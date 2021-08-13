@@ -1,4 +1,3 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/khihadysucahyo/go-clean-arch-boilerplate)](https://goreportcard.com/report/github.com/khihadysucahyo/go-clean-arch-boilerplate)
 [![Maintainability](https://api.codeclimate.com/v1/badges/afaeafb0caa35a6463f4/maintainability)](https://codeclimate.com/repos/611626fd92439c0161013db6/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/afaeafb0caa35a6463f4/test_coverage)](https://codeclimate.com/repos/611626fd92439c0161013db6/test_coverage)
 
