@@ -12,6 +12,9 @@ clean:
 docker:
 	docker build -t cms-content-service .
 
+migrate:
+	go run ./database/migrations/migrate.go
+
 run:
 	docker-compose up --build -d
 
