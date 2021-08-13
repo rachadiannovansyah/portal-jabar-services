@@ -33,7 +33,7 @@ GO_HTML_COV             := ./coverage.html
 GO_TEST_OUTFILE         := ./c.out
 GOLANG_DOCKER_IMAGE     := golang:1.15
 CC_TEST_REPORTER_ID		:= ${CC_TEST_REPORTER_ID}
-CC_PREFIX				:= github.com/khihadysucahyo/go-clean-arch-boilerplate
+CC_PREFIX				:= github.com/jabardigitalservice/portal-jabar-api
 
 # custom logic for code climate, gross but necessary
 coverage:

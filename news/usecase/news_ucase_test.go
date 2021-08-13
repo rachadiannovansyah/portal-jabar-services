@@ -21,12 +21,12 @@ func TestFetch(t *testing.T) {
 		Content: "News",
 	}
 
-	mockListContent := make([]domain.News, 0)
-	mockListContent = append(mockListContent, mockNews)
+	mockListNews := make([]domain.News, 0)
+	mockListNews = append(mockListNews, mockNews)
 
 	t.Run("success", func(t *testing.T) {
 		mockNewsRepo.On("Fetch", mock.Anything, mock.AnythingOfType("string"),
-			mock.AnythingOfType("int64")).Return(mockListContent, "next-cursor", nil).Once()
+			mock.AnythingOfType("int64")).Return(mockListNews, "next-cursor", nil).Once()
 
 		u := ucase.NewNewsUsecase(mockNewsRepo, time.Second*2)
 		num := int64(1)
@@ -36,7 +36,7 @@ func TestFetch(t *testing.T) {
 		assert.Equal(t, cursorExpected, nextCursor)
 		assert.NotEmpty(t, nextCursor)
 		assert.NoError(t, err)
-		assert.Len(t, list, len(mockListContent))
+		assert.Len(t, list, len(mockListNews))
 
 		mockNewsRepo.AssertExpectations(t)
 	})
@@ -53,73 +53,6 @@ func TestFetch(t *testing.T) {
 		assert.Empty(t, nextCursor)
 		assert.Error(t, err)
 		assert.Len(t, list, 0)
-		mockNewsRepo.AssertExpectations(t)
-	})
-
-}
-
-func TestGetByID(t *testing.T) {
-	mockContentRepo := new(mocks.NewsRepository)
-	mockContent := domain.News{
-		Title:   "Hello",
-		Content: "News",
-	}
-	t.Run("success", func(t *testing.T) {
-		mockContentRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockContent, nil).Once()
-		u := ucase.NewNewsUsecase(mockContentRepo, time.Second*2)
-
-		a, err := u.GetByID(context.TODO(), mockContent.ID)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, a)
-
-		mockContentRepo.AssertExpectations(t)
-	})
-	t.Run("error-failed", func(t *testing.T) {
-		mockContentRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(domain.News{}, errors.New("Unexpected")).Once()
-
-		u := ucase.NewNewsUsecase(mockContentRepo, time.Second*2)
-
-		a, err := u.GetByID(context.TODO(), mockContent.ID)
-
-		assert.Error(t, err)
-		assert.Equal(t, domain.News{}, a)
-
-		mockContentRepo.AssertExpectations(t)
-	})
-
-}
-
-func TestStore(t *testing.T) {
-	mockNewsRepo := new(mocks.NewsRepository)
-	mockNews := domain.News{
-		Slug:    "Hello",
-		Content: "News",
-	}
-
-	t.Run("success", func(t *testing.T) {
-		tempmockNews := mockNews
-		tempmockNews.ID = 0
-		mockNewsRepo.On("GetBySlug", mock.Anything, mock.AnythingOfType("string")).Return(domain.News{}, domain.ErrNotFound).Once()
-		mockNewsRepo.On("Store", mock.Anything, mock.AnythingOfType("*domain.News")).Return(nil).Once()
-
-		u := ucase.NewNewsUsecase(mockNewsRepo, time.Second*2)
-
-		err := u.Store(context.TODO(), &tempmockNews)
-
-		assert.NoError(t, err)
-		assert.Equal(t, mockNews.Title, tempmockNews.Title)
-		mockNewsRepo.AssertExpectations(t)
-	})
-	t.Run("existing-title", func(t *testing.T) {
-		existingNews := mockNews
-		mockNewsRepo.On("GetByTitle", mock.Anything, mock.AnythingOfType("string")).Return(existingNews, nil).Once()
-
-		u := ucase.NewNewsUsecase(mockNewsRepo, time.Second*2)
-
-		err := u.Store(context.TODO(), &mockNews)
-
-		assert.Error(t, err)
 		mockNewsRepo.AssertExpectations(t)
 	})
 
@@ -144,7 +77,7 @@ func TestDelete(t *testing.T) {
 		assert.NoError(t, err)
 		mockNewsRepo.AssertExpectations(t)
 	})
-	t.Run("content-is-not-exist", func(t *testing.T) {
+	t.Run("news-is-not-exist", func(t *testing.T) {
 		mockNewsRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(domain.News{}, nil).Once()
 
 		u := ucase.NewNewsUsecase(mockNewsRepo, time.Second*2)
@@ -168,20 +101,20 @@ func TestDelete(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	mockContentRepo := new(mocks.NewsRepository)
-	mockContent := domain.News{
+	mockNewsRepo := new(mocks.NewsRepository)
+	mockNews := domain.News{
 		Title:   "Hello",
 		Content: "News",
 		ID:      23,
 	}
 
 	t.Run("success", func(t *testing.T) {
-		mockContentRepo.On("Update", mock.Anything, &mockContent).Once().Return(nil)
+		mockNewsRepo.On("Update", mock.Anything, &mockNews).Once().Return(nil)
 
-		u := ucase.NewNewsUsecase(mockContentRepo, time.Second*2)
+		u := ucase.NewNewsUsecase(mockNewsRepo, time.Second*2)
 
-		err := u.Update(context.TODO(), &mockContent)
+		err := u.Update(context.TODO(), &mockNews)
 		assert.NoError(t, err)
-		mockContentRepo.AssertExpectations(t)
+		mockNewsRepo.AssertExpectations(t)
 	})
 }

@@ -77,8 +77,8 @@ func (a *newsUsecase) GetBySlug(c context.Context, slug string) (res domain.News
 func (a *newsUsecase) Store(c context.Context, m *domain.News) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedContent, _ := a.GetBySlug(ctx, m.Slug)
-	if existedContent != (domain.News{}) {
+	existedNews, _ := a.GetBySlug(ctx, m.Slug)
+	if existedNews != (domain.News{}) {
 		return domain.ErrConflict
 	}
 
@@ -89,11 +89,11 @@ func (a *newsUsecase) Store(c context.Context, m *domain.News) (err error) {
 func (a *newsUsecase) Delete(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedContent, err := a.newsRepo.GetByID(ctx, id)
+	existedNews, err := a.newsRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
-	if existedContent == (domain.News{}) {
+	if existedNews == (domain.News{}) {
 		return domain.ErrNotFound
 	}
 	return a.newsRepo.Delete(ctx, id)
