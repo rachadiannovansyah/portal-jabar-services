@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/jmoiron/sqlx v1.2.0 // indirect
 	github.com/labstack/echo/v4 v4.4.0
 	github.com/sirupsen/logrus v1.0.5
 	github.com/spf13/viper v1.8.1
