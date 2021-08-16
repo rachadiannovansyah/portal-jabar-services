@@ -17,19 +17,19 @@ func (m *CreateNewsTable) Up(con *sqlx.DB) {
 	table.PrimaryKey("id")
 	table.Column("newsCategoryId").Type("int unsigned")
 	table.ForeignKey("newsCategoryId").
-		Reference("categories").
+		Reference("news_categories").
 		On("id").
 		OnDelete("cascade").
 		OnUpdate("cascade")
-	table.String("title", 500).Nullable()
-	table.String("content", 1000).Nullable()
-	table.String("slug", 500).Nullable()
-	table.String("imagePath", 500).Nullable()
-	table.String("videoUrl", 500).Nullable()
-	table.String("newsSource", 500).Nullable()
-	table.String("showDate", 500).Nullable()
-	table.String("endDate", 500).Nullable()
-	table.String("published", 500).Default("unpublished")
+	table.String("title", 80)
+	table.Column("content").Type("text")
+	table.String("slug", 100).Nullable()
+	table.String("image", 255).Nullable()
+	table.String("videoUrl", 80).Nullable()
+	table.String("source", 80).Nullable()
+	table.Column("showDate").Type("datetime")
+	table.Column("endDate").Type("datetime")
+	table.String("status", 12).Default("published")
 	table.WithTimestamps()
 
 	table.MustExec()

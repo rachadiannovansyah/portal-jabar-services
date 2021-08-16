@@ -35,8 +35,8 @@ func main() {
 	dbHost := viper.GetString(`DB_HOST`)
 	dbPort := viper.GetString(`DB_PORT`)
 	dbUser := viper.GetString(`DB_USER`)
-	dbPass := viper.GetString(`DB_PASS`)
-	dbName := viper.GetString(`DB_DATABASE`)
+	dbPass := viper.GetString(`DB_PASSWORD`)
+	dbName := viper.GetString(`DB_NAME`)
 	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
 	log.Println(connection)
 	val := url.Values{}
