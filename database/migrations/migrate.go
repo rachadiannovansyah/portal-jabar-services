@@ -12,6 +12,7 @@ func main() {
 
 func getMigrationsList() []run.Migratable {
 	return []run.Migratable{
+		&list.CreateNewsCategoriesTable{},
 		&list.CreateNewsTable{},
 	}
 }
