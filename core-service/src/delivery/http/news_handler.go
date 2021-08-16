@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	validator "gopkg.in/go-playground/validator.v9"
 
-	"github.com/jabardigitalservice/portal-jabar-api/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
 // ResponseError represent the reseponse error struct

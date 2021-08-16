@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	domain "github.com/jabardigitalservice/portal-jabar-api/domain"
+	domain "github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	mock "github.com/stretchr/testify/mock"
 )
 

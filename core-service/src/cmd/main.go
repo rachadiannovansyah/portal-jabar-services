@@ -15,10 +15,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 
-	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-api/news/delivery/http"
-	_newsHttpDeliveryMiddleware "github.com/jabardigitalservice/portal-jabar-api/news/delivery/http/middleware"
-	_newsRepo "github.com/jabardigitalservice/portal-jabar-api/news/repository/mysql"
-	_newsUcase "github.com/jabardigitalservice/portal-jabar-api/news/usecase"
+	httpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http"
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http/middleware"
+	repo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/repositories/mysql"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/usecases"
 )
 
 func init() {
@@ -61,7 +61,7 @@ func main() {
 	}()
 
 	e := echo.New()
-	middL := _newsHttpDeliveryMiddleware.InitMiddleware()
+	middL := middl.InitMiddleware()
 	e.Use(middL.CORS)
 	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
@@ -81,13 +81,13 @@ func main() {
 		Repanic: true,
 	}))
 
-	nr := _newsRepo.NewMysqlNewsRepository(dbConn)
+	nr := repo.NewMysqlNewsRepository(dbConn)
 
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// news handler
-	nu := _newsUcase.NewNewsUsecase(nr, timeoutContext)
-	_newsHttpDelivery.NewNewsHandler(e, r, nu)
+	nu := usecases.NewNewsUsecase(nr, timeoutContext)
+	httpDelivery.NewNewsHandler(e, r, nu)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

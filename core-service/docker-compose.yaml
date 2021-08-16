@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     container_name: api
     ports:
       - 7070:7070
@@ -16,7 +16,7 @@ services:
   mysql:
     image: mysql:5.7
     platform: linux/amd64
-    container_name: content_service_mysql
+    container_name: core_service_mysql
     command: mysqld --user=root
     volumes:
       - ./news.sql:/docker-entrypoint-initdb.d/init.sql

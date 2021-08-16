@@ -21,6 +21,6 @@ WORKDIR /app
 
 EXPOSE 7070
 
-COPY --from=builder /app/engine /app
+COPY --from=builder /app/src/engine /app
 
 CMD /app/engine

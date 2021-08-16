@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jabardigitalservice/portal-jabar-api/news/delivery/http/middleware"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http/middleware"
 )
 
 func TestCORS(t *testing.T) {

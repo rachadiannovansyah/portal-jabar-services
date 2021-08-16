@@ -1,10 +1,10 @@
-package usecase
+package usecases
 
 import (
 	"context"
 	"time"
 
-	"github.com/jabardigitalservice/portal-jabar-api/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
 type newsUsecase struct {
