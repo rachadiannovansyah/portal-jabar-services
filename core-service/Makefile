@@ -5,10 +5,10 @@ GO_HTML_COV             := ./coverage.html
 GO_TEST_OUTFILE         := ./c.out
 GOLANG_DOCKER_IMAGE     := golang:1.15
 CC_TEST_REPORTER_ID			:= ${CC_TEST_REPORTER_ID}
-CC_PREFIX								:= github.com/jabardigitalservice/portal-jabar-api
+CC_PREFIX								:= github.com/jabardigitalservice/portal-jabar-services/core-service
 
 engine:
-	go build -o ${BINARY} app/*.go
+	cd src && go build -o ${BINARY} cmd/*.go
 
 unittest:
 	go test -short  ./...
@@ -17,7 +17,7 @@ clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
 docker:
-	docker build -t cms-content-service .
+	docker build -t portal-jabar-core-svc .
 
 run:
 	docker-compose up --build -d
@@ -38,7 +38,7 @@ migrate:
 	docker run --rm -w /app -v ${ROOT}:/app \
 		 --env-file=.env \
 		 --network=portal-jabar-api_default \
-		${GOLANG_DOCKER_IMAGE} go run ./database/migrations/migrate.go --verbose
+		${GOLANG_DOCKER_IMAGE} go run ./src/database/migrations/migrate.go --verbose
 
 # custom logic for code climate, gross but necessary
 coverage:

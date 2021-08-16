@@ -1,4 +1,4 @@
-package usecase_test
+package usecases_test
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/jabardigitalservice/portal-jabar-api/domain"
-	"github.com/jabardigitalservice/portal-jabar-api/domain/mocks"
-	ucase "github.com/jabardigitalservice/portal-jabar-api/news/usecase"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain/mocks"
+	ucase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/usecases"
 )
 
 func TestFetch(t *testing.T) {

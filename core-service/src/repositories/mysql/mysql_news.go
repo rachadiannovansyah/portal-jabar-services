@@ -7,8 +7,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/jabardigitalservice/portal-jabar-api/domain"
-	"github.com/jabardigitalservice/portal-jabar-api/news/repository"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/repositories"
 )
 
 type mysqlNewsRepository struct {
@@ -60,7 +60,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, cursor string, num int6
 	query := `SELECT id, title, content, imagePath, videoUrl, createdAt
 		FROM news WHERE createdAt > ? OR createdAt is null ORDER BY createdAt LIMIT ? `
 
-	decodedCursor, err := repository.DecodeCursor(cursor)
+	decodedCursor, err := repositories.DecodeCursor(cursor)
 	if err != nil && cursor != "" {
 		return nil, "", domain.ErrBadParamInput
 	}
@@ -71,7 +71,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, cursor string, num int6
 	}
 
 	if len(res) == int(num) {
-		nextCursor = repository.EncodeCursor(res[len(res)-1].CreatedAt)
+		nextCursor = repositories.EncodeCursor(res[len(res)-1].CreatedAt)
 	}
 
 	return

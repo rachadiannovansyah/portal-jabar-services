@@ -12,10 +12,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	newsHttp "github.com/jabardigitalservice/portal-jabar-api/news/delivery/http"
+	newsHttp "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http"
 
-	"github.com/jabardigitalservice/portal-jabar-api/domain"
-	"github.com/jabardigitalservice/portal-jabar-api/domain/mocks"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain/mocks"
 )
 
 func TestFetch(t *testing.T) {
