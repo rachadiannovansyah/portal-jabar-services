@@ -15,6 +15,7 @@ services:
 
   mysql:
     image: mysql:5.7
+    platform: linux/amd64
     container_name: content_service_mysql
     command: mysqld --user=root
     volumes:
