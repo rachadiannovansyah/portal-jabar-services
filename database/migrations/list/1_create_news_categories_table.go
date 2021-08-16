@@ -15,8 +15,8 @@ func (m *CreateNewsCategoriesTable) Up(con *sqlx.DB) {
 	table := builder.NewTable("news_categories", con)
 	table.Column("id").Type("int unsigned").Autoincrement()
 	table.PrimaryKey("id")
-	table.String("title", 500).Nullable()
-	table.String("description", 1000).Nullable()
+	table.String("title", 80)
+	table.Column("description").Type("text")
 	table.WithTimestamps()
 
 	table.MustExec()
