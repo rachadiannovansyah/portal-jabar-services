@@ -17,7 +17,7 @@ clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
 docker:
-	docker build -f docker/Dockerfile -t portal-jabar_core-service .
+	docker build -f ./docker/Dockerfile -t portal-jabar_core-service --no-cache .
 
 run:
 	docker-compose up --build -d
