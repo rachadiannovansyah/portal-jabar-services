@@ -17,7 +17,7 @@ clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
 docker:
-	docker build -t portal-jabar-core-svc .
+	docker build -f docker/Dockerfile -t portal-jabar_core-service .
 
 run:
 	docker-compose up --build -d
@@ -35,10 +35,10 @@ lint:
 .PHONY: clean install unittest build docker run stop vendor lint-prepare lint
 
 migrate:
-	docker run --rm -w /app -v ${ROOT}:/app \
+	docker run --rm -w /app -v ${ROOT}/src:/app \
 		 --env-file=.env \
-		 --network=portal-jabar-api_default \
-		${GOLANG_DOCKER_IMAGE} go run ./src/database/migrations/migrate.go --verbose
+		 --network=core-service_default \
+		${GOLANG_DOCKER_IMAGE} go run ./database/migrations/migrate.go --verbose
 
 # custom logic for code climate, gross but necessary
 coverage:
