@@ -1,4 +1,5 @@
 BEGIN;
+DROP TABLE IF EXISTS categories;
 
 CREATE TABLE `categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -7,6 +8,8 @@ CREATE TABLE `categories` (
   `type` varchar(80) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS contents;
 
 CREATE TABLE `contents` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
