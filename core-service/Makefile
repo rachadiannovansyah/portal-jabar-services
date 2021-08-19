@@ -68,9 +68,7 @@ test:
 	@go test ./... -coverprofile=./coverage.out & go tool cover -html=./coverage.out
 
 # ========================== database ==========================
-.PHONY: migrate
 migrate:
 	docker run --rm -v "${ROOT}/src/database/migrations:/migrations" \
 		--network host migrate/migrate -path ./migrations/ \
 		-database "mysql://${DB_USER}:${DB_PASSWORD}@tcp(localhost:3306)/${DB_NAME}" up
-
