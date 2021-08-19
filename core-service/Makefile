@@ -1,4 +1,5 @@
 # Definitions
+include .env
 BINARY									:= engine
 ROOT                    := $(PWD)
 GO_HTML_COV             := ./coverage.html
@@ -34,12 +35,6 @@ lint:
 
 .PHONY: clean install unittest build docker run stop vendor lint-prepare lint
 
-migrate:
-	docker run --rm -w /app -v ${ROOT}/src:/app \
-		 --env-file=.env \
-		 --network=core-service_default \
-		${GOLANG_DOCKER_IMAGE} go run ./database/migrations/migrate.go --verbose
-
 # custom logic for code climate, gross but necessary
 coverage:
 	# download CC test reported
@@ -71,3 +66,9 @@ endif
 
 test:
 	@go test ./... -coverprofile=./coverage.out & go tool cover -html=./coverage.out
+
+# ========================== database ==========================
+migrate:
+	docker run --rm -v "${ROOT}/src/database/migrations:/migrations" \
+		--network host migrate/migrate -path ./migrations/ \
+		-database "mysql://${DB_USER}:${DB_PASSWORD}@tcp(localhost:3306)/${DB_NAME}" up
