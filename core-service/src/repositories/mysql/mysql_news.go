@@ -3,24 +3,20 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/repositories"
 )
-
-type mysqlNewsRepository struct {
-	Conn *sql.DB
-}
 
 // NewMysqlNewsRepository will create an object that represent the news.Repository interface
 func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
-	return &mysqlNewsRepository{Conn}
+	return &mysqlRepository{Conn}
 }
 
-func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
+var querySelectNews = `SELECT id, title, content, image, video, slug, createdAt, updatedAt FROM news`
+
+func (m *mysqlRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -41,9 +37,11 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.ID,
 			&t.Title,
 			&t.Content,
-			&t.ImagePath,
-			&t.VideoUrl,
+			&t.Image,
+			&t.Video,
+			&t.Slug,
 			&t.CreatedAt,
+			&t.UpdatedAt,
 		)
 
 		if err != nil {
@@ -56,29 +54,28 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
-func (m *mysqlNewsRepository) Fetch(ctx context.Context, cursor string, num int64) (res []domain.News, nextCursor string, err error) {
-	query := `SELECT id, title, content, imagePath, videoUrl, createdAt
-		FROM news WHERE createdAt > ? OR createdAt is null ORDER BY createdAt LIMIT ? `
+func (m *mysqlRepository) Fetch(ctx context.Context, params *domain.FetchNewsRequest) (res []domain.News, total int64, err error) {
+	query := querySelectNews
 
-	decodedCursor, err := repositories.DecodeCursor(cursor)
-	if err != nil && cursor != "" {
-		return nil, "", domain.ErrBadParamInput
+	if params.Keyword != "" {
+		query = query + ` WHERE title like '%` + params.Keyword + `%' `
 	}
 
-	res, err = m.fetch(ctx, query, decodedCursor, num)
+	query = query + ` ORDER BY createdAt LIMIT ?,? `
+
+	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+
 	if err != nil {
-		return nil, "", err
+		return nil, 0, err
 	}
 
-	if len(res) == int(num) {
-		nextCursor = repositories.EncodeCursor(res[len(res)-1].CreatedAt)
-	}
+	total, _ = m.count(ctx, "SELECT COUNT(1) FROM news")
 
 	return
 }
-func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain.News, err error) {
-	query := `SELECT id, title, content, imagePath, videoUrl, createdAt 
-		FROM news WHERE ID = ?`
+
+func (m *mysqlRepository) GetByID(ctx context.Context, id int64) (res domain.News, err error) {
+	query := querySelectNews + ` WHERE ID = ?`
 
 	list, err := m.fetch(ctx, query, id)
 	if err != nil {
@@ -89,91 +86,6 @@ func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain
 		res = list[0]
 	} else {
 		return res, domain.ErrNotFound
-	}
-
-	return
-}
-
-func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, title string) (res domain.News, err error) {
-	query := `SELECT id, title, content, imagePath, videoUrl, createdAt
-  						FROM news WHERE slug = ?`
-
-	list, err := m.fetch(ctx, query, title)
-	if err != nil {
-		return
-	}
-
-	if len(list) > 0 {
-		res = list[0]
-	} else {
-		return res, domain.ErrNotFound
-	}
-	return
-}
-
-func (m *mysqlNewsRepository) Store(ctx context.Context, a *domain.News) (err error) {
-	query := `INSERT news SET title=? , content=? , updatedAt=? , createdAt=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx, a.Title, a.Content, a.UpdatedAt, a.CreatedAt)
-	if err != nil {
-		return
-	}
-	lastID, err := res.LastInsertId()
-	if err != nil {
-		return
-	}
-	a.ID = lastID
-	return
-}
-
-func (m *mysqlNewsRepository) Delete(ctx context.Context, id int64) (err error) {
-	query := "DELETE FROM news WHERE id = ?"
-
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx, id)
-	if err != nil {
-		return
-	}
-
-	rowsAfected, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-
-	if rowsAfected != 1 {
-		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", rowsAfected)
-		return
-	}
-
-	return
-}
-func (m *mysqlNewsRepository) Update(ctx context.Context, ar *domain.News) (err error) {
-	query := `UPDATE news set title=?, content=?, updatedAt=? WHERE id = ?`
-
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx, ar.Title, ar.Content, ar.UpdatedAt, ar.ID)
-	if err != nil {
-		return
-	}
-	affect, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-	if affect != 1 {
-		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", affect)
-		return
 	}
 
 	return

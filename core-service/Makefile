@@ -8,11 +8,15 @@ GOLANG_DOCKER_IMAGE     := golang:1.15
 CC_TEST_REPORTER_ID			:= ${CC_TEST_REPORTER_ID}
 CC_PREFIX								:= github.com/jabardigitalservice/portal-jabar-services/core-service
 
+# ========================== database ==========================
+migrate:
+	docker run --rm -v "${ROOT}/src/database/migrations:/migrations" \
+		--network host migrate/migrate -path ./migrations/ \
+		-database "mysql://${DB_USER}:${DB_PASSWORD}@tcp(localhost:3306)/${DB_NAME}" up
+
+# ========================== build ==========================
 engine:
 	cd src && go build -o ${BINARY} cmd/*.go
-
-unittest:
-	go test -short  ./...
 
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
@@ -26,15 +30,7 @@ run:
 stop:
 	docker-compose down
 
-lint-prepare:
-	@echo "Installing golangci-lint" 
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
-
-lint:
-	./bin/golangci-lint run ./...
-
-.PHONY: clean install unittest build docker run stop vendor lint-prepare lint
-
+# ========================== test ==========================
 # custom logic for code climate, gross but necessary
 coverage:
 	# download CC test reported
@@ -67,8 +63,3 @@ endif
 test:
 	@go test ./... -coverprofile=./coverage.out & go tool cover -html=./coverage.out
 
-# ========================== database ==========================
-migrate:
-	docker run --rm -v "${ROOT}/src/database/migrations:/migrations" \
-		--network host migrate/migrate -path ./migrations/ \
-		-database "mysql://${DB_USER}:${DB_PASSWORD}@tcp(localhost:3306)/${DB_NAME}" up

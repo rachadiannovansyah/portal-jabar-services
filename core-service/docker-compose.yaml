@@ -18,7 +18,7 @@ services:
     container_name: core_service_mysql
     command: mysqld --user=root
     volumes:
-      - ./news.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 3306:3306
     environment:
