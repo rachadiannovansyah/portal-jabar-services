@@ -14,10 +14,6 @@ This project has 4 Domain layer :
 * Usecase Layer
 * Delivery Layer
 
-#### The diagram:
-
-![img.png](arch.png)
-
 ### How To Run This Project
 
 Since the project already use Go Module, I recommend to put the source code in any folder but GOPATH.
@@ -57,11 +53,3 @@ $ curl localhost:7070
 # Stop
 $ make stop
 ```
-
-### Tools Used:
-
-In this project, I use some tools listed below. But you can use any simmilar library that have the same purposes. But,
-well, different library will have different implementation type. Just be creative and use anything that you really need.
-
-- All libraries listed in [`go.mod`](https://github.com/bxcodec/go-clean-arch/blob/master/go.mod)
-- ["github.com/vektra/mockery".](https://github.com/vektra/mockery) To Generate Mocks for testing needs.
