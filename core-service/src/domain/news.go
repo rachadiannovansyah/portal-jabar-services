@@ -7,33 +7,34 @@ import (
 
 // News ...
 type News struct {
-	ID             int64      `json:"id"`
-	NewsCategoryID int64      `json:"newsCategoryId" validate:"required"`
-	Title          string     `json:"title" validate:"required"`
-	Content        string     `json:"content" validate:"required"`
-	Slug           string     `json:"slug"`
-	Image          NullString `json:"image"`
-	Video          NullString `json:"video"`
-	Source         NullString `json:"source"`
-	ShowDate       string     `json:"showDate"`
-	EndDate        string     `json:"endDate"`
-	Status         string     `json:"status"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	UpdatedAt      time.Time  `json:"updatedAt"`
+	ID        int64        `json:"id"`
+	Title     string       `json:"title" validate:"required"`
+	Excerpt   string       `json:"excerpt"`
+	Content   string       `json:"content" validate:"required"`
+	Slug      string       `json:"slug"`
+	Image     NullString   `json:"image"`
+	Video     NullString   `json:"video"`
+	Source    NullString   `json:"source"`
+	ShowDate  string       `json:"showDate,omitempty"`
+	EndDate   string       `json:"endDate,omitempty"`
+	Status    string       `json:"status,omitempty"`
+	Category  NewsCategory `json:"category" validate:"required"`
+	CreatedBy NullString   `json:"createdBy"`
+	CreatedAt time.Time    `json:"createdAt"`
+	UpdatedAt time.Time    `json:"updatedAt"`
 }
 
-// ListNews ...
-type ListNews struct {
-	ID        int64      `json:"id"`
-	Title     string     `json:"title"`
-	Excerpt   string     `json:"excerpt"`
-	Category  int64      `json:"category"`
-	Slug      string     `json:"slug"`
-	Image     NullString `json:"image"`
-	Video     NullString `json:"video"`
-	Author    string     `json:"author"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+// NewsListResponse ...
+type NewsListResponse struct {
+	ID        int64        `json:"id"`
+	Title     string       `json:"title"`
+	Excerpt   string       `json:"excerpt"`
+	Slug      string       `json:"slug"`
+	Image     NullString   `json:"image"`
+	Category  NewsCategory `json:"category"`
+	CreatedBy NullString   `json:"createdBy"`
+	CreatedAt time.Time    `json:"createdAt"`
+	UpdatedAt time.Time    `json:"updatedAt"`
 }
 
 // FetchNewsRequest penggunaan pointer ini agar dapat memberikan value nil jika tidak digunakan
