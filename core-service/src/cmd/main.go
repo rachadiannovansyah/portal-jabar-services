@@ -83,9 +83,12 @@ func main() {
 
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
-	// content handler
+	// init repo category repo
 	nr := repo.NewMysqlNewsRepository(dbConn)
-	nu := usecases.NewContentUsecase(nr, timeoutContext)
+	ncr := repo.NewMysqlNewsCategoriesRepository(dbConn)
+
+	// news handler
+	nu := usecases.NewNewsUsecase(nr, ncr, timeoutContext)
 	httpDelivery.NewContentHandler(e, r, nu)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))

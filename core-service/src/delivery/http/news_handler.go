@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 
@@ -57,8 +58,12 @@ func (a *ContentHandler) FetchContents(c echo.Context) error {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
 	}
 
+	// Copy slice to slice
+	listNewsRes := []domain.NewsListResponse{}
+	copier.Copy(&listNewsRes, &listNews)
+
 	res := &domain.ResultsData{
-		Data: listNews,
+		Data: listNewsRes,
 		Meta: &domain.MetaData{
 			TotalCount:  total,
 			TotalPage:   math.Ceil(float64(total) / float64(perPage)),
