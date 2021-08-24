@@ -66,8 +66,11 @@ func main() {
 	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
 
+	// api v1
+	v1 := e.Group("/v1")
+
 	// restricted group
-	r := e.Group("")
+	r := v1.Group("")
 	r.Use(middL.JWT)
 
 	if err := sentry.Init(sentry.ClientOptions{
@@ -89,7 +92,7 @@ func main() {
 
 	// news handler
 	nu := usecases.NewNewsUsecase(nr, ncr, timeoutContext)
-	httpDelivery.NewContentHandler(e, r, nu)
+	httpDelivery.NewContentHandler(v1, r, nu)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

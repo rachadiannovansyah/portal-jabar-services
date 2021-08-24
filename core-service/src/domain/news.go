@@ -40,7 +40,6 @@ type NewsListResponse struct {
 // FetchNewsRequest penggunaan pointer ini agar dapat memberikan value nil jika tidak digunakan
 type FetchNewsRequest struct {
 	Keyword string
-	Type    string
 	PerPage int64
 	Offset  int64
 	OrderBy string

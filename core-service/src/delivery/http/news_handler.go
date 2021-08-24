@@ -18,7 +18,7 @@ type ContentHandler struct {
 }
 
 // NewContentHandler will initialize the contents/ resources endpoint
-func NewContentHandler(e *echo.Echo, r *echo.Group, us domain.NewsUsecase) {
+func NewContentHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	handler := &ContentHandler{
 		CUsecase: us,
 	}
@@ -32,7 +32,7 @@ func (a *ContentHandler) FetchContents(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
-	perPage, _ := strconv.ParseInt(c.QueryParam("perPage"), 10, 64)
+	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
 
 	if page == 0 {
 		page = 1
@@ -44,12 +44,11 @@ func (a *ContentHandler) FetchContents(c echo.Context) error {
 	offset := (page - 1) * perPage
 
 	params := domain.FetchNewsRequest{
-		Keyword: c.QueryParam("keyword"),
-		Type:    c.QueryParam("type"),
+		Keyword: c.QueryParam("q"),
 		PerPage: perPage,
 		Offset:  offset,
-		OrderBy: c.QueryParam("orderBy"),
-		SortBy:  c.QueryParam("sortBy"),
+		OrderBy: c.QueryParam("order_by"),
+		SortBy:  c.QueryParam("sort_by"),
 	}
 
 	listNews, total, err := a.CUsecase.Fetch(ctx, &params)
