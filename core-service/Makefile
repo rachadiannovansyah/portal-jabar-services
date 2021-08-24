@@ -1,5 +1,3 @@
-# Definitions
-include .env
 BINARY									:= engine
 ROOT                    := $(PWD)
 GO_HTML_COV             := ./coverage.html
@@ -8,7 +6,8 @@ GOLANG_DOCKER_IMAGE     := golang:1.15
 CC_TEST_REPORTER_ID			:= ${CC_TEST_REPORTER_ID}
 CC_PREFIX								:= github.com/jabardigitalservice/portal-jabar-services/core-service
 
-# ========================== database ==========================
+# ========================== database ==========================	
+# export env first: export $(xargs <.env)
 migrate:
 	docker run --rm -v "${ROOT}/src/database/migrations:/migrations" \
 		--network host migrate/migrate -path ./migrations/ \
