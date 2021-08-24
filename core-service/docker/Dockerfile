@@ -24,4 +24,5 @@ EXPOSE 7070
 COPY --from=builder /app/src/engine /app
 
 # executable
-ENTRYPOINT [ "./app/engine" ]
+# ENTRYPOINT [ "./app/engine" ]
+CMD /app/engine
