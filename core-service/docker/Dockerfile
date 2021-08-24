@@ -1,5 +1,5 @@
 # Builder
-FROM golang:1.14.2-alpine3.11 as builder
+FROM registry.digitalservice.id/proxyjds/library/golang:1.14.2-alpine3.11 as builder
 
 RUN apk update && apk upgrade && \
     apk --update add git make
@@ -11,7 +11,7 @@ COPY . .
 RUN make engine
 
 # Distribution
-FROM alpine:latest
+FROM registry.digitalservice.id/proxyjds/library/alpine:latest
 
 RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata && \
