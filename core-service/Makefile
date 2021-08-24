@@ -29,6 +29,8 @@ run:
 stop:
 	docker-compose down
 
+.PHONY: clean install unittest build docker run stop vendor lint-prepare lint
+
 # ========================== test ==========================
 # custom logic for code climate, gross but necessary
 coverage:
