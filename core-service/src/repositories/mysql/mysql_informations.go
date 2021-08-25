@@ -46,8 +46,6 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 			&infos.ShowDate,
 			&infos.EndDate,
 			&infos.Status,
-			&infos.CreatedBy,
-			&infos.UpdatedBy,
 			&infos.CreatedAt,
 			&infos.UpdatedAt,
 		)
@@ -75,7 +73,7 @@ func (mr *mysqlInformationsRepository) count(ctx context.Context, query string) 
 }
 
 func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
-	query := `SELECT * FROM informations`
+	query := `SELECT id, categoryId, title, description, slug, image, showDate, endDate, status, createdAt, updatedAt FROM informations`
 
 	if params.Keyword != "" {
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
@@ -95,7 +93,7 @@ func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *dom
 }
 
 func (mr *mysqlInformationsRepository) GetByID(ctx context.Context, id int64) (res domain.Informations, err error) {
-	query := `SELECT * FROM informations` + ` WHERE ID = ?`
+	query := `SELECT id, categoryId, title, description, slug, image, showDate, endDate, status, createdAt, updatedAt FROM informations` + ` WHERE ID = ?`
 
 	list, err := mr.fetchQuery(ctx, query, id)
 	if err != nil {

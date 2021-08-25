@@ -15,7 +15,7 @@ CREATE TABLE `informations` (
   `categoryId` int(10) unsigned NOT NULL,
   `title` varchar(80) NOT NULL,
   `excerpt` varchar(150) NOT NULL,
-  `content` text NOT NULL,
+  `description` text NOT NULL,
   `slug` varchar(100) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `source` varchar(80) DEFAULT NULL,
