@@ -94,11 +94,11 @@ func (usecase *informationsUcase) FetchAll(c context.Context, params *domain.Fet
 	return
 }
 
-func (usecase *informationsUcase) FetchOne(c context.Context, id int64) (res domain.Informations, err error) {
+func (usecase *informationsUcase) GetByID(c context.Context, id int64) (res domain.Informations, err error) {
 	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 
-	res, err = usecase.informationRepo.FetchOne(ctx, id)
+	res, err = usecase.informationRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}

@@ -19,7 +19,7 @@ func NewInformationHandler(e *echo.Group, r *echo.Group, us domain.InformationsU
 	}
 
 	e.GET("/informations", handler.FetchAll)
-	e.GET("/informations/:id", handler.FetchOne)
+	e.GET("/informations/:id", handler.GetById)
 }
 
 func (handler *InformationHandler) FetchAll(c echo.Context) error {
@@ -65,7 +65,7 @@ func (handler *InformationHandler) FetchAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (handler *InformationHandler) FetchOne(c echo.Context) error {
+func (handler *InformationHandler) GetById(c echo.Context) error {
 	reqId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
@@ -74,7 +74,7 @@ func (handler *InformationHandler) FetchOne(c echo.Context) error {
 	id := int64(reqId)
 	ctx := c.Request().Context()
 
-	informations, err := handler.InformationsUcase.FetchOne(ctx, id)
+	informations, err := handler.InformationsUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}

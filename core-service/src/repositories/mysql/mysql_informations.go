@@ -94,7 +94,7 @@ func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *dom
 	return
 }
 
-func (mr *mysqlInformationsRepository) FetchOne(ctx context.Context, id int64) (res domain.Informations, err error) {
+func (mr *mysqlInformationsRepository) GetByID(ctx context.Context, id int64) (res domain.Informations, err error) {
 	query := `SELECT * FROM informations` + ` WHERE ID = ?`
 
 	list, err := mr.fetchQuery(ctx, query, id)

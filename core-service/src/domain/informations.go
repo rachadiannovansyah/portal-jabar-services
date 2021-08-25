@@ -45,10 +45,10 @@ type FetchInformationsRequest struct {
 
 type InformationsUcase interface {
 	FetchAll(ctx context.Context, params *FetchInformationsRequest) ([]Informations, int64, error)
-	FetchOne(ctx context.Context, id int64) (Informations, error)
+	GetByID(ctx context.Context, id int64) (Informations, error)
 }
 
 type InformationsRepo interface {
 	FetchAll(ctx context.Context, params *FetchInformationsRequest) (new []Informations, total int64, err error)
-	FetchOne(ctx context.Context, id int64) (Informations, error)
+	GetByID(ctx context.Context, id int64) (Informations, error)
 }
