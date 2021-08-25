@@ -11,15 +11,15 @@ import (
 
 type newsUsecase struct {
 	newsRepo       domain.NewsRepository
-	newsCatRepo    domain.NewsCategoryRepository
+	categories     domain.CategoriesRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.NewsCategoryRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoriesRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
-		newsCatRepo:    nc,
+		categories:     nc,
 		contextTimeout: timeout,
 	}
 }
@@ -28,18 +28,18 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
-	mapCategories := map[int64]domain.NewsCategory{}
+	mapCategories := map[int64]domain.Categories{}
 
 	for _, news := range data {
-		mapCategories[news.Category.ID] = domain.NewsCategory{}
+		mapCategories[news.Category.ID] = domain.Categories{}
 	}
 
 	// Using goroutine to fetch the category's detail
-	chanCategory := make(chan domain.NewsCategory)
+	chanCategory := make(chan domain.Categories)
 	for categoryID := range mapCategories {
 		categoryID := categoryID
 		g.Go(func() error {
-			res, err := n.newsCatRepo.GetByID(ctx, categoryID)
+			res, err := n.categories.GetByID(ctx, categoryID)
 			if err != nil {
 				return err
 			}
@@ -58,7 +58,7 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	}()
 
 	for category := range chanCategory {
-		if category != (domain.NewsCategory{}) {
+		if category != (domain.Categories{}) {
 			mapCategories[category.ID] = category
 		}
 	}
@@ -104,7 +104,7 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 		return
 	}
 
-	resCategory, err := n.newsCatRepo.GetByID(ctx, res.Category.ID)
+	resCategory, err := n.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
 		return domain.News{}, err
 	}

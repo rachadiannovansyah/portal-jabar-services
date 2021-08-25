@@ -19,7 +19,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, newsCategoryId, title, excerpt, content, image, video, slug, createdAt, updatedAt FROM news`
+var querySelectNews = `SELECT id, categoryId, title, excerpt, content, image, video, slug, createdAt, updatedAt FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -56,7 +56,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			logrus.Error(err)
 			return nil, err
 		}
-		t.Category = domain.NewsCategory{ID: categoryID}
+		t.Category = domain.Categories{ID: categoryID}
 		result = append(result, t)
 	}
 
