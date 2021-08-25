@@ -6,20 +6,20 @@ import (
 )
 
 type Informations struct {
-	ID          int64      `json:"id"`
-	Category    Category   `json:"categoryId" validate:"required"`
-	Title       string     `json:"title" validate:"required"`
-	Description string     `json:"description" validate:"required"`
-	Slug        string     `json:"slug"`
-	Image       NullString `json:"image"`
-	ShowDate    string     `json:"showDate"`
-	EndDate     string     `json:"endDate"`
-	Status      string     `json:"status"`
-	CreatedBy   string     `json:"createdBy"`
-	UpdatedBy   string     `json:"updatedBy"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
-	DeletedAt   time.Time  `json:"deletedAt"`
+	ID        int64      `json:"id"`
+	Category  Category   `json:"categoryId" validate:"required"`
+	Title     string     `json:"title" validate:"required"`
+	Content   string     `json:"content" validate:"required"`
+	Slug      string     `json:"slug"`
+	Image     NullString `json:"image"`
+	ShowDate  string     `json:"showDate"`
+	EndDate   string     `json:"endDate"`
+	Status    string     `json:"status"`
+	CreatedBy string     `json:"createdBy"`
+	UpdatedBy string     `json:"updatedBy"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt time.Time  `json:"deletedAt"`
 }
 
 type ListInformations struct {
