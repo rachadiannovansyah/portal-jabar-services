@@ -6,27 +6,27 @@ import (
 )
 
 type Informations struct {
-	ID                    int64      `json:"id"`
-	InformationCategoryID int64      `json:"informationCategoryID" validate:"required"`
-	Title                 string     `json:"title" validate:"required"`
-	Description           string     `json:"description" validate:"required"`
-	Slug                  string     `json:"slug"`
-	Image                 NullString `json:"image"`
-	ShowDate              string     `json:"showDate"`
-	EndDate               string     `json:"endDate"`
-	Status                string     `json:"status"`
-	CreatedBy             string     `json:"createdBy"`
-	UpdatedBy             string     `json:"updatedBy"`
-	CreatedAt             time.Time  `json:"createdAt"`
-	UpdatedAt             time.Time  `json:"updatedAt"`
-	DeletedAt             time.Time  `json:"deletedAt"`
+	ID          int64      `json:"id"`
+	Category    Categories `json:"categoryId" validate:"required"`
+	Title       string     `json:"title" validate:"required"`
+	Description string     `json:"description" validate:"required"`
+	Slug        string     `json:"slug"`
+	Image       NullString `json:"image"`
+	ShowDate    string     `json:"showDate"`
+	EndDate     string     `json:"endDate"`
+	Status      string     `json:"status"`
+	CreatedBy   string     `json:"createdBy"`
+	UpdatedBy   string     `json:"updatedBy"`
+	CreatedAt   time.Time  `json:"createdAt"`
+	UpdatedAt   time.Time  `json:"updatedAt"`
+	DeletedAt   time.Time  `json:"deletedAt"`
 }
 
 type ListInformations struct {
 	ID        int64      `json:"id"`
 	Title     string     `json:"title"`
 	Excerpt   string     `json:"excerpt"`
-	Category  int64      `json:"category"`
+	Category  Categories `json:"categoryId"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
 	Author    string     `json:"author"`

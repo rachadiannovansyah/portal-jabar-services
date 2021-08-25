@@ -35,6 +35,7 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 	result = make([]domain.Informations, 0)
 	for rows.Next() {
 		infos := domain.Informations{}
+		categoryID := int64(0)
 		err = rows.Scan(
 			&infos.ID,
 			&infos.Title,
@@ -43,6 +44,7 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 			&infos.Image,
 			&infos.ShowDate,
 			&infos.EndDate,
+			&categoryID,
 			&infos.CreatedBy,
 			&infos.UpdatedBy,
 			&infos.CreatedAt,
@@ -53,6 +55,7 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 			logrus.Error(err)
 			return nil, err
 		}
+		infos.Category = domain.Categories{ID: categoryID}
 		result = append(result, infos)
 	}
 
