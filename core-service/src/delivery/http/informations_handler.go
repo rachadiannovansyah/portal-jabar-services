@@ -13,7 +13,7 @@ type InformationHandler struct {
 	InformationsUcase domain.InformationsUcase
 }
 
-func NewInformationHandler(e *echo.Echo, r *echo.Group, us domain.InformationsUcase) {
+func NewInformationHandler(e *echo.Group, r *echo.Group, us domain.InformationsUcase) {
 	handler := &InformationHandler{
 		InformationsUcase: us,
 	}

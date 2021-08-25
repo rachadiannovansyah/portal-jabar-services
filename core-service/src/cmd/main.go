@@ -97,7 +97,7 @@ func main() {
 
 	// informations handler
 	iu := usecases.NewInformationUcase(ir, ctg, timeoutContext)
-	httpDelivery.NewInformationHandler(e, r, iu)
+	httpDelivery.NewInformationHandler(v1, r, iu)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
