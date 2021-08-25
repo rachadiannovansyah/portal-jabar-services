@@ -1,25 +1,18 @@
 BEGIN;
 
-DROP TABLE IF EXISTS information_categories;
-CREATE TABLE `information_categories` (
+DROP TABLE IF EXISTS categories;
+CREATE TABLE `categories` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(80) NOT NULL,
   `description` varchar(255),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-DROP TABLE IF EXISTS news_categories;
-CREATE TABLE `news_categories` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(80) NOT NULL,
-  `description` varchar(255),
+  `type` varchar(80),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS informations;
 CREATE TABLE `informations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `infoCategoryId` int(10) unsigned NOT NULL,
+  `categoryId` int(10) unsigned NOT NULL,
   `title` varchar(80) NOT NULL,
   `excerpt` varchar(150) NOT NULL,
   `content` text NOT NULL,
@@ -32,14 +25,14 @@ CREATE TABLE `informations` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `info_categories_id_fk` (`infoCategoryId`),
-  CONSTRAINT `info_categories_id_fk` FOREIGN KEY (`infoCategoryId`) REFERENCES `information_categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `info_categories_id_fk` (`categoryId`),
+  CONSTRAINT `info_categories_id_fk` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS news;
 CREATE TABLE `news` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `newsCategoryId` int(10) unsigned NOT NULL,
+  `categoryId` int(10) unsigned NOT NULL,
   `title` varchar(80) NOT NULL,
   `excerpt` varchar(150) NOT NULL,
   `content` text NOT NULL,
@@ -51,8 +44,8 @@ CREATE TABLE `news` (
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `news_categories_id_fk` (`newsCategoryId`),
-  CONSTRAINT `news_categories_id_fk` FOREIGN KEY (`newsCategoryId`) REFERENCES `news_categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `news_categories_id_fk` (`categoryId`),
+  CONSTRAINT `news_categories_id_fk` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 COMMIT;
