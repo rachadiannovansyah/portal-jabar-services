@@ -66,8 +66,11 @@ func main() {
 	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
 
+	// api v1
+	v1 := e.Group("/v1")
+
 	// restricted group
-	r := e.Group("")
+	r := v1.Group("")
 	r.Use(middL.JWT)
 
 	if err := sentry.Init(sentry.ClientOptions{
@@ -90,7 +93,7 @@ func main() {
 
 	// news handler
 	nu := usecases.NewNewsUsecase(nr, ctg, timeoutContext)
-	httpDelivery.NewContentHandler(e, r, nu)
+	httpDelivery.NewContentHandler(v1, r, nu)
 
 	// informations handler
 	iu := usecases.NewInformationUcase(ir, ctg, timeoutContext)
