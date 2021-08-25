@@ -15,13 +15,11 @@ type News struct {
 	Image     NullString `json:"image"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
-	ShowDate  string     `json:"showDate,omitempty"`
-	EndDate   string     `json:"endDate,omitempty"`
 	Status    string     `json:"status,omitempty"`
-	Category  Category   `json:"categoryId" validate:"required"`
-	CreatedBy NullString `json:"createdBy"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+	Category  Category   `json:"category_id" validate:"required"`
+	CreatedBy NullString `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 // NewsListResponse ...
@@ -31,10 +29,10 @@ type NewsListResponse struct {
 	Excerpt   string     `json:"excerpt"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
-	Category  Category   `json:"categoryId"`
-	CreatedBy NullString `json:"createdBy"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+	Category  Category   `json:"category_id"`
+	CreatedBy NullString `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 // FetchNewsRequest penggunaan pointer ini agar dapat memberikan value nil jika tidak digunakan
