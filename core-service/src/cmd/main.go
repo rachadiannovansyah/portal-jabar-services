@@ -88,11 +88,16 @@ func main() {
 
 	// init repo category repo
 	nr := repo.NewMysqlNewsRepository(dbConn)
-	ncr := repo.NewMysqlNewsCategoriesRepository(dbConn)
+	ctg := repo.NewMysqlCategoriesRepository(dbConn)
+	ir := repo.NewMysqlInformationsRepository(dbConn)
 
 	// news handler
-	nu := usecases.NewNewsUsecase(nr, ncr, timeoutContext)
+	nu := usecases.NewNewsUsecase(nr, ctg, timeoutContext)
 	httpDelivery.NewContentHandler(v1, r, nu)
+
+	// informations handler
+	iu := usecases.NewInformationUcase(ir, ctg, timeoutContext)
+	httpDelivery.NewInformationHandler(v1, r, iu)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

@@ -9,29 +9,28 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type newsUsecase struct {
-	newsRepo       domain.NewsRepository
-	categories     domain.CategoriesRepository
-	contextTimeout time.Duration
+type informationsUcase struct {
+	informationRepo domain.InformationsRepo
+	categories      domain.CategoriesRepository
+	contextTimeout  time.Duration
 }
 
-// NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoriesRepository, timeout time.Duration) domain.NewsUsecase {
-	return &newsUsecase{
-		newsRepo:       n,
-		categories:     nc,
-		contextTimeout: timeout,
+func NewInformationUcase(repo domain.InformationsRepo, ctg domain.CategoriesRepository, timeout time.Duration) domain.InformationsUcase {
+	return &informationsUcase{
+		informationRepo: repo,
+		categories:      ctg,
+		contextTimeout:  timeout,
 	}
 }
 
-func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News) ([]domain.News, error) {
+func (n *informationsUcase) fillCategoryDetails(c context.Context, data []domain.Informations) ([]domain.Informations, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
 	mapCategories := map[int64]domain.Category{}
 
-	for _, news := range data {
-		mapCategories[news.Category.ID] = domain.Category{}
+	for _, infos := range data {
+		mapCategories[infos.Category.ID] = domain.Category{}
 	}
 
 	// Using goroutine to fetch the category's detail
@@ -77,17 +76,17 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	return data, nil
 }
 
-func (n *newsUsecase) Fetch(c context.Context, params *domain.FetchNewsRequest) (res []domain.News, total int64, err error) {
+func (usecase *informationsUcase) FetchAll(c context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
 
-	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 
-	res, total, err = n.newsRepo.Fetch(ctx, params)
+	res, total, err = usecase.informationRepo.FetchAll(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	res, err = n.fillCategoryDetails(ctx, res)
+	res, err = usecase.fillCategoryDetails(ctx, res)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -95,18 +94,18 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.FetchNewsRequest) 
 	return
 }
 
-func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err error) {
-	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+func (usecase *informationsUcase) GetByID(c context.Context, id int64) (res domain.Informations, err error) {
+	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
 	defer cancel()
 
-	res, err = n.newsRepo.GetByID(ctx, id)
+	res, err = usecase.informationRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
 
-	resCategory, err := n.categories.GetByID(ctx, res.Category.ID)
+	resCategory, err := usecase.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
-		return domain.News{}, err
+		return domain.Informations{}, err
 	}
 	res.Category = resCategory
 
