@@ -38,13 +38,14 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 		categoryID := int64(0)
 		err = rows.Scan(
 			&infos.ID,
+			&categoryID,
 			&infos.Title,
 			&infos.Description,
 			&infos.Slug,
 			&infos.Image,
 			&infos.ShowDate,
 			&infos.EndDate,
-			&categoryID,
+			&infos.Status,
 			&infos.CreatedBy,
 			&infos.UpdatedBy,
 			&infos.CreatedAt,
