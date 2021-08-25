@@ -56,7 +56,7 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 			logrus.Error(err)
 			return nil, err
 		}
-		infos.Category = domain.Categories{ID: categoryID}
+		infos.Category = domain.Category{ID: categoryID}
 		result = append(result, infos)
 	}
 

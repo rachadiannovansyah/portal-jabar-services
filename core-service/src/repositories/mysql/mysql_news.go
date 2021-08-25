@@ -56,7 +56,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			logrus.Error(err)
 			return nil, err
 		}
-		t.Category = domain.Categories{ID: categoryID}
+		t.Category = domain.Category{ID: categoryID}
 		result = append(result, t)
 	}
 

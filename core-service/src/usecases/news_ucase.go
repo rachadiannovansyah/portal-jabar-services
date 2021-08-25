@@ -28,14 +28,14 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
-	mapCategories := map[int64]domain.Categories{}
+	mapCategories := map[int64]domain.Category{}
 
 	for _, news := range data {
-		mapCategories[news.Category.ID] = domain.Categories{}
+		mapCategories[news.Category.ID] = domain.Category{}
 	}
 
 	// Using goroutine to fetch the category's detail
-	chanCategory := make(chan domain.Categories)
+	chanCategory := make(chan domain.Category)
 	for categoryID := range mapCategories {
 		categoryID := categoryID
 		g.Go(func() error {
@@ -58,7 +58,7 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	}()
 
 	for category := range chanCategory {
-		if category != (domain.Categories{}) {
+		if category != (domain.Category{}) {
 			mapCategories[category.ID] = category
 		}
 	}

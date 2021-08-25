@@ -7,7 +7,7 @@ import (
 
 type Informations struct {
 	ID          int64      `json:"id"`
-	Category    Categories `json:"categoryId" validate:"required"`
+	Category    Category   `json:"categoryId" validate:"required"`
 	Title       string     `json:"title" validate:"required"`
 	Description string     `json:"description" validate:"required"`
 	Slug        string     `json:"slug"`
@@ -26,7 +26,7 @@ type ListInformations struct {
 	ID        int64      `json:"id"`
 	Title     string     `json:"title"`
 	Excerpt   string     `json:"excerpt"`
-	Category  Categories `json:"categoryId"`
+	Category  Category   `json:"categoryId"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
 	Author    string     `json:"author"`

@@ -18,7 +18,7 @@ type News struct {
 	ShowDate  string     `json:"showDate,omitempty"`
 	EndDate   string     `json:"endDate,omitempty"`
 	Status    string     `json:"status,omitempty"`
-	Category  Categories `json:"categoryId" validate:"required"`
+	Category  Category   `json:"categoryId" validate:"required"`
 	CreatedBy NullString `json:"createdBy"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
@@ -31,7 +31,7 @@ type NewsListResponse struct {
 	Excerpt   string     `json:"excerpt"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
-	Category  Categories `json:"categoryId"`
+	Category  Category   `json:"categoryId"`
 	CreatedBy NullString `json:"createdBy"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

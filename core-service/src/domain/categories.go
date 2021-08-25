@@ -2,7 +2,7 @@ package domain
 
 import "context"
 
-type Categories struct {
+type Category struct {
 	ID          int64      `json:"id"`
 	Title       string     `json:"title" validate:"required"`
 	Description NullString `json:"description,omitempty"`
@@ -10,9 +10,9 @@ type Categories struct {
 }
 
 type CategoriesUsecase interface {
-	GetByID(ctx context.Context, id int64) (Categories, error)
+	GetByID(ctx context.Context, id int64) (Category, error)
 }
 
 type CategoriesRepository interface {
-	GetByID(ctx context.Context, id int64) (Categories, error)
+	GetByID(ctx context.Context, id int64) (Category, error)
 }

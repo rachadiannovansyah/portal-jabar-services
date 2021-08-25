@@ -18,7 +18,7 @@ func NewMysqlCategoriesRepository(Conn *sql.DB) domain.CategoriesRepository {
 }
 
 // GetByID ...
-func (m *mysqlCategoriesRepository) GetByID(ctx context.Context, id int64) (res domain.Categories, err error) {
+func (m *mysqlCategoriesRepository) GetByID(ctx context.Context, id int64) (res domain.Category, err error) {
 	query := `SELECT id, title, description FROM categories WHERE id = ?`
 
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
