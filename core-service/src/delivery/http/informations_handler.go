@@ -27,7 +27,7 @@ func (handler *InformationHandler) FetchAll(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
-	perPage, _ := strconv.ParseInt(c.QueryParam("perPage"), 10, 64)
+	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
 
 	if page == 0 {
 		page = 1
@@ -40,11 +40,10 @@ func (handler *InformationHandler) FetchAll(c echo.Context) error {
 
 	params := domain.FetchInformationsRequest{
 		Keyword: c.QueryParam("keyword"),
-		Type:    c.QueryParam("type"),
 		PerPage: perPage,
 		Offset:  offset,
-		OrderBy: c.QueryParam("orderBy"),
-		SortBy:  c.QueryParam("sortBy"),
+		OrderBy: c.QueryParam("order_by"),
+		SortBy:  c.QueryParam("sort_by"),
 	}
 
 	listInformations, total, err := handler.InformationsUcase.FetchAll(ctx, &params)
