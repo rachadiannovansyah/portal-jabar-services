@@ -3,17 +3,22 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-func NewMysqlInformationsRepository(Conn *sql.DB) domain.InformationsRepo {
-	return &mysqlRepository{Conn}
+type mysqlInformationsRepository struct {
+	Conn *sql.DB
 }
 
-func (mr *mysqlRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Informations, err error) {
+func NewMysqlInformationsRepository(Conn *sql.DB) domain.InformationsRepo {
+	return &mysqlInformationsRepository{Conn}
+}
+
+func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Informations, err error) {
 	rows, err := mr.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -54,7 +59,18 @@ func (mr *mysqlRepository) fetchQuery(ctx context.Context, query string, args ..
 	return result, nil
 }
 
-func (mr *mysqlRepository) FetchAll(ctx context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
+func (mr *mysqlInformationsRepository) count(ctx context.Context, query string) (total int64, err error) {
+
+	err = mr.Conn.QueryRow(query).Scan(&total)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return total, nil
+}
+
+func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
 	query := `SELECT * FROM informations`
 
 	if params.Keyword != "" {
@@ -74,7 +90,7 @@ func (mr *mysqlRepository) FetchAll(ctx context.Context, params *domain.FetchInf
 	return
 }
 
-func (mr *mysqlRepository) FetchOne(ctx context.Context, id int64) (res domain.Informations, err error) {
+func (mr *mysqlInformationsRepository) FetchOne(ctx context.Context, id int64) (res domain.Informations, err error) {
 	query := `SELECT * FROM informations` + ` WHERE ID = ?`
 
 	list, err := mr.fetchQuery(ctx, query, id)
