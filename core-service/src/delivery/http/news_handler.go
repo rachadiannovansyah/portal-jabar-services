@@ -12,22 +12,22 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-// ContentHandler ...
-type ContentHandler struct {
+// NewsHandler ...
+type NewsHandler struct {
 	CUsecase domain.NewsUsecase
 }
 
-// NewContentHandler will initialize the contents/ resources endpoint
-func NewContentHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
-	handler := &ContentHandler{
+// NewNewsHandler will initialize the contents/ resources endpoint
+func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
+	handler := &NewsHandler{
 		CUsecase: us,
 	}
-	e.GET("/news", handler.FetchContents)
+	e.GET("/news", handler.FetchNews)
 	e.GET("/news/:id", handler.GetByID)
 }
 
-// FetchContents will fetch the content based on given params
-func (a *ContentHandler) FetchContents(c echo.Context) error {
+// FetchNews will fetch the content based on given params
+func (a *NewsHandler) FetchNews(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
@@ -43,7 +43,7 @@ func (a *ContentHandler) FetchContents(c echo.Context) error {
 
 	offset := (page - 1) * perPage
 
-	params := domain.FetchNewsRequest{
+	params := domain.Request{
 		Keyword: c.QueryParam("q"),
 		PerPage: perPage,
 		Offset:  offset,
@@ -75,7 +75,7 @@ func (a *ContentHandler) FetchContents(c echo.Context) error {
 }
 
 // GetByID will get article by given id
-func (a *ContentHandler) GetByID(c echo.Context) error {
+func (a *NewsHandler) GetByID(c echo.Context) error {
 	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())

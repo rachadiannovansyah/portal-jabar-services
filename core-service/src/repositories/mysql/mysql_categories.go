@@ -8,17 +8,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type mysqlCategoriesRepository struct {
+type mysqlCategoryRepository struct {
 	Conn *sql.DB
 }
 
-// NewMysqlNewsCategoriesRepository will create an object that represent the news.NewsCategoryRepository interface
-func NewMysqlCategoriesRepository(Conn *sql.DB) domain.CategoriesRepository {
-	return &mysqlCategoriesRepository{Conn}
+// NewMysqlCategoryRepository will create an object that represent the news.NewsCategoryRepository interface
+func NewMysqlCategoryRepository(Conn *sql.DB) domain.CategoryRepository {
+	return &mysqlCategoryRepository{Conn}
 }
 
 // GetByID ...
-func (m *mysqlCategoriesRepository) GetByID(ctx context.Context, id int64) (res domain.Category, err error) {
+func (m *mysqlCategoryRepository) GetByID(ctx context.Context, id int64) (res domain.Category, err error) {
 	query := `SELECT id, title, description, type FROM categories WHERE id = ?`
 
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(

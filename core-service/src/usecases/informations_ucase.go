@@ -9,21 +9,22 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type informationsUcase struct {
-	informationRepo domain.InformationsRepo
-	categories      domain.CategoriesRepository
+type informationUcase struct {
+	informationRepo domain.InformationRepository
+	categories      domain.CategoryRepository
 	contextTimeout  time.Duration
 }
 
-func NewInformationUcase(repo domain.InformationsRepo, ctg domain.CategoriesRepository, timeout time.Duration) domain.InformationsUcase {
-	return &informationsUcase{
+// NewInformationUsecase ...
+func NewInformationUsecase(repo domain.InformationRepository, ctg domain.CategoryRepository, timeout time.Duration) domain.InformationUsecase {
+	return &informationUcase{
 		informationRepo: repo,
 		categories:      ctg,
 		contextTimeout:  timeout,
 	}
 }
 
-func (n *informationsUcase) fillCategoryDetails(c context.Context, data []domain.Informations) ([]domain.Informations, error) {
+func (i *informationUcase) fillCategoryDetails(c context.Context, data []domain.Information) ([]domain.Information, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
@@ -38,7 +39,7 @@ func (n *informationsUcase) fillCategoryDetails(c context.Context, data []domain
 	for categoryID := range mapCategories {
 		categoryID := categoryID
 		g.Go(func() error {
-			res, err := n.categories.GetByID(ctx, categoryID)
+			res, err := i.categories.GetByID(ctx, categoryID)
 			if err != nil {
 				return err
 			}
@@ -76,17 +77,18 @@ func (n *informationsUcase) fillCategoryDetails(c context.Context, data []domain
 	return data, nil
 }
 
-func (usecase *informationsUcase) FetchAll(c context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
+// Fetch ...
+func (i *informationUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Information, total int64, err error) {
 
-	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
 	defer cancel()
 
-	res, total, err = usecase.informationRepo.FetchAll(ctx, params)
+	res, total, err = i.informationRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	res, err = usecase.fillCategoryDetails(ctx, res)
+	res, err = i.fillCategoryDetails(ctx, res)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -94,18 +96,19 @@ func (usecase *informationsUcase) FetchAll(c context.Context, params *domain.Fet
 	return
 }
 
-func (usecase *informationsUcase) GetByID(c context.Context, id int64) (res domain.Informations, err error) {
-	ctx, cancel := context.WithTimeout(c, usecase.contextTimeout)
+// GetByID ...
+func (i *informationUcase) GetByID(c context.Context, id int64) (res domain.Information, err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
 	defer cancel()
 
-	res, err = usecase.informationRepo.GetByID(ctx, id)
+	res, err = i.informationRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
 
-	resCategory, err := usecase.categories.GetByID(ctx, res.Category.ID)
+	resCategory, err := i.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
-		return domain.Informations{}, err
+		return domain.Information{}, err
 	}
 	res.Category = resCategory
 

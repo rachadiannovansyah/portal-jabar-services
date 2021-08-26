@@ -11,12 +11,12 @@ import (
 
 type newsUsecase struct {
 	newsRepo       domain.NewsRepository
-	categories     domain.CategoriesRepository
+	categories     domain.CategoryRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoriesRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
@@ -77,7 +77,7 @@ func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News)
 	return data, nil
 }
 
-func (n *newsUsecase) Fetch(c context.Context, params *domain.FetchNewsRequest) (res []domain.News, total int64, err error) {
+func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()

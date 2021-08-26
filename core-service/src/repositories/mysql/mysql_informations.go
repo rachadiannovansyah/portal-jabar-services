@@ -10,15 +10,16 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-type mysqlInformationsRepository struct {
+type mysqlInformationRepository struct {
 	Conn *sql.DB
 }
 
-func NewMysqlInformationsRepository(Conn *sql.DB) domain.InformationsRepo {
-	return &mysqlInformationsRepository{Conn}
+// NewMysqlInformationRepository ..
+func NewMysqlInformationRepository(Conn *sql.DB) domain.InformationRepository {
+	return &mysqlInformationRepository{Conn}
 }
 
-func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Informations, err error) {
+func (mr *mysqlInformationRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Information, err error) {
 	rows, err := mr.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -32,9 +33,9 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 		}
 	}()
 
-	result = make([]domain.Informations, 0)
+	result = make([]domain.Information, 0)
 	for rows.Next() {
-		infos := domain.Informations{}
+		infos := domain.Information{}
 		categoryID := int64(0)
 		err = rows.Scan(
 			&infos.ID,
@@ -61,7 +62,7 @@ func (mr *mysqlInformationsRepository) fetchQuery(ctx context.Context, query str
 	return result, nil
 }
 
-func (mr *mysqlInformationsRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (mr *mysqlInformationRepository) count(ctx context.Context, query string) (total int64, err error) {
 
 	err = mr.Conn.QueryRow(query).Scan(&total)
 	if err != nil {
@@ -72,7 +73,7 @@ func (mr *mysqlInformationsRepository) count(ctx context.Context, query string) 
 	return total, nil
 }
 
-func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *domain.FetchInformationsRequest) (res []domain.Informations, total int64, err error) {
+func (mr *mysqlInformationRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Information, total int64, err error) {
 	query := `SELECT id, category_id, title, content, slug, image, show_date, end_date, status, created_at, updated_at FROM informations`
 
 	if params.Keyword != "" {
@@ -92,12 +93,12 @@ func (mr *mysqlInformationsRepository) FetchAll(ctx context.Context, params *dom
 	return
 }
 
-func (mr *mysqlInformationsRepository) GetByID(ctx context.Context, id int64) (res domain.Informations, err error) {
+func (mr *mysqlInformationRepository) GetByID(ctx context.Context, id int64) (res domain.Information, err error) {
 	query := `SELECT id, category_id, title, content, slug, image, show_date, end_date, status, created_at, updated_at FROM informations` + ` WHERE ID = ?`
 
 	list, err := mr.fetchQuery(ctx, query, id)
 	if err != nil {
-		return domain.Informations{}, err
+		return domain.Information{}, err
 	}
 
 	if len(list) > 0 {
