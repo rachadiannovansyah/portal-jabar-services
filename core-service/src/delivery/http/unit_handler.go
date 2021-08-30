@@ -5,27 +5,28 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-// InformationHandler ...
-type InformationHandler struct {
-	InformationsUcase domain.InformationUsecase
+// UnitHandler ...
+type UnitHandler struct {
+	UUsecase domain.UnitUsecase
 }
 
-// NewInformationHandler ...
-func NewInformationHandler(e *echo.Group, r *echo.Group, us domain.InformationUsecase) {
-	handler := &InformationHandler{
-		InformationsUcase: us,
+// NewUnitHandler will initialize the contents/ resources endpoint
+func NewUnitHandler(e *echo.Group, r *echo.Group, us domain.UnitUsecase) {
+	handler := &UnitHandler{
+		UUsecase: us,
 	}
-
-	e.GET("/informations", handler.Fetch)
-	e.GET("/informations/:id", handler.GetByID)
+	e.GET("/units", handler.FetchUnits)
+	e.GET("/units/:id", handler.GetByID)
 }
 
-// Fetch ...
-func (handler *InformationHandler) Fetch(c echo.Context) error {
+// FetchUnits will fetch the content based on given params
+func (a *UnitHandler) FetchUnits(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
@@ -42,21 +43,25 @@ func (handler *InformationHandler) Fetch(c echo.Context) error {
 	offset := (page - 1) * perPage
 
 	params := domain.Request{
-		Keyword: c.QueryParam("keyword"),
+		Keyword: c.QueryParam("q"),
 		PerPage: perPage,
 		Offset:  offset,
 		OrderBy: c.QueryParam("order_by"),
 		SortBy:  c.QueryParam("sort_by"),
 	}
 
-	listInformations, total, err := handler.InformationsUcase.Fetch(ctx, &params)
+	listUnit, total, err := a.UUsecase.Fetch(ctx, &params)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
 	}
 
+	// Copy slice to slice
+	listUnitRes := []domain.UnitListResponse{}
+	copier.Copy(&listUnitRes, &listUnit)
+
 	res := &domain.ResultsData{
-		Data: listInformations,
+		Data: listUnitRes,
 		Meta: &domain.MetaData{
 			TotalCount:  total,
 			TotalPage:   math.Ceil(float64(total) / float64(perPage)),
@@ -68,20 +73,20 @@ func (handler *InformationHandler) Fetch(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-// GetByID ...
-func (handler *InformationHandler) GetByID(c echo.Context) error {
-	reqID, err := strconv.Atoi(c.Param("id"))
+// GetByID will get units by given id
+func (a *UnitHandler) GetByID(c echo.Context) error {
+	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
 
-	id := int64(reqID)
+	id := int64(idP)
 	ctx := c.Request().Context()
 
-	informations, err := handler.InformationsUcase.GetByID(ctx, id)
+	unit, err := a.UUsecase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &informations})
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &unit})
 }

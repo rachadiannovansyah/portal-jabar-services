@@ -26,6 +26,24 @@ func (ns *NullString) Scan(value interface{}) error {
 	return nil
 }
 
+// NullInt64 is an alias for sql.NullInt64 data type
+type NullInt64 sql.NullInt64
+
+// Scan implements the Scanner interface for NullInt64
+func (ni *NullInt64) Scan(value interface{}) error {
+	var i sql.NullInt64
+	if err := i.Scan(value); err != nil {
+		return err
+	}
+	// if nil the make Valid false
+	if reflect.TypeOf(value) == nil {
+		*ni = NullInt64{i.Int64, false}
+	} else {
+		*ni = NullInt64{i.Int64, true}
+	}
+	return nil
+}
+
 // MarshalJSON for NullString
 func (ns *NullString) MarshalJSON() ([]byte, error) {
 	if !ns.Valid {
@@ -39,4 +57,12 @@ func (ns *NullString) UnmarshalJSON(b []byte) error {
 	err := json.Unmarshal(b, &ns.String)
 	ns.Valid = (err == nil)
 	return err
+}
+
+// MarshalJSON for NullInt64
+func (ni *NullInt64) MarshalJSON() ([]byte, error) {
+	if !ni.Valid {
+		return []byte("null"), nil
+	}
+	return json.Marshal(ni.Int64)
 }

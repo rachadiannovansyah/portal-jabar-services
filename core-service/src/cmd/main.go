@@ -46,17 +46,17 @@ func main() {
 	dbConn, err := sql.Open(`mysql`, dsn)
 
 	if err != nil {
-		log.Fatal("A", err)
+		log.Fatal(err)
 	}
 	err = dbConn.Ping()
 	if err != nil {
-		log.Fatal("B", err)
+		log.Fatal(err)
 	}
 
 	defer func() {
 		err := dbConn.Close()
 		if err != nil {
-			log.Fatal("C", err)
+			log.Fatal(err)
 		}
 	}()
 
@@ -87,17 +87,9 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
-	nr := repo.NewMysqlNewsRepository(dbConn)
-	ctg := repo.NewMysqlCategoriesRepository(dbConn)
-	ir := repo.NewMysqlInformationsRepository(dbConn)
-
-	// news handler
-	nu := usecases.NewNewsUsecase(nr, ctg, timeoutContext)
-	httpDelivery.NewContentHandler(v1, r, nu)
-
-	// informations handler
-	iu := usecases.NewInformationUcase(ir, ctg, timeoutContext)
-	httpDelivery.NewInformationHandler(v1, r, iu)
+	mysqlRepos := repo.NewMysqlRepositories(dbConn)
+	usecases := usecases.NewUcase(mysqlRepos, timeoutContext)
+	httpDelivery.NewHandler(v1, r, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

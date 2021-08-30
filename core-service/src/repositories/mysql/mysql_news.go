@@ -74,7 +74,7 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 	return total, nil
 }
 
-func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.FetchNewsRequest) (res []domain.News, total int64, err error) {
+func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 	query := querySelectNews
 
 	if params.Keyword != "" {
