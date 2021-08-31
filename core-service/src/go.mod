@@ -11,5 +11,6 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
+	github.com/vektra/mockery/v2 v2.9.0 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 )
