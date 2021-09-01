@@ -12,6 +12,7 @@ type mysqlAreaRepository struct {
 	Conn *sql.DB
 }
 
+// NewMysqlAreaRepository will create an object that represent the area.Repository interface
 func NewMysqlAreaRepository(Conn *sql.DB) domain.AreaRepository {
 	return &mysqlAreaRepository{Conn}
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Event model ..
 type Event struct {
 	ID          int64      `json:"id"`
 	Category    Category   `json:"category" validate:"required"`
@@ -25,6 +26,7 @@ type Event struct {
 	DeletedAt   time.Time  `json:"deleted_at"`
 }
 
+// ListEvent ...
 type ListEvent struct {
 	ID          int64      `json:"id"`
 	Title       NullString `json:"title"`
@@ -37,11 +39,13 @@ type ListEvent struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
+// EventUsecase ..
 type EventUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
 	GetByID(ctx context.Context, id int64) (Event, error)
 }
 
+// EventRepository ..
 type EventRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []Event, total int64, err error)
 	GetByID(ctx context.Context, id int64) (Event, error)

@@ -9,10 +9,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// EventHandler is represented by domain.EventUsecase
 type EventHandler struct {
 	EventUcase domain.EventUsecase
 }
 
+// NewEventHandler will initialize the event endpoint
 func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	handler := &EventHandler{
 		EventUcase: us,
@@ -22,7 +24,8 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	e.GET("/events/:id", handler.GetByID)
 }
 
-func (handler *EventHandler) Fetch(c echo.Context) error {
+// Fetch will get events data
+func (h *EventHandler) Fetch(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
@@ -48,7 +51,7 @@ func (handler *EventHandler) Fetch(c echo.Context) error {
 		EndDate:   c.QueryParam("end_date"),
 	}
 
-	listEvent, total, err := handler.EventUcase.Fetch(ctx, &params)
+	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
@@ -67,7 +70,8 @@ func (handler *EventHandler) Fetch(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (handler *EventHandler) GetByID(c echo.Context) error {
+// GetByID will get event by given id
+func (h *EventHandler) GetByID(c echo.Context) error {
 	reqID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
@@ -76,7 +80,7 @@ func (handler *EventHandler) GetByID(c echo.Context) error {
 	id := int64(reqID)
 	ctx := c.Request().Context()
 
-	event, err := handler.EventUcase.GetByID(ctx, id)
+	event, err := h.EventUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}

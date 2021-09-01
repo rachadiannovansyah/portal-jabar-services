@@ -15,6 +15,7 @@ type eventUcase struct {
 	contextTimeout time.Duration
 }
 
+// NewEventUsecase will create new an eventUsecase object representation of domain.eventUsecase interface
 func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, timeout time.Duration) domain.EventUsecase {
 	return &eventUcase{
 		eventRepo:      repo,
@@ -23,7 +24,7 @@ func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository,
 	}
 }
 
-func (i *eventUcase) fillCategoryDetails(c context.Context, data []domain.Event) ([]domain.Event, error) {
+func (u *eventUcase) fillCategoryDetails(c context.Context, data []domain.Event) ([]domain.Event, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
@@ -38,7 +39,7 @@ func (i *eventUcase) fillCategoryDetails(c context.Context, data []domain.Event)
 	for categoryID := range mapCategories {
 		categoryID := categoryID
 		g.Go(func() error {
-			res, err := i.categories.GetByID(ctx, categoryID)
+			res, err := u.categories.GetByID(ctx, categoryID)
 			if err != nil {
 				return err
 			}
@@ -77,17 +78,17 @@ func (i *eventUcase) fillCategoryDetails(c context.Context, data []domain.Event)
 }
 
 // Fetch ...
-func (i *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
+func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
-	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, total, err = i.eventRepo.Fetch(ctx, params)
+	res, total, err = u.eventRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	res, err = i.fillCategoryDetails(ctx, res)
+	res, err = u.fillCategoryDetails(ctx, res)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -96,16 +97,16 @@ func (i *eventUcase) Fetch(c context.Context, params *domain.Request) (res []dom
 }
 
 // GetByID ...
-func (i *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err error) {
-	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, err = i.eventRepo.GetByID(ctx, id)
+	res, err = u.eventRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
 
-	resCategory, err := i.categories.GetByID(ctx, res.Category.ID)
+	resCategory, err := u.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
 		return domain.Event{}, err
 	}

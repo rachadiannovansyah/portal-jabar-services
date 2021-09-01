@@ -2,6 +2,7 @@ package domain
 
 import "context"
 
+// Area model ..
 type Area struct {
 	ID                   int64      `json:"id"`
 	Depth                NullString `json:"depth" validate:"required"`
@@ -14,10 +15,12 @@ type Area struct {
 	Meta                 NullString `json:"meta" validate:"required"`
 }
 
+// AreaUseCase ..
 type AreaUseCase interface {
 	GetByID(ctx context.Context, id int64) (Area, error)
 }
 
+// AreaRepository ..
 type AreaRepository interface {
 	GetByID(ctx context.Context, id int64) (Area, error)
 }

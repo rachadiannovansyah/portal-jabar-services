@@ -13,12 +13,13 @@ type mysqlEventRepository struct {
 	Conn *sql.DB
 }
 
+// NewMysqlEventRepository will create an object that represent the event.Repository interface
 func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-func (mr *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
-	rows, err := mr.Conn.QueryContext(ctx, query, args...)
+func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
+	rows, err := r.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
@@ -66,9 +67,9 @@ func (mr *mysqlEventRepository) fetchQuery(ctx context.Context, query string, ar
 	return result, nil
 }
 
-func (mr *mysqlEventRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (r *mysqlEventRepository) count(ctx context.Context, query string) (total int64, err error) {
 
-	err = mr.Conn.QueryRow(query).Scan(&total)
+	err = r.Conn.QueryRow(query).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -77,7 +78,7 @@ func (mr *mysqlEventRepository) count(ctx context.Context, query string) (total 
 	return total, nil
 }
 
-func (mr *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
+func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 	query := `SELECT id, category_id, title, description, date, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM event`
 
 	if params.Keyword != "" {
@@ -90,21 +91,21 @@ func (mr *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Reques
 
 	query = query + ` ORDER BY created_at LIMIT ?,? `
 
-	res, err = mr.fetchQuery(ctx, query, params.Offset, params.PerPage)
+	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
 		return nil, 0, err
 	}
 
-	total, _ = mr.count(ctx, "SELECT COUNT(1) FROM event")
+	total, _ = r.count(ctx, "SELECT COUNT(1) FROM event")
 
 	return
 }
 
-func (mr *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domain.Event, err error) {
+func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domain.Event, err error) {
 	query := `SELECT id, category_id, title, description, date, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM informations` + ` WHERE ID = ?`
 
-	list, err := mr.fetchQuery(ctx, query, id)
+	list, err := r.fetchQuery(ctx, query, id)
 	if err != nil {
 		return domain.Event{}, err
 	}
