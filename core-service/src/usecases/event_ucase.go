@@ -9,21 +9,21 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type agendaUcase struct {
-	agendaRepo     domain.AgendaRepository
+type eventUcase struct {
+	eventRepo      domain.EventRepository
 	categories     domain.CategoryRepository
 	contextTimeout time.Duration
 }
 
-func NewAgendaUsecase(repo domain.AgendaRepository, ctg domain.CategoryRepository, timeout time.Duration) domain.AgendaUsecase {
-	return &agendaUcase{
-		agendaRepo:     repo,
+func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, timeout time.Duration) domain.EventUsecase {
+	return &eventUcase{
+		eventRepo:      repo,
 		categories:     ctg,
 		contextTimeout: timeout,
 	}
 }
 
-func (i *agendaUcase) fillCategoryDetails(c context.Context, data []domain.Agenda) ([]domain.Agenda, error) {
+func (i *eventUcase) fillCategoryDetails(c context.Context, data []domain.Event) ([]domain.Event, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the category's id
@@ -77,12 +77,12 @@ func (i *agendaUcase) fillCategoryDetails(c context.Context, data []domain.Agend
 }
 
 // Fetch ...
-func (i *agendaUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Agenda, total int64, err error) {
+func (i *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
 	defer cancel()
 
-	res, total, err = i.agendaRepo.Fetch(ctx, params)
+	res, total, err = i.eventRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -96,18 +96,18 @@ func (i *agendaUcase) Fetch(c context.Context, params *domain.Request) (res []do
 }
 
 // GetByID ...
-func (i *agendaUcase) GetByID(c context.Context, id int64) (res domain.Agenda, err error) {
+func (i *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err error) {
 	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
 	defer cancel()
 
-	res, err = i.agendaRepo.GetByID(ctx, id)
+	res, err = i.eventRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
 
 	resCategory, err := i.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
-		return domain.Agenda{}, err
+		return domain.Event{}, err
 	}
 	res.Category = resCategory
 

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Agenda struct {
+type Event struct {
 	ID          int64      `json:"id"`
 	Category    Category   `json:"category" validate:"required"`
 	Title       NullString `json:"title" validate:"required"`
@@ -25,7 +25,7 @@ type Agenda struct {
 	DeletedAt   time.Time  `json:"deleted_at"`
 }
 
-type ListAgenda struct {
+type ListEvent struct {
 	ID          int64      `json:"id"`
 	Title       NullString `json:"title"`
 	Description NullString `json:"description"`
@@ -37,12 +37,12 @@ type ListAgenda struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-type AgendaUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]Agenda, int64, error)
-	GetByID(ctx context.Context, id int64) (Agenda, error)
+type EventUsecase interface {
+	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
+	GetByID(ctx context.Context, id int64) (Event, error)
 }
 
-type AgendaRepository interface {
-	Fetch(ctx context.Context, params *Request) (new []Agenda, total int64, err error)
-	GetByID(ctx context.Context, id int64) (Agenda, error)
+type EventRepository interface {
+	Fetch(ctx context.Context, params *Request) (new []Event, total int64, err error)
+	GetByID(ctx context.Context, id int64) (Event, error)
 }
