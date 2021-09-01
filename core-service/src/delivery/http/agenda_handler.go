@@ -18,8 +18,8 @@ func NewAgendaHandler(e *echo.Group, r *echo.Group, us domain.AgendaUsecase) {
 		AgendaUcase: us,
 	}
 
-	e.GET("/agenda", handler.Fetch)
-	e.GET("/agenda/:id", handler.GetByID)
+	e.GET("/events", handler.Fetch)
+	e.GET("/events/:id", handler.GetByID)
 }
 
 func (handler *AgendaHandler) Fetch(c echo.Context) error {
@@ -44,7 +44,7 @@ func (handler *AgendaHandler) Fetch(c echo.Context) error {
 		Offset:    offset,
 		OrderBy:   c.QueryParam("order_by"),
 		SortBy:    c.QueryParam("sort_by"),
-		StartDate: c.QueryParam("start_Date"),
+		StartDate: c.QueryParam("start_date"),
 		EndDate:   c.QueryParam("end_date"),
 	}
 
