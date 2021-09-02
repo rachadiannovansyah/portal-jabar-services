@@ -13,6 +13,7 @@ type Usecases struct {
 	NewsUcase        domain.NewsUsecase
 	InformationUcase domain.InformationUsecase
 	UnitUcase        domain.UnitUsecase
+	EventUcase       domain.EventUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -21,5 +22,6 @@ func NewUcase(r *mysql.Repositories, timeoutContext time.Duration) *Usecases {
 		NewsUcase:        NewNewsUsecase(r.NewsRepo, r.CategoryRepo, timeoutContext),
 		InformationUcase: NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:        NewUnitUsecase(r.UnitRepo, timeoutContext),
+		EventUcase:       NewEventUsecase(r.EventRepo, r.CategoryRepo, timeoutContext),
 	}
 }
