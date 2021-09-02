@@ -18,7 +18,7 @@ func NewMysqlAreaRepository(Conn *sql.DB) domain.AreaRepository {
 }
 
 func (m *mysqlAreaRepository) GetByID(ctx context.Context, id int64) (res domain.Area, err error) {
-	query := `SELECT id, depth, name, parent_code_kemendagri, code_kemendagri, code_bps, latitude, longtitude, meta FROM categories WHERE id = ?`
+	query := `SELECT id, depth, name, parent_code_kemendagri, code_kemendagri, code_bps, latitude, longtitude, meta FROM areas WHERE id = ?`
 
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
 		&res.ID,
