@@ -1,7 +1,6 @@
 package http
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 
@@ -27,31 +26,13 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 }
 
 // FetchNews will fetch the content based on given params
-func (a *NewsHandler) FetchNews(c echo.Context) error {
+func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
-	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
+	params := GetRequestParams(c)
 
-	if page == 0 {
-		page = 1
-	}
-	if perPage == 0 {
-		perPage = 10
-	}
-
-	offset := (page - 1) * perPage
-
-	params := domain.Request{
-		Keyword: c.QueryParam("q"),
-		PerPage: perPage,
-		Offset:  offset,
-		OrderBy: c.QueryParam("order_by"),
-		SortBy:  c.QueryParam("sort_by"),
-	}
-
-	listNews, total, err := a.CUsecase.Fetch(ctx, &params)
+	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
@@ -61,21 +42,13 @@ func (a *NewsHandler) FetchNews(c echo.Context) error {
 	listNewsRes := []domain.NewsListResponse{}
 	copier.Copy(&listNewsRes, &listNews)
 
-	res := &domain.ResultsData{
-		Data: listNewsRes,
-		Meta: &domain.MetaData{
-			TotalCount:  total,
-			TotalPage:   math.Ceil(float64(total) / float64(perPage)),
-			CurrentPage: page,
-			PerPage:     perPage,
-		},
-	}
+	res := Paginate(c, listNewsRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
 }
 
 // GetByID will get article by given id
-func (a *NewsHandler) GetByID(c echo.Context) error {
+func (h *NewsHandler) GetByID(c echo.Context) error {
 	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
@@ -84,7 +57,7 @@ func (a *NewsHandler) GetByID(c echo.Context) error {
 	id := int64(idP)
 	ctx := c.Request().Context()
 
-	news, err := a.CUsecase.GetByID(ctx, id)
+	news, err := h.CUsecase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}

@@ -1,7 +1,6 @@
 package http
 
 import (
-	"math"
 	"net/http"
 	"strconv"
 
@@ -25,51 +24,25 @@ func NewInformationHandler(e *echo.Group, r *echo.Group, us domain.InformationUs
 }
 
 // Fetch ...
-func (handler *InformationHandler) Fetch(c echo.Context) error {
+func (h *InformationHandler) Fetch(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
-	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
+	params := GetRequestParams(c)
 
-	if page == 0 {
-		page = 1
-	}
-	if perPage == 0 {
-		perPage = 10
-	}
-
-	offset := (page - 1) * perPage
-
-	params := domain.Request{
-		Keyword: c.QueryParam("keyword"),
-		PerPage: perPage,
-		Offset:  offset,
-		OrderBy: c.QueryParam("order_by"),
-		SortBy:  c.QueryParam("sort_by"),
-	}
-
-	listInformations, total, err := handler.InformationsUcase.Fetch(ctx, &params)
+	listInformations, total, err := h.InformationsUcase.Fetch(ctx, &params)
 
 	if err != nil {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
 	}
 
-	res := &domain.ResultsData{
-		Data: listInformations,
-		Meta: &domain.MetaData{
-			TotalCount:  total,
-			TotalPage:   math.Ceil(float64(total) / float64(perPage)),
-			CurrentPage: page,
-			PerPage:     perPage,
-		},
-	}
+	res := Paginate(c, listInformations, total, params)
 
 	return c.JSON(http.StatusOK, res)
 }
 
 // GetByID ...
-func (handler *InformationHandler) GetByID(c echo.Context) error {
+func (h *InformationHandler) GetByID(c echo.Context) error {
 	reqID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
@@ -78,7 +51,7 @@ func (handler *InformationHandler) GetByID(c echo.Context) error {
 	id := int64(reqID)
 	ctx := c.Request().Context()
 
-	informations, err := handler.InformationsUcase.GetByID(ctx, id)
+	informations, err := h.InformationsUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
