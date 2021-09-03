@@ -10,4 +10,5 @@ func NewHandler(e *echo.Group, r *echo.Group, u *usecases.Usecases) {
 	NewNewsHandler(e, r, u.NewsUcase)
 	NewInformationHandler(e, r, u.InformationUcase)
 	NewUnitHandler(e, r, u.UnitUcase)
+	NewEventHandler(e, r, u.EventUcase)
 }
