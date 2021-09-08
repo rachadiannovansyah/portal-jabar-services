@@ -18,6 +18,8 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
+var querySelectAgenda = `SELECT id, category_id, title, description, date, priority, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM events`
+
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -80,7 +82,7 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := `SELECT id, category_id, title, description, date, priority, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM events`
+	query := querySelectAgenda
 
 	if params.Keyword != "" {
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
@@ -104,7 +106,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 }
 
 func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domain.Event, err error) {
-	query := `SELECT id, category_id, title, description, date, priority, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM events` + ` WHERE ID = ?`
+	query := querySelectAgenda + ` WHERE ID = ?`
 
 	list, err := r.fetchQuery(ctx, query, id)
 	if err != nil {
