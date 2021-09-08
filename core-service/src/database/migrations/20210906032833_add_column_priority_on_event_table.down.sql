@@ -1,0 +1,1 @@
+ALTER TABLE `events` DROP IF EXISTS `priority`;
