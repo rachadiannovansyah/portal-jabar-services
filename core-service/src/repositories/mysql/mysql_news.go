@@ -81,7 +81,13 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
 	}
 
-	query = query + ` ORDER BY created_at LIMIT ?,? `
+	if params.SortBy != "" {
+		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query = query + ` ORDER BY created_at DESC`
+	}
+
+	query = query + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
@@ -107,6 +113,14 @@ func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain
 	} else {
 		return res, domain.ErrNotFound
 	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error) {
+	query := `UPDATE news SET views = views + 1 WHERE id = ?`
+
+	_, err = m.Conn.ExecContext(ctx, query, id)
 
 	return
 }

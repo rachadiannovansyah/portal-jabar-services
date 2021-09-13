@@ -6,8 +6,8 @@ type Request struct {
 	Page      int64
 	PerPage   int64
 	Offset    int64
-	OrderBy   string
 	SortBy    string
+	SortOrder string
 	StartDate string
 	EndDate   string
 }
