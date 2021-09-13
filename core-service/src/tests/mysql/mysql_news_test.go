@@ -50,11 +50,11 @@ func TestFetch(t *testing.T) {
 	a := mysqlRepo.NewMysqlNewsRepository(db)
 
 	params := &domain.Request{
-		Keyword: "",
-		PerPage: 10,
-		Offset:  0,
-		OrderBy: "",
-		SortBy:  "",
+		Keyword:   "",
+		PerPage:   10,
+		Offset:    0,
+		SortBy:    "",
+		SortOrder: "",
 	}
 
 	list, _, err := a.Fetch(context.TODO(), params)
