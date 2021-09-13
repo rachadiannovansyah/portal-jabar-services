@@ -16,6 +16,7 @@ type News struct {
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
 	Status    NullString `json:"status,omitempty"`
+	Views     int64      `json:"views"`
 	Category  Category   `json:"category" validate:"required"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -45,4 +46,5 @@ type NewsUsecase interface {
 type NewsRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []News, total int64, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	AddView(ctx context.Context, id int64) (err error)
 }

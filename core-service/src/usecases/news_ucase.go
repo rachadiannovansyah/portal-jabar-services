@@ -104,6 +104,12 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 		return
 	}
 
+	// FIXME: prevent abuse page views counter by using cache (redis)
+	err = n.newsRepo.AddView(ctx, id)
+	if err != nil {
+		logrus.Error(err)
+	}
+
 	resCategory, err := n.categories.GetByID(ctx, res.Category.ID)
 	if err != nil {
 		return domain.News{}, err
