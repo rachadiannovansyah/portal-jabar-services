@@ -1,10 +1,8 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
-	"net/url"
 	"time"
 
 	sentryecho "github.com/getsentry/sentry-go/echo"
@@ -15,44 +13,17 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/database"
 	httpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http/middleware"
 	repo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/repositories/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/usecases"
 )
 
-func init() {
-	viper.SetConfigFile(`.env`)
-	viper.AutomaticEnv()
-	viper.ReadInConfig()
-
-	if viper.GetBool(`DEBUG`) {
-		log.Println("Service RUN on DEBUG mode")
-	}
-}
-
 func main() {
-	dbHost := viper.GetString(`DB_HOST`)
-	dbPort := viper.GetString(`DB_PORT`)
-	dbUser := viper.GetString(`DB_USER`)
-	dbPass := viper.GetString(`DB_PASSWORD`)
-	dbName := viper.GetString(`DB_NAME`)
-	connection := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPass, dbHost, dbPort, dbName)
-	log.Println(connection)
-	val := url.Values{}
-	val.Add("parseTime", "1")
-	val.Add("loc", "Asia/Jakarta")
-	dsn := fmt.Sprintf("%s?%s", connection, val.Encode())
-	dbConn, err := sql.Open(`mysql`, dsn)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = dbConn.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	cfg := config.NewConfig()
+	dbConn := database.InitDB(cfg)
 	defer func() {
 		err := dbConn.Close()
 		if err != nil {
