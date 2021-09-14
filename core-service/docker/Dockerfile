@@ -9,6 +9,7 @@ WORKDIR /app
 COPY . .
 
 RUN make engine
+RUN make migrater
 
 # Distribution
 FROM registry.digitalservice.id/proxyjds/library/alpine:latest
@@ -22,5 +23,7 @@ WORKDIR /app
 EXPOSE 7070
 
 COPY --from=builder /app/src/engine /app
+COPY --from=builder /app/src/migrater /app
+COPY --from=builder /app/src/database/migrations /app/migrations
 
 CMD /app/engine
