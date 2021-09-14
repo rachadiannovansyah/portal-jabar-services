@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
+
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/mysql"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/source/file"
@@ -23,6 +25,8 @@ func main() {
 func run() error {
 	var err error
 
+	cfg := config.NewConfig()
+
 	if len(os.Args) <= 2 {
 		logrus.Error("Usage:", os.Args[1], "command", "argument")
 		return errors.New("invalid command")
@@ -30,10 +34,10 @@ func run() error {
 
 	switch os.Args[1] {
 	case "migrate":
-		dsn := "" //FIXME: make this configurable
+		dsn := cfg.DB.DSN + "&multiStatements=true"
 		err = Migrate(dsn, os.Args[2])
 	case "seed":
-		err = errors.New("to be develop!")
+		err = errors.New("to be develop")
 	default:
 		err = errors.New("must specify a command")
 	}
