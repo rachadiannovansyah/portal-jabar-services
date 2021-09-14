@@ -17,6 +17,9 @@ migrate:
 engine:
 	cd src && go build -o ${BINARY} cmd/*.go
 
+migrater:
+	cd src && go build -o migrater cmd/migrater/main.go
+
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
 
