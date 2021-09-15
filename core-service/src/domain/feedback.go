@@ -8,10 +8,10 @@ import (
 // Feedback is a domain model for feedback
 type Feedback struct {
 	ID          int64     `json:"id"`
-	Rating      int8      `json:"rating"`
-	Compliments string    `json:"compliments"`
-	Criticism   string    `json:"criticism"`
-	Suggestions string    `json:"suggestions"`
+	Rating      int8      `json:"rating" validate:"required"`
+	Compliments string    `json:"compliments" validate:"required,max=1500"`
+	Criticism   string    `json:"criticism" validate:"required,max=1500"`
+	Suggestions string    `json:"suggestions" validate:"required,max=1500"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

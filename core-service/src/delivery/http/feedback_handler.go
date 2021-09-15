@@ -33,22 +33,21 @@ func isRequestValid(m *domain.Feedback) (bool, error) {
 
 // Store will store the feedback by given request body
 func (a *FeedbackHandler) Store(c echo.Context) (err error) {
-	var feedback domain.Feedback
-	err = c.Bind(&feedback)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	f := new(domain.Feedback)
+	if err = c.Bind(f); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	var ok bool
-	if ok, err = isRequestValid(&feedback); !ok {
-		return c.JSON(http.StatusBadRequest, err.Error())
+	if ok, err = isRequestValid(f); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	ctx := c.Request().Context()
-	err = a.FUsecase.Store(ctx, &feedback)
+	err = a.FUsecase.Store(ctx, f)
 	if err != nil {
 		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, feedback)
+	return c.JSON(http.StatusCreated, f)
 }
