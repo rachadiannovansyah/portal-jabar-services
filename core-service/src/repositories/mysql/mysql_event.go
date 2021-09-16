@@ -82,17 +82,26 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := querySelectAgenda
+	query := `SELECT id, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at
+			MONTH(date) AS month, 
+			WEEK(date) AS week, 
+			DATE(date) AS date,
+			COUNT(id) AS count
+			FROM events`
 
 	if params.Keyword != "" {
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` WHERE (date BETWEEN ` + params.StartDate + ` AND ` + params.EndDate + `)`
+		query = query + ` WHERE (date BETWEEN ` + params.StartDate + ` AND ` + params.EndDate + ` GROUP BY week)`
 	}
 
-	query = query + ` ORDER BY created_at LIMIT ?,? `
+	if params.SortBy != "" {
+		query = query + ` ORDER BY created_at, priorities` + params.SortOrder
+	}
+
+	query = query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 
