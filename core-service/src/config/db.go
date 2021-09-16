@@ -2,7 +2,8 @@ package config
 
 import (
 	"fmt"
-	"os"
+
+	"github.com/spf13/viper"
 )
 
 // DBConfig represents DB configuration.
@@ -14,11 +15,11 @@ type DBConfig struct {
 func LoadDBConfig() DBConfig {
 	return DBConfig{
 		DSN: fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-			os.Getenv("DB_USER"),
-			os.Getenv("DB_PASSWORD"),
-			os.Getenv("DB_HOST"),
-			os.Getenv("DB_PORT"),
-			os.Getenv("DB_NAME"),
+			viper.GetString("DB_USER"),
+			viper.GetString("DB_PASSWORD"),
+			viper.GetString("DB_HOST"),
+			viper.GetString("DB_PORT"),
+			viper.GetString("DB_NAME"),
 		),
 	}
 }
