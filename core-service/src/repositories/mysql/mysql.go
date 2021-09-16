@@ -14,6 +14,7 @@ type Repositories struct {
 	UnitRepo        domain.UnitRepository
 	AreaRepo        domain.AreaRepository
 	EventRepo       domain.EventRepository
+	FeedbackRepo    domain.FeedbackRepository
 }
 
 // NewMysqlRepositories will create an object that represent all repos interface
@@ -25,5 +26,6 @@ func NewMysqlRepositories(Conn *sql.DB) *Repositories {
 		UnitRepo:        NewMysqlUnitRepository(Conn),
 		AreaRepo:        NewMysqlAreaRepository(Conn),
 		EventRepo:       NewMysqlEventRepository(Conn),
+		FeedbackRepo:    NewMysqlFeedbackRepository(Conn),
 	}
 }

@@ -11,4 +11,5 @@ func NewHandler(e *echo.Group, r *echo.Group, u *usecases.Usecases) {
 	NewInformationHandler(e, r, u.InformationUcase)
 	NewUnitHandler(e, r, u.UnitUcase)
 	NewEventHandler(e, r, u.EventUcase)
+	NewFeedbackHandler(e, r, u.FeedbackUcase)
 }
