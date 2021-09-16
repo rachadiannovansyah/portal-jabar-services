@@ -47,6 +47,7 @@ func main() {
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:              cfg.Sentry.DSN,
 		TracesSampleRate: cfg.Sentry.TracesSampleRate,
+		Environment:      cfg.Sentry.Environment,
 	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
