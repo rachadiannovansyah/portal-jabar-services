@@ -1,1 +1,1 @@
-ALTER TABLE `events` DROP COLUMN `priorities`;
+ALTER TABLE events DROP COLUMN priorities;
