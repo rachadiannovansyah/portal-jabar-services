@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
 
-	"github.com/getsentry/sentry-go"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -45,8 +45,9 @@ func main() {
 	r.Use(middL.JWT)
 
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              viper.GetString(`SENTRY_DSN`),
-		TracesSampleRate: 1.0,
+		Dsn:              cfg.Sentry.DSN,
+		TracesSampleRate: cfg.Sentry.TracesSampleRate,
+		Environment:      cfg.Sentry.Environment,
 	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
