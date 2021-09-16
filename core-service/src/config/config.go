@@ -8,7 +8,8 @@ import (
 
 // Config is the struct for the config
 type Config struct {
-	DB DBConfig
+	DB     DBConfig
+	Sentry SentryConfig
 }
 
 // NewConfig creates a new Config struct
@@ -22,6 +23,7 @@ func NewConfig() *Config {
 	}
 
 	return &Config{
-		DB: LoadDBConfig(),
+		DB:     LoadDBConfig(),
+		Sentry: LoadSentryConfig(),
 	}
 }
