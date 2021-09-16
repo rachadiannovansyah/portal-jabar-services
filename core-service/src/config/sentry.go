@@ -1,6 +1,8 @@
 package config
 
-import "os"
+import (
+	"github.com/spf13/viper"
+)
 
 // SentryConfig is the sentry configuration
 type SentryConfig struct {
@@ -12,8 +14,8 @@ type SentryConfig struct {
 // LoadSentryConfig loads the sentry configuration
 func LoadSentryConfig() SentryConfig {
 	return SentryConfig{
-		DSN:              os.Getenv("SENTRY_DSN"),
-		TracesSampleRate: 1.0,
-		Environment:      os.Getenv("SENTRY_ENVIRONMENT"),
+		DSN:              viper.GetString("SENTRY_DSN"),
+		TracesSampleRate: viper.GetFloat64("SENTRY_TRACES_SAMPLE_RATE"),
+		Environment:      viper.GetString("SENTRY_ENVIRONMENT"),
 	}
 }
