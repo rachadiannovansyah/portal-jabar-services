@@ -42,18 +42,12 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			&event.ID,
 			&categoryID,
 			&event.Title,
-			&event.Description,
-			&event.Date,
-			&event.Priority,
+			&event.Priorities,
 			&event.Address,
 			&event.StartHour,
 			&event.EndHour,
-			&event.Image,
-			&event.PublishedBy,
-			&event.Province,
-			&event.City,
-			&event.District,
-			&event.Village,
+			&event.Week,
+			&event.Month,
 			&event.CreatedAt,
 			&event.UpdatedAt,
 		)
@@ -82,12 +76,7 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := `SELECT id, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at
-			MONTH(date) AS month, 
-			WEEK(date) AS week, 
-			DATE(date) AS date,
-			COUNT(id) AS count
-			FROM events`
+	query := `SELECT id, category_id, title, priorities, address, start_hour, end_hour, WEEK(date) as week, MONTH(date) as month, created_at, updated_at FROM events`
 
 	if params.Keyword != "" {
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
@@ -98,7 +87,9 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	}
 
 	if params.SortBy != "" {
-		query = query + ` ORDER BY created_at, priorities` + params.SortOrder
+		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query = query + ` ORDER BY created_at DESC `
 	}
 
 	query = query + ` LIMIT ?,? `
