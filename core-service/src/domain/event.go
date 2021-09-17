@@ -7,38 +7,32 @@ import (
 
 // Event model ..
 type Event struct {
-	ID          int64      `json:"id"`
-	Category    Category   `json:"category" validate:"required"`
-	Title       NullString `json:"title" validate:"required"`
-	Description NullString `json:"description" validate:"required"`
-	Date        NullString `json:"date"`
-	Priority    NullString `json:"priority"`
-	Address     NullString `json:"address"`
-	StartHour   NullString `json:"start_hour,omitempty"`
-	EndHour     NullString `json:"end_hour,omitempty"`
-	Image       NullString `json:"image"`
-	PublishedBy NullString `json:"published_by"`
-	Province    Area       `json:"province" validate:"required"`
-	City        Area       `json:"city" validate:"required"`
-	District    Area       `json:"district" validate:"required"`
-	Village     Area       `json:"village" validate:"required"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	DeletedAt   time.Time  `json:"deleted_at"`
+	ID         int64      `json:"id"`
+	Category   Category   `json:"category" validate:"required"`
+	Title      NullString `json:"title" validate:"required"`
+	Priorities NullString `json:"priorities"`
+	Address    NullString `json:"address"`
+	StartHour  NullString `json:"start_hour,omitempty"`
+	EndHour    NullString `json:"end_hour,omitempty"`
+	Week       int64      `json:"week"`
+	Month      int64      `json:"month"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
 // ListEvent ...
 type ListEvent struct {
-	ID          int64      `json:"id"`
-	Title       NullString `json:"title"`
-	Description NullString `json:"description"`
-	Category    Category   `json:"category"`
-	Date        NullString `json:"date"`
-	Province    Area       `json:"province"`
-	Image       NullString `json:"image"`
-	PublishedBy NullString `json:"published_by"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID         int64      `json:"id"`
+	Category   Category   `json:"category"`
+	Title      NullString `json:"title"`
+	Priorities NullString `json:"priorities"`
+	Address    NullString `json:"address"`
+	StartHour  NullString `json:"start_hour,omitempty"`
+	EndHour    NullString `json:"end_hour,omitempty"`
+	Week       int64      `json:"week"`
+	Month      int64      `json:"month"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
 }
 
 // EventUsecase ..
