@@ -35,13 +35,18 @@ func GetRequestParams(c echo.Context) domain.Request {
 
 	offset := (page - 1) * perPage
 
+	sortOrder := c.QueryParam("sort_order")
+	if sortOrder == "" {
+		sortOrder = "DESC"
+	}
+
 	params := domain.Request{
 		Keyword:   c.QueryParam("q"),
 		Page:      page,
 		PerPage:   perPage,
 		Offset:    offset,
 		SortBy:    c.QueryParam("sort_by"),
-		SortOrder: c.QueryParam("sort_order"),
+		SortOrder: sortOrder,
 	}
 
 	return params

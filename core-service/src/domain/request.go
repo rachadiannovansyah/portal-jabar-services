@@ -10,4 +10,5 @@ type Request struct {
 	SortOrder string
 	StartDate string
 	EndDate   string
+	Filters   map[string]interface{}
 }
