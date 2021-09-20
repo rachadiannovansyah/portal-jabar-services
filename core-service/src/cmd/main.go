@@ -33,7 +33,7 @@ func main() {
 
 	e := echo.New()
 	middL := middl.InitMiddleware()
-	e.Use(middL.CORS)
+	e.Use(middleware.CORSWithConfig(cfg.Cors))
 	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
 

@@ -17,15 +17,6 @@ type GoMiddleware struct {
 	// another stuff , may be needed by middleware
 }
 
-// CORS will handle the CORS middleware
-func (m *GoMiddleware) CORS(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		c.Response().Header().Set("Access-Control-Allow-Origin", "*")
-		c.Response().Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		return next(c)
-	}
-}
-
 // SENTRY will handle the SENTRY middleware
 func (m *GoMiddleware) SENTRY(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {

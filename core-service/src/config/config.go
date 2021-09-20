@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 
 	"github.com/spf13/viper"
@@ -10,6 +11,7 @@ import (
 type Config struct {
 	DB     DBConfig
 	Sentry SentryConfig
+	Cors   middleware.CORSConfig
 }
 
 // NewConfig creates a new Config struct
@@ -25,5 +27,6 @@ func NewConfig() *Config {
 	return &Config{
 		DB:     LoadDBConfig(),
 		Sentry: LoadSentryConfig(),
+		Cors:   LoadCorsConfig(),
 	}
 }
