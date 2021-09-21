@@ -14,7 +14,6 @@ type Event struct {
 	Address   NullString `json:"address"`
 	StartHour NullString `json:"start_hour,omitempty"`
 	EndHour   NullString `json:"end_hour,omitempty"`
-	Weeks     NullString `json:"weeks"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }
