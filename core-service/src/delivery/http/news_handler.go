@@ -31,6 +31,9 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	params := GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"highlight": c.QueryParam("highlight"),
+	}
 
 	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
 
