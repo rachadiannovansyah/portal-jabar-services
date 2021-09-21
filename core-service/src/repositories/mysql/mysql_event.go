@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category_id, title, description, date, priority, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM events`
+var querySelectAgenda = `select id, CONCAT(YEAR(date), '/', WEEK(date)) as week, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -40,14 +40,13 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 		categoryID := int64(0)
 		err = rows.Scan(
 			&event.ID,
+			&event.WeeksOfMonth,
 			&categoryID,
 			&event.Title,
-			&event.Priorities,
+			&event.Priority,
 			&event.Address,
 			&event.StartHour,
 			&event.EndHour,
-			&event.Week,
-			&event.Month,
 			&event.CreatedAt,
 			&event.UpdatedAt,
 		)
@@ -76,20 +75,20 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := `SELECT id, category_id, title, priorities, address, start_hour, end_hour, WEEK(date) as week, MONTH(date) as month, created_at, updated_at FROM events`
+	query := querySelectAgenda
 
 	if params.Keyword != "" {
 		query = query + ` WHERE title like '%` + params.Keyword + `%' `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` WHERE (date BETWEEN ` + params.StartDate + ` AND ` + params.EndDate + ` GROUP BY week)`
+		query = query + ` WHERE date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `' GROUP BY id, week, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at`
 	}
 
 	if params.SortBy != "" {
 		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query = query + ` ORDER BY created_at DESC `
+		query = query + ` ORDER BY created_at DESC`
 	}
 
 	query = query + ` LIMIT ?,? `
