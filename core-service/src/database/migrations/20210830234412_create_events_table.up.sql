@@ -5,7 +5,7 @@ CREATE TABLE `events` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
     `title` varchar(80) NOT NULL,
     `description` varchar(255),
-    `date` datetime NOT NULL,
+    `date` date NOT NULL,
     `start_hour` datetime NOT NULL,
     `end_hour` datetime NOT NULL,
     `image` varchar(255) DEFAULT NULL,
