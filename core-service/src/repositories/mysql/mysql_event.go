@@ -40,7 +40,7 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 		categoryID := int64(0)
 		err = rows.Scan(
 			&event.ID,
-			&event.WeeksOfMonth,
+			&event.Weeks,
 			&categoryID,
 			&event.Title,
 			&event.Priority,
