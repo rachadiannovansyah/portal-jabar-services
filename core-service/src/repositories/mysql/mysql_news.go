@@ -75,10 +75,14 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-	query := querySelectNews
+	query := querySelectNews + ` WHERE 1=1 `
 
 	if params.Keyword != "" {
-		query = query + ` WHERE title like '%` + params.Keyword + `%' `
+		query = query + ` AND title like '%` + params.Keyword + `%' `
+	}
+
+	if v, ok := params.Filters["highlight"]; ok && v == "true" {
+		query = query + ` AND highlight = 1`
 	}
 
 	if params.SortBy != "" {
