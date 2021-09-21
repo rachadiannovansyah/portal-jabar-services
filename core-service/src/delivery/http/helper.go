@@ -42,6 +42,8 @@ func GetRequestParams(c echo.Context) domain.Request {
 		Offset:    offset,
 		SortBy:    c.QueryParam("sort_by"),
 		SortOrder: c.QueryParam("sort_order"),
+		StartDate: c.QueryParam("start_date"),
+		EndDate:   c.QueryParam("end_date"),
 	}
 
 	return params
