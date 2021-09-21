@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `select id, CONCAT(YEAR(date), '/', WEEK(date)) as week, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at FROM events`
+var querySelectAgenda = `select id, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -40,7 +40,6 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 		categoryID := int64(0)
 		err = rows.Scan(
 			&event.ID,
-			&event.Weeks,
 			&categoryID,
 			&event.Title,
 			&event.Priority,
@@ -77,12 +76,14 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 	query := querySelectAgenda
 
+	query = query + ` WHERE 1=1`
+
 	if params.Keyword != "" {
-		query = query + ` WHERE title like '%` + params.Keyword + `%' `
+		query = query + ` AND title like '%` + params.Keyword + `%' `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` WHERE date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `' GROUP BY id, week, category_id, title, priority, address, start_hour, end_hour, created_at, updated_at`
+		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	if params.SortBy != "" {
@@ -94,7 +95,6 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	query = query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
-
 	if err != nil {
 		return nil, 0, err
 	}
