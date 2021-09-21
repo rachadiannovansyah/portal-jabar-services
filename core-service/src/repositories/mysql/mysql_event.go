@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category_id, title, description, date, priority, address, start_hour, end_hour, image, published_by, province_code, city_code, district_code, village_code, created_at, updated_at FROM events`
+var querySelectAgenda = `select id, category_id, title, priority, address, date, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -42,12 +42,11 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			&event.ID,
 			&categoryID,
 			&event.Title,
-			&event.Priorities,
+			&event.Priority,
 			&event.Address,
+			&event.Date,
 			&event.StartHour,
 			&event.EndHour,
-			&event.Week,
-			&event.Month,
 			&event.CreatedAt,
 			&event.UpdatedAt,
 		)
@@ -76,26 +75,27 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := `SELECT id, category_id, title, priorities, address, start_hour, end_hour, WEEK(date) as week, MONTH(date) as month, created_at, updated_at FROM events`
+	query := querySelectAgenda
+
+	query = query + ` WHERE 1=1`
 
 	if params.Keyword != "" {
-		query = query + ` WHERE title like '%` + params.Keyword + `%' `
+		query = query + ` AND title like '%` + params.Keyword + `%' `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` WHERE (date BETWEEN ` + params.StartDate + ` AND ` + params.EndDate + ` GROUP BY week)`
+		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	if params.SortBy != "" {
-		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+		query = query + ` ORDER BY date, ` + params.SortBy + ` , priority ` + params.SortOrder
 	} else {
-		query = query + ` ORDER BY created_at DESC `
+		query = query + ` ORDER BY created_at DESC`
 	}
 
 	query = query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
-
 	if err != nil {
 		return nil, 0, err
 	}

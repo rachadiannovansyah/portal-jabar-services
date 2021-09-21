@@ -5,34 +5,32 @@ import (
 	"time"
 )
 
-// Event model ..
+// Event ...
 type Event struct {
-	ID         int64      `json:"id"`
-	Category   Category   `json:"category" validate:"required"`
-	Title      NullString `json:"title" validate:"required"`
-	Priorities NullString `json:"priorities"`
-	Address    NullString `json:"address"`
-	StartHour  NullString `json:"start_hour,omitempty"`
-	EndHour    NullString `json:"end_hour,omitempty"`
-	Week       int64      `json:"week"`
-	Month      int64      `json:"month"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	ID        int64      `json:"id"`
+	Category  Category   `json:"category"`
+	Title     NullString `json:"title"`
+	Priority  NullString `json:"priority"`
+	Address   NullString `json:"address"`
+	Date      NullString `json:"date"`
+	StartHour NullString `json:"start_hour,omitempty"`
+	EndHour   NullString `json:"end_hour,omitempty"`
+	Week      int64      `json:"week"`
+	Month     int64      `json:"month"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
-// ListEvent ...
-type ListEvent struct {
-	ID         int64      `json:"id"`
-	Category   Category   `json:"category"`
-	Title      NullString `json:"title"`
-	Priorities NullString `json:"priorities"`
-	Address    NullString `json:"address"`
-	StartHour  NullString `json:"start_hour,omitempty"`
-	EndHour    NullString `json:"end_hour,omitempty"`
-	Week       int64      `json:"week"`
-	Month      int64      `json:"month"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+// ListEventResponse model ..
+type ListEventResponse struct {
+	ID        int64      `json:"id"`
+	Category  Category   `json:"category" validate:"required"`
+	Title     NullString `json:"title" validate:"required"`
+	Priority  NullString `json:"priority"`
+	Address   NullString `json:"address"`
+	Date      NullString `json:"date"`
+	StartHour NullString `json:"start_hour,omitempty"`
+	EndHour   NullString `json:"end_hour,omitempty"`
 }
 
 // EventUsecase ..
