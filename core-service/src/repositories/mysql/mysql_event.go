@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `select id, category_id, title, priority, address, date, start_hour, end_hour, created_at, updated_at FROM events`
+var querySelectAgenda = `select id, category_id, title, priority, type, address, date, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -43,6 +43,7 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			&categoryID,
 			&event.Title,
 			&event.Priority,
+			&event.Type,
 			&event.Address,
 			&event.Date,
 			&event.StartHour,
