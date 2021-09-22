@@ -10,7 +10,7 @@ CREATE TABLE `events` (
     `end_hour` varchar(18) NOT NULL,
     `image` varchar(255) DEFAULT NULL,
     `published_by` varchar(16) DEFAULT NULL,
-    `address` varchar(255) NOT NULL,
+    `address` varchar(255) DEFAULT NULL,
     `category_id` int(10) unsigned NOT NULL,
     `province_code` varchar(191) unsigned NULL,
     `city_code` varchar(191) unsigned NULL,

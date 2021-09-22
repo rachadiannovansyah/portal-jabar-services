@@ -18,6 +18,7 @@ type Event struct {
 	PublishedBy  NullString `json:"published_by"`
 	Type         NullString `json:"type"`
 	Address      NullString `json:"address"`
+	URL          NullString `json:"url"`
 	Category     Category   `json:"category"`
 	ProvinceCode Area       `json:"province_code"`
 	CityCode     Area       `json:"city_code"`
@@ -37,6 +38,7 @@ type ListEventResponse struct {
 	Priority  NullString `json:"priority"`
 	Type      NullString `json:"type"`
 	Address   NullString `json:"address"`
+	URL       NullString `json:"url"`
 	Category  Category   `json:"category" validate:"required"`
 }
 
