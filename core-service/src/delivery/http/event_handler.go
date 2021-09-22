@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -36,7 +37,10 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
 	}
 
-	res := Paginate(c, listEvent, total, params)
+	listEventRes := []domain.ListEventResponse{}
+	copier.Copy(&listEventRes, &listEvent)
+
+	res := Paginate(c, listEventRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
 }
