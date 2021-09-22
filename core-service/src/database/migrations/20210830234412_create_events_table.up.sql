@@ -11,6 +11,7 @@ CREATE TABLE `events` (
     `image` varchar(255) DEFAULT NULL,
     `published_by` varchar(16) DEFAULT NULL,
     `address` varchar(255) DEFAULT NULL,
+    `url` varchar(80) DEFAULT NULL,
     `category_id` int(10) unsigned NOT NULL,
     `province_code` varchar(191) unsigned NULL,
     `city_code` varchar(191) unsigned NULL,
