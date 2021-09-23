@@ -7,7 +7,7 @@ CREATE TABLE categories (
   description varchar(255),
   type varchar(80),
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 DROP TABLE IF EXISTS informations;
 CREATE TABLE informations (
@@ -27,7 +27,7 @@ CREATE TABLE informations (
   PRIMARY KEY (id),
   KEY info_categories_id_fk (category_id),
   CONSTRAINT info_categories_id_fk FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 CREATE INDEX idx_title ON informations (title);
 CREATE INDEX idx_status ON informations (status);
 CREATE INDEX idx_show_date ON informations (show_date);
@@ -52,7 +52,7 @@ CREATE TABLE news (
   PRIMARY KEY (id),
   KEY news_categories_id_fk (category_id),
   CONSTRAINT news_categories_id_fk FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 CREATE INDEX idx_title ON news (title);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
@@ -72,7 +72,7 @@ CREATE TABLE units (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 CREATE INDEX idx_name ON units (name);
 
 DROP TABLE IF EXISTS areas;
@@ -93,7 +93,7 @@ CREATE TABLE areas (
   UNIQUE INDEX areas_code_bps_unique(code_bps) USING BTREE,
   INDEX areas_name_index(name) USING BTREE,
   INDEX areas_parent_code_kemendagri_index(parent_code_kemendagri) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
@@ -119,7 +119,7 @@ CREATE TABLE events (
   PRIMARY KEY (id),
   KEY events_categories_id_fk (category_id),
   CONSTRAINT events_categories_fk FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 CREATE INDEX idx_title ON events (title);
 CREATE INDEX idx_start_hour ON events (start_hour);
 CREATE INDEX idx_end_hour ON events (end_hour);
@@ -133,6 +133,6 @@ CREATE TABLE feedback (
   suggestions text NOT NULL,
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
-)ENGINE=InnoDB DEFAULT CHARSET=latin1;
+);
 
 COMMIT;
