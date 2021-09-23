@@ -1,1 +1,0 @@
-ALTER TABLE news DROP COLUMN views;
