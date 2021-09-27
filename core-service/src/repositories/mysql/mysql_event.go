@@ -89,11 +89,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
-	if params.SortBy != "" {
-		query = query + ` ORDER BY date, ` + params.SortBy + ` , priority ` + params.SortOrder
-	} else {
-		query = query + ` ORDER BY created_at DESC`
-	}
+	query = query + ` ORDER BY date, start_hour, priority DESC `
 
 	query = query + ` LIMIT ?,? `
 
