@@ -149,9 +149,7 @@ CREATE TABLE featured_programs (
 	logo varchar(150),
 	created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  KEY fp_categories_id_fk (category_id),
-  CONSTRAINT fp_categories_id_fk FOREIGN KEY (category_id) REFERENCES categories (id)
+  PRIMARY KEY (id)
 );
 
 COMMIT;
