@@ -5,3 +5,4 @@ DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS areas;
 DROP TABLE IF EXISTS feedback;
+DROP TABLE IF EXISTS featured_programs;
