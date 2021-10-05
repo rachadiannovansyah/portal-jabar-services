@@ -8,26 +8,28 @@ import (
 
 // Repositories ...
 type Repositories struct {
-	CategoryRepo    domain.CategoryRepository
-	NewsRepo        domain.NewsRepository
-	InformationRepo domain.InformationRepository
-	UnitRepo        domain.UnitRepository
-	AreaRepo        domain.AreaRepository
-	EventRepo       domain.EventRepository
-	FeedbackRepo    domain.FeedbackRepository
-	UserRepo        domain.UserRepository
+	CategoryRepo        domain.CategoryRepository
+	NewsRepo            domain.NewsRepository
+	InformationRepo     domain.InformationRepository
+	UnitRepo            domain.UnitRepository
+	AreaRepo            domain.AreaRepository
+	EventRepo           domain.EventRepository
+	FeedbackRepo        domain.FeedbackRepository
+	FeaturedProgramRepo domain.FeaturedProgramRepository
+	UserRepo            domain.UserRepository
 }
 
 // NewMysqlRepositories will create an object that represent all repos interface
 func NewMysqlRepositories(Conn *sql.DB) *Repositories {
 	return &Repositories{
-		CategoryRepo:    NewMysqlCategoryRepository(Conn),
-		NewsRepo:        NewMysqlNewsRepository(Conn),
-		InformationRepo: NewMysqlInformationRepository(Conn),
-		UnitRepo:        NewMysqlUnitRepository(Conn),
-		AreaRepo:        NewMysqlAreaRepository(Conn),
-		EventRepo:       NewMysqlEventRepository(Conn),
-		FeedbackRepo:    NewMysqlFeedbackRepository(Conn),
-		UserRepo:        NewMysqlUserRepository(Conn),
+		CategoryRepo:        NewMysqlCategoryRepository(Conn),
+		NewsRepo:            NewMysqlNewsRepository(Conn),
+		InformationRepo:     NewMysqlInformationRepository(Conn),
+		UnitRepo:            NewMysqlUnitRepository(Conn),
+		AreaRepo:            NewMysqlAreaRepository(Conn),
+		EventRepo:           NewMysqlEventRepository(Conn),
+		FeedbackRepo:        NewMysqlFeedbackRepository(Conn),
+		FeaturedProgramRepo: NewMysqlFeaturedProgramRepository(Conn),
+		UserRepo:            NewMysqlUserRepository(Conn),
 	}
 }

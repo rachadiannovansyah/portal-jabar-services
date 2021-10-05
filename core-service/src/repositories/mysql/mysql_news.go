@@ -89,6 +89,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` AND highlight = 1`
 	}
 
+	if v, ok := params.Filters["category_id"]; ok && v != "" {
+		query = fmt.Sprintf("%s AND category_id = %s", query, v)
+	}
+
 	if params.SortBy != "" {
 		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {

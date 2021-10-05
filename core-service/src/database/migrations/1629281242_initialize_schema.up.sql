@@ -175,4 +175,21 @@ CREATE TABLE feedback (
   PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS featured_programs;
+CREATE TABLE featured_programs (
+	id int(10) unsigned NOT NULL AUTO_INCREMENT,
+	title varchar(100) not null,
+	excerpt varchar(255) not null,
+	description text not null,
+	organization varchar(100),
+	categories json,
+	service_type varchar(10),
+	websites json,
+	social_media json,
+	logo varchar(150),
+	created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
 COMMIT;
