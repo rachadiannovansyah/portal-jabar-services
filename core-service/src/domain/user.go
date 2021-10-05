@@ -3,11 +3,13 @@ package domain
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // User ...
 type User struct {
-	ID        string    `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
@@ -27,5 +29,5 @@ type Author struct {
 
 // UserRepository represent the unit repository contract
 type UserRepository interface {
-	GetByID(ctx context.Context, id string) (User, error)
+	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 }

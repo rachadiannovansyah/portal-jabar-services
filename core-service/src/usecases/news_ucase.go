@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
@@ -83,7 +84,7 @@ func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) (
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the user's id
-	mapUsers := map[string]domain.User{}
+	mapUsers := map[uuid.UUID]domain.User{}
 
 	for _, news := range data {
 		mapUsers[news.Author.ID] = domain.User{}

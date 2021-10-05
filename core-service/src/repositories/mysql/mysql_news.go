@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -39,7 +40,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	for rows.Next() {
 		t := domain.News{}
 		categoryID := int64(0)
-		authorID := string("")
+		authorID := uuid.UUID{}
 		err = rows.Scan(
 			&t.ID,
 			&categoryID,

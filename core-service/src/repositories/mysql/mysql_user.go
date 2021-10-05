@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -18,7 +19,7 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 }
 
 // GetByID ...
-func (m *mysqlUserRepository) GetByID(ctx context.Context, id string) (res domain.User, err error) {
+func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
 	query := `SELECT id, name, username, email, password, unit_id, role_id FROM users WHERE id = ?`
 
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
