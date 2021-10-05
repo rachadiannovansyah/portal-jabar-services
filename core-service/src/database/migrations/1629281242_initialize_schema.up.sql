@@ -2,69 +2,69 @@ BEGIN;
 
 DROP TABLE IF EXISTS areas;
 CREATE TABLE areas (
-    id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-    depth int(11) NULL DEFAULT NULL,
-    name varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    parent_code_kemendagri varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    code_kemendagri varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    code_bps varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    latitude varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    longitude varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    meta varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-    created_at timestamp(0) NULL DEFAULT NULL,
-    updated_at timestamp(0) NULL DEFAULT NULL,
-    PRIMARY KEY (id) USING BTREE,
-    UNIQUE INDEX areas_code_kemendagri_unique(code_kemendagri) USING BTREE,
-    UNIQUE INDEX areas_code_bps_unique(code_bps) USING BTREE,
-    INDEX areas_name_index(name) USING BTREE,
-    INDEX areas_parent_code_kemendagri_index(parent_code_kemendagri) USING BTREE
+  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  depth int(11) NULL DEFAULT NULL,
+  name varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  parent_code_kemendagri varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  code_kemendagri varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  code_bps varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  latitude varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  longitude varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  meta varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  created_at timestamp(0) NULL DEFAULT NULL,
+  updated_at timestamp(0) NULL DEFAULT NULL,
+  PRIMARY KEY (id) USING BTREE,
+  UNIQUE INDEX areas_code_kemendagri_unique(code_kemendagri) USING BTREE,
+  UNIQUE INDEX areas_code_bps_unique(code_bps) USING BTREE,
+  INDEX areas_name_index(name) USING BTREE,
+  INDEX areas_parent_code_kemendagri_index(parent_code_kemendagri) USING BTREE
 );
 
 -- ipj_db.units definition
 DROP TABLE IF EXISTS units;
 CREATE TABLE units (
-    id int(10) unsigned NOT NULL AUTO_INCREMENT,
-    parent_id int(10) DEFAULT NULL,
-    name varchar(100) NOT NULL,
-    description varchar(255) DEFAULT NULL,
-    logo varchar(255) DEFAULT NULL,
-    website varchar(60) DEFAULT NULL,
-    phone varchar(100) DEFAULT NULL,
-    address varchar(255) DEFAULT NULL,
-    chief varchar(100) DEFAULT NULL,
-    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   PRIMARY KEY (id)
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  parent_id int(10) DEFAULT NULL,
+  name varchar(100) NOT NULL,
+  description varchar(255) DEFAULT NULL,
+  logo varchar(255) DEFAULT NULL,
+  website varchar(60) DEFAULT NULL,
+  phone varchar(100) DEFAULT NULL,
+  address varchar(255) DEFAULT NULL,
+  chief varchar(100) DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
 );
 CREATE INDEX idx_name ON units (name);
 
 DROP TABLE IF EXISTS roles;
 CREATE TABLE roles (
-   id tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT,
-   name varchar(100) NOT NULL,
-   description varchar(255) NOT NULL,
-   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   PRIMARY KEY (id)
+  id tinyint(2) UNSIGNED NOT NULL AUTO_INCREMENT,
+  name varchar(100) NOT NULL,
+  description varchar(255) NOT NULL,
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
 );
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-   id varchar(36) NOT NULL,
-   name varchar(100) NOT NULL,
-   username varchar(100) NOT NULL,
-   email varchar(80) NOT NULL,
-   password varchar(255) NOT NULL,
-   unit_id int(10) unsigned,
-   role_id tinyint(2) unsigned,
-   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   deleted_at timestamp NULL DEFAULT NULL,
-   PRIMARY KEY (id),
-   KEY users_unit_id_fk (unit_id),
-   KEY users_role_id_fk (role_id),
-   CONSTRAINT users_unit_id_fk FOREIGN KEY (unit_id) REFERENCES units (id),
-   CONSTRAINT users_role_id_fk FOREIGN KEY (role_id) REFERENCES roles (id)
+  id varchar(36) NOT NULL,
+  name varchar(100) NOT NULL,
+  username varchar(100) NOT NULL,
+  email varchar(80) NOT NULL,
+  password varchar(255) NOT NULL,
+  unit_id int(10) unsigned,
+  role_id tinyint(2) unsigned,
+  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_at timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (id),
+  KEY users_unit_id_fk (unit_id),
+  KEY users_role_id_fk (role_id),
+  CONSTRAINT users_unit_id_fk FOREIGN KEY (unit_id) REFERENCES units (id),
+  CONSTRAINT users_role_id_fk FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 CREATE INDEX idx_username ON users(username);
 CREATE INDEX idx_deleted_at ON users(deleted_at);
