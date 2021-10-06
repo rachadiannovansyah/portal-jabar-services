@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -19,7 +20,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category_id, title, excerpt, content, image, video, slug, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category_id, title, excerpt, content, image, video, slug, author_id, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -39,6 +40,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	for rows.Next() {
 		t := domain.News{}
 		categoryID := int64(0)
+		authorID := uuid.UUID{}
 		err = rows.Scan(
 			&t.ID,
 			&categoryID,
@@ -48,6 +50,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Image,
 			&t.Video,
 			&t.Slug,
+			&authorID,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
@@ -57,6 +60,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			return nil, err
 		}
 		t.Category = domain.Category{ID: categoryID}
+		t.Author = domain.User{ID: authorID}
 		result = append(result, t)
 	}
 

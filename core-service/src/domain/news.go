@@ -19,7 +19,8 @@ type News struct {
 	Views     int64      `json:"views"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Category  Category   `json:"category" validate:"required"`
-	CreatedBy NullString `json:"created_by"`
+	Author    User       `json:"author" validate:"required"`
+	CreatedBy User       `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }
@@ -32,6 +33,7 @@ type NewsListResponse struct {
 	Slug      NullString `json:"slug"`
 	Image     NullString `json:"image"`
 	Category  Category   `json:"category"`
+	Author    Author     `json:"author"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
