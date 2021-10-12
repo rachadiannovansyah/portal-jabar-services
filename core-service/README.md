@@ -1,6 +1,7 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/jabardigitalservice/portal-jabar-services)](https://goreportcard.com/report/github.com/jabardigitalservice/portal-jabar-services)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e1b0eb219c1b35f76491/maintainability)](https://codeclimate.com/github/jabardigitalservice/portal-jabar-services/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e1b0eb219c1b35f76491/test_coverage)](https://codeclimate.com/github/jabardigitalservice/portal-jabar-services/test_coverage)
 ![ci workflow](https://github.com/jabardigitalservice/portal-jabar-services/actions/workflows/ci.yml/badge.svg)
-[![Maintainability](https://api.codeclimate.com/v1/badges/afaeafb0caa35a6463f4/maintainability)](https://codeclimate.com/repos/611626fd92439c0161013db6/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/afaeafb0caa35a6463f4/test_coverage)](https://codeclimate.com/repos/611626fd92439c0161013db6/test_coverage)
 
 # core-service
 The core of jabar portal services
