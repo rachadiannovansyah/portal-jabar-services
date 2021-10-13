@@ -32,6 +32,7 @@ func main() {
 	}()
 
 	e := echo.New()
+	e.HTTPErrorHandler = httpDelivery.HttpErrorHandler
 	middL := middl.InitMiddleware()
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
 	e.Use(middL.SENTRY)
