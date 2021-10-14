@@ -34,7 +34,7 @@ func (h *UnitHandler) FetchUnits(c echo.Context) error {
 	listUnit, total, err := h.UUsecase.Fetch(ctx, &params)
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
+		return err
 	}
 
 	// Copy slice to slice

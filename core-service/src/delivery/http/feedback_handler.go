@@ -46,7 +46,7 @@ func (h *FeedbackHandler) Store(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	err = h.FUsecase.Store(ctx, f)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		return err
 	}
 
 	return c.JSON(http.StatusCreated, f)

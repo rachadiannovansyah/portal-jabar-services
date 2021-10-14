@@ -18,8 +18,8 @@ func NewHandler(e *echo.Group, r *echo.Group, u *usecases.Usecases) {
 	NewFeaturedProgramHandler(e, r, u.FeaturedProgramUcase)
 }
 
-// HttpErrorHandler ...
-func HttpErrorHandler(err error, c echo.Context) {
+// ErrorHandler ...
+func ErrorHandler(err error, c echo.Context) {
 	report, ok := err.(*echo.HTTPError)
 	if !ok {
 		report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
