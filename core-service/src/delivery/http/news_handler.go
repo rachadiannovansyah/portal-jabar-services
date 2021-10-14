@@ -40,7 +40,7 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
+		return err
 	}
 
 	// Copy slice to slice

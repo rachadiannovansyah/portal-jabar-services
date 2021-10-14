@@ -33,7 +33,7 @@ func (h *InformationHandler) Fetch(c echo.Context) error {
 	listInformations, total, err := h.InformationsUcase.Fetch(ctx, &params)
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
+		return err
 	}
 
 	res := Paginate(c, listInformations, total, params)

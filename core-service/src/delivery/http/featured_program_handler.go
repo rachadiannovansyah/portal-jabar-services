@@ -26,7 +26,7 @@ func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 	featuredProgramsList, err := h.FPUsecase.Fetch(ctx)
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
+		return err
 	}
 
 	data := map[string]interface{}{"data": featuredProgramsList}

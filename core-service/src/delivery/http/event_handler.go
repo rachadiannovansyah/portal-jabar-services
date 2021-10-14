@@ -34,7 +34,7 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), &ResponseError{Message: err.Error()})
+		return err
 	}
 
 	listEventRes := []domain.ListEventResponse{}
