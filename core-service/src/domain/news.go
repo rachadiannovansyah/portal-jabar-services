@@ -18,7 +18,7 @@ type News struct {
 	Status    NullString `json:"status,omitempty"`
 	Views     int64      `json:"views"`
 	Highlight int8       `json:"highlight,omitempty"`
-	Type      NullString `json:"type:`
+	Type      NullString `json:"type"`
 	Category  Category   `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
 	CreatedBy User       `json:"created_by"`
