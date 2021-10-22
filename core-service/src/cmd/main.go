@@ -13,12 +13,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/cmd/server"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/database"
-	httpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http"
-	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/delivery/http/middleware"
-	repo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/repositories/mysql"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/usecases"
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 )
 
 func main() {
@@ -32,7 +30,7 @@ func main() {
 	}()
 
 	e := echo.New()
-	e.HTTPErrorHandler = httpDelivery.ErrorHandler
+	e.HTTPErrorHandler = server.ErrorHandler
 	middL := middl.InitMiddleware()
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
 	e.Use(middL.SENTRY)
@@ -60,9 +58,9 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
-	mysqlRepos := repo.NewMysqlRepositories(dbConn)
-	usecases := usecases.NewUcase(mysqlRepos, timeoutContext)
-	httpDelivery.NewHandler(v1, r, usecases)
+	mysqlRepos := server.NewMysqlRepositories(dbConn)
+	usecases := server.NewUcase(mysqlRepos, timeoutContext)
+	server.NewHandler(v1, r, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
