@@ -6,6 +6,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
 
+	_authHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/delivery/http"
 	_eventHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/delivery/http"
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
@@ -22,6 +23,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_eventHttpDelivery.NewEventHandler(e, r, u.EventUcase)
 	_feedbackHttpDelivery.NewFeedbackHandler(e, r, u.FeedbackUcase)
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(e, r, u.FeaturedProgramUcase)
+	_authHttpDelivery.NewAuthHandler(e, r, u.AuthUcase)
 }
 
 // ErrorHandler ...

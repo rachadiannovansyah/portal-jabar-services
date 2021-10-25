@@ -30,4 +30,5 @@ type Author struct {
 // UserRepository represent the unit repository contract
 type UserRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
+	GetByEmail(ctx context.Context, email string) (User, error)
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
 	_eventUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/usecase"
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
@@ -21,6 +22,7 @@ type Usecases struct {
 	EventUcase           domain.EventUsecase
 	FeedbackUcase        domain.FeedbackUsecase
 	FeaturedProgramUcase domain.FeaturedProgramUsecase
+	AuthUcase            domain.AuthUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -32,5 +34,6 @@ func NewUcase(r *Repositories, timeoutContext time.Duration) *Usecases {
 		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, timeoutContext),
 		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
+		AuthUcase:            _authUcase.NewAuthUsecase(r.UserRepo, timeoutContext),
 	}
 }
