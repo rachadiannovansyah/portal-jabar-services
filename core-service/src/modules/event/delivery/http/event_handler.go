@@ -23,6 +23,7 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 
 	e.GET("/events", handler.Fetch)
 	e.GET("/events/:id", handler.GetByID)
+	e.GET("/events/calendar", handler.ListCalendar)
 }
 
 // Fetch will get events data
@@ -62,4 +63,21 @@ func (h *EventHandler) GetByID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &event})
+}
+
+// ListCalendar ..
+func (h *EventHandler) ListCalendar(c echo.Context) error {
+	ctx := c.Request().Context()
+	params := helpers.GetRequestParams(c)
+
+	listEvents, err := h.EventUcase.ListCalendar(ctx, &params)
+
+	if err != nil {
+		return nil
+	}
+
+	listEventCalendar := []domain.ListEventCalendarReponse{}
+	copier.Copy(&listEventCalendar, &listEvents)
+
+	return c.JSON(http.StatusOK, listEventCalendar)
 }
