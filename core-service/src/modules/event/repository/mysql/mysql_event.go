@@ -119,3 +119,53 @@ func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domai
 
 	return
 }
+
+func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query string) (result []domain.Event, err error) {
+	rows, err := r.Conn.QueryContext(ctx, query)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
+
+	result = make([]domain.Event, 0)
+	for rows.Next() {
+		event := domain.Event{}
+		categoryID := int64(0)
+		err = rows.Scan(
+			&event.ID,
+			&event.Title,
+			&event.Date,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+
+		event.Category = domain.Category{ID: categoryID}
+		result = append(result, event)
+	}
+
+	return result, nil
+}
+
+func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
+	query := `SELECT id, title, date from events where 1=1`
+
+	if params.StartDate != "" && params.EndDate != "" {
+		query = query + ` AND date BETWEEN '` + params.StartDate + `' and '` + params.EndDate + `'`
+	}
+
+	query = query + ` ORDER BY date DESC `
+
+	res, err = r.fetchQueryCalendar(ctx, query)
+
+	return
+}

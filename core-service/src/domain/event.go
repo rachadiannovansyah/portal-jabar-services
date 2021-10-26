@@ -42,14 +42,23 @@ type ListEventResponse struct {
 	Category  Category   `json:"category" validate:"required"`
 }
 
+//ListEventCalendarReponse ..
+type ListEventCalendarReponse struct {
+	ID    int64      `json:"id"`
+	Title NullString `json:"title"`
+	Date  NullString `json:"date"`
+}
+
 // EventUsecase ..
 type EventUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
 	GetByID(ctx context.Context, id int64) (Event, error)
+	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 }
 
 // EventRepository ..
 type EventRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []Event, total int64, err error)
 	GetByID(ctx context.Context, id int64) (Event, error)
+	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 }

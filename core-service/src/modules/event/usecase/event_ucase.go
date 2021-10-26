@@ -114,3 +114,16 @@ func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err
 
 	return
 }
+
+// ListCalendar will get data without paginate
+func (u *eventUcase) ListCalendar(c context.Context, params *domain.Request) (res []domain.Event, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.eventRepo.ListCalendar(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
