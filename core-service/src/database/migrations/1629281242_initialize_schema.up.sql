@@ -105,9 +105,9 @@ CREATE INDEX idx_end_date ON informations (end_date);
 DROP TABLE IF EXISTS news;
 CREATE TABLE news (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  category_id int(10) unsigned NOT NULL,
+  category varchar(30) NOT NULL,
   title varchar(80) NOT NULL,
-  excerpt varchar(150) NOT NULL,
+  excerpt text NOT NULL,
   content text NOT NULL,
   slug varchar(100) DEFAULT NULL,
   image varchar(255) DEFAULT NULL,
@@ -123,16 +123,15 @@ CREATE TABLE news (
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  KEY news_categories_id_fk (category_id),
   KEY users_author_id_fk (author_id),
   KEY users_created_by_fk (created_by),
   KEY users_updated_by_fk (updated_by),
-  CONSTRAINT news_categories_id_fk FOREIGN KEY (category_id) REFERENCES categories (id),
   CONSTRAINT users_author_id_fk FOREIGN KEY (author_id) REFERENCES users (id),
   CONSTRAINT users_created_by_fk FOREIGN KEY (created_by) REFERENCES users (id),
   CONSTRAINT users_updated_by_fk FOREIGN KEY (updated_by) REFERENCES users (id)
 );
 CREATE INDEX idx_title ON news (title);
+CREATE INDEX idx_category ON news (category);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
 

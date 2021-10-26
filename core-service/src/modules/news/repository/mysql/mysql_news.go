@@ -20,7 +20,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category_id, title, excerpt, content, image, video, slug, author_id, type, source, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, source, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -39,11 +39,10 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	result = make([]domain.News, 0)
 	for rows.Next() {
 		t := domain.News{}
-		categoryID := int64(0)
 		authorID := uuid.UUID{}
 		err = rows.Scan(
 			&t.ID,
-			&categoryID,
+			&t.Category,
 			&t.Title,
 			&t.Excerpt,
 			&t.Content,
@@ -61,7 +60,6 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			logrus.Error(err)
 			return nil, err
 		}
-		t.Category = domain.Category{ID: categoryID}
 		t.Author = domain.User{ID: authorID}
 		result = append(result, t)
 	}
@@ -91,8 +89,8 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` AND highlight = 1`
 	}
 
-	if v, ok := params.Filters["category_id"]; ok && v != "" {
-		query = fmt.Sprintf("%s AND category_id = %s", query, v)
+	if v, ok := params.Filters["category"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
 	}
 
 	if v, ok := params.Filters["type"]; ok && v != "" {

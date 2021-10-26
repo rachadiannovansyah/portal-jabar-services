@@ -8,18 +8,18 @@ import (
 // News ...
 type News struct {
 	ID        int64      `json:"id"`
-	Title     NullString `json:"title" validate:"required"`
-	Excerpt   NullString `json:"excerpt"`
-	Content   NullString `json:"content" validate:"required"`
+	Title     string     `json:"title" validate:"required"`
+	Excerpt   string     `json:"excerpt"`
+	Content   string     `json:"content" validate:"required"`
 	Slug      NullString `json:"slug"`
 	Image     NullString `json:"image"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
-	Status    NullString `json:"status,omitempty"`
+	Status    string     `json:"status,omitempty"`
 	Views     int64      `json:"views"`
 	Highlight int8       `json:"highlight,omitempty"`
-	Type      NullString `json:"type"`
-	Category  Category   `json:"category" validate:"required"`
+	Type      string     `json:"type"`
+	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
 	CreatedBy User       `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -29,15 +29,35 @@ type News struct {
 // NewsListResponse ...
 type NewsListResponse struct {
 	ID        int64      `json:"id"`
-	Title     NullString `json:"title"`
-	Excerpt   NullString `json:"excerpt"`
+	Title     string     `json:"title"`
+	Excerpt   string     `json:"excerpt"`
 	Slug      NullString `json:"slug"`
 	Image     NullString `json:"image"`
-	Category  Category   `json:"category"`
+	Category  string     `json:"category"`
 	Author    Author     `json:"author"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
 	CreatedBy NullString `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+// DetailNewsResponse ...
+type DetailNewsResponse struct {
+	ID        int64      `json:"id"`
+	Title     string     `json:"title" validate:"required"`
+	Excerpt   string     `json:"excerpt"`
+	Content   string     `json:"content" validate:"required"`
+	Slug      NullString `json:"slug"`
+	Image     NullString `json:"image"`
+	Video     NullString `json:"video"`
+	Source    NullString `json:"source"`
+	Status    string     `json:"status,omitempty"`
+	Views     int64      `json:"views"`
+	Highlight int8       `json:"highlight,omitempty"`
+	Type      string     `json:"type"`
+	Category  string     `json:"category" validate:"required"`
+	Author    Author     `json:"author" validate:"required"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }

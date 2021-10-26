@@ -27,59 +27,6 @@ func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u dom
 	}
 }
 
-func (n *newsUsecase) fillCategoryDetails(c context.Context, data []domain.News) ([]domain.News, error) {
-	g, ctx := errgroup.WithContext(c)
-
-	// Get the category's id
-	mapCategories := map[int64]domain.Category{}
-
-	for _, news := range data {
-		mapCategories[news.Category.ID] = domain.Category{}
-	}
-
-	// Using goroutine to fetch the category's detail
-	chanCategory := make(chan domain.Category)
-	for categoryID := range mapCategories {
-		categoryID := categoryID
-		g.Go(func() error {
-			res, err := n.categories.GetByID(ctx, categoryID)
-			if err != nil {
-				return err
-			}
-			chanCategory <- res
-			return nil
-		})
-	}
-
-	go func() {
-		err := g.Wait()
-		if err != nil {
-			logrus.Error(err)
-			return
-		}
-		close(chanCategory)
-	}()
-
-	for category := range chanCategory {
-		if category != (domain.Category{}) {
-			mapCategories[category.ID] = category
-		}
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	// merge the category's data
-	for index, item := range data {
-		if a, ok := mapCategories[item.Category.ID]; ok {
-			data[index].Category = a
-		}
-	}
-
-	return data, nil
-}
-
 func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) ([]domain.News, error) {
 	g, ctx := errgroup.WithContext(c)
 
@@ -143,11 +90,6 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 		return nil, 0, err
 	}
 
-	res, err = n.fillCategoryDetails(ctx, res)
-	if err != nil {
-		return nil, 0, err
-	}
-
 	res, err = n.fillAuthorDetails(ctx, res)
 	if err != nil {
 		return nil, 0, err
@@ -164,18 +106,18 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 	if err != nil {
 		return
 	}
+ 
+	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
+	if err != nil {
+		return
+	}
+	res.Author = resAuthor
 
 	// FIXME: prevent abuse page views counter by using cache (redis)
 	err = n.newsRepo.AddView(ctx, id)
 	if err != nil {
 		logrus.Error(err)
 	}
-
-	resCategory, err := n.categories.GetByID(ctx, res.Category.ID)
-	if err != nil {
-		return domain.News{}, err
-	}
-	res.Category = resCategory
 
 	return
 }

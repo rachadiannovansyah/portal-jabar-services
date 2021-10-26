@@ -20,31 +20,31 @@ func TestFetch(t *testing.T) {
 	mockNews := []domain.News{
 		{
 			ID:        1,
-			Title:     domain.NullString{String: "title", Valid: true},
-			Excerpt:   domain.NullString{String: "excerpt", Valid: true},
-			Content:   domain.NullString{String: "content", Valid: true},
+			Title:     "title",
+			Excerpt:   "excerpt",
+			Content:   "content",
 			Image:     domain.NullString{String: "image", Valid: true},
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
 		{
 			ID:        2,
-			Title:     domain.NullString{String: "title 2", Valid: true},
-			Excerpt:   domain.NullString{String: "excerpt 2", Valid: true},
-			Content:   domain.NullString{String: "content 2", Valid: true},
+			Title:     "title",
+			Excerpt:   "excerpt",
+			Content:   "content",
 			Image:     domain.NullString{String: "image 2", Valid: true},
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "category_id", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "source", "created_at", "updated_at"}).
-		AddRow(mockNews[0].ID, mockNews[0].Category.ID, mockNews[0].Title.String, mockNews[0].Excerpt.String, mockNews[0].Content.String,
+	rows := sqlmock.NewRows([]string{"id", "category", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "source", "created_at", "updated_at"}).
+		AddRow(mockNews[0].ID, mockNews[0].Category, mockNews[0].Title, mockNews[0].Excerpt, mockNews[0].Content,
 			nil, nil, mockNews[0].Slug.String, "", mockNews[0].Video.String, mockNews[0].Source.String, mockNews[0].CreatedAt, mockNews[0].UpdatedAt).
-		AddRow(mockNews[1].ID, mockNews[1].Category.ID, mockNews[1].Title.String, mockNews[1].Excerpt.String, mockNews[1].Content.String,
+		AddRow(mockNews[1].ID, mockNews[1].Category, mockNews[1].Title, mockNews[1].Excerpt, mockNews[1].Content,
 			nil, nil, mockNews[1].Slug.String, "", mockNews[1].Video.String, mockNews[1].Source.String, mockNews[1].CreatedAt, mockNews[1].UpdatedAt)
 
-	query := "SELECT id, category_id, title, excerpt, content, image, video, slug, author_id, type, source, created_at, updated_at FROM news"
+	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, source, created_at, updated_at FROM news"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := mysqlRepo.NewMysqlNewsRepository(db)
