@@ -32,9 +32,9 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"highlight":   c.QueryParam("highlight"),
-		"category_id": c.QueryParam("category_id"),
-		"type":        c.QueryParam("type"),
+		"highlight": c.QueryParam("highlight"),
+		"category":  c.QueryParam("cat"),
+		"type":      c.QueryParam("type"),
 	}
 
 	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
@@ -67,5 +67,9 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &news})
+	// Copy slice to slice
+	newsRes := []domain.DetailNewsResponse{}
+	copier.Copy(&newsRes, &news)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
 }
