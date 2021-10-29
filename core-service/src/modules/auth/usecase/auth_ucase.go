@@ -38,8 +38,8 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 func createAccessToken(u domain.User) (res domain.Auth, err error) {
 	res = domain.Auth{
 		AccessToken: "23843294u2xn32nxb23yx48732y8$",
-		TokenType: "jwt",
-		ExpiresIn: 20,
+		TokenType:   "bearer",
+		ExpiresIn:   20,
 	}
 	return
 }
