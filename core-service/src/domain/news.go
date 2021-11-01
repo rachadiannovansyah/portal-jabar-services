@@ -51,7 +51,7 @@ type NewsBanner struct {
 	Slug        NullString   `json:"slug"`
 	Author      Author       `json:"author,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
-	RelatedNews []NewsBanner `json:"related_news,omitempty"`
+	RelatedNews []NewsBanner `json:"related_news"`
 }
 
 // DetailNewsResponse ...
@@ -84,7 +84,7 @@ type NewsUsecase interface {
 // NewsRepository represent the news repository contract
 type NewsRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []News, total int64, err error)
-	FetchNewsBanner(ctx context.Context) (newsBanner []News, err error)
+	FetchNewsBanner(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 }

@@ -97,7 +97,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 		g.Go(func() error {
 			params := domain.Request{PerPage: 4}
 			params.Filters = map[string]interface{}{
-				"highlight": 0,
+				"highlight": "0",
 				"category":  category,
 			}
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
@@ -120,6 +120,9 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	}()
 
 	for relatedNews := range chanNews {
+		if len(relatedNews) < 1 {
+			continue
+		}
 		relatedNewsBanner := []domain.NewsBanner{}
 		copier.Copy(&relatedNewsBanner, &relatedNews)
 		mapCategories[relatedNews[0].Category] = relatedNewsBanner

@@ -5,9 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
-
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/sirupsen/logrus"
 )
 
 type mysqlNewsRepository struct {
@@ -84,8 +83,8 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` AND title like '%` + params.Keyword + `%' `
 	}
 
-	if v, ok := params.Filters["highlight"]; ok && v != "true" {
-		query = query + ` AND highlight = 1`
+	if v, ok := params.Filters["highlight"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND highlight = '%s'`, query, v)
 	}
 
 	if v, ok := params.Filters["category"]; ok && v != "" {
