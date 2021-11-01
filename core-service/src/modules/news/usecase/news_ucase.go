@@ -94,19 +94,16 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// Using goroutine to fetch the user's detail
 	chanNews := make(chan []domain.News)
 	for category := range mapCategories {
-		g.Go(func() error {
-			params := domain.Request{PerPage: 4}
-			params.Filters = map[string]interface{}{
-				"highlight": "0",
-				"category":  category,
-			}
+		params := domain.Request{PerPage: 4}
+		params.Filters = map[string]interface{}{
+			"highlight": "0",
+			"category":  category,
+		}
+		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
-			if err != nil {
-				return err
-			}
 
 			chanNews <- res
-			return nil
+			return
 		})
 	}
 
@@ -131,7 +128,6 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	if err := g.Wait(); err != nil {
 		return nil, err
 	}
-
 	// merge the user's data
 	for index, item := range data {
 		if a, ok := mapCategories[item.Category]; ok {
