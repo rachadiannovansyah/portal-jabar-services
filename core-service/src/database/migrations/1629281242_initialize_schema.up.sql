@@ -117,6 +117,7 @@ CREATE TABLE news (
   views bigint DEFAULT 0 NOT NULL,
   highlight tinyint(1) NOT NULL,
   type varchar(20) NOT NULL DEFAULT 'article',
+  tags varchar(100) NOT NULL,
   author_id varchar(36),
   created_by varchar(36),
   updated_by varchar(36),
