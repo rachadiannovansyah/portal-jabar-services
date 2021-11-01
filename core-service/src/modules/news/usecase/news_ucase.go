@@ -106,7 +106,7 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 	if err != nil {
 		return
 	}
- 
+
 	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
 	if err != nil {
 		return

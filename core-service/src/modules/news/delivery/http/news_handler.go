@@ -35,6 +35,7 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		"highlight": c.QueryParam("highlight"),
 		"category":  c.QueryParam("cat"),
 		"type":      c.QueryParam("type"),
+		"tags":      c.QueryParam("tags"),
 	}
 
 	listNews, total, err := h.CUsecase.Fetch(ctx, &params)

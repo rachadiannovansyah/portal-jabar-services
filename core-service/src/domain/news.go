@@ -19,6 +19,7 @@ type News struct {
 	Views     int64      `json:"views"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
+	Tags      string     `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
 	CreatedBy User       `json:"created_by"`
@@ -37,6 +38,7 @@ type NewsListResponse struct {
 	Author    Author     `json:"author"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
+	Tags      string     `json:"tags"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -56,6 +58,7 @@ type DetailNewsResponse struct {
 	Views     int64      `json:"views"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
+	Tags      string     `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    Author     `json:"author" validate:"required"`
 	CreatedAt time.Time  `json:"created_at"`
