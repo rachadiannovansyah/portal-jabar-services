@@ -20,12 +20,12 @@ func NewFeaturedProgramUsecase(p domain.FeaturedProgramRepository, timeout time.
 	}
 }
 
-func (u *featuredProgramUsecase) Fetch(c context.Context) (res []domain.FeaturedProgram, err error) {
+func (u *featuredProgramUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, err = u.featuredProgramRepo.Fetch(ctx)
+	res, err = u.featuredProgramRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, err
 	}

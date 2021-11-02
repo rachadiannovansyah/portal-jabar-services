@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 // FeaturedProgramHandler ...
@@ -23,7 +24,12 @@ func NewFeaturedProgramHandler(e *echo.Group, r *echo.Group, us domain.FeaturedP
 func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 
 	ctx := c.Request().Context()
-	featuredProgramsList, err := h.FPUsecase.Fetch(ctx)
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"categories": c.QueryParam("categories"),
+	}
+
+	featuredProgramsList, err := h.FPUsecase.Fetch(ctx, &params)
 
 	if err != nil {
 		return err
