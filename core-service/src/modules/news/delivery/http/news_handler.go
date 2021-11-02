@@ -24,7 +24,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news", handler.FetchNews)
 	e.GET("/news/:id", handler.GetByID)
 	e.GET("/news/banner", handler.FetchNewsBanner)
-	e.GET("/news/headline", handler.FetchNewsHeadline)
+	e.PATCH("/news/:id/share", handler.AddShare)
 }
 
 // FetchNews will fetch the content based on given params
@@ -115,4 +115,26 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
+}
+
+// AddShare counter to share
+func (h *NewsHandler) AddShare(c echo.Context) error {
+	// FIXME: Check and verify the recaptcha response token.
+
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	err = h.CUsecase.AddShare(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully add share count",
+	})
 }

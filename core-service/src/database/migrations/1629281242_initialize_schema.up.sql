@@ -115,6 +115,7 @@ CREATE TABLE news (
   source varchar(80) DEFAULT NULL,
   status varchar(12) NOT NULL DEFAULT 'PUBLISHED',
   views bigint DEFAULT 0 NOT NULL,
+  shared bigint DEFAULT 0 NOT NULL,
   highlight tinyint(1) NOT NULL,
   type varchar(20) NOT NULL DEFAULT 'article',
   tags varchar(100) NOT NULL,
