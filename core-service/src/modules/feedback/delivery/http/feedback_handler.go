@@ -33,6 +33,8 @@ func isRequestValid(f *domain.Feedback) (bool, error) {
 
 // Store will store the feedback by given request body
 func (h *FeedbackHandler) Store(c echo.Context) (err error) {
+	// FIXME: Check and verify the recaptcha response token.
+
 	f := new(domain.Feedback)
 	if err = c.Bind(f); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
