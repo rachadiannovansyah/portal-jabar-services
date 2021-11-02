@@ -193,6 +193,7 @@ CREATE TABLE featured_programs (
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+CREATE INDEX idx_categories_program on featured_programs (categories);
 
 DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (
