@@ -205,3 +205,21 @@ func (n *newsUsecase) FetchNewsBanner(c context.Context) (res []domain.NewsBanne
 
 	return
 }
+
+func (n *newsUsecase) FetchNewsHeadline(c context.Context) (res []domain.News, err error) {
+
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.newsRepo.FetchNewsHeadline(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err = n.fillAuthorDetails(ctx, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
