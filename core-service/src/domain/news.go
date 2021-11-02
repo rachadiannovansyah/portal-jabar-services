@@ -17,6 +17,7 @@ type News struct {
 	Source    NullString `json:"source"`
 	Status    string     `json:"status,omitempty"`
 	Views     int64      `json:"views"`
+	Shared    int64      `json:"shared"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
 	Tags      string     `json:"tags"`
@@ -68,6 +69,7 @@ type DetailNewsResponse struct {
 	Source    NullString `json:"source"`
 	Status    string     `json:"status,omitempty"`
 	Views     int64      `json:"views"`
+	Shared    int64      `json:"shared"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
 	Tags      string     `json:"tags"`
@@ -83,6 +85,7 @@ type NewsUsecase interface {
 	FetchNewsBanner(ctx context.Context) ([]NewsBanner, error)
 	FetchNewsHeadline(ctx context.Context) ([]News, error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	AddShare(ctx context.Context, id int64) error
 }
 
 // NewsRepository represent the news repository contract
@@ -92,4 +95,5 @@ type NewsRepository interface {
 	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
+	AddShare(ctx context.Context, id int64) (err error)
 }
