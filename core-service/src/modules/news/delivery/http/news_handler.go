@@ -24,6 +24,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news", handler.FetchNews)
 	e.GET("/news/:id", handler.GetByID)
 	e.GET("/news/banner", handler.FetchNewsBanner)
+	e.GET("/news/headline", handler.FetchNewsHeadline)
 }
 
 // FetchNews will fetch the content based on given params
@@ -67,6 +68,28 @@ func (h *NewsHandler) FetchNewsBanner(c echo.Context) error {
 
 	res := map[string]interface{}{
 		"data": listNews,
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+// FetchNewsHeadline ...
+func (h *NewsHandler) FetchNewsHeadline(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	headlineNews, err := h.CUsecase.FetchNewsHeadline(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	// Copy slice to slice
+	headlineNewsRes := []domain.NewsBanner{}
+	copier.Copy(&headlineNewsRes, &headlineNews)
+
+	res := map[string]interface{}{
+		"data": headlineNewsRes,
 	}
 
 	return c.JSON(http.StatusOK, res)

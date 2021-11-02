@@ -53,7 +53,7 @@ type NewsBanner struct {
 	Slug        NullString   `json:"slug"`
 	Author      Author       `json:"author,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
-	RelatedNews []NewsBanner `json:"related_news"`
+	RelatedNews []NewsBanner `json:"related_news,omitempty"`
 }
 
 // DetailNewsResponse ...
@@ -81,6 +81,7 @@ type DetailNewsResponse struct {
 type NewsUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]News, int64, error)
 	FetchNewsBanner(ctx context.Context) ([]NewsBanner, error)
+	FetchNewsHeadline(ctx context.Context) ([]News, error)
 	GetByID(ctx context.Context, id int64) (News, error)
 }
 
@@ -88,6 +89,7 @@ type NewsUsecase interface {
 type NewsRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []News, total int64, err error)
 	FetchNewsBanner(ctx context.Context) (news []News, err error)
+	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 }
