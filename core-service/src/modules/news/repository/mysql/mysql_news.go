@@ -4,11 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
-
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/sirupsen/logrus"
 )
 
 type mysqlNewsRepository struct {
@@ -20,7 +18,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, source, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, tags, source, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -51,6 +49,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Slug,
 			&authorID,
 			&t.Type,
+			&t.Tags,
 			&t.Source,
 			&t.CreatedAt,
 			&t.UpdatedAt,
@@ -85,8 +84,8 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` AND title like '%` + params.Keyword + `%' `
 	}
 
-	if v, ok := params.Filters["highlight"]; ok && v == "true" {
-		query = query + ` AND highlight = 1`
+	if v, ok := params.Filters["highlight"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND highlight = '%s'`, query, v)
 	}
 
 	if v, ok := params.Filters["category"]; ok && v != "" {
@@ -95,6 +94,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 
 	if v, ok := params.Filters["type"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
+	}
+
+	if v, ok := params.Filters["tags"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND tags = "%s"`, query, v)
 	}
 
 	if params.SortBy != "" {
@@ -137,6 +140,37 @@ func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error)
 	query := `UPDATE news SET views = views + 1 WHERE id = ?`
 
 	_, err = m.Conn.ExecContext(ctx, query, id)
+
+	return
+}
+
+func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
+	query := querySelectNews + ` WHERE id IN (
+		SELECT MAX(id) FROM news WHERE highlight = ? GROUP BY category 
+	)`
+
+	res, err = m.fetch(ctx, query, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []domain.News, err error) {
+	query := querySelectNews + ` WHERE id IN (
+		SELECT MAX(id) FROM news WHERE id NOT IN (
+			SELECT id from news  WHERE id IN (
+				SELECT MAX(id) FROM news WHERE highlight = 1 
+				GROUP BY category 
+			)
+		) AND highlight = 1 GROUP BY category
+	)`
+
+	res, err = m.fetch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
 
 	return
 }

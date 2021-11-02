@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
 	"time"
 
 	"github.com/google/uuid"
@@ -80,6 +81,63 @@ func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) (
 	return data, nil
 }
 
+func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanner) ([]domain.NewsBanner, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the category
+	mapCategories := map[string][]domain.NewsBanner{}
+
+	for _, news := range data {
+		mapCategories[news.Category] = []domain.NewsBanner{}
+	}
+
+	// Using goroutine to fetch the user's detail
+	chanNews := make(chan []domain.News)
+	for category := range mapCategories {
+		params := domain.Request{PerPage: 4}
+		params.Filters = map[string]interface{}{
+			"highlight": "0",
+			"category":  category,
+		}
+		g.Go(func() (err error) {
+			res, _, err := n.newsRepo.Fetch(ctx, &params)
+
+			chanNews <- res
+			return
+		})
+	}
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanNews)
+	}()
+
+	for relatedNews := range chanNews {
+		if len(relatedNews) < 1 {
+			continue
+		}
+		relatedNewsBanner := []domain.NewsBanner{}
+		copier.Copy(&relatedNewsBanner, &relatedNews)
+		mapCategories[relatedNews[0].Category] = relatedNewsBanner
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+	// merge the user's data
+	for index, item := range data {
+		if a, ok := mapCategories[item.Category]; ok {
+			data[index].RelatedNews = a
+		}
+	}
+
+	return data, nil
+}
+
 func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -106,7 +164,7 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 	if err != nil {
 		return
 	}
- 
+
 	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
 	if err != nil {
 		return
@@ -117,6 +175,50 @@ func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err
 	err = n.newsRepo.AddView(ctx, id)
 	if err != nil {
 		logrus.Error(err)
+	}
+
+	return
+}
+
+func (n *newsUsecase) FetchNewsBanner(c context.Context) (res []domain.NewsBanner, err error) {
+
+	news := []domain.News{}
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	news, err = n.newsRepo.FetchNewsBanner(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	news, err = n.fillAuthorDetails(ctx, news)
+	if err != nil {
+		return nil, err
+	}
+
+	copier.Copy(&res, &news)
+
+	res, err = n.fillRelatedNews(ctx, res)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (n *newsUsecase) FetchNewsHeadline(c context.Context) (res []domain.News, err error) {
+
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.newsRepo.FetchNewsHeadline(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err = n.fillAuthorDetails(ctx, res)
+	if err != nil {
+		return nil, err
 	}
 
 	return
