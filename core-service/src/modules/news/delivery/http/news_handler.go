@@ -24,6 +24,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news", handler.FetchNews)
 	e.GET("/news/:id", handler.GetByID)
 	e.GET("/news/banner", handler.FetchNewsBanner)
+	e.GET("/news/headline", handler.FetchNewsHeadline)
 	e.PATCH("/news/:id/share", handler.AddShare)
 }
 
