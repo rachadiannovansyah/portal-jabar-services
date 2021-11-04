@@ -80,7 +80,7 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-	query := querySelectNews + ` WHERE 1=1 `
+	query := ` WHERE 1=1 `
 
 	if params.Keyword != "" {
 		query = query + ` AND title like '%` + params.Keyword + `%' `
@@ -108,15 +108,15 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = query + ` ORDER BY created_at DESC`
 	}
 
-	query = query + ` LIMIT ?,? `
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
+
+	query = querySelectNews + query + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
 		return nil, 0, err
 	}
-
-	total, _ = m.count(ctx, "SELECT COUNT(1) FROM news")
 
 	return
 }
