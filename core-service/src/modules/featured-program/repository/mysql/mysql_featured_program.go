@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 
@@ -58,9 +59,13 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 	return result, nil
 }
 
-func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context) (res []domain.FeaturedProgram, err error) {
+func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
 
-	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs limit 50`
+	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs WHERE 1=1`
+
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND json_search(categories, 'all', '%s') is not null limit 50`, query, v)
+	}
 
 	res, err = m.fetch(ctx, query)
 

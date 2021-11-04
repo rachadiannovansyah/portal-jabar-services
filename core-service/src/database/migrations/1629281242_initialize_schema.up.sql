@@ -115,6 +115,7 @@ CREATE TABLE news (
   source varchar(80) DEFAULT NULL,
   status varchar(12) NOT NULL DEFAULT 'PUBLISHED',
   views bigint DEFAULT 0 NOT NULL,
+  shared bigint DEFAULT 0 NOT NULL,
   highlight tinyint(1) NOT NULL,
   type varchar(20) NOT NULL DEFAULT 'article',
   tags varchar(100) NOT NULL,
@@ -192,6 +193,7 @@ CREATE TABLE featured_programs (
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
+CREATE INDEX idx_categories_program on featured_programs (categories);
 
 DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (

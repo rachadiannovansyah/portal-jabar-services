@@ -223,3 +223,9 @@ func (n *newsUsecase) FetchNewsHeadline(c context.Context) (res []domain.News, e
 
 	return
 }
+
+func (n *newsUsecase) AddShare(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+	return n.newsRepo.AddShare(ctx, id)
+}

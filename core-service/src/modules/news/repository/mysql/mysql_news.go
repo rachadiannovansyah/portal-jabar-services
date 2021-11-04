@@ -18,7 +18,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, tags, source, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, tags, source, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -49,6 +49,8 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Slug,
 			&authorID,
 			&t.Type,
+			&t.Views,
+			&t.Shared,
 			&t.Tags,
 			&t.Source,
 			&t.CreatedAt,
@@ -138,6 +140,14 @@ func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain
 
 func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error) {
 	query := `UPDATE news SET views = views + 1 WHERE id = ?`
+
+	_, err = m.Conn.ExecContext(ctx, query, id)
+
+	return
+}
+
+func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error) {
+	query := `UPDATE news SET shared = shared + 1 WHERE id = ?`
 
 	_, err = m.Conn.ExecContext(ctx, query, id)
 
