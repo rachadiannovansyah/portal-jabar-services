@@ -89,14 +89,14 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	query = query + ` ORDER BY date, start_hour, priority DESC `
 
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `+query)
+
 	query = querySelectAgenda + query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
 		return nil, 0, err
 	}
-
-	total, _ = r.count(ctx, "SELECT COUNT(1) FROM events "+query)
 
 	return
 }
