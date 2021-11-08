@@ -12,7 +12,7 @@ type FeaturedProgram struct {
 	Excerpt      string           `json:"excerpt"`
 	Description  string           `json:"description"`
 	Organization string           `json:"organization"`
-	Categories   JSONStringSlices `json:"categories"`
+	Categories   string           `json:"categories"`
 	ServiceType  string           `json:"service_type"`
 	Websites     JSONStringSlices `json:"websites"`
 	SocialMedia  SocialMedia      `json:"social_media"`
