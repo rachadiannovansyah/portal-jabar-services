@@ -67,9 +67,9 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 	for idx, cat := range data {
 		if v, ok := params.Filters["categories"]; ok && v != "" {
 			if idx == 0 {
-				query = fmt.Sprintf(`%s AND JSON_SEARCH(categories, 'all', '%s') is not null`, query, cat)
+				query = fmt.Sprintf(`%s AND JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
 			} else {
-				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') is not null`, query, cat)
+				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
 			}
 		}
 	}
