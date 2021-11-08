@@ -67,13 +67,13 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 	for idx, cat := range data {
 		if v, ok := params.Filters["categories"]; ok && v != "" {
 			if idx == 0 {
-				query = fmt.Sprintf(`%s AND json_search(categories, 'all', '%s') is not null`, query, cat)
+				query = fmt.Sprintf(`%s AND JSON_SEARCH(categories, 'all', '%s') is not null`, query, cat)
 			} else {
-				query = fmt.Sprintf(`%s OR json_search(categories, 'all', '%s') is not null`, query, cat)
+				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') is not null`, query, cat)
 			}
 		}
 	}
-	query = query + ` limit 50`
+	query = query + ` LIMIT 50`
 
 	res, err = m.fetch(ctx, query)
 
