@@ -151,7 +151,7 @@ CREATE TABLE events (
   type ENUM('offline', 'online') NOT NULL,
   address varchar(255) DEFAULT NULL,
   url varchar(80) DEFAULT NULL,
-  category_id int(10) unsigned NOT NULL,
+  category varchar(30) NOT NULL,
   province_code varchar(191) NULL,
   city_code varchar(191) NULL,
   district_code varchar(191) NULL,
@@ -159,12 +159,11 @@ CREATE TABLE events (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  KEY events_categories_id_fk (category_id),
-  CONSTRAINT events_categories_fk FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE INDEX idx_title ON events (title);
 CREATE INDEX idx_start_hour ON events (start_hour);
 CREATE INDEX idx_end_hour ON events (end_hour);
+CREATE INDEX idx_category ON events (category);
 
 DROP TABLE IF EXISTS feedback;
 CREATE TABLE feedback (
