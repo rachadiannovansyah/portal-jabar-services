@@ -10,6 +10,7 @@ import (
 // Config is the struct for the config
 type Config struct {
 	DB     DBConfig
+	JWT    JWTConfig
 	Sentry SentryConfig
 	Cors   middleware.CORSConfig
 }
@@ -26,6 +27,7 @@ func NewConfig() *Config {
 
 	return &Config{
 		DB:     LoadDBConfig(),
+		JWT:    LoadJWTConfig(),
 		Sentry: LoadSentryConfig(),
 		Cors:   LoadCorsConfig(),
 	}
