@@ -8,18 +8,18 @@ import (
 // Event ...
 type Event struct {
 	ID           int64      `json:"id"`
-	Title        NullString `json:"title"`
-	Description  NullString `json:"description"`
-	Date         NullString `json:"date"`
-	Priority     NullString `json:"priority"`
-	StartHour    NullString `json:"start_hour,omitempty"`
-	EndHour      NullString `json:"end_hour,omitempty"`
+	Title        string     `json:"title"`
+	Description  string     `json:"description"`
+	Priority     string     `json:"priority"`
+	Date         time.Time  `json:"date"`
+	StartHour    string     `json:"start_hour"`
+	EndHour      string     `json:"end_hour"`
 	Image        NullString `json:"image"`
 	PublishedBy  NullString `json:"published_by"`
-	Type         NullString `json:"type"`
+	Type         string     `json:"type"`
 	Address      NullString `json:"address"`
 	URL          NullString `json:"url"`
-	Category     Category   `json:"category"`
+	Category     string     `json:"category"`
 	ProvinceCode Area       `json:"province_code"`
 	CityCode     Area       `json:"city_code"`
 	DistrictCode Area       `json:"district_code"`
@@ -31,22 +31,22 @@ type Event struct {
 // ListEventResponse model ..
 type ListEventResponse struct {
 	ID        int64      `json:"id"`
-	Title     NullString `json:"title" validate:"required"`
-	Date      NullString `json:"date"`
-	StartHour NullString `json:"start_hour,omitempty"`
-	EndHour   NullString `json:"end_hour,omitempty"`
-	Priority  NullString `json:"priority"`
-	Type      NullString `json:"type"`
+	Title     string     `json:"title" validate:"required"`
+	Date      time.Time  `json:"date"`
+	StartHour string     `json:"start_hour"`
+	EndHour   string     `json:"end_hour"`
+	Priority  string     `json:"priority"`
+	Type      string     `json:"type"`
 	Address   NullString `json:"address"`
 	URL       NullString `json:"url"`
-	Category  Category   `json:"category" validate:"required"`
+	Category  string     `json:"category" validate:"required"`
 }
 
 //ListEventCalendarReponse ..
 type ListEventCalendarReponse struct {
-	ID    int64      `json:"id"`
-	Title NullString `json:"title"`
-	Date  NullString `json:"date"`
+	ID    int64     `json:"id"`
+	Title string    `json:"title"`
+	Date  time.Time `json:"date"`
 }
 
 // EventUsecase ..

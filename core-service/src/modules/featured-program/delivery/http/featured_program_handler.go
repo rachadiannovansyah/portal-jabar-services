@@ -26,7 +26,7 @@ func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"categories": c.QueryParam("cat"),
+		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
 	featuredProgramsList, err := h.FPUsecase.Fetch(ctx, &params)

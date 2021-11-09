@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `select id, category_id, title, priority, type, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
+var querySelectAgenda = `select id, category, title, priority, type, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -37,10 +37,9 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 	result = make([]domain.Event, 0)
 	for rows.Next() {
 		event := domain.Event{}
-		categoryID := int64(0)
 		err = rows.Scan(
 			&event.ID,
-			&categoryID,
+			&event.Category,
 			&event.Title,
 			&event.Priority,
 			&event.Type,
@@ -58,7 +57,6 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			return nil, err
 		}
 
-		event.Category = domain.Category{ID: categoryID}
 		result = append(result, event)
 	}
 
@@ -89,14 +87,14 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	query = query + ` ORDER BY date, start_hour, priority DESC `
 
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `+query)
+
 	query = querySelectAgenda + query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
 		return nil, 0, err
 	}
-
-	total, _ = r.count(ctx, "SELECT COUNT(1) FROM events "+query)
 
 	return
 }
@@ -135,7 +133,6 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 	result = make([]domain.Event, 0)
 	for rows.Next() {
 		event := domain.Event{}
-		categoryID := int64(0)
 		err = rows.Scan(
 			&event.ID,
 			&event.Title,
@@ -147,7 +144,6 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 			return nil, err
 		}
 
-		event.Category = domain.Category{ID: categoryID}
 		result = append(result, event)
 	}
 
