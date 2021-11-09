@@ -59,7 +59,7 @@ func main() {
 
 	// init repo category repo
 	mysqlRepos := server.NewMysqlRepositories(dbConn)
-	usecases := server.NewUcase(mysqlRepos, timeoutContext)
+	usecases := server.NewUcase(cfg, mysqlRepos, timeoutContext)
 	server.NewHandler(v1, r, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
