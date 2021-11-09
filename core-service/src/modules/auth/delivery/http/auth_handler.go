@@ -30,10 +30,10 @@ func (h *AuthHandler) Login(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	auth, err := h.AUsecase.Login(ctx, cred)
+	res, err := h.AUsecase.Login(ctx, cred)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, auth)
+	return c.JSON(http.StatusOK, res)
 }
