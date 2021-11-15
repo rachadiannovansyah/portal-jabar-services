@@ -7,19 +7,25 @@ import (
 )
 
 type JwtCustomClaims struct {
-	Name string    `json:"name"`
-	ID   uuid.UUID `json:"id"`
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 	jwt.StandardClaims
 }
 
 type JwtCustomRefreshClaims struct {
-	ID uuid.UUID `json:"id"`
+	ID    uuid.UUID `json:"id"`
+	Email string    `json:"email"`
 	jwt.StandardClaims
 }
 
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type RefreshRequest struct {
+	Token string `json:"token" validate:"required"`
 }
 
 type LoginResponse struct {
@@ -31,4 +37,5 @@ type LoginResponse struct {
 // AuthUsecase ...
 type AuthUsecase interface {
 	Login(ctx context.Context, req *LoginRequest) (LoginResponse, error)
+	RefreshToken(ctx context.Context, req *RefreshRequest) (LoginResponse, error)
 }

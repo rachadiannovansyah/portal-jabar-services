@@ -18,7 +18,9 @@ func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase) {
 	handler := &AuthHandler{
 		AUsecase: us,
 	}
-	e.POST("/login", handler.Login)
+
+	e.POST("/auth/login", handler.Login)
+	e.POST("/auth/refresh", handler.RefreshToken)
 }
 
 // Login ...
@@ -31,6 +33,22 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	res, err := h.AUsecase.Login(ctx, cred)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h *AuthHandler) RefreshToken(c echo.Context) error {
+	refreshRequest := new(domain.RefreshRequest)
+	if err := c.Bind(refreshRequest); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+
+	res, err := h.AUsecase.RefreshToken(ctx, refreshRequest)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}

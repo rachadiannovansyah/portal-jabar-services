@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"time"
@@ -24,6 +25,14 @@ func NewAuthUsecase(cfg *config.Config, u domain.UserRepository, timeout time.Du
 	}
 }
 
+func newLoginResponse(token, refreshToken string, exp int64) domain.LoginResponse {
+	return domain.LoginResponse{
+		AccessToken:  token,
+		RefreshToken: refreshToken,
+		Exp:          exp,
+	}
+}
+
 func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res domain.LoginResponse, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -41,11 +50,46 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 
 	refreshToken, err := n.createRefreshToken(&user)
 
-	res = domain.LoginResponse{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		Exp:          exp,
+	res = newLoginResponse(accessToken, refreshToken, exp)
+
+	return
+}
+
+func (n *authUsecase) RefreshToken(c context.Context, req *domain.RefreshRequest) (res domain.LoginResponse, err error) {
+
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	// claim refresh token first
+	token, err := jwt.Parse(req.Token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(n.config.JWT.RefreshSecret), nil
+	})
+
+	if err != nil {
+		return
 	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok && !token.Valid {
+		return domain.LoginResponse{}, fmt.Errorf("invalid token")
+	}
+
+	user, err := n.userRepo.GetByEmail(ctx, claims["email"].(string))
+	if err != nil {
+		return domain.LoginResponse{}, err
+	}
+
+	accessToken, exp, err := n.createAccessToken(&user)
+	if err != nil {
+		return domain.LoginResponse{}, err
+	}
+
+	refreshToken, err := n.createRefreshToken(&user)
+
+	res = newLoginResponse(accessToken, refreshToken, exp)
 
 	return
 }
@@ -53,8 +97,9 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
 	exp = time.Now().Add(time.Hour * n.config.JWT.ExpireCount).Unix()
 	claims := &domain.JwtCustomClaims{
-		user.Name,
 		user.ID,
+		user.Name,
+		user.Email,
 		jwt.StandardClaims{
 			ExpiresAt: exp,
 		},
@@ -67,7 +112,8 @@ func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, 
 
 func (n *authUsecase) createRefreshToken(user *domain.User) (t string, err error) {
 	claimsRefresh := &domain.JwtCustomRefreshClaims{
-		ID: user.ID,
+		ID:    user.ID,
+		Email: user.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * n.config.JWT.ExpireRefreshCount).Unix(),
 		},
