@@ -77,7 +77,7 @@ func (mr *mysqlInformationRepository) Fetch(ctx context.Context, params *domain.
 	query := `SELECT id, category_id, title, content, slug, image, show_date, end_date, status, created_at, updated_at FROM informations`
 
 	if params.Keyword != "" {
-		query += ` WHERE title like '%` + params.Keyword + `%' `
+		query += ` WHERE title LIKE '%` + params.Keyword + `%' `
 	}
 
 	query += ` ORDER BY created_at LIMIT ?,? `

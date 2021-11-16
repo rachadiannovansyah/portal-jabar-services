@@ -78,7 +78,7 @@ func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request)
 	query := querySelectUnit
 
 	if params.Keyword != "" {
-		query += ` WHERE name like '%` + params.Keyword + `%' `
+		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
 	}
 
 	query += ` ORDER BY created_at LIMIT ?,? `

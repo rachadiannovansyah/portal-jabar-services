@@ -78,7 +78,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	query := ` WHERE 1=1`
 
 	if params.Keyword != "" {
-		query += ` AND title like '%` + params.Keyword + `%' `
+		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
@@ -151,10 +151,10 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 }
 
 func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
-	query := `SELECT id, title, date from events where 1=1`
+	query := `SELECT id, title, date FROM events WHERE 1=1`
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` AND date BETWEEN '` + params.StartDate + `' and '` + params.EndDate + `'`
+		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	query = query + ` ORDER BY date DESC `

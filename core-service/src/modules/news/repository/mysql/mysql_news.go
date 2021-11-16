@@ -84,7 +84,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	query := ` WHERE 1=1 `
 
 	if params.Keyword != "" {
-		query += ` AND title like '%` + params.Keyword + `%' `
+		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
