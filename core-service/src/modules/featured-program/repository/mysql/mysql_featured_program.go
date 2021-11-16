@@ -63,10 +63,10 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 
 	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs WHERE 1=1`
 
-	data := params.Filters["categories"].([]string)
+	categories := params.Filters["categories"].([]string)
 
-	if len(data) > 0 {
-		for idx, cat := range data {
+	if len(categories) > 0 {
+		for idx, cat := range categories {
 			if idx == 0 {
 				query = fmt.Sprintf(`%s AND (JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
 			} else {
