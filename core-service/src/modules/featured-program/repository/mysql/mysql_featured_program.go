@@ -64,16 +64,18 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs WHERE 1=1`
 
 	data := params.Filters["categories"].([]string)
-	for idx, cat := range data {
-		if v, ok := params.Filters["categories"]; ok && v != "" {
+
+	if len(data) > 0 {
+		for idx, cat := range data {
 			if idx == 0 {
 				query = fmt.Sprintf(`%s AND (JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
 			} else {
 				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
 			}
 		}
+		query += `)` // it's imagine end blocking query of loop json_search
 	}
-	query += `) ` // it's imagine end blocking query of loop json_search
+
 	query += ` LIMIT 50`
 
 	res, err = m.fetch(ctx, query)
