@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -83,7 +84,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	query := ` WHERE 1=1 `
 
 	if params.Keyword != "" {
-		query = query + ` AND title like '%` + params.Keyword + `%' `
+		query += ` AND title like '%` + params.Keyword + `%' `
 	}
 
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
@@ -103,9 +104,9 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	}
 
 	if params.SortBy != "" {
-		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query = query + ` ORDER BY created_at DESC`
+		query += ` ORDER BY created_at DESC`
 	}
 
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
