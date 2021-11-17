@@ -19,6 +19,8 @@ func NewMysqlFeaturedProgramRepository(Conn *sql.DB) domain.FeaturedProgramRepos
 	return &mysqlFeaturedProgramRepository{Conn}
 }
 
+var querySelect = `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs`
+
 func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.FeaturedProgram, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -59,9 +61,29 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 	return result, nil
 }
 
-func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
+func (m *mysqlFeaturedProgramRepository) count(ctx context.Context, query string) (total int64, err error) {
 
-	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs WHERE 1=1`
+	err = m.Conn.QueryRow(query).Scan(&total)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return total, nil
+}
+
+func (m *mysqlFeaturedProgramRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return lastUpdated, nil
+}
+
+func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.FeaturedProgram, total int64, lastUpdated string, err error) {
+	query := ` WHERE 1=1`
 
 	categories := params.Filters["categories"].([]string)
 
@@ -76,12 +98,16 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 		query += `)` // it's imagine end blocking query of loop json_search
 	}
 
-	query += ` LIMIT 50`
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM featured_programs `+query)
+
+	lastUpdated, _ = m.getLastUpdated(ctx, ` SELECT updated_at FROM featured_programs`+query+` LIMIT 1`)
+
+	query = querySelect + query + ` LIMIT 50`
 
 	res, err = m.fetch(ctx, query)
 
 	if err != nil {
-		return nil, err
+		return nil, 0, "", err
 	}
 
 	return

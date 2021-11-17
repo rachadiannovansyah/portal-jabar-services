@@ -29,13 +29,19 @@ func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
-	featuredProgramsList, err := h.FPUsecase.Fetch(ctx, &params)
+	featuredProgramsList, total, lastUpdated, err := h.FPUsecase.Fetch(ctx, &params)
 
 	if err != nil {
 		return err
 	}
 
-	data := map[string]interface{}{"data": featuredProgramsList}
+	data := domain.ResultsData{
+		Data: featuredProgramsList,
+		Meta: &domain.CustomMetaData{
+			TotalCount:  total,
+			LastUpdated: lastUpdated,
+		},
+	}
 
 	return c.JSON(http.StatusOK, data)
 }
