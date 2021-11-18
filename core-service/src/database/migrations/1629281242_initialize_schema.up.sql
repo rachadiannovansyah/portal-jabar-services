@@ -109,7 +109,7 @@ CREATE TABLE news (
   title varchar(80) NOT NULL,
   excerpt text NOT NULL,
   content text NOT NULL,
-  slug varchar(100) DEFAULT NULL,
+  slug varchar(100) UNIQUE NOT NULL,
   image varchar(255) DEFAULT NULL,
   video varchar(80) DEFAULT NULL,
   source varchar(80) DEFAULT NULL,
@@ -133,6 +133,7 @@ CREATE TABLE news (
   CONSTRAINT users_updated_by_fk FOREIGN KEY (updated_by) REFERENCES users (id)
 );
 CREATE INDEX idx_title ON news (title);
+CREATE INDEX idx_slug ON news (slug);
 CREATE INDEX idx_category ON news (category);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);

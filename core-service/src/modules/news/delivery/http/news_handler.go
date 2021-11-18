@@ -23,6 +23,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	}
 	e.GET("/news", handler.FetchNews)
 	e.GET("/news/:id", handler.GetByID)
+	e.GET("/news/slug/:slug", handler.GetBySlug)
 	e.GET("/news/banner", handler.FetchNewsBanner)
 	e.GET("/news/headline", handler.FetchNewsHeadline)
 	e.PATCH("/news/:id/share", handler.AddShare)
@@ -112,7 +113,24 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 	}
 
 	// Copy slice to slice
-	newsRes := []domain.DetailNewsResponse{}
+	newsRes := domain.DetailNewsResponse{}
+	copier.Copy(&newsRes, &news)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
+}
+
+// GetBySlug will get article by given slug
+func (h *NewsHandler) GetBySlug(c echo.Context) error {
+	slug := c.Param("slug")
+	ctx := c.Request().Context()
+
+	news, err := h.CUsecase.GetBySlug(ctx, slug)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// Copy slice to slice
+	newsRes := domain.DetailNewsResponse{}
 	copier.Copy(&newsRes, &news)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
