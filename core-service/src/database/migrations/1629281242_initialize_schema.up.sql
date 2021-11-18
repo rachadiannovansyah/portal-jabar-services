@@ -109,7 +109,7 @@ CREATE TABLE news (
   title varchar(80) NOT NULL,
   excerpt text NOT NULL,
   content text NOT NULL,
-  slug varchar(100) DEFAULT NULL,
+  slug varchar(100) UNIQUE NOT NULL,
   image varchar(255) DEFAULT NULL,
   video varchar(80) DEFAULT NULL,
   source varchar(80) DEFAULT NULL,

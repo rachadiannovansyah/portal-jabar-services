@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -69,6 +68,23 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
+func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value string) (res domain.News, err error) {
+	query := fmt.Sprintf("%s WHERE %s=?", querySelectNews, key)
+
+	list, err := m.fetch(ctx, query, value)
+	if err != nil {
+		return domain.News{}, err
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
+
+	return
+}
+
 func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)
@@ -123,20 +139,11 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 }
 
 func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain.News, err error) {
-	query := querySelectNews + ` WHERE id = ?`
+	return m.findOne(ctx, "id", fmt.Sprintf("%v", id))
+}
 
-	list, err := m.fetch(ctx, query, id)
-	if err != nil {
-		return domain.News{}, err
-	}
-
-	if len(list) > 0 {
-		res = list[0]
-	} else {
-		return res, domain.ErrNotFound
-	}
-
-	return
+func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, slug string) (res domain.News, err error) {
+	return m.findOne(ctx, "slug", slug)
 }
 
 func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error) {

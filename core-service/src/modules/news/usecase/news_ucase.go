@@ -138,6 +138,26 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	return data, nil
 }
 
+func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {
+	if key == "slug" {
+		res, err = n.newsRepo.GetBySlug(ctx, value.(string))
+	} else {
+		res, err = n.newsRepo.GetByID(ctx, value.(int64))
+	}
+
+	if err != nil {
+		return
+	}
+
+	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
+	if err != nil {
+		return
+	}
+	res.Author = resAuthor
+
+	return
+}
+
 func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -159,20 +179,20 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
+	return n.getDetail(ctx, "id", id)
+}
 
-	res, err = n.newsRepo.GetByID(ctx, id)
+func (n *newsUsecase) GetBySlug(c context.Context, slug string) (res domain.News, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.getDetail(ctx, "slug", slug)
 	if err != nil {
 		return
 	}
-
-	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
-	if err != nil {
-		return
-	}
-	res.Author = resAuthor
 
 	// FIXME: prevent abuse page views counter by using cache (redis)
-	err = n.newsRepo.AddView(ctx, id)
+	err = n.newsRepo.AddView(ctx, res.ID)
 	if err != nil {
 		logrus.Error(err)
 	}

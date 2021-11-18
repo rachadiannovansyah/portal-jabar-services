@@ -85,6 +85,7 @@ type NewsUsecase interface {
 	FetchNewsBanner(ctx context.Context) ([]NewsBanner, error)
 	FetchNewsHeadline(ctx context.Context) ([]News, error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
 }
 
@@ -94,6 +95,7 @@ type NewsRepository interface {
 	FetchNewsBanner(ctx context.Context) (news []News, err error)
 	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
 }
