@@ -29,7 +29,8 @@ func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
-	featuredProgramsList, total, lastUpdated, err := h.FPUsecase.Fetch(ctx, &params)
+	featuredProgramsList, err := h.FPUsecase.Fetch(ctx, &params)
+	total, lastUpdated, err := h.FPUsecase.MetaFetch(ctx, &params)
 
 	if err != nil {
 		return err

@@ -20,15 +20,29 @@ func NewFeaturedProgramUsecase(p domain.FeaturedProgramRepository, timeout time.
 	}
 }
 
-func (u *featuredProgramUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.FeaturedProgram, total int64, lastUpdated string, err error) {
+func (u *featuredProgramUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, total, lastUpdated, err = u.featuredProgramRepo.Fetch(ctx, params)
+	res, err = u.featuredProgramRepo.Fetch(ctx, params)
 
 	if err != nil {
-		return nil, 0, "", err
+		return nil, err
+	}
+
+	return
+}
+
+func (u *featuredProgramUsecase) MetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	total, lastUpdated, err = u.featuredProgramRepo.MetaFetch(ctx, params)
+
+	if err != nil {
+		return 0, "", err
 	}
 
 	return

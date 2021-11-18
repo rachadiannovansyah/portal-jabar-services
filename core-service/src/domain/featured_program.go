@@ -32,10 +32,12 @@ type SocialMedia struct {
 
 // FeaturedProgramUsecase represent the featured program usecases
 type FeaturedProgramUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]FeaturedProgram, int64, string, error)
+	Fetch(ctx context.Context, params *Request) ([]FeaturedProgram, error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 }
 
 // FeaturedProgramRepository represent the featured program repository contract
 type FeaturedProgramRepository interface {
-	Fetch(ctx context.Context, params *Request) (fp []FeaturedProgram, total int64, lastUpdated string, err error)
+	Fetch(ctx context.Context, params *Request) (fp []FeaturedProgram, err error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 }
