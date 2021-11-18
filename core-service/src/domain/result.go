@@ -14,7 +14,7 @@ type ResultData struct {
 // ResultsData ...
 type ResultsData struct {
 	Data interface{} `json:"data"`
-	Meta *MetaData   `json:"meta"`
+	Meta interface{} `json:"meta"`
 }
 
 // MetaData ...
@@ -23,4 +23,10 @@ type MetaData struct {
 	TotalPage   float64 `json:"total_page"`
 	CurrentPage int64   `json:"current_page"`
 	PerPage     int64   `json:"per_page"`
+}
+
+// CustomMetaData ..
+type CustomMetaData struct {
+	TotalCount  int64  `json:"total_count"`
+	LastUpdated string `json:"last_updated"`
 }
