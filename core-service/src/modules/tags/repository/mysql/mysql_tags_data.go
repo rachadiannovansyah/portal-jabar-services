@@ -35,7 +35,6 @@ func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args 
 	for rows.Next() {
 		t := domain.TagsData{}
 		err = rows.Scan(
-			&t.ID,
 			&t.DataID,
 			&t.TagsName,
 			&t.Type,
@@ -52,7 +51,7 @@ func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args 
 }
 
 func (m *mysqlTagsDataRepository) FetchTagsData(ctx context.Context, id int64) (res []domain.TagsData, err error) {
-	query := `SELECT id, data_id, tags_name, type FROM tags_data WHERE data_id = ?`
+	query := `SELECT data_id, tags_name, type FROM tags_data WHERE data_id = ?`
 
 	res, err = m.fetch(ctx, query, id)
 	if err != nil {
