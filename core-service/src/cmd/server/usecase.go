@@ -26,7 +26,7 @@ type Usecases struct {
 // NewUcase will create an object that represent all usecases interface
 func NewUcase(r *Repositories, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
-		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, timeoutContext),
+		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagsDataRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
 		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, timeoutContext),

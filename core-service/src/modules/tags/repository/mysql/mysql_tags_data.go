@@ -17,10 +17,8 @@ func NewMysqlTagsDataRepository(Conn *sql.DB) domain.TagsDataRepository {
 	return &mysqlTagsDataRepository{Conn}
 }
 
-func (m *mysqlTagsDataRepository) GetByName(ctx context.Context, name string) (res []domain.TagsData, err error) {
-	query := `SELECT id, data_id, tags_id, name, type from tags_data where name LIKE '% ? %'`
-
-	rows, err := m.Conn.QueryContext(ctx, query)
+func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args ...interface{}) (res []domain.TagsData, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
@@ -29,27 +27,37 @@ func (m *mysqlTagsDataRepository) GetByName(ctx context.Context, name string) (r
 	defer func() {
 		errRow := rows.Close()
 		if errRow != nil {
-			logrus.Error(err)
+			logrus.Error(errRow)
 		}
 	}()
 
 	res = make([]domain.TagsData, 0)
 	for rows.Next() {
-		tags := domain.TagsData{}
+		t := domain.TagsData{}
 		err = rows.Scan(
-			&tags.ID,
-			&tags.Data,
-			&tags.Tags,
-			&tags.TagsName,
-			&tags.Type,
+			&t.ID,
+			&t.DataID,
+			&t.TagsName,
+			&t.Type,
 		)
 
 		if err != nil {
 			logrus.Error(err)
 			return nil, err
 		}
-		res = append(res, tags)
+		res = append(res, t)
 	}
 
 	return res, nil
+}
+
+func (m *mysqlTagsDataRepository) FetchTagsData(ctx context.Context, id int64) (res []domain.TagsData, err error) {
+	query := `SELECT id, data_id, tags_name, type FROM tags_data WHERE data_id = ?`
+
+	res, err = m.fetch(ctx, query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return
 }
