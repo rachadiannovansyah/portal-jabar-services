@@ -42,13 +42,13 @@ func TestFetch(t *testing.T) {
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "category", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "views", "shared", "tags", "source", "created_at", "updated_at"}).
+	rows := sqlmock.NewRows([]string{"id", "category", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "views", "shared", "source", "created_at", "updated_at"}).
 		AddRow(mockNews[0].ID, mockNews[0].Category, mockNews[0].Title, mockNews[0].Excerpt, mockNews[0].Content,
 			nil, nil, mockNews[0].Slug.String, "", "", mockNews[0].Views, mockNews[0].Shared, mockNews[0].Source.String, mockNews[0].CreatedAt, mockNews[0].UpdatedAt).
 		AddRow(mockNews[1].ID, mockNews[1].Category, mockNews[1].Title, mockNews[1].Excerpt, mockNews[1].Content,
 			nil, nil, mockNews[1].Slug.String, "", "", mockNews[1].Views, mockNews[1].Shared, mockNews[1].Source.String, mockNews[1].CreatedAt, mockNews[1].UpdatedAt)
 
-	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, tags, source, created_at, updated_at FROM news"
+	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, created_at, updated_at FROM news"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := mysqlRepo.NewMysqlNewsRepository(db)
