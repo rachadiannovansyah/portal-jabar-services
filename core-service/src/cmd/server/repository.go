@@ -6,6 +6,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_areaRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/repository/mysql"
 	_categoryRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/category/repository/mysql"
+	_dataTagsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/data-tags/repository/mysql"
 	_eventRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/repository/mysql"
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
@@ -26,6 +27,7 @@ type Repositories struct {
 	FeedbackRepo        domain.FeedbackRepository
 	FeaturedProgramRepo domain.FeaturedProgramRepository
 	UserRepo            domain.UserRepository
+	DataTagsRepo        domain.DataTagsRepository
 }
 
 // NewMysqlRepositories will create an object that represent all repos interface
@@ -40,5 +42,6 @@ func NewMysqlRepositories(Conn *sql.DB) *Repositories {
 		FeedbackRepo:        _feedbackRepo.NewMysqlFeedbackRepository(Conn),
 		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(Conn),
 		UserRepo:            _userRepo.NewMysqlUserRepository(Conn),
+		DataTagsRepo:        _dataTagsRepo.NewMysqlDataTagsRepository(Conn),
 	}
 }
