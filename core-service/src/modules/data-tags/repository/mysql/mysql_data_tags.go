@@ -8,16 +8,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type mysqlTagsDataRepository struct {
+type mysqlDataTagsRepository struct {
 	Conn *sql.DB
 }
 
-// NewMysqlTagsDataRepository ..
-func NewMysqlTagsDataRepository(Conn *sql.DB) domain.TagsDataRepository {
-	return &mysqlTagsDataRepository{Conn}
+// NewMysqlDataTagsRepository ..
+func NewMysqlDataTagsRepository(Conn *sql.DB) domain.DataTagsRepository {
+	return &mysqlDataTagsRepository{Conn}
 }
 
-func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args ...interface{}) (res []domain.TagsData, err error) {
+func (m *mysqlDataTagsRepository) fetch(ctx context.Context, query string, args ...interface{}) (res []domain.DataTags, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -31,9 +31,9 @@ func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args 
 		}
 	}()
 
-	res = make([]domain.TagsData, 0)
+	res = make([]domain.DataTags, 0)
 	for rows.Next() {
-		t := domain.TagsData{}
+		t := domain.DataTags{}
 		err = rows.Scan(
 			&t.DataID,
 			&t.TagsName,
@@ -50,7 +50,7 @@ func (m *mysqlTagsDataRepository) fetch(ctx context.Context, query string, args 
 	return res, nil
 }
 
-func (m *mysqlTagsDataRepository) FetchTagsData(ctx context.Context, id int64) (res []domain.TagsData, err error) {
+func (m *mysqlDataTagsRepository) FetchDataTags(ctx context.Context, id int64) (res []domain.DataTags, err error) {
 	query := `SELECT data_id, tags_name, type FROM tags_data WHERE data_id = ?`
 
 	res, err = m.fetch(ctx, query, id)

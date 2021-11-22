@@ -16,12 +16,12 @@ type newsUsecase struct {
 	newsRepo       domain.NewsRepository
 	categories     domain.CategoryRepository
 	userRepo       domain.UserRepository
-	tagsRepo       domain.TagsDataRepository
+	tagsRepo       domain.DataTagsRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.TagsDataRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.DataTagsRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
@@ -31,22 +31,22 @@ func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u dom
 	}
 }
 
-func (n *newsUsecase) fillTagsData(c context.Context, data []domain.News) ([]domain.News, error) {
+func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]domain.News, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the tags
-	mapNews := map[int64][]domain.TagsData{}
+	mapNews := map[int64][]domain.DataTags{}
 
 	for _, news := range data {
-		mapNews[news.ID] = []domain.TagsData{}
+		mapNews[news.ID] = []domain.DataTags{}
 	}
 
 	// Using goroutine to fetch the list tags
-	chanTags := make(chan []domain.TagsData)
+	chanTags := make(chan []domain.DataTags)
 	for idx := range mapNews {
 		newsID := idx
 		g.Go(func() (err error) {
-			res, err := n.tagsRepo.FetchTagsData(ctx, newsID)
+			res, err := n.tagsRepo.FetchDataTags(ctx, newsID)
 			chanTags <- res
 			return
 		})
@@ -62,7 +62,7 @@ func (n *newsUsecase) fillTagsData(c context.Context, data []domain.News) ([]dom
 	}()
 
 	for listTags := range chanTags {
-		newsTags := []domain.TagsData{}
+		newsTags := []domain.DataTags{}
 		copier.Copy(&newsTags, &listTags)
 		if len(listTags) < 1 {
 			continue
@@ -210,7 +210,7 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 		return nil, 0, err
 	}
 
-	res, err = n.fillTagsData(ctx, res)
+	res, err = n.fillDataTags(ctx, res)
 
 	if err != nil {
 		return nil, 0, err
