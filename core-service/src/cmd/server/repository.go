@@ -1,7 +1,7 @@
 package server
 
 import (
-	"database/sql"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/database"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_areaRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/repository/mysql"
@@ -11,12 +11,13 @@ import (
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
 	_userRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/repository/mysql"
 )
 
-// Repositories ...
-type Repositories struct {
+// Repository ...
+type Repository struct {
 	CategoryRepo        domain.CategoryRepository
 	NewsRepo            domain.NewsRepository
 	InformationRepo     domain.InformationRepository
@@ -26,19 +27,21 @@ type Repositories struct {
 	FeedbackRepo        domain.FeedbackRepository
 	FeaturedProgramRepo domain.FeaturedProgramRepository
 	UserRepo            domain.UserRepository
+	SearchRepo          domain.SearchRepository
 }
 
-// NewMysqlRepositories will create an object that represent all repos interface
-func NewMysqlRepositories(Conn *sql.DB) *Repositories {
-	return &Repositories{
-		CategoryRepo:        _categoryRepo.NewMysqlCategoryRepository(Conn),
-		NewsRepo:            _newsRepo.NewMysqlNewsRepository(Conn),
-		InformationRepo:     _informationRepo.NewMysqlInformationRepository(Conn),
-		UnitRepo:            _unitRepo.NewMysqlUnitRepository(Conn),
-		AreaRepo:            _areaRepo.NewMysqlAreaRepository(Conn),
-		EventRepo:           _eventRepo.NewMysqlEventRepository(Conn),
-		FeedbackRepo:        _feedbackRepo.NewMysqlFeedbackRepository(Conn),
-		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(Conn),
-		UserRepo:            _userRepo.NewMysqlUserRepository(Conn),
+// NewRepository will create an object that represent all repos interface
+func NewRepository(conn *database.DBConn) *Repository {
+	return &Repository{
+		CategoryRepo:        _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
+		NewsRepo:            _newsRepo.NewMysqlNewsRepository(conn.Mysql),
+		InformationRepo:     _informationRepo.NewMysqlInformationRepository(conn.Mysql),
+		UnitRepo:            _unitRepo.NewMysqlUnitRepository(conn.Mysql),
+		AreaRepo:            _areaRepo.NewMysqlAreaRepository(conn.Mysql),
+		EventRepo:           _eventRepo.NewMysqlEventRepository(conn.Mysql),
+		FeedbackRepo:        _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
+		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
+		UserRepo:            _userRepo.NewMysqlUserRepository(conn.Mysql),
+		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
 	}
 }

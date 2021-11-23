@@ -11,6 +11,7 @@ import (
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
+	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
 )
 
@@ -22,6 +23,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_eventHttpDelivery.NewEventHandler(e, r, u.EventUcase)
 	_feedbackHttpDelivery.NewFeedbackHandler(e, r, u.FeedbackUcase)
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(e, r, u.FeaturedProgramUcase)
+	_searchHttpDelivery.NewSearchHandler(e, r, u.SearchUcase)
 }
 
 // ErrorHandler ...
