@@ -24,10 +24,10 @@ func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase) {
 func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
-	listSearch, _, err := h.SUsecase.Fetch(ctx, &params)
+	listSearch, tot, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
 		return err
 	}
-	res := helpers.Paginate(c, listSearch, 0, params)
+	res := helpers.Paginate(c, listSearch, tot, params)
 	return c.JSON(http.StatusOK, res)
 }
