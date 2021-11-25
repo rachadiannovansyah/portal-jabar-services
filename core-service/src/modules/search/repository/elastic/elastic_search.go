@@ -103,11 +103,10 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 }
 
 func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, key string) (res []domain.SearchSuggestionResponse, err error) {
-
 	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
+	query := q{
+		"query": q{
+			"multi_match": q{
 				"query":  key,
 				"fields": []string{"title", "content"},
 			},
@@ -116,6 +115,10 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, key str
 
 	esclient := es.Conn
 
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		failOnError(err, "Error encoding query")
+	}
+
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esclient.Search(
 		esclient.Search.WithContext(ctx),
@@ -123,10 +126,6 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, key str
 		esclient.Search.WithBody(&buf),
 		esclient.Search.WithSize(5),
 	)
-
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		failOnError(err, "Error encoding query")
-	}
 
 	// Decode the JSON response and using a pointer
 	if err := json.NewDecoder(resp.Body).Decode(&mapResp); err != nil {
