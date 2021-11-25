@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 )
@@ -28,11 +30,52 @@ func NewElasticSearchRepository(es *elasticsearch.Client) domain.SearchRepositor
 	return &elasticSearchRepository{es}
 }
 
-func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.SearchListResponse, tot int64, err error) {
+func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResponse) {
+	// Iterate the document "hits" returned by API call
+	for _, hit := range mapResp["hits"].(map[string]interface{})["hits"].([]interface{}) {
+
+		// Parse the attributes/fields of the document
+		doc := hit.(map[string]interface{})
+
+		// The "_source" data is another map interface nested inside of doc
+		source := doc["_source"]
+
+		// mapstructure
+		searchData := domain.SearchListResponse{}
+		mapstructure.Decode(source, &searchData)
+		res = append(res, searchData)
+	}
+
+	return
+}
+
+// type alias for map query
+type q map[string]interface{}
+
+func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, err error) {
 
 	var buf bytes.Buffer
-	query := map[string]interface{}{}
+	query := q{
+		"query": q{
+			"multi_match": q{
+				"query":  params.Keyword,
+				"fields": []string{"title", "content"},
+			},
+		},
+		"aggs": q{
+			"agg_count_domain": q{
+				"terms": q{
+					"field": "domain.keyword",
+				},
+			},
+		},
+	}
+
 	esclient := es.Conn
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		failOnError(err, "Error encoding query")
+	}
 
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esclient.Search(
@@ -43,32 +86,15 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 		esclient.Search.WithSize(int(params.PerPage)),
 	)
 
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		failOnError(err, "Error encoding query")
-	}
-
 	// Decode the JSON response and using a pointer
 	if err := json.NewDecoder(resp.Body).Decode(&mapResp); err != nil {
 		failOnError(err, "Error parsing the response body")
 
 		// If no error, then convert response to a map[string]interface
 	} else {
-		tot = int64(mapResp["hits"].(map[string]interface{})["total"].(interface{}).(map[string]interface{})["value"].(float64))
-
-		// Iterate the document "hits" returned by API call
-		for _, hit := range mapResp["hits"].(map[string]interface{})["hits"].([]interface{}) {
-
-			// Parse the attributes/fields of the document
-			doc := hit.(map[string]interface{})
-
-			// The "_source" data is another map interface nested inside of doc
-			source := doc["_source"]
-
-			// mapstructure
-			searchData := domain.SearchListResponse{}
-			mapstructure.Decode(source, &searchData)
-			res = append(res, searchData)
-		}
+		fmt.Println("aggs", mapResp["aggregations"].(map[string]interface{}))
+		total = int64(helpers.GetESTotalCount(mapResp))
+		docs = mapElasticDocs(mapResp)
 	}
 
 	return

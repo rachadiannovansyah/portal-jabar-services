@@ -19,14 +19,24 @@ type ResultsData struct {
 
 // MetaData ...
 type MetaData struct {
-	TotalCount  int64   `json:"total_count"`
-	TotalPage   float64 `json:"total_page"`
-	CurrentPage int64   `json:"current_page"`
-	PerPage     int64   `json:"per_page"`
+	TotalCount        int64               `json:"total_count"`
+	TotalPage         float64             `json:"total_page"`
+	CurrentPage       int64               `json:"current_page"`
+	PerPage           int64               `json:"per_page"`
+	AggregationsCount *MetaAggCountDomain `json:"aggregations_count,omitempty"`
 }
 
 // CustomMetaData ..
 type CustomMetaData struct {
 	TotalCount  int64  `json:"total_count"`
 	LastUpdated string `json:"last_updated"`
+}
+
+// MetaAggsData
+type MetaAggCountDomain struct {
+	News          int64 `json:"news"`
+	Information   int64 `json:"information"`
+	PublicService int64 `json:"public_service"`
+	Announcement  int64 `json:"announcement"`
+	About         int64 `json:"about"`
 }
