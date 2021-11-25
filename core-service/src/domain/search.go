@@ -31,12 +31,20 @@ type SearchListResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// SearchSuggestionResponse ..
+type SearchSuggestionResponse struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+}
+
 // SearchUsecase represent the search usecases
 type SearchUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]SearchListResponse, int64, error)
+	SearchSuggestion(ctx context.Context, key string) ([]SearchSuggestionResponse, error)
 }
 
 // SearchRepository represent the search repository contract
 type SearchRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []SearchListResponse, total int64, err error)
+	SearchSuggestion(ctx context.Context, key string) (res []SearchSuggestionResponse, err error)
 }

@@ -31,3 +31,15 @@ func (n *searchUsecase) Fetch(c context.Context, params *domain.Request) (res []
 
 	return
 }
+
+func (n *searchUsecase) SearchSuggestion(c context.Context, key string) (res []domain.SearchSuggestionResponse, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.searchRepo.SearchSuggestion(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
