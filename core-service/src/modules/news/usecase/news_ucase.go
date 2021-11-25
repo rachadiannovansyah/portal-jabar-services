@@ -84,6 +84,47 @@ func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]dom
 	return data, nil
 }
 
+func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (domain.News, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the tags
+	mapNews := map[int64][]domain.DataTags{}
+	mapNews[data.ID] = []domain.DataTags{}
+
+	// Using goroutine to fetch the list tags
+	chanTags := make(chan []domain.DataTags)
+	g.Go(func() (err error) {
+		res, err := n.tagsRepo.FetchDataTags(ctx, data.ID)
+		chanTags <- res
+		return
+	})
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanTags)
+	}()
+
+	for listTags := range chanTags {
+		newsTags := []domain.DataTags{}
+		copier.Copy(&newsTags, &listTags)
+		if len(listTags) < 1 {
+			continue
+		}
+		mapNews[listTags[0].DataID] = newsTags
+	}
+
+	// merge the tags's data
+	if tags, ok := mapNews[data.ID]; ok {
+		data.Tags = tags
+	}
+
+	return data, nil
+}
+
 func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) ([]domain.News, error) {
 	g, ctx := errgroup.WithContext(c)
 
@@ -210,6 +251,12 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 		return
 	}
 	res.Author = resAuthor
+
+	res, err = n.fillDataTagsDetail(ctx, res)
+
+	if err != nil {
+		return
+	}
 
 	return
 }
