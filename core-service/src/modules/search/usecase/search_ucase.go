@@ -20,13 +20,13 @@ func NewSearchUsecase(s domain.SearchRepository, timeout time.Duration) domain.S
 	}
 }
 
-func (n *searchUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.SearchListResponse, tot int64, err error) {
+func (n *searchUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.SearchListResponse, tot int64, aggs interface{}, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	res, tot, err = n.searchRepo.Fetch(ctx, params)
+	res, tot, aggs, err = n.searchRepo.Fetch(ctx, params)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, nil, err
 	}
 
 	return

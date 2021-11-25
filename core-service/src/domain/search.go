@@ -38,12 +38,12 @@ type SearchSuggestionResponse struct {
 
 // SearchUsecase represent the search usecases
 type SearchUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]SearchListResponse, int64, error)
+	Fetch(ctx context.Context, params *Request) ([]SearchListResponse, int64, interface{}, error)
 	SearchSuggestion(ctx context.Context, key string) ([]SearchSuggestionResponse, error)
 }
 
 // SearchRepository represent the search repository contract
 type SearchRepository interface {
-	Fetch(ctx context.Context, params *Request) (new []SearchListResponse, total int64, err error)
+	Fetch(ctx context.Context, params *Request) (docs []SearchListResponse, total int64, aggs interface{}, err error)
 	SearchSuggestion(ctx context.Context, key string) (res []SearchSuggestionResponse, err error)
 }

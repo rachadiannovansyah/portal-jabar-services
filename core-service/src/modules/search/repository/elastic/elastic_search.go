@@ -54,7 +54,7 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 // type alias for map query
 type q map[string]interface{}
 
-func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, err error) {
+func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
 
 	var buf bytes.Buffer
 	query := q{
@@ -65,7 +65,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 			},
 		},
 		"aggs": q{
-			"agg_count_domain": q{
+			"agg_domain": q{
 				"terms": q{
 					"field": "domain.keyword",
 				},
@@ -82,7 +82,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esclient.Search(
 		esclient.Search.WithContext(ctx),
-		esclient.Search.WithIndex("ipj-content-staging"),
+		esclient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
 		esclient.Search.WithBody(&buf),
 		esclient.Search.WithFrom(int(params.Offset)),
 		esclient.Search.WithSize(int(params.PerPage)),
@@ -94,9 +94,10 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 
 		// If no error, then convert response to a map[string]interface
 	} else {
-		fmt.Println("aggs", mapResp["aggregations"].(map[string]interface{}))
-		total = int64(helpers.GetESTotalCount(mapResp))
+		fmt.Println("aggs", mapResp["aggregations"].(map[string]interface{})["agg_domain"].(map[string]interface{}))
 		docs = mapElasticDocs(mapResp)
+		total = int64(helpers.GetESTotalCount(mapResp))
+		aggs = mapResp["aggregations"].(map[string]interface{})
 	}
 
 	return
