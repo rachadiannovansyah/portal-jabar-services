@@ -203,8 +203,8 @@ CREATE TABLE tags (
 );
 CREATE INDEX idx_tags_name ON tags (name);
 
-DROP TABLE IF EXISTS tags_data;
-CREATE TABLE tags_data (
+DROP TABLE IF EXISTS data_tags;
+CREATE TABLE data_tags (
     id int(10) unsigned NOT NULL AUTO_INCREMENT,
     data_id int(10) unsigned,
     tags_id int(10) unsigned,
@@ -212,6 +212,6 @@ CREATE TABLE tags_data (
     type varchar(10),
     PRIMARY KEY(id)
 );
-CREATE INDEX idx_tags_name ON tags_data (tags_name);
+CREATE INDEX idx_tags_name ON data_tags (tags_name);
 
 COMMIT;
