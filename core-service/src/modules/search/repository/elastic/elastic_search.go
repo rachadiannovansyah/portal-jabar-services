@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -52,14 +51,18 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 // type alias for map query
 type q map[string]interface{}
 
-func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
+func buildQuery(params *domain.Request) (buf bytes.Buffer) {
+	domain := []string{"news", "information", "public_service", "announcement", "about"}
+	if domainFilter := params.Filters["domain"].([]string); len(domainFilter) > 0 {
+		domain = domainFilter
+	}
 
-	var buf bytes.Buffer
 	query := q{
 		"query": q{
 			"multi_match": q{
 				"query":  params.Keyword,
 				"fields": []string{"title", "content"},
+				"type":   "best_fields",
 			},
 		},
 		"aggs": q{
@@ -69,21 +72,31 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 				},
 			},
 		},
+		"post_filter": q{
+			"terms": q{
+				"domain": domain,
+			},
+		},
 	}
-
-	esclient := es.Conn
 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
 		failOnError(err, "Error encoding query")
 	}
 
+	return
+}
+
+func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
+	esClient := es.Conn
+	query := buildQuery(params)
+
 	// Pass the JSON query to the Golang client's Search() method
-	resp, err := esclient.Search(
-		esclient.Search.WithContext(ctx),
-		esclient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
-		esclient.Search.WithBody(&buf),
-		esclient.Search.WithFrom(int(params.Offset)),
-		esclient.Search.WithSize(int(params.PerPage)),
+	resp, err := esClient.Search(
+		esClient.Search.WithContext(ctx),
+		esClient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
+		esClient.Search.WithBody(&query),
+		esClient.Search.WithFrom(int(params.Offset)),
+		esClient.Search.WithSize(int(params.PerPage)),
 	)
 
 	// Decode the JSON response and using a pointer
@@ -92,7 +105,6 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 
 		// If no error, then convert response to a map[string]interface
 	} else {
-		fmt.Println("aggs", mapResp["aggregations"].(map[string]interface{})["agg_domain"].(map[string]interface{}))
 		docs = mapElasticDocs(mapResp)
 		total = int64(helpers.GetESTotalCount(mapResp))
 		aggs = mapResp["aggregations"].(map[string]interface{})
