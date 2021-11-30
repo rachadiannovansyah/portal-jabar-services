@@ -37,11 +37,15 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 		doc := hit.(map[string]interface{})
 
 		// The "_source" data is another map interface nested inside of doc
-		source := doc["_source"]
+		source := doc["_source"].(map[string]interface{})
 
 		// mapstructure
 		searchData := domain.SearchListResponse{}
 		mapstructure.Decode(source, &searchData)
+
+		// parsing the date string to time.Time
+		searchData.CreatedAt = helpers.ParseESDate(source["created_at"].(string))
+
 		res = append(res, searchData)
 	}
 
@@ -93,7 +97,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esClient.Search(
 		esClient.Search.WithContext(ctx),
-		esClient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
+		esClient.Search.WithIndex("ipj-content-dev"), // FIXME: this should use env
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
 		esClient.Search.WithSize(int(params.PerPage)),
