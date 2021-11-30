@@ -103,13 +103,19 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 	return
 }
 
-func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, key string) (res []domain.SearchSuggestionResponse, err error) {
+func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params *domain.Request) (res []string, err error) {
 	var buf bytes.Buffer
+	key := params.Filters["suggestion"]
+
 	query := q{
+		"_source": q{
+			"includes": "title",
+		},
 		"query": q{
-			"multi_match": q{
-				"query":  key,
-				"fields": []string{"title", "content"},
+			"bool": q{
+				"must": q{
+					"term": q{"title": key},
+				},
 			},
 		},
 	}
@@ -143,11 +149,9 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, key str
 			// The "_source" data is another map interface nested inside of doc
 			source := doc["_source"]
 
-			// mapstructure
-			searchSuggestData := domain.SearchSuggestionResponse{}
-			mapstructure.Decode(source, &searchSuggestData)
+			title := source.(map[string]interface{})["title"].(string)
 
-			res = append(res, searchSuggestData)
+			res = append(res, title)
 		}
 	}
 

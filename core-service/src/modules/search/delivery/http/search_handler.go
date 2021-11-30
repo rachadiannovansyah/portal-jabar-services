@@ -20,7 +20,7 @@ func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase) {
 		SUsecase: us,
 	}
 	e.GET("/search", handler.FetchSearch)
-	e.GET("/search/suggestion/:suggestion", handler.SearchSuggestion)
+	e.GET("/search/suggestion", handler.SearchSuggestion)
 }
 
 // FetchSearch will fetch the content based on given params
@@ -48,13 +48,16 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 // SearchSuggestion ...
 func (h *SearchHandler) SearchSuggestion(c echo.Context) error {
 	ctx := c.Request().Context()
-	suggestion := c.Param("suggestion")
-	fmt.Println(suggestion)
-	if suggestion == "" {
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"suggestion": c.QueryParam("q"),
+	}
+
+	if params.Filters["suggestion"] == "" {
 		return c.JSON(http.StatusOK, "")
 	}
 
-	listSuggest, err := h.SUsecase.SearchSuggestion(ctx, suggestion)
+	listSuggest, err := h.SUsecase.SearchSuggestion(ctx, &params)
 
 	if err != nil {
 		return err

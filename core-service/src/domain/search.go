@@ -30,20 +30,14 @@ type SearchListResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// SearchSuggestionResponse ..
-type SearchSuggestionResponse struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-}
-
 // SearchUsecase represent the search usecases
 type SearchUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]SearchListResponse, int64, interface{}, error)
-	SearchSuggestion(ctx context.Context, key string) ([]SearchSuggestionResponse, error)
+	SearchSuggestion(ctx context.Context, params *Request) ([]string, error)
 }
 
 // SearchRepository represent the search repository contract
 type SearchRepository interface {
 	Fetch(ctx context.Context, params *Request) (docs []SearchListResponse, total int64, aggs interface{}, err error)
-	SearchSuggestion(ctx context.Context, key string) (res []SearchSuggestionResponse, err error)
+	SearchSuggestion(ctx context.Context, params *Request) (res []string, err error)
 }
