@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -27,21 +26,17 @@ func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase) {
 func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"domain": c.Request().URL.Query()["domain[]"],
+	}
+
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
 		return err
 	}
 	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
-
-	// FIXME: meta aggregation structure in the next PR
-	aggDomain := aggs.(map[string]interface{})["agg_domain"].(map[string]interface{})["buckets"]
-	fmt.Println("aggDomain", aggDomain)
-	meta.Aggregations = &domain.MetaAggregations{
-		Domain: domain.AggDomain{
-			News: 1, // FIXME: remove hardcoded aggregate
-		},
-	}
+	meta.Aggregations = helpers.ESAggregate(aggs)
 	return c.JSON(http.StatusOK, res)
 }
 

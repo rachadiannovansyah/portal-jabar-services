@@ -12,7 +12,7 @@ type Search struct {
 	Excerpt   string `json:"excerpt"`
 	Content   string `json:"content"`
 	Slug      string `json:"slug"`
-	Category  string `json:"category" validate:"required"`
+	Category  string `json:"category"`
 	Thumbnail string `json:"thumbnail"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
@@ -25,9 +25,9 @@ type SearchListResponse struct {
 	Title     string `json:"title"`
 	Excerpt   string `json:"excerpt"`
 	Slug      string `json:"slug"`
-	Category  string `json:"category" validate:"required"`
+	Category  string `json:"category"`
 	Thumbnail string `json:"thumbnail"`
-	CreatedAt string `json:"created_at"`
+	CreatedAt string `json:"created_at" mapstructure:"created_at"`
 }
 
 // SearchUsecase represent the search usecases
