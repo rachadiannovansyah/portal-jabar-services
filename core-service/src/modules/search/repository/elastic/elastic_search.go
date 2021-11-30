@@ -97,7 +97,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esClient.Search(
 		esClient.Search.WithContext(ctx),
-		esClient.Search.WithIndex("ipj-content-dev"), // FIXME: this should use env
+		esClient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
 		esClient.Search.WithSize(int(params.PerPage)),
