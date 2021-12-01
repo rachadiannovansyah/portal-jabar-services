@@ -120,7 +120,7 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 
 	query := q{
 		"_source": q{
-			"includes": []string{"id", "title"},
+			"includes": "title",
 		},
 		"query": q{
 			"bool": q{

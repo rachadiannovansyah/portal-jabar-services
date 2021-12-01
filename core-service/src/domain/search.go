@@ -32,8 +32,7 @@ type SearchListResponse struct {
 
 // SuggestResponse ..
 type SuggestResponse struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
+	Value string `json:"value" mapstructure:"title"`
 }
 
 // SearchUsecase represent the search usecases
