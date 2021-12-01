@@ -1,10 +1,11 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 // SearchHandler ...
@@ -18,9 +19,10 @@ func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase) {
 		SUsecase: us,
 	}
 	e.GET("/search", handler.FetchSearch)
+	e.GET("/search/suggest", handler.SearchSuggestion)
 }
 
-// FetchNews will fetch the content based on given params
+// FetchSearch will fetch the content based on given params
 func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
@@ -36,4 +38,25 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
 	return c.JSON(http.StatusOK, res)
+}
+
+// SearchSuggestion ...
+func (h *SearchHandler) SearchSuggestion(c echo.Context) error {
+	ctx := c.Request().Context()
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"suggestions": c.QueryParam("q"),
+	}
+
+	if params.Filters["suggestions"] == "" {
+		return c.JSON(http.StatusOK, "")
+	}
+
+	listSuggest, err := h.SUsecase.SearchSuggestion(ctx, &params)
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, listSuggest)
 }

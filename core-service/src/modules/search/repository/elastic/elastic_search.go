@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -114,6 +115,63 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 		docs = mapElasticDocs(mapResp)
 		total = int64(helpers.GetESTotalCount(mapResp))
 		aggs = mapResp["aggregations"].(map[string]interface{})
+	}
+
+	return
+}
+
+func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params *domain.Request) (res []domain.SuggestResponse, err error) {
+	var buf bytes.Buffer
+	key := params.Filters["suggestions"]
+
+	query := q{
+		"_source": q{
+			"includes": "title",
+		},
+		"query": q{
+			"bool": q{
+				"must": q{
+					"term": q{"title": key},
+				},
+			},
+		},
+	}
+
+	esclient := es.Conn
+
+	if err := json.NewEncoder(&buf).Encode(query); err != nil {
+		failOnError(err, "Error encoding query")
+	}
+
+	// Pass the JSON query to the Golang client's Search() method
+	resp, err := esclient.Search(
+		esclient.Search.WithContext(ctx),
+		esclient.Search.WithIndex("ipj-content-staging"),
+		esclient.Search.WithBody(&buf),
+		esclient.Search.WithSize(5),
+	)
+
+	// Decode the JSON response and using a pointer
+	if err := json.NewDecoder(resp.Body).Decode(&mapResp); err != nil {
+
+		failOnError(err, "Error parsing the response body")
+
+	} else {
+		// Iterate the document "hits" returned by API call
+		for _, hit := range mapResp["hits"].(map[string]interface{})["hits"].([]interface{}) {
+
+			// Parse the attributes/fields of the document
+			doc := hit.(map[string]interface{})
+
+			// The "_source" data is another map interface nested inside of doc
+			source := doc["_source"]
+
+			// mapstructure using suggest response
+			suggestData := domain.SuggestResponse{}
+			mapstructure.Decode(source, &suggestData)
+
+			res = append(res, suggestData)
+		}
 	}
 
 	return
