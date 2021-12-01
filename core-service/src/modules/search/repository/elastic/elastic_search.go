@@ -37,11 +37,15 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 		doc := hit.(map[string]interface{})
 
 		// The "_source" data is another map interface nested inside of doc
-		source := doc["_source"]
+		source := doc["_source"].(map[string]interface{})
 
 		// mapstructure
 		searchData := domain.SearchListResponse{}
 		mapstructure.Decode(source, &searchData)
+
+		// parsing the date string to time.Time
+		searchData.CreatedAt = helpers.ParseESDate(source["created_at"].(string))
+
 		res = append(res, searchData)
 	}
 
