@@ -161,10 +161,10 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 			source := doc["_source"]
 
 			// mapstructure using suggest response
-			searchData := domain.SuggestResponse{}
-			mapstructure.Decode(source, &searchData)
+			suggestData := domain.SuggestResponse{}
+			mapstructure.Decode(source, &suggestData)
 
-			res = append(res, searchData)
+			res = append(res, suggestData)
 		}
 	}
 
