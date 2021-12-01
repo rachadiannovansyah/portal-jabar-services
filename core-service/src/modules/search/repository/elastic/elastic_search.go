@@ -60,8 +60,10 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 	if domainFilter := params.Filters["domain"].([]string); len(domainFilter) > 0 {
 		domain = domainFilter
 	}
-
 	query := q{
+		"sort": []map[string]interface{}{
+			q{"created_at": q{"order": params.SortOrder}},
+		},
 		"query": q{
 			"multi_match": q{
 				"query":  params.Keyword,
@@ -72,7 +74,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		"aggs": q{
 			"agg_domain": q{
 				"terms": q{
-					"field": "domain.keyword",
+					"field": "domain",
 				},
 			},
 		},
