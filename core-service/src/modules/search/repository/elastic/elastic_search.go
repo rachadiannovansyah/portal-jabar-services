@@ -62,14 +62,19 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		domain = domainFilter
 	}
 	query := q{
+		"_source": q{
+			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "created_at"},
+		},
 		"sort": []map[string]interface{}{
 			q{"created_at": q{"order": params.SortOrder}},
 		},
 		"query": q{
 			"multi_match": q{
-				"query":  params.Keyword,
-				"fields": []string{"title", "content"},
-				"type":   "best_fields",
+				"query":         params.Keyword,
+				"fields":        []string{"title", "content"},
+				"type":          "best_fields",
+				"fuzziness":     "AUTO",
+				"prefix_length": 2,
 			},
 		},
 		"aggs": q{
