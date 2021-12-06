@@ -138,6 +138,8 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 				"must": q{
 					"term": q{"title": key},
 				},
+				"fuzziness":     "AUTO",
+				"prefix_length": 2,
 			},
 		},
 	}
