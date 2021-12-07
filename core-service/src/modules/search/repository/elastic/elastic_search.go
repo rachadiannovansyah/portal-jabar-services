@@ -134,10 +134,12 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 			"includes": "title",
 		},
 		"query": q{
-			"bool": q{
-				"must": q{
-					"term": q{"title": key},
-				},
+			"multi_match": q{
+				"query":         key,
+				"fields":        "title",
+				"type":          "best_fields",
+				"fuzziness":     "AUTO",
+				"prefix_length": 2,
 			},
 		},
 	}
@@ -169,7 +171,7 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 			doc := hit.(map[string]interface{})
 
 			// The "_source" data is another map interface nested inside of doc
-			source := doc["_source"]
+			source := doc["_source"].(map[string]interface{})
 
 			// mapstructure using suggest response
 			suggestData := domain.SuggestResponse{}
