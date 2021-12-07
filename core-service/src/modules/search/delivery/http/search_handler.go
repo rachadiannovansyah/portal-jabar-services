@@ -58,5 +58,9 @@ func (h *SearchHandler) SearchSuggestion(c echo.Context) error {
 		return err
 	}
 
+	if len(listSuggest) == 0 {
+		return c.JSON(http.StatusOK, []string{})
+	}
+
 	return c.JSON(http.StatusOK, listSuggest)
 }
