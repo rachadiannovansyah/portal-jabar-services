@@ -2,8 +2,6 @@ package server
 
 import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"time"
-
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
 	_eventUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/usecase"
@@ -11,7 +9,9 @@ import (
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
+	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
+	"time"
 )
 
 // Usecases ...
@@ -24,17 +24,19 @@ type Usecases struct {
 	FeedbackUcase        domain.FeedbackUsecase
 	FeaturedProgramUcase domain.FeaturedProgramUsecase
 	AuthUcase            domain.AuthUsecase
+	SearchUcase          domain.SearchUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
-func NewUcase(cfg *config.Config, r *Repositories, timeoutContext time.Duration) *Usecases {
+func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
-		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, timeoutContext),
+		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.DataTagsRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
 		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, timeoutContext),
 		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),
+		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
 	}
 }

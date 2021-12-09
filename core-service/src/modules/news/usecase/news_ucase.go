@@ -2,8 +2,9 @@ package usecase
 
 import (
 	"context"
-	"github.com/jinzhu/copier"
 	"time"
+
+	"github.com/jinzhu/copier"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -15,17 +16,113 @@ type newsUsecase struct {
 	newsRepo       domain.NewsRepository
 	categories     domain.CategoryRepository
 	userRepo       domain.UserRepository
+	tagsRepo       domain.DataTagsRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.DataTagsRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
 		userRepo:       u,
+		tagsRepo:       tr,
 		contextTimeout: timeout,
 	}
+}
+
+func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]domain.News, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the tags
+	mapNews := map[int64][]domain.DataTags{}
+
+	for _, news := range data {
+		mapNews[news.ID] = []domain.DataTags{}
+	}
+
+	// Using goroutine to fetch the list tags
+	chanTags := make(chan []domain.DataTags)
+	for idx := range mapNews {
+		newsID := idx
+		g.Go(func() (err error) {
+			res, err := n.tagsRepo.FetchDataTags(ctx, newsID)
+			chanTags <- res
+			return
+		})
+	}
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanTags)
+	}()
+
+	for listTags := range chanTags {
+		newsTags := []domain.DataTags{}
+		copier.Copy(&newsTags, &listTags)
+		if len(listTags) < 1 {
+			continue
+		}
+		mapNews[listTags[0].DataID] = newsTags
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	// merge the tags's data
+	for index, element := range data {
+		if tags, ok := mapNews[element.ID]; ok {
+			data[index].Tags = tags
+		}
+	}
+
+	return data, nil
+}
+
+func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (domain.News, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the tags
+	mapNews := map[int64][]domain.DataTags{}
+	mapNews[data.ID] = []domain.DataTags{}
+
+	// Using goroutine to fetch the list tags
+	chanTags := make(chan []domain.DataTags)
+	g.Go(func() (err error) {
+		res, err := n.tagsRepo.FetchDataTags(ctx, data.ID)
+		chanTags <- res
+		return
+	})
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanTags)
+	}()
+
+	for listTags := range chanTags {
+		newsTags := []domain.DataTags{}
+		copier.Copy(&newsTags, &listTags)
+		if len(listTags) < 1 {
+			continue
+		}
+		mapNews[listTags[0].DataID] = newsTags
+	}
+
+	// merge the tags's data
+	if tags, ok := mapNews[data.ID]; ok {
+		data.Tags = tags
+	}
+
+	return data, nil
 }
 
 func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) ([]domain.News, error) {
@@ -138,6 +235,32 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	return data, nil
 }
 
+func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {
+	if key == "slug" {
+		res, err = n.newsRepo.GetBySlug(ctx, value.(string))
+	} else {
+		res, err = n.newsRepo.GetByID(ctx, value.(int64))
+	}
+
+	if err != nil {
+		return
+	}
+
+	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
+	if err != nil {
+		return
+	}
+	res.Author = resAuthor
+
+	res, err = n.fillDataTagsDetail(ctx, res)
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -149,6 +272,13 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 	}
 
 	res, err = n.fillAuthorDetails(ctx, res)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err = n.fillDataTags(ctx, res)
+
 	if err != nil {
 		return nil, 0, err
 	}
@@ -159,20 +289,20 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
+	return n.getDetail(ctx, "id", id)
+}
 
-	res, err = n.newsRepo.GetByID(ctx, id)
+func (n *newsUsecase) GetBySlug(c context.Context, slug string) (res domain.News, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.getDetail(ctx, "slug", slug)
 	if err != nil {
 		return
 	}
-
-	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
-	if err != nil {
-		return
-	}
-	res.Author = resAuthor
 
 	// FIXME: prevent abuse page views counter by using cache (redis)
-	err = n.newsRepo.AddView(ctx, id)
+	err = n.newsRepo.AddView(ctx, res.ID)
 	if err != nil {
 		logrus.Error(err)
 	}

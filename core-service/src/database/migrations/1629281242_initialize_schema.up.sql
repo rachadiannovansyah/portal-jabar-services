@@ -109,7 +109,7 @@ CREATE TABLE news (
   title varchar(80) NOT NULL,
   excerpt text NOT NULL,
   content text NOT NULL,
-  slug varchar(100) DEFAULT NULL,
+  slug varchar(100) UNIQUE NOT NULL,
   image varchar(255) DEFAULT NULL,
   video varchar(80) DEFAULT NULL,
   source varchar(80) DEFAULT NULL,
@@ -133,6 +133,7 @@ CREATE TABLE news (
   CONSTRAINT users_updated_by_fk FOREIGN KEY (updated_by) REFERENCES users (id)
 );
 CREATE INDEX idx_title ON news (title);
+CREATE INDEX idx_slug ON news (slug);
 CREATE INDEX idx_category ON news (category);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
@@ -202,8 +203,8 @@ CREATE TABLE tags (
 );
 CREATE INDEX idx_tags_name ON tags (name);
 
-DROP TABLE IF EXISTS tags_data;
-CREATE TABLE tags_data (
+DROP TABLE IF EXISTS data_tags;
+CREATE TABLE data_tags (
     id int(10) unsigned NOT NULL AUTO_INCREMENT,
     data_id int(10) unsigned,
     tags_id int(10) unsigned,
@@ -211,6 +212,6 @@ CREATE TABLE tags_data (
     type varchar(10),
     PRIMARY KEY(id)
 );
-CREATE INDEX idx_tags_name ON tags_data (tags_name);
+CREATE INDEX idx_tags_name ON data_tags (tags_name);
 
 COMMIT;

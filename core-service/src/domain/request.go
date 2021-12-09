@@ -7,7 +7,7 @@ type Request struct {
 	PerPage   int64
 	Offset    int64
 	SortBy    string
-	SortOrder string
+	SortOrder string `default:"desc"`
 	StartDate string
 	EndDate   string
 	Filters   map[string]interface{}

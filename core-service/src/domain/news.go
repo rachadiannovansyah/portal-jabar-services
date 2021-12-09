@@ -20,7 +20,7 @@ type News struct {
 	Shared    int64      `json:"shared"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
-	Tags      string     `json:"tags"`
+	Tags      []DataTags `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
 	CreatedBy User       `json:"created_by"`
@@ -39,7 +39,7 @@ type NewsListResponse struct {
 	Author    Author     `json:"author"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
-	Tags      string     `json:"tags"`
+	Tags      []DataTags `json:"tags"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -72,7 +72,7 @@ type DetailNewsResponse struct {
 	Shared    int64      `json:"shared"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
-	Tags      string     `json:"tags"`
+	Tags      []DataTags `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    Author     `json:"author" validate:"required"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -85,6 +85,7 @@ type NewsUsecase interface {
 	FetchNewsBanner(ctx context.Context) ([]NewsBanner, error)
 	FetchNewsHeadline(ctx context.Context) ([]News, error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
 }
 
@@ -94,6 +95,7 @@ type NewsRepository interface {
 	FetchNewsBanner(ctx context.Context) (news []News, err error)
 	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
+	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
 }

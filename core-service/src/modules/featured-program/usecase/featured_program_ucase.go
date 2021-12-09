@@ -26,8 +26,23 @@ func (u *featuredProgramUsecase) Fetch(c context.Context, params *domain.Request
 	defer cancel()
 
 	res, err = u.featuredProgramRepo.Fetch(ctx, params)
+
 	if err != nil {
 		return nil, err
+	}
+
+	return
+}
+
+func (u *featuredProgramUsecase) MetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	total, lastUpdated, err = u.featuredProgramRepo.MetaFetch(ctx, params)
+
+	if err != nil {
+		return 0, "", err
 	}
 
 	return

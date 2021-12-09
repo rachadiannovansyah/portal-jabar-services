@@ -21,9 +21,9 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
-	dbConn := database.InitDB(cfg)
+	dbConn := database.NewDBConn(cfg)
 	defer func() {
-		err := dbConn.Close()
+		err := dbConn.Mysql.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,7 +58,7 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
-	mysqlRepos := server.NewMysqlRepositories(dbConn)
+	mysqlRepos := server.NewRepository(dbConn)
 	usecases := server.NewUcase(cfg, mysqlRepos, timeoutContext)
 	server.NewHandler(v1, r, usecases)
 

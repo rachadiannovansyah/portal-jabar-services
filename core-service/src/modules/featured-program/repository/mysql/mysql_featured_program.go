@@ -19,6 +19,27 @@ func NewMysqlFeaturedProgramRepository(Conn *sql.DB) domain.FeaturedProgramRepos
 	return &mysqlFeaturedProgramRepository{Conn}
 }
 
+var querySelect = `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs`
+
+func getJSONSearch(params *domain.Request) (query string) {
+	query = ` WHERE 1=1`
+
+	categories := params.Filters["categories"].([]string)
+
+	if len(categories) > 0 {
+		for idx, cat := range categories {
+			if idx == 0 {
+				query = fmt.Sprintf(`%s AND (JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
+			} else {
+				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
+			}
+		}
+		query += `)` // it's imagine end blocking query of loop json_search
+	}
+
+	return
+}
+
 func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.FeaturedProgram, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -59,26 +80,50 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 	return result, nil
 }
 
-func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
+func (m *mysqlFeaturedProgramRepository) count(ctx context.Context, query string) (total int64, err error) {
 
-	query := `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs WHERE 1=1`
-
-	data := params.Filters["categories"].([]string)
-	for idx, cat := range data {
-		if v, ok := params.Filters["categories"]; ok && v != "" {
-			if idx == 0 {
-				query = fmt.Sprintf(`%s AND JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
-			} else {
-				query = fmt.Sprintf(`%s OR JSON_SEARCH(categories, 'all', '%s') IS NOT NULL`, query, cat)
-			}
-		}
+	err = m.Conn.QueryRow(query).Scan(&total)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
 	}
-	query = query + ` LIMIT 50`
+
+	return total, nil
+}
+
+func (m *mysqlFeaturedProgramRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return lastUpdated, nil
+}
+
+func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.FeaturedProgram, err error) {
+	query := getJSONSearch(params)
+
+	query = querySelect + query + ` LIMIT 50`
 
 	res, err = m.fetch(ctx, query)
 
 	if err != nil {
 		return nil, err
+	}
+
+	return
+}
+
+func (m *mysqlFeaturedProgramRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+	query := getJSONSearch(params)
+
+	total, err = m.count(ctx, ` SELECT COUNT(1) FROM featured_programs `+query)
+
+	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM featured_programs`+query+` LIMIT 1`)
+
+	if err != nil {
+		return 0, "", err
 	}
 
 	return

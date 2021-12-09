@@ -18,7 +18,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, tags, source, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -51,7 +51,6 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Type,
 			&t.Views,
 			&t.Shared,
-			&t.Tags,
 			&t.Source,
 			&t.CreatedAt,
 			&t.UpdatedAt,
@@ -66,6 +65,23 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	}
 
 	return result, nil
+}
+
+func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value string) (res domain.News, err error) {
+	query := fmt.Sprintf("%s WHERE %s=?", querySelectNews, key)
+
+	list, err := m.fetch(ctx, query, value)
+	if err != nil {
+		return domain.News{}, err
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
+
+	return
 }
 
 func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total int64, err error) {
@@ -83,7 +99,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	query := ` WHERE 1=1 `
 
 	if params.Keyword != "" {
-		query = query + ` AND title like '%` + params.Keyword + `%' `
+		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
@@ -98,14 +114,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
 	}
 
-	if v, ok := params.Filters["tags"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND tags = "%s"`, query, v)
-	}
-
 	if params.SortBy != "" {
-		query = query + ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query = query + ` ORDER BY created_at DESC`
+		query += ` ORDER BY created_at DESC`
 	}
 
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
@@ -122,20 +134,11 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 }
 
 func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain.News, err error) {
-	query := querySelectNews + ` WHERE id = ?`
+	return m.findOne(ctx, "id", fmt.Sprintf("%v", id))
+}
 
-	list, err := m.fetch(ctx, query, id)
-	if err != nil {
-		return domain.News{}, err
-	}
-
-	if len(list) > 0 {
-		res = list[0]
-	} else {
-		return res, domain.ErrNotFound
-	}
-
-	return
+func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, slug string) (res domain.News, err error) {
+	return m.findOne(ctx, "slug", slug)
 }
 
 func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error) {

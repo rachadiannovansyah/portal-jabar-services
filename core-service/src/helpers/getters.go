@@ -69,6 +69,21 @@ func Paginate(c echo.Context, data interface{}, total int64, params domain.Reque
 	}
 }
 
+// ESAggregate ...
+func ESAggregate(aggs interface{}) *domain.MetaAggregations {
+	aggDomain := aggs.(map[string]interface{})["agg_domain"].(map[string]interface{})["buckets"].([]interface{})
+
+	return &domain.MetaAggregations{
+		Domain: domain.AggDomain{
+			News:          int64(MapValue(aggDomain, "news")),
+			Information:   int64(MapValue(aggDomain, "information")),
+			PublicService: int64(MapValue(aggDomain, "public_service")),
+			Announcement:  int64(MapValue(aggDomain, "announcement")),
+			About:         int64(MapValue(aggDomain, "about")),
+		},
+	}
+}
+
 // GetStatusCode ...
 func GetStatusCode(err error) int {
 	if err == nil {
