@@ -14,6 +14,7 @@ import (
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
+	_userHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/delivery/http"
 )
 
 // NewHandler will create a new handler for the given usecase
@@ -26,6 +27,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(e, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(e, r, u.AuthUcase)
 	_searchHttpDelivery.NewSearchHandler(e, r, u.SearchUcase)
+	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
 }
 
 // ErrorHandler ...

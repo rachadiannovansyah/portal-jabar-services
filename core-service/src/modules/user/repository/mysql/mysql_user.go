@@ -55,3 +55,18 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 
 	return
 }
+
+func (m *mysqlUserRepository) Store(ctx context.Context, u *domain.User) (err error) {
+	query := `INSERT users SET id = ?, name = ?, username = ?, email = ?, password = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, u.ID, u.Name, u.Username, u.Email, u.Password)
+	if err != nil {
+		return
+	}
+
+	return
+}

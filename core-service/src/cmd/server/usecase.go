@@ -11,6 +11,7 @@ import (
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
+	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
 	"time"
 )
 
@@ -25,6 +26,7 @@ type Usecases struct {
 	FeaturedProgramUcase domain.FeaturedProgramUsecase
 	AuthUcase            domain.AuthUsecase
 	SearchUcase          domain.SearchUsecase
+	UserUsecase          domain.UserUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -38,5 +40,6 @@ func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),
 		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
+		UserUsecase:          _userUcase.NewUserkUsecase(r.UserRepo, timeoutContext),
 	}
 }

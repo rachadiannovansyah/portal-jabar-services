@@ -3,9 +3,11 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
@@ -17,9 +19,9 @@ type authUsecase struct {
 }
 
 // NewAuthUsecase will create new an authUsecase object representation of domain.AuthUsecase interface
-func NewAuthUsecase(cfg *config.Config, u domain.UserRepository, timeout time.Duration) domain.AuthUsecase {
+func NewAuthUsecase(c *config.Config, u domain.UserRepository, timeout time.Duration) domain.AuthUsecase {
 	return &authUsecase{
-		config:         cfg,
+		config:         c,
 		userRepo:       u,
 		contextTimeout: timeout,
 	}
@@ -41,6 +43,10 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 	user, err := n.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return domain.LoginResponse{}, err
+	}
+
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
+		return domain.LoginResponse{}, fmt.Errorf("Invalid credentials")
 	}
 
 	accessToken, exp, err := n.createAccessToken(&user)

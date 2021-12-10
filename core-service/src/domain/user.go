@@ -31,4 +31,10 @@ type Author struct {
 type UserRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	GetByEmail(ctx context.Context, email string) (User, error)
+	Store(context.Context, *User) error
+}
+
+// UserUsecase ...
+type UserUsecase interface {
+	Store(context.Context, *User) error
 }
