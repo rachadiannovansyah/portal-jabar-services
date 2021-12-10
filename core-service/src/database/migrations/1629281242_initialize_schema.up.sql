@@ -166,6 +166,7 @@ CREATE INDEX idx_title ON events (title);
 CREATE INDEX idx_start_hour ON events (start_hour);
 CREATE INDEX idx_end_hour ON events (end_hour);
 CREATE INDEX idx_category ON events (category);
+CREATE INDEX idx_status ON events (status);
 
 DROP TABLE IF EXISTS feedback;
 CREATE TABLE feedback (
