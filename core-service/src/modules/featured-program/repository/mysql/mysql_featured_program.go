@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/sirupsen/logrus"
 
@@ -93,9 +94,10 @@ func (m *mysqlFeaturedProgramRepository) count(ctx context.Context, query string
 
 func (m *mysqlFeaturedProgramRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
 	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
+
+	if err == sql.ErrNoRows {
+		// there were no rows, but otherwise no error occurred
+		log.Println(err)
 	}
 
 	return lastUpdated, nil
