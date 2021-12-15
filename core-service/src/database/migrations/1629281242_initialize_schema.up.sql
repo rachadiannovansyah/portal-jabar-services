@@ -150,6 +150,7 @@ CREATE TABLE events (
   image varchar(255) DEFAULT NULL,
   published_by varchar(16) DEFAULT NULL,
   type ENUM('offline', 'online') NOT NULL,
+  status varchar(20) DEFAULT 'unpublish' NOT NULL,
   address varchar(255) DEFAULT NULL,
   url varchar(80) DEFAULT NULL,
   category varchar(30) NOT NULL,
@@ -165,6 +166,7 @@ CREATE INDEX idx_title ON events (title);
 CREATE INDEX idx_start_hour ON events (start_hour);
 CREATE INDEX idx_end_hour ON events (end_hour);
 CREATE INDEX idx_category ON events (category);
+CREATE INDEX idx_status ON events (status);
 
 DROP TABLE IF EXISTS feedback;
 CREATE TABLE feedback (

@@ -17,6 +17,7 @@ type Event struct {
 	Image        NullString `json:"image"`
 	PublishedBy  NullString `json:"published_by"`
 	Type         string     `json:"type"`
+	Status       string     `json:"status"`
 	Address      NullString `json:"address"`
 	URL          NullString `json:"url"`
 	Category     string     `json:"category"`
@@ -37,6 +38,7 @@ type ListEventResponse struct {
 	EndHour   string     `json:"end_hour"`
 	Priority  string     `json:"priority"`
 	Type      string     `json:"type"`
+	Status    string     `json:"status"`
 	Address   NullString `json:"address"`
 	URL       NullString `json:"url"`
 	Category  string     `json:"category" validate:"required"`
