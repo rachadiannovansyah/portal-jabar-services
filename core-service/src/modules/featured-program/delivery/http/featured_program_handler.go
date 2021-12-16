@@ -30,10 +30,24 @@ func (h *FeaturedProgramHandler) FetchFeaturedPrograms(c echo.Context) error {
 	}
 
 	featuredProgramsList, err := h.FPUsecase.Fetch(ctx, &params)
+
+	if err != nil {
+		return err
+	}
+
 	total, lastUpdated, err := h.FPUsecase.MetaFetch(ctx, &params)
 
 	if err != nil {
 		return err
+	}
+
+	// handled if no rows in result then res will provide empty arr
+	if total == 0 {
+		data := domain.ResultsData{
+			Data: []string{},
+		}
+
+		return c.JSON(http.StatusOK, data)
 	}
 
 	data := domain.ResultsData{
