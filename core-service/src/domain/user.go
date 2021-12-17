@@ -21,6 +21,16 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at"`
 }
 
+// UserInfo ...
+type UserInfo struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Username string    `json:"username"`
+	Email    string    `json:"email"`
+	UnitID   NullInt64 `json:"unit_id"`
+	RoleID   NullInt64 `json:"role_id"`
+}
+
 // Author ...
 type Author struct {
 	Name string `json:"name"`

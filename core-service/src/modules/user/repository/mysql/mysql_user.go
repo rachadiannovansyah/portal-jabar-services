@@ -24,7 +24,6 @@ var querySelect = `SELECT id, name, username, email, password, unit_id, role_id 
 // GetByID ...
 func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
 	query := querySelect + fmt.Sprintf(` AND id = '%s'`, id)
-	fmt.Println("QUERY", query)
 	err = m.scan(ctx, query, &res)
 
 	return

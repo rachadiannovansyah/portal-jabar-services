@@ -37,7 +37,6 @@ func (u *userUsecase) Store(c context.Context, usr *domain.User) (err error) {
 	if err != nil {
 		return err
 	}
-	
 	usr.Password = string(encryptedPassword)
 
 	err = u.userRepo.Store(ctx, usr)

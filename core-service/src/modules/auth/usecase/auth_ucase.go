@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 
@@ -33,6 +34,37 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 		RefreshToken: refreshToken,
 		Exp:          exp,
 	}
+}
+
+func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
+	exp = time.Now().Add(time.Hour * n.config.JWT.ExpireCount).Unix()
+	claims := &domain.JwtCustomClaims{
+		user.ID,
+		user.Name,
+		user.Email,
+		jwt.StandardClaims{
+			ExpiresAt: exp,
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	accessToken, err = token.SignedString([]byte(n.config.JWT.AccessSecret))
+
+	return
+}
+
+func (n *authUsecase) createRefreshToken(user *domain.User) (t string, err error) {
+	claimsRefresh := &domain.JwtCustomRefreshClaims{
+		ID:    user.ID,
+		Email: user.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * n.config.JWT.ExpireRefreshCount).Unix(),
+		},
+	}
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
+
+	t, err = refreshToken.SignedString([]byte(n.config.JWT.RefreshSecret))
+
+	return
 }
 
 func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res domain.LoginResponse, err error) {
@@ -100,33 +132,13 @@ func (n *authUsecase) RefreshToken(c context.Context, req *domain.RefreshRequest
 	return
 }
 
-func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
-	exp = time.Now().Add(time.Hour * n.config.JWT.ExpireCount).Unix()
-	claims := &domain.JwtCustomClaims{
-		user.ID,
-		user.Name,
-		user.Email,
-		jwt.StandardClaims{
-			ExpiresAt: exp,
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	accessToken, err = token.SignedString([]byte(n.config.JWT.AccessSecret))
+func (n *authUsecase) UserProfile(c context.Context, id uuid.UUID) (res domain.User, err error) {
 
-	return
-}
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 
-func (n *authUsecase) createRefreshToken(user *domain.User) (t string, err error) {
-	claimsRefresh := &domain.JwtCustomRefreshClaims{
-		ID:    user.ID,
-		Email: user.Email,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * n.config.JWT.ExpireRefreshCount).Unix(),
-		},
-	}
-	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
+	res, err = n.userRepo.GetByID(ctx, id)
 
-	t, err = refreshToken.SignedString([]byte(n.config.JWT.RefreshSecret))
+	defer cancel()
 
 	return
 }

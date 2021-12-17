@@ -29,8 +29,8 @@ type RefreshRequest struct {
 }
 
 type LoginResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 	Exp          int64  `json:"exp"`
 }
 
@@ -38,4 +38,5 @@ type LoginResponse struct {
 type AuthUsecase interface {
 	Login(ctx context.Context, req *LoginRequest) (LoginResponse, error)
 	RefreshToken(ctx context.Context, req *RefreshRequest) (LoginResponse, error)
+	UserProfile(ctx context.Context, id uuid.UUID) (User, error)
 }

@@ -1,7 +1,9 @@
 package http
 
 import (
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -21,6 +23,7 @@ func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase) {
 
 	e.POST("/auth/login", handler.Login)
 	e.POST("/auth/refresh", handler.RefreshToken)
+	r.GET("/auth/me", handler.UserProfile)
 }
 
 // Login ...
@@ -37,7 +40,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: res})
 }
 
 func (h *AuthHandler) RefreshToken(c echo.Context) error {
@@ -54,4 +57,21 @@ func (h *AuthHandler) RefreshToken(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func (h *AuthHandler) UserProfile(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	res, err := h.AUsecase.UserProfile(ctx, auth.ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	userinfo := domain.UserInfo{}
+	copier.Copy(&userinfo, &res)
+
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &userinfo})
 }
