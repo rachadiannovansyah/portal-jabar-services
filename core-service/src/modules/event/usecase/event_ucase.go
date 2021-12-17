@@ -61,3 +61,29 @@ func (u *eventUcase) ListCalendar(c context.Context, params *domain.Request) (re
 
 	return
 }
+
+// Store an events
+func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	existedEvent, _ := u.GetByTitle(ctx, m.Title)
+	if existedEvent != (domain.Event{}) {
+		return domain.ErrConflict
+	}
+	err = u.eventRepo.Store(ctx, m)
+
+	return
+}
+
+func (u *eventUcase) GetByTitle(c context.Context, title string) (res domain.Event, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.eventRepo.GetByTitle(ctx, title)
+	if err != nil {
+		return
+	}
+
+	return
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 // EventHandler is represented by domain.EventUsecase
@@ -24,6 +25,17 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	e.GET("/events", handler.Fetch)
 	e.GET("/events/:id", handler.GetByID)
 	e.GET("/events/calendar", handler.ListCalendar)
+	e.POST("/events", handler.Store)
+}
+
+// Validate domain
+func isRequestValid(m *domain.StoreRequestEvent) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(m)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Fetch will get events data
@@ -80,4 +92,28 @@ func (h *EventHandler) ListCalendar(c echo.Context) error {
 	copier.Copy(&listEventCalendar, &listEvents)
 
 	return c.JSON(http.StatusOK, listEventCalendar)
+}
+
+// Store ..
+func (h *EventHandler) Store(c echo.Context) (err error) {
+	var events domain.StoreRequestEvent
+	err = c.Bind(&events)
+
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(&events); !ok {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	err = h.EventUcase.Store(ctx, &events)
+
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusCreated, events)
 }

@@ -18,7 +18,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `select id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -161,6 +161,44 @@ func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.
 	query = query + ` ORDER BY date DESC `
 
 	res, err = r.fetchQueryCalendar(ctx, query)
+
+	return
+}
+
+func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (res domain.Event, err error) {
+	query := querySelectAgenda + ` WHERE title = ?`
+
+	list, err := r.fetchQuery(ctx, query, title)
+	if err != nil {
+		return
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
+	return
+}
+
+func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequestEvent) (err error) {
+	query := `INSERT events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=?`
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, m.Title, m.Type, m.URL, m.Address, m.Date, m.StartHour, m.EndHour, m.Category)
+	if err != nil {
+		return
+	}
+
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	m.ID = lastID
 
 	return
 }
