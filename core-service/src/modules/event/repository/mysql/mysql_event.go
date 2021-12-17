@@ -167,7 +167,7 @@ func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.
 
 func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (res domain.Event, err error) {
 	query := querySelectAgenda + ` WHERE title = ?`
-	fmt.Println(query)
+
 	list, err := r.fetchQuery(ctx, query, title)
 	if err != nil {
 		return
