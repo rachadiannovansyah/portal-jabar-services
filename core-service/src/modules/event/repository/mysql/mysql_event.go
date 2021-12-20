@@ -205,14 +205,14 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 }
 
 func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error) {
-	query := "UPDATE events SET deleted_at=?, status=? WHERE id = ?"
+	query := "UPDATE events SET deleted_at=? WHERE id = ?"
 	stmt, err := r.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
 	deletedAt := time.Now()
-	res, err := stmt.ExecContext(ctx, deletedAt, "trashed", id)
+	res, err := stmt.ExecContext(ctx, deletedAt, id)
 	if err != nil {
 		return
 	}
