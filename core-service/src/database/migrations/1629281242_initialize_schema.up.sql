@@ -160,7 +160,7 @@ CREATE TABLE events (
   village_code varchar(191) NULL,
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at datetime NULL DEFAULT CURRENT_TIMESTAMP ON DELETE CURRENT_TIMESTAMP,
+  deleted_at datetime,
   PRIMARY KEY (id),
 );
 CREATE INDEX idx_title ON events (title);
