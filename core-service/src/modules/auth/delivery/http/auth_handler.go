@@ -40,7 +40,7 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultsData{Data: res})
+	return c.JSON(http.StatusOK, &res)
 }
 
 func (h *AuthHandler) RefreshToken(c echo.Context) error {

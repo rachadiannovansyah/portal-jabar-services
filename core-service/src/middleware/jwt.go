@@ -2,23 +2,18 @@ package middleware
 
 import (
 	"fmt"
-	"log"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/spf13/viper"
 )
 
 // JWT will handle the JWT middleware
 func (m *GoMiddleware) JWT(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// get the token from the header
-
-		JWT_SIGNATURE_KEY := []byte("-----BEGIN PUBLIC KEY-----\n" +
-			viper.GetString(`KEYCLOAK_PEM`) +
-			"\n-----END PUBLIC KEY-----\n")
 
 		authorizationHeader := c.Request().Header.Get("Authorization")
 		if !strings.Contains(authorizationHeader, "Bearer") {
@@ -27,30 +22,28 @@ func (m *GoMiddleware) JWT(next echo.HandlerFunc) echo.HandlerFunc {
 
 		tokenString := strings.Replace(authorizationHeader, "Bearer ", "", -1)
 
-		key, err := jwt.ParseRSAPublicKeyFromPEM(JWT_SIGNATURE_KEY)
-		if err != nil {
-			log.Printf("validate: parse key: %v", err)
-			return err
-		}
+		// Initialize a new instance of `Claims`
+		claims := &domain.JwtCustomClaims{}
 
-		token, err := jwt.Parse(tokenString, func(jwtToken *jwt.Token) (interface{}, error) {
-			if _, ok := jwtToken.Method.(*jwt.SigningMethodRSA); !ok {
-				return nil, fmt.Errorf("unexpected method: %s", jwtToken.Header["alg"])
-			}
-
-			return key, nil
+		// Parse the JWT string and store the result in `claims`.
+		// Note that we are passing the key in this method as well. This method will return an error
+		// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+		// or if the signature does not match
+		tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			fmt.Println("JWT_KEY", m.JWTKey)
+			return m.JWTKey, nil
 		})
-
 		if err != nil {
-			log.Printf("validate: parse token: %v", err)
+			if err == jwt.ErrSignatureInvalid {
+				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+			}
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		if !tkn.Valid {
 			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 		}
 
-		_, ok := token.Claims.(jwt.MapClaims)
-		if !ok || !token.Valid {
-			log.Printf("validate: token invalid: %v", err)
-			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
-		}
+		c.Set("auth:user", claims)
 
 		return next(c)
 	}
