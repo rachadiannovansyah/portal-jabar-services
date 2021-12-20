@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -199,6 +200,32 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 	}
 
 	m.ID = lastID
+
+	return
+}
+
+func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "UPDATE events SET deleted_at=? WHERE id = ?"
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	deletedAt := time.Now()
+	res, err := stmt.ExecContext(ctx, deletedAt, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
+		return
+	}
 
 	return
 }
