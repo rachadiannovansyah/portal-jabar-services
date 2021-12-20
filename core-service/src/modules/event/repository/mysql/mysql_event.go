@@ -202,3 +202,28 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 
 	return
 }
+
+func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "DELETE FROM events WHERE id = ?"
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
+		return
+	}
+
+	return
+}

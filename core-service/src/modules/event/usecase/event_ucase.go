@@ -87,3 +87,19 @@ func (u *eventUcase) GetByTitle(c context.Context, title string) (res domain.Eve
 
 	return
 }
+
+func (u *eventUcase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	existedEvent, err := u.eventRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	if existedEvent == (domain.Event{}) {
+		return domain.ErrNotFound
+	}
+
+	return u.eventRepo.Delete(ctx, id)
+}

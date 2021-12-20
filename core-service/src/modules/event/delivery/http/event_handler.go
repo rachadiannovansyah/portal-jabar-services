@@ -26,6 +26,7 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	e.GET("/events/:id", handler.GetByID)
 	e.GET("/events/calendar", handler.ListCalendar)
 	e.POST("/events", handler.Store)
+	e.DELETE("/events/:id", handler.Delete)
 }
 
 // Validate domain
@@ -116,4 +117,21 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusCreated, events)
+}
+
+func (h *EventHandler) Delete(c echo.Context) (err error) {
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.EventUcase.Delete(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
