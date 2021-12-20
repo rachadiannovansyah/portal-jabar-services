@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -204,13 +205,14 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 }
 
 func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error) {
-	query := "DELETE FROM events WHERE id = ?"
+	query := "UPDATE events SET deleted_at=?, status=? WHERE id = ?"
 	stmt, err := r.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, id)
+	deletedAt := time.Now()
+	res, err := stmt.ExecContext(ctx, deletedAt, "trashed", id)
 	if err != nil {
 		return
 	}
