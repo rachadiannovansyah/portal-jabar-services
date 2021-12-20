@@ -160,7 +160,7 @@ CREATE TABLE events (
   village_code varchar(191) NULL,
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  deleted_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON DELETE CURRENT_TIMESTAMP,
+  deleted_at datetime NULL DEFAULT CURRENT_TIMESTAMP ON DELETE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
 );
 CREATE INDEX idx_title ON events (title);
@@ -168,6 +168,7 @@ CREATE INDEX idx_start_hour ON events (start_hour);
 CREATE INDEX idx_end_hour ON events (end_hour);
 CREATE INDEX idx_category ON events (category);
 CREATE INDEX idx_status ON events (status);
+CREATE INDEX idx_deleted_at ON events (deleted_at);
 
 DROP TABLE IF EXISTS feedback;
 CREATE TABLE feedback (
