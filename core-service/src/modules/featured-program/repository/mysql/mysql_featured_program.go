@@ -120,7 +120,7 @@ func (m *mysqlFeaturedProgramRepository) Fetch(ctx context.Context, params *doma
 func (m *mysqlFeaturedProgramRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
 	query := getJSONSearch(params)
 
-	total, err = m.count(ctx, ` SELECT COUNT(1) FROM featured_programs `+query)
+	total, err = m.count(ctx, ` SELECT COUNT(1) FROM featured_programs `)
 
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM featured_programs`+query+` LIMIT 1`)
 
