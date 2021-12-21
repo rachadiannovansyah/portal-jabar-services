@@ -103,3 +103,11 @@ func (u *eventUcase) Delete(c context.Context, id int64) (err error) {
 
 	return u.eventRepo.Delete(ctx, id)
 }
+
+func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequestEvent) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	body.UpdatedAt = time.Now()
+	return u.eventRepo.Update(ctx, id, body)
+}

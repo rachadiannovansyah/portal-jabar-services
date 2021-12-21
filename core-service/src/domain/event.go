@@ -42,6 +42,19 @@ type StoreRequestEvent struct {
 	Category  string `json:"category" validate:"required"`
 }
 
+// UpdateRequestEvent ..
+type UpdateRequestEvent struct {
+	Title     string    `json:"title" validate:"required"`
+	Type      string    `json:"type" validate:"required"`
+	URL       string    `json:"url"`
+	Address   string    `json:"address"`
+	Date      string    `json:"date" validate:"required"`
+	StartHour string    `json:"start_hour" validate:"required"`
+	EndHour   string    `json:"end_hour" validate:"required"`
+	Category  string    `json:"category" validate:"required"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // ListEventResponse model ..
 type ListEventResponse struct {
 	ID        int64      `json:"id"`
@@ -72,6 +85,7 @@ type EventUsecase interface {
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	Store(context.Context, *StoreRequestEvent) error
 	Delete(ctx context.Context, id int64) error
+	Update(context.Context, int64, *UpdateRequestEvent) error
 }
 
 // EventRepository ..
@@ -82,4 +96,5 @@ type EventRepository interface {
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	Store(ctx context.Context, body *StoreRequestEvent) error
 	Delete(ctx context.Context, id int64) error
+	Update(ctx context.Context, id int64, body *UpdateRequestEvent) error
 }

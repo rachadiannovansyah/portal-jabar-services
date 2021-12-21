@@ -229,3 +229,28 @@ func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error)
 
 	return
 }
+
+func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.UpdateRequestEvent) (err error) {
+	query := `UPDATE events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , updated_at=? WHERE id = ?`
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, m.Title, m.Type, m.URL, m.Address, m.Date, m.StartHour, m.EndHour, m.Category, m.UpdatedAt, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total affected: %d", rowAffected)
+		return
+	}
+
+	return
+}
