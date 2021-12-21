@@ -19,7 +19,7 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 	return &mysqlUserRepository{Conn}
 }
 
-var querySelect = `SELECT id, name, username, email, password, unit_id, role_id FROM users WHERE 1=1`
+var querySelect = `SELECT id, name, username, email, photo, password, unit_id, role_id FROM users WHERE 1=1`
 
 // GetByID ...
 func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
@@ -44,6 +44,7 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Name,
 		&res.Username,
 		&res.Email,
+		&res.Photo,
 		&res.Password,
 		&res.UnitID,
 		&res.RoleID,
