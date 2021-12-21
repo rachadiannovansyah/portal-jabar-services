@@ -27,6 +27,7 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	e.GET("/events/calendar", handler.ListCalendar)
 	e.POST("/events", handler.Store)
 	e.DELETE("/events/:id", handler.Delete)
+	e.PUT("/events/:id", handler.Update)
 }
 
 // Validate domain
@@ -95,7 +96,7 @@ func (h *EventHandler) ListCalendar(c echo.Context) error {
 	return c.JSON(http.StatusOK, listEventCalendar)
 }
 
-// Store ..
+// Store a new event ..
 func (h *EventHandler) Store(c echo.Context) (err error) {
 	var events domain.StoreRequestEvent
 	err = c.Bind(&events)
@@ -119,6 +120,7 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, events)
 }
 
+// Delete an event ..
 func (h *EventHandler) Delete(c echo.Context) (err error) {
 	reqID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -134,4 +136,29 @@ func (h *EventHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// Update an event ..
+func (h *EventHandler) Update(c echo.Context) (err error) {
+	var events domain.UpdateRequestEvent
+	err = c.Bind(&events)
+
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.EventUcase.Update(ctx, id, &events)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, domain.ErrNotFound.Error())
+	}
+
+	return c.JSON(http.StatusOK, events)
 }
