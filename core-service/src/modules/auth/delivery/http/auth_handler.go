@@ -62,6 +62,7 @@ func (h *AuthHandler) RefreshToken(c echo.Context) error {
 func (h *AuthHandler) UserProfile(c echo.Context) error {
 	ctx := c.Request().Context()
 
+	// FIXME: authenticated variables must be global variables to be accessible everywhere
 	auth := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 

@@ -38,10 +38,7 @@ func (h *UserHandler) Store(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	//var ok bool
-	//if ok, err = isRequestValid(u); !ok {
-	//	return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	//}
+	// FIXME: validate request based on AC Rules (waiting)
 
 	ctx := c.Request().Context()
 	err = h.UUsecase.Store(ctx, u)
