@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -18,11 +19,27 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 	return &mysqlUserRepository{Conn}
 }
 
+var querySelect = `SELECT id, name, username, email, password, unit_id, role_id FROM users WHERE 1=1`
+
 // GetByID ...
 func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
-	query := `SELECT id, name, username, email, password, unit_id, role_id FROM users WHERE id = ?`
+	query := querySelect + fmt.Sprintf(` AND id = '%s'`, id)
+	err = m.scan(ctx, query, &res)
 
-	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
+	return
+}
+
+// GetByEmail ...
+func (m *mysqlUserRepository) GetByEmail(ctx context.Context, email string) (res domain.User, err error) {
+	query := querySelect + fmt.Sprintf(` AND email = '%s'`, email)
+
+	err = m.scan(ctx, query, &res)
+
+	return
+}
+
+func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domain.User) (err error) {
+	err = m.Conn.QueryRowContext(ctx, query).Scan(
 		&res.ID,
 		&res.Name,
 		&res.Username,
@@ -33,6 +50,21 @@ func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res do
 	)
 	if err != nil {
 		logrus.Error("Error found", err)
+	}
+
+	return
+}
+
+func (m *mysqlUserRepository) Store(ctx context.Context, u *domain.User) (err error) {
+	query := `INSERT users SET id = ?, name = ?, username = ?, email = ?, password = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, u.ID, u.Name, u.Username, u.Email, u.Password)
+	if err != nil {
+		return
 	}
 
 	return

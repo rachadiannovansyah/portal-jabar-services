@@ -31,7 +31,7 @@ func main() {
 
 	e := echo.New()
 	e.HTTPErrorHandler = server.ErrorHandler
-	middL := middl.InitMiddleware()
+	middL := middl.InitMiddleware(cfg)
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
 	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
@@ -59,7 +59,7 @@ func main() {
 
 	// init repo category repo
 	mysqlRepos := server.NewRepository(dbConn)
-	usecases := server.NewUcase(mysqlRepos, timeoutContext)
+	usecases := server.NewUcase(cfg, mysqlRepos, timeoutContext)
 	server.NewHandler(v1, r, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))

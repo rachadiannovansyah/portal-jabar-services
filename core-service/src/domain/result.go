@@ -14,7 +14,7 @@ type ResultData struct {
 // ResultsData ...
 type ResultsData struct {
 	Data interface{} `json:"data"`
-	Meta interface{} `json:"meta"`
+	Meta interface{} `json:"meta,omitempty"`
 }
 
 // MetaData ...

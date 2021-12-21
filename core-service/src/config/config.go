@@ -1,9 +1,10 @@
 package config
 
 import (
+	"log"
+
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/labstack/echo/v4/middleware"
-	"log"
 
 	"github.com/spf13/viper"
 )
@@ -11,6 +12,7 @@ import (
 // Config is the struct for the config
 type Config struct {
 	DB      DBConfig
+	JWT     JWTConfig
 	Sentry  SentryConfig
 	Cors    middleware.CORSConfig
 	ELastic elasticsearch.Config
@@ -28,6 +30,7 @@ func NewConfig() *Config {
 
 	return &Config{
 		DB:      LoadDBConfig(),
+		JWT:     LoadJWTConfig(),
 		Sentry:  LoadSentryConfig(),
 		Cors:    LoadCorsConfig(),
 		ELastic: LoadElasticConfig(),
