@@ -19,7 +19,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events WHERE deleted_at is null `
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -77,7 +77,7 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := ` WHERE 1=1`
+	query := ` AND 1=1`
 
 	if params.Keyword != "" {
 		query += ` AND title LIKE '%` + params.Keyword + `%' `
@@ -102,7 +102,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 }
 
 func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domain.Event, err error) {
-	query := querySelectAgenda + ` WHERE ID = ?`
+	query := querySelectAgenda + ` AND ID = ?`
 
 	list, err := r.fetchQuery(ctx, query, id)
 	if err != nil {
@@ -167,7 +167,7 @@ func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.
 }
 
 func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (res domain.Event, err error) {
-	query := querySelectAgenda + ` WHERE title = ?`
+	query := querySelectAgenda + ` AND title = ?`
 
 	list, err := r.fetchQuery(ctx, query, title)
 	if err != nil {
