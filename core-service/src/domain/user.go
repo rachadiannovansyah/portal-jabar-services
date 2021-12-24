@@ -9,26 +9,28 @@ import (
 
 // User ...
 type User struct {
-	ID        uuid.UUID `json:"id"`
-	Name      string    `json:"name"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	UnitID    NullInt64 `json:"unit_id"`
-	RoleID    NullInt64 `json:"role_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	DeletedAt time.Time `json:"deleted_at"`
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	Username  string     `json:"username"`
+	Email     string     `json:"email"`
+	Password  string     `json:"password"`
+	Photo     NullString `json:"photo"`
+	UnitID    NullInt64  `json:"unit_id"`
+	RoleID    NullInt64  `json:"role_id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt time.Time  `json:"deleted_at"`
 }
 
 // UserInfo ...
 type UserInfo struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
-	Username string    `json:"username"`
-	Email    string    `json:"email"`
-	UnitID   NullInt64 `json:"unit_id"`
-	RoleID   NullInt64 `json:"role_id"`
+	ID       uuid.UUID  `json:"id"`
+	Name     string     `json:"name"`
+	Username string     `json:"username"`
+	Email    string     `json:"email"`
+	Photo    NullString `json:"photo"`
+	UnitID   NullInt64  `json:"unit_id"`
+	RoleID   NullInt64  `json:"role_id"`
 }
 
 // Author ...

@@ -4,6 +4,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/mitchellh/mapstructure"
+	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -26,11 +27,24 @@ func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase) {
 	r.GET("/auth/me", handler.UserProfile)
 }
 
+func isRequestValid(f *domain.LoginRequest) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(f)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // Login ...
 func (h *AuthHandler) Login(c echo.Context) error {
 	cred := new(domain.LoginRequest)
 	if err := c.Bind(cred); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if ok, err := isRequestValid(cred); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	ctx := c.Request().Context()

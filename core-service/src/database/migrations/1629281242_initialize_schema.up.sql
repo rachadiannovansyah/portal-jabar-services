@@ -54,6 +54,7 @@ CREATE TABLE users (
   name varchar(100) NOT NULL,
   username varchar(100) NOT NULL,
   email varchar(80) NOT NULL,
+  photo varchar(255),
   password varchar(255) NOT NULL,
   unit_id int(10) unsigned,
   role_id tinyint(2) unsigned,
