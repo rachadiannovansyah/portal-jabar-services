@@ -37,7 +37,7 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 }
 
 func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
-	exp = time.Now().Add(time.Hour * n.config.JWT.ExpireCount).Unix()
+	exp = time.Now().Add(time.Second * n.config.JWT.TTL).Unix()
 	claims := &domain.JwtCustomClaims{
 		user.ID,
 		user.Name,
@@ -57,7 +57,7 @@ func (n *authUsecase) createRefreshToken(user *domain.User) (t string, err error
 		ID:    user.ID,
 		Email: user.Email,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * n.config.JWT.ExpireRefreshCount).Unix(),
+			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
 		},
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)
@@ -78,7 +78,7 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
-		return domain.LoginResponse{}, fmt.Errorf("Invalid credentials")
+		return domain.LoginResponse{}, domain.ErrInvalidCredentials
 	}
 
 	accessToken, exp, err := n.createAccessToken(&user)
