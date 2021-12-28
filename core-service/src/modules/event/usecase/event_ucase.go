@@ -67,10 +67,6 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	existedEvent, _ := u.GetByTitle(ctx, m.Title)
-	if existedEvent != (domain.Event{}) {
-		return domain.ErrConflict
-	}
 	err = u.eventRepo.Store(ctx, m)
 
 	return
