@@ -99,6 +99,7 @@ func (h *EventHandler) ListCalendar(c echo.Context) error {
 // Store a new event ..
 func (h *EventHandler) Store(c echo.Context) (err error) {
 	var events domain.StoreRequestEvent
+	var dt domain.DataTags
 	err = c.Bind(&events)
 
 	if err != nil {
@@ -111,7 +112,7 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
-	err = h.EventUcase.Store(ctx, &events)
+	err = h.EventUcase.Store(ctx, &events, &dt)
 
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})

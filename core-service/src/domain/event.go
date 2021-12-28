@@ -83,7 +83,7 @@ type EventUsecase interface {
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
-	Store(context.Context, *StoreRequestEvent) error
+	Store(context.Context, *StoreRequestEvent, *DataTags) error
 	Delete(ctx context.Context, id int64) error
 	Update(context.Context, int64, *UpdateRequestEvent) error
 }
