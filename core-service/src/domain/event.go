@@ -40,6 +40,7 @@ type StoreRequestEvent struct {
 	StartHour string `json:"start_hour" validate:"required"`
 	EndHour   string `json:"end_hour" validate:"required"`
 	Category  string `json:"category" validate:"required"`
+	Tags      []Tags `json:"tags"`
 }
 
 // UpdateRequestEvent ..
@@ -83,7 +84,7 @@ type EventUsecase interface {
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
-	Store(context.Context, *StoreRequestEvent, *DataTags) error
+	Store(context.Context, *StoreRequestEvent) error
 	Delete(ctx context.Context, id int64) error
 	Update(context.Context, int64, *UpdateRequestEvent) error
 }

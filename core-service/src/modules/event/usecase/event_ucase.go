@@ -10,17 +10,17 @@ import (
 type eventUcase struct {
 	eventRepo      domain.EventRepository
 	categories     domain.CategoryRepository
-	tagsRepo       domain.DataTagsRepository
+	tagsRepo       domain.TagsRepository
 	contextTimeout time.Duration
 }
 
 // NewEventUsecase will create new an eventUsecase object representation of domain.eventUsecase interface
-func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tr domain.DataTagsRepository, timeout time.Duration) domain.EventUsecase {
+func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tags domain.TagsRepository, timeout time.Duration) domain.EventUsecase {
 	return &eventUcase{
 		eventRepo:      repo,
 		categories:     ctg,
 		contextTimeout: timeout,
-		tagsRepo:       tr,
+		tagsRepo:       tags,
 	}
 }
 
@@ -65,12 +65,21 @@ func (u *eventUcase) ListCalendar(c context.Context, params *domain.Request) (re
 }
 
 // Store an events
-func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent, dt *domain.DataTags) (err error) {
+func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
 	err = u.eventRepo.Store(ctx, m)
-	err = u.tagsRepo.StoreDataTags(ctx, dt)
+	if err != nil {
+		return
+	}
+
+	for _, tags := range m.Tags {
+		err = u.tagsRepo.StoreTags(ctx, tags)
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }
