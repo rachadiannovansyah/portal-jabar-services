@@ -36,7 +36,7 @@ func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *
 		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.DataTagsRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
-		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.DataTagsRepo, timeoutContext),
+		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.TagsRepo, timeoutContext),
 		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),
