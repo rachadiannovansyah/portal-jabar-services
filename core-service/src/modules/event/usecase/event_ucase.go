@@ -74,8 +74,8 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 		return
 	}
 
-	for _, tags := range m.Tags {
-		err = u.tagsRepo.StoreTags(ctx, tags)
+	for _, tag := range m.Tags {
+		err = u.tagsRepo.StoreTags(ctx, tag)
 		if err != nil {
 			return
 		}
