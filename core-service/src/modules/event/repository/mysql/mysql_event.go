@@ -89,7 +89,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	query += ` ORDER BY date, start_hour, priority DESC `
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `+query)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `)
 
 	query = querySelectAgenda + query + ` LIMIT ?,? `
 
