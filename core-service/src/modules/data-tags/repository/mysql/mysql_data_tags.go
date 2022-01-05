@@ -60,3 +60,25 @@ func (m *mysqlDataTagsRepository) FetchDataTags(ctx context.Context, id int64) (
 
 	return
 }
+
+func (m *mysqlDataTagsRepository) StoreDataTags(ctx context.Context, dt *domain.DataTags) (err error) {
+	query := `INSERT data_tags SET data_id=?, tags_name=?, type=?`
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, dt.DataID, dt.TagsName, dt.Type)
+	if err != nil {
+		return
+	}
+
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		return
+	}
+	dt.ID = lastID
+
+	return
+}

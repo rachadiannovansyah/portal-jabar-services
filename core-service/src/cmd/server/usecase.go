@@ -1,6 +1,8 @@
 package server
 
 import (
+	"time"
+
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
@@ -12,7 +14,6 @@ import (
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
 	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
-	"time"
 )
 
 // Usecases ...
@@ -35,7 +36,7 @@ func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *
 		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.DataTagsRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
-		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, timeoutContext),
+		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.TagRepo, r.DataTagsRepo, timeoutContext),
 		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),

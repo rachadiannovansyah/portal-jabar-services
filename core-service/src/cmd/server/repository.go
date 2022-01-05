@@ -13,6 +13,7 @@ import (
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
+	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
 	_userRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/repository/mysql"
 )
@@ -29,6 +30,7 @@ type Repository struct {
 	FeaturedProgramRepo domain.FeaturedProgramRepository
 	UserRepo            domain.UserRepository
 	DataTagsRepo        domain.DataTagsRepository
+	TagRepo             domain.TagRepository
 	SearchRepo          domain.SearchRepository
 }
 
@@ -45,6 +47,7 @@ func NewRepository(conn *database.DBConn) *Repository {
 		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
 		UserRepo:            _userRepo.NewMysqlUserRepository(conn.Mysql),
 		DataTagsRepo:        _dataTagsRepo.NewMysqlDataTagsRepository(conn.Mysql),
+		TagRepo:             _tagRepo.NewMysqlTagRepository(conn.Mysql),
 		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
 	}
 }
