@@ -100,7 +100,6 @@ func (h *EventHandler) ListCalendar(c echo.Context) error {
 func (h *EventHandler) Store(c echo.Context) (err error) {
 	var events domain.StoreRequestEvent
 	err = c.Bind(&events)
-
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
