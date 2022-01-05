@@ -7,16 +7,16 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-type mysqlTagsRepository struct {
+type mysqlTagRepository struct {
 	Conn *sql.DB
 }
 
-// NewMysqlTagsRepository ..
-func NewMysqlTagsRepository(Conn *sql.DB) domain.TagsRepository {
-	return &mysqlTagsRepository{Conn}
+// NewMysqlTagRepository ..
+func NewMysqlTagRepository(Conn *sql.DB) domain.TagRepository {
+	return &mysqlTagRepository{Conn}
 }
 
-func (m *mysqlTagsRepository) StoreTags(ctx context.Context, t *domain.Tags) (err error) {
+func (m *mysqlTagRepository) StoreTag(ctx context.Context, t *domain.Tag) (err error) {
 	query := `INSERT tags SET name=?`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
