@@ -35,7 +35,11 @@ func (m *mysqlUserRepository) GetByEmail(ctx context.Context, email string) (res
 
 	err = m.scan(ctx, query, &res)
 
-	return
+	if err != sql.ErrNoRows {
+		return
+	}
+
+	return res, nil
 }
 
 func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domain.User) (err error) {
