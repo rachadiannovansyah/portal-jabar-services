@@ -17,7 +17,7 @@ func NewMysqlTagRepository(Conn *sql.DB) domain.TagRepository {
 }
 
 func (m *mysqlTagRepository) StoreTag(ctx context.Context, t *domain.Tag) (err error) {
-	query := `INSERT tags SET name=?`
+	query := `INSERT tag SET name=?`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
