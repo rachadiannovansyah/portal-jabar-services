@@ -86,10 +86,10 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 		}
 
 		dataTag := &domain.DataTag{
-			DataID:   m.ID,
-			TagID:    tag.ID,
-			TagsName: tagName,
-			Type:     "events",
+			DataID:  m.ID,
+			TagID:   tag.ID,
+			TagName: tagName,
+			Type:    "events",
 		}
 		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
 		if err != nil {

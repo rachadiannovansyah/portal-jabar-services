@@ -36,7 +36,7 @@ func (m *mysqlDataTagRepository) fetch(ctx context.Context, query string, args .
 		t := domain.DataTag{}
 		err = rows.Scan(
 			&t.DataID,
-			&t.TagsName,
+			&t.TagName,
 			&t.Type,
 		)
 
@@ -69,7 +69,7 @@ func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.Da
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, dt.DataID, dt.TagID, dt.TagsName, dt.Type)
+	res, err := stmt.ExecContext(ctx, dt.DataID, dt.TagID, dt.TagName, dt.Type)
 	if err != nil {
 		return
 	}
