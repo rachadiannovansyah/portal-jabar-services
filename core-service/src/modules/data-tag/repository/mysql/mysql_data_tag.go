@@ -8,16 +8,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type mysqlDataTagsRepository struct {
+type mysqlDataTagRepository struct {
 	Conn *sql.DB
 }
 
-// NewMysqlDataTagsRepository ..
-func NewMysqlDataTagsRepository(Conn *sql.DB) domain.DataTagsRepository {
-	return &mysqlDataTagsRepository{Conn}
+// NewMysqlDataTagRepository ..
+func NewMysqlDataTagRepository(Conn *sql.DB) domain.DataTagRepository {
+	return &mysqlDataTagRepository{Conn}
 }
 
-func (m *mysqlDataTagsRepository) fetch(ctx context.Context, query string, args ...interface{}) (res []domain.DataTags, err error) {
+func (m *mysqlDataTagRepository) fetch(ctx context.Context, query string, args ...interface{}) (res []domain.DataTag, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -31,12 +31,12 @@ func (m *mysqlDataTagsRepository) fetch(ctx context.Context, query string, args 
 		}
 	}()
 
-	res = make([]domain.DataTags, 0)
+	res = make([]domain.DataTag, 0)
 	for rows.Next() {
-		t := domain.DataTags{}
+		t := domain.DataTag{}
 		err = rows.Scan(
 			&t.DataID,
-			&t.TagsName,
+			&t.TagName,
 			&t.Type,
 		)
 
@@ -50,8 +50,8 @@ func (m *mysqlDataTagsRepository) fetch(ctx context.Context, query string, args 
 	return res, nil
 }
 
-func (m *mysqlDataTagsRepository) FetchDataTags(ctx context.Context, id int64) (res []domain.DataTags, err error) {
-	query := `SELECT data_id, tags_name, type FROM data_tags WHERE data_id = ?`
+func (m *mysqlDataTagRepository) FetchDataTags(ctx context.Context, id int64) (res []domain.DataTag, err error) {
+	query := `SELECT data_id, tag_name, type FROM data_tag WHERE data_id = ?`
 
 	res, err = m.fetch(ctx, query, id)
 	if err != nil {
@@ -61,15 +61,15 @@ func (m *mysqlDataTagsRepository) FetchDataTags(ctx context.Context, id int64) (
 	return
 }
 
-func (m *mysqlDataTagsRepository) StoreDataTags(ctx context.Context, dt *domain.DataTags) (err error) {
-	query := `INSERT data_tags SET data_id=?, tags_name=?, type=?`
+func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.DataTag) (err error) {
+	query := `INSERT data_tag SET data_id=?, tag_id=?, tag_name=?, type=?`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, dt.DataID, dt.TagsName, dt.Type)
+	res, err := stmt.ExecContext(ctx, dt.DataID, dt.TagID, dt.TagName, dt.Type)
 	if err != nil {
 		return
 	}

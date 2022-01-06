@@ -200,23 +200,23 @@ CREATE TABLE featured_programs (
 );
 CREATE INDEX idx_categories_program on featured_programs (categories);
 
-DROP TABLE IF EXISTS tags;
-CREATE TABLE tags (
+DROP TABLE IF EXISTS tag;
+CREATE TABLE tag (
     id int(10) unsigned NOT NULL AUTO_INCREMENT,
     name varchar(20) NOT NULL,
     PRIMARY KEY(id)
 );
-CREATE INDEX idx_tags_name ON tags (name);
+CREATE INDEX idx_tag_name ON tag (name);
 
-DROP TABLE IF EXISTS data_tags;
-CREATE TABLE data_tags (
+DROP TABLE IF EXISTS data_tag;
+CREATE TABLE data_tag (
     id int(10) unsigned NOT NULL AUTO_INCREMENT,
     data_id int(10) unsigned,
-    tags_id int(10) unsigned,
-    tags_name varchar(20),
+    tag_id int(10) unsigned,
+    tag_name varchar(20),
     type varchar(10),
     PRIMARY KEY(id)
 );
-CREATE INDEX idx_tags_name ON data_tags (tags_name);
+CREATE INDEX idx_tag_name ON data_tag (tag_name);
 
 COMMIT;
