@@ -6,6 +6,7 @@ import "context"
 type DataTags struct {
 	ID       int64  `json:"id"`
 	DataID   int64  `json:"data_id"`
+	TagID    int64  `json:"tag_id"`
 	TagsName string `json:"tags_name"`
 	Type     string `json:"type"`
 }
