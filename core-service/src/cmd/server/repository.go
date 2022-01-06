@@ -6,7 +6,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_areaRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/repository/mysql"
 	_categoryRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/category/repository/mysql"
-	_dataTagsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/data-tags/repository/mysql"
+	_dataTagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/data-tag/repository/mysql"
 	_eventRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/repository/mysql"
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
@@ -29,7 +29,7 @@ type Repository struct {
 	FeedbackRepo        domain.FeedbackRepository
 	FeaturedProgramRepo domain.FeaturedProgramRepository
 	UserRepo            domain.UserRepository
-	DataTagsRepo        domain.DataTagsRepository
+	DataTagsRepo        domain.DataTagRepository
 	TagRepo             domain.TagRepository
 	SearchRepo          domain.SearchRepository
 }
@@ -46,7 +46,7 @@ func NewRepository(conn *database.DBConn) *Repository {
 		FeedbackRepo:        _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
 		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
 		UserRepo:            _userRepo.NewMysqlUserRepository(conn.Mysql),
-		DataTagsRepo:        _dataTagsRepo.NewMysqlDataTagsRepository(conn.Mysql),
+		DataTagsRepo:        _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
 		TagRepo:             _tagRepo.NewMysqlTagRepository(conn.Mysql),
 		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
 	}

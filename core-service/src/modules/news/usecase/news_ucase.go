@@ -16,12 +16,12 @@ type newsUsecase struct {
 	newsRepo       domain.NewsRepository
 	categories     domain.CategoryRepository
 	userRepo       domain.UserRepository
-	tagsRepo       domain.DataTagsRepository
+	tagsRepo       domain.DataTagRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.DataTagsRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.DataTagRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
@@ -35,14 +35,14 @@ func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]dom
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the tags
-	mapNews := map[int64][]domain.DataTags{}
+	mapNews := map[int64][]domain.DataTag{}
 
 	for _, news := range data {
-		mapNews[news.ID] = []domain.DataTags{}
+		mapNews[news.ID] = []domain.DataTag{}
 	}
 
 	// Using goroutine to fetch the list tags
-	chanTags := make(chan []domain.DataTags)
+	chanTags := make(chan []domain.DataTag)
 	for idx := range mapNews {
 		newsID := idx
 		g.Go(func() (err error) {
@@ -62,7 +62,7 @@ func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]dom
 	}()
 
 	for listTags := range chanTags {
-		newsTags := []domain.DataTags{}
+		newsTags := []domain.DataTag{}
 		copier.Copy(&newsTags, &listTags)
 		if len(listTags) < 1 {
 			continue
@@ -88,11 +88,11 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the tags
-	mapNews := map[int64][]domain.DataTags{}
-	mapNews[data.ID] = []domain.DataTags{}
+	mapNews := map[int64][]domain.DataTag{}
+	mapNews[data.ID] = []domain.DataTag{}
 
 	// Using goroutine to fetch the list tags
-	chanTags := make(chan []domain.DataTags)
+	chanTags := make(chan []domain.DataTag)
 	g.Go(func() (err error) {
 		res, err := n.tagsRepo.FetchDataTags(ctx, data.ID)
 		chanTags <- res
@@ -109,7 +109,7 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	}()
 
 	for listTags := range chanTags {
-		newsTags := []domain.DataTags{}
+		newsTags := []domain.DataTag{}
 		copier.Copy(&newsTags, &listTags)
 		if len(listTags) < 1 {
 			continue

@@ -11,18 +11,18 @@ type eventUcase struct {
 	eventRepo      domain.EventRepository
 	categories     domain.CategoryRepository
 	tagsRepo       domain.TagRepository
-	dataTagsRepo   domain.DataTagsRepository
+	dataTagRepo    domain.DataTagRepository
 	contextTimeout time.Duration
 }
 
 // NewEventUsecase will create new an eventUsecase object representation of domain.eventUsecase interface
-func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tags domain.TagRepository, dtags domain.DataTagsRepository, timeout time.Duration) domain.EventUsecase {
+func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tags domain.TagRepository, dtags domain.DataTagRepository, timeout time.Duration) domain.EventUsecase {
 	return &eventUcase{
 		eventRepo:      repo,
 		categories:     ctg,
 		contextTimeout: timeout,
 		tagsRepo:       tags,
-		dataTagsRepo:   dtags,
+		dataTagRepo:    dtags,
 	}
 }
 
@@ -85,13 +85,13 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 			return
 		}
 
-		dataTag := &domain.DataTags{
+		dataTag := &domain.DataTag{
 			DataID:   m.ID,
 			TagID:    tag.ID,
 			TagsName: tagName,
 			Type:     "events",
 		}
-		err = u.dataTagsRepo.StoreDataTags(ctx, dataTag)
+		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
 		if err != nil {
 			return
 		}
