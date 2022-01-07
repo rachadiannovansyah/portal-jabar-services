@@ -34,7 +34,7 @@ func (m *GoMiddleware) JWT(next echo.HandlerFunc) echo.HandlerFunc {
 			return m.JWTKey, nil
 		})
 		if err != nil {
-			if err == jwt.ErrSignatureInvalid {
+			if err == jwt.ErrSignatureInvalid || !tkn.Valid {
 				return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 			}
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
