@@ -86,8 +86,11 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
-
-	query += ` ORDER BY date, start_hour, priority DESC `
+	if params.SortBy != "" {
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query += ` ORDER BY date, start_hour, priority DESC `
+	}
 
 	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `)
 
