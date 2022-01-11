@@ -152,7 +152,7 @@ CREATE TABLE events (
   image varchar(255) DEFAULT NULL,
   published_by varchar(16) DEFAULT NULL,
   type ENUM('offline', 'online') NOT NULL,
-  status varchar(20) DEFAULT 'UNPUBLISHED' NOT NULL,
+  status varchar(12) NOT NULL DEFAULT 'UNPUBLISHED',
   address varchar(255) DEFAULT NULL,
   url varchar(80) DEFAULT NULL,
   category varchar(30) NOT NULL,
