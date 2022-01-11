@@ -40,6 +40,7 @@ type NewsListResponse struct {
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
 	Tags      []DataTag  `json:"tags"`
+	Status    string     `json:"status"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`

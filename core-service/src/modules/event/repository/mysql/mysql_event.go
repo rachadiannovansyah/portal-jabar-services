@@ -86,6 +86,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
+
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {

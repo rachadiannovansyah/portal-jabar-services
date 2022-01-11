@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -18,7 +19,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, status, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -52,6 +53,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Views,
 			&t.Shared,
 			&t.Source,
+			&t.Status,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
@@ -112,6 +114,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 
 	if v, ok := params.Filters["type"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
+	}
+
+	if params.StartDate != "" && params.EndDate != "" {
+		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	if params.SortBy != "" {
