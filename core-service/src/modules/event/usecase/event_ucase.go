@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jinzhu/copier"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 )
 
 type eventUcase struct {
@@ -26,6 +29,58 @@ func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository,
 	}
 }
 
+func (u *eventUcase) fillDataTags(c context.Context, data []domain.Event) ([]domain.Event, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the tags from the tags domain
+	mapTags := map[int64][]domain.DataTag{}
+
+	for _, eventTag := range data {
+		mapTags[eventTag.ID] = []domain.DataTag{}
+	}
+
+	// Using goroutine to fetch the list tags
+	chanTags := make(chan []domain.DataTag)
+	for idx := range mapTags {
+		eventID := idx
+		g.Go(func() (err error) {
+			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID)
+			chanTags <- res
+			return
+		})
+	}
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanTags)
+	}()
+
+	for listTags := range chanTags {
+		eventTags := []domain.DataTag{}
+		copier.Copy(&eventTags, &listTags)
+		if len(listTags) < 1 {
+			continue
+		}
+		mapTags[listTags[0].DataID] = eventTags
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	for index, element := range data {
+		if tags, ok := mapTags[element.ID]; ok {
+			data[index].Tags = tags
+		}
+	}
+
+	return data, nil
+}
+
 // Fetch ...
 func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
@@ -33,6 +88,12 @@ func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []dom
 	defer cancel()
 
 	res, total, err = u.eventRepo.Fetch(ctx, params)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err = u.fillDataTags(ctx, res)
+
 	if err != nil {
 		return nil, 0, err
 	}
@@ -115,15 +176,6 @@ func (u *eventUcase) GetByTitle(c context.Context, title string) (res domain.Eve
 func (u *eventUcase) Delete(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
-
-	existedEvent, err := u.eventRepo.GetByID(ctx, id)
-	if err != nil {
-		return
-	}
-
-	if existedEvent == (domain.Event{}) {
-		return domain.ErrNotFound
-	}
 
 	return u.eventRepo.Delete(ctx, id)
 }

@@ -21,6 +21,7 @@ type Event struct {
 	Address      NullString `json:"address"`
 	URL          NullString `json:"url"`
 	Category     string     `json:"category"`
+	Tags         []DataTag  `json:"tags"`
 	ProvinceCode Area       `json:"province_code"`
 	CityCode     Area       `json:"city_code"`
 	DistrictCode Area       `json:"district_code"`
@@ -69,6 +70,7 @@ type ListEventResponse struct {
 	Address   NullString `json:"address"`
 	URL       NullString `json:"url"`
 	Category  string     `json:"category" validate:"required"`
+	Tags      []DataTag  `json:"tags"`
 }
 
 //ListEventCalendarReponse ..
