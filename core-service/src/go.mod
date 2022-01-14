@@ -3,6 +3,7 @@ module github.com/jabardigitalservice/portal-jabar-services/core-service/src
 go 1.16
 
 require (
+	github.com/aws/aws-sdk-go v1.15.11
 	github.com/containerd/containerd v1.5.5 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/docker v20.10.8+incompatible // indirect

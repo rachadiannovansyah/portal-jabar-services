@@ -1,6 +1,7 @@
 package server
 
 import (
+	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 	"net/http"
 
 	"github.com/getsentry/sentry-go"
@@ -28,6 +29,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_authHttpDelivery.NewAuthHandler(e, r, u.AuthUcase)
 	_searchHttpDelivery.NewSearchHandler(e, r, u.SearchUcase)
 	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
+	_galleryHttpDelivery.NewMediaHandler(e, r, u.MediaUsecase)
 }
 
 // ErrorHandler ...

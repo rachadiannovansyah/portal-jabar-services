@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
@@ -10,6 +11,7 @@ import (
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
+	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
@@ -28,10 +30,11 @@ type Usecases struct {
 	AuthUcase            domain.AuthUsecase
 	SearchUcase          domain.SearchUsecase
 	UserUsecase          domain.UserUsecase
+	MediaUsecase         domain.MediaUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
-func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *Usecases {
+func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
 		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.DataTagsRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
@@ -42,5 +45,6 @@ func NewUcase(cfg *config.Config, r *Repository, timeoutContext time.Duration) *
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),
 		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
 		UserUsecase:          _userUcase.NewUserkUsecase(r.UserRepo, timeoutContext),
+		MediaUsecase:         _mediaUcase.NewMediaUsecase(conn, timeoutContext),
 	}
 }

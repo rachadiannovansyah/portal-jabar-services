@@ -16,6 +16,7 @@ type Config struct {
 	Sentry  SentryConfig
 	Cors    middleware.CORSConfig
 	ELastic elasticsearch.Config
+	AWS     AwsConfig
 }
 
 // NewConfig creates a new Config struct
@@ -34,5 +35,6 @@ func NewConfig() *Config {
 		Sentry:  LoadSentryConfig(),
 		Cors:    LoadCorsConfig(),
 		ELastic: LoadElasticConfig(),
+		AWS:     LoadAwsConfig(),
 	}
 }

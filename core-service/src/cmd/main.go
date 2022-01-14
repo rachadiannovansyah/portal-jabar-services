@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"log"
 	"time"
 
@@ -15,15 +16,14 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/cmd/server"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/database"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 )
 
 func main() {
 	cfg := config.NewConfig()
-	dbConn := database.NewDBConn(cfg)
+	conn := utils.NewDBConn(cfg)
 	defer func() {
-		err := dbConn.Mysql.Close()
+		err := conn.Mysql.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -58,8 +58,8 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
-	mysqlRepos := server.NewRepository(dbConn)
-	usecases := server.NewUcase(cfg, mysqlRepos, timeoutContext)
+	mysqlRepos := server.NewRepository(conn)
+	usecases := server.NewUcase(cfg, conn, mysqlRepos, timeoutContext)
 	server.NewHandler(v1, r, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))

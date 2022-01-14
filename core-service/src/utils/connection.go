@@ -1,22 +1,27 @@
-package database
+package utils
 
 import (
 	"database/sql"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/elastic/go-elasticsearch/v8"
 	"log"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
-type DBConn struct {
+type Conn struct {
 	Mysql   *sql.DB
 	Elastic *elasticsearch.Client
+	AWS     *session.Session
 }
 
-func NewDBConn(cfg *config.Config) *DBConn {
-	return &DBConn{
+func NewDBConn(cfg *config.Config) *Conn {
+	return &Conn{
 		Mysql:   initMysql(cfg),
 		Elastic: initELastClient(cfg),
+		AWS:     initAWSClient(cfg),
 	}
 }
 
@@ -50,4 +55,21 @@ func initELastClient(cfg *config.Config) *elasticsearch.Client {
 	defer res.Body.Close()
 
 	return es
+}
+
+func initAWSClient(cfg *config.Config) *session.Session {
+	s, err := session.NewSession(&aws.Config{
+		Region: aws.String(cfg.AWS.Region),
+		Credentials: credentials.NewStaticCredentials(
+			cfg.AWS.AccessKey,
+			cfg.AWS.SecretAccessKey,
+			"",
+		),
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return s
 }
