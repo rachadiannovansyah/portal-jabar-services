@@ -19,7 +19,7 @@ func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 	handler := &MediaHandler{
 		MUsecase: mu,
 	}
-	e.POST("/media/upload", handler.Store)
+	r.POST("/media/upload", handler.Store)
 }
 
 // Store will store the feedback by given request body
