@@ -73,6 +73,24 @@ type ListEventResponse struct {
 	Tags      []DataTag  `json:"tags"`
 }
 
+type DetailEventResponse struct {
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Date        time.Time  `json:"date"`
+	StartHour   string     `json:"start_hour"`
+	EndHour     string     `json:"end_hour"`
+	PublishedBy NullString `json:"published_by"`
+	Type        string     `json:"type"`
+	Status      string     `json:"status"`
+	Address     NullString `json:"address"`
+	URL         NullString `json:"url"`
+	Category    string     `json:"category"`
+	Tags        []DataTag  `json:"tags"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+}
+
 //ListEventCalendarReponse ..
 type ListEventCalendarReponse struct {
 	ID    int64     `json:"id"`
