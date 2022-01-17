@@ -76,7 +76,10 @@ func (h *EventHandler) GetByID(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &event})
+	detailEventRes := domain.DetailEventResponse{}
+	copier.Copy(&detailEventRes, &event)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailEventRes})
 }
 
 // ListCalendar ..

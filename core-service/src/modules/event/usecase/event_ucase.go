@@ -81,6 +81,54 @@ func (u *eventUcase) fillDataTags(c context.Context, data []domain.Event) ([]dom
 	return data, nil
 }
 
+func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (domain.Event, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the tags from the tags domain
+	mapTags := map[int64][]domain.DataTag{}
+
+	mapTags[data.ID] = []domain.DataTag{}
+
+	// Using goroutine to fetch the list tags
+	chanTags := make(chan []domain.DataTag)
+	for idx := range mapTags {
+		eventID := idx
+		g.Go(func() (err error) {
+			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID)
+			chanTags <- res
+			return
+		})
+	}
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanTags)
+	}()
+
+	for listTags := range chanTags {
+		eventTags := []domain.DataTag{}
+		copier.Copy(&eventTags, &listTags)
+		if len(listTags) < 1 {
+			continue
+		}
+		mapTags[listTags[0].DataID] = eventTags
+	}
+
+	if err := g.Wait(); err != nil {
+		return data, err
+	}
+
+	if tags, ok := mapTags[data.ID]; ok {
+		data.Tags = tags
+	}
+
+	return data, nil
+}
+
 // Fetch ...
 func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
@@ -110,6 +158,8 @@ func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err
 	if err != nil {
 		return
 	}
+
+	res, err = u.fillDetailDataTags(ctx, res)
 
 	return
 }
