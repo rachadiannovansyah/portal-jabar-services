@@ -46,6 +46,7 @@ type StoreRequestEvent struct {
 
 // UpdateRequestEvent ..
 type UpdateRequestEvent struct {
+	ID        int64     `json:"id"`
 	Title     string    `json:"title" validate:"required"`
 	Type      string    `json:"type" validate:"required"`
 	URL       string    `json:"url"`
@@ -54,6 +55,7 @@ type UpdateRequestEvent struct {
 	StartHour string    `json:"start_hour" validate:"required"`
 	EndHour   string    `json:"end_hour" validate:"required"`
 	Category  string    `json:"category" validate:"required"`
+	Tags      []string  `json:"tags"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
