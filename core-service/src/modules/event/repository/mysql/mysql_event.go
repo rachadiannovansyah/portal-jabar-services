@@ -89,8 +89,10 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
-	} else {
+	} else if params.Filters["isPortal"] == true {
 		query += ` ORDER BY date, start_hour, priority DESC `
+	} else {
+		query += ` ORDER BY date DESC `
 	}
 
 	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `)
