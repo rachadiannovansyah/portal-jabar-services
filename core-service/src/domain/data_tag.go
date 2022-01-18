@@ -15,4 +15,5 @@ type DataTag struct {
 type DataTagRepository interface {
 	FetchDataTags(ctx context.Context, id int64) ([]DataTag, error)
 	StoreDataTag(ctx context.Context, dt *DataTag) error
+	DeleteDataTag(ctx context.Context, id int64) error
 }
