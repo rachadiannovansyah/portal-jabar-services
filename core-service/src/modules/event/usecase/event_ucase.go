@@ -235,5 +235,35 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequ
 	defer cancel()
 
 	body.UpdatedAt = time.Now()
-	return u.eventRepo.Update(ctx, id, body)
+
+	err = u.eventRepo.Update(ctx, id, body)
+
+	err = u.dataTagRepo.DeleteDataTag(ctx, id)
+	if err != nil {
+		return
+	}
+
+	for _, tagName := range body.Tags {
+		tag := &domain.Tag{
+			Name: tagName,
+		}
+		err = u.tagsRepo.StoreTag(ctx, tag)
+		if err != nil {
+			return
+		}
+
+		dataTag := &domain.DataTag{
+			DataID:  id,
+			TagID:   tag.ID,
+			TagName: tagName,
+			Type:    "events",
+		}
+
+		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
+		if err != nil {
+			return
+		}
+	}
+
+	return
 }

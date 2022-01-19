@@ -84,3 +84,19 @@ func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.Da
 
 	return
 }
+
+func (m *mysqlDataTagRepository) DeleteDataTag(ctx context.Context, id int64) (err error) {
+	query := `DELETE FROM data_tags WHERE data_id=?`
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	return
+}
