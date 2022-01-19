@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS news;
 CREATE TABLE news (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   category varchar(30) NOT NULL,
-  title varchar(80) NOT NULL,
+  title varchar(255) NOT NULL,
   excerpt text NOT NULL,
   content text NOT NULL,
   slug varchar(100) UNIQUE NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE news (
   status varchar(12) NOT NULL DEFAULT 'UNPUBLISHED',
   views bigint DEFAULT 0 NOT NULL,
   shared bigint DEFAULT 0 NOT NULL,
-  highlight tinyint(1) NOT NULL,
+  highlight tinyint(1) NOT NUL DEFAULT 0,
   type varchar(20) NOT NULL DEFAULT 'article',
   tags varchar(100) NOT NULL,
   author_id varchar(36),

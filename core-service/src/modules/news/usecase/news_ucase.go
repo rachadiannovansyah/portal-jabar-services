@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"github.com/gosimple/slug"
 	"time"
 
 	"github.com/jinzhu/copier"
@@ -358,4 +360,13 @@ func (n *newsUsecase) AddShare(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 	return n.newsRepo.AddShare(ctx, id)
+}
+
+func (n *newsUsecase) Store(c context.Context, dt *domain.News) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	dt.Slug = fmt.Sprintf("%s-%s", slug.Make(dt.Title), uuid.New().String())
+	err = n.newsRepo.Store(ctx, dt)
+	return
 }

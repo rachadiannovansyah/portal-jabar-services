@@ -11,7 +11,7 @@ type News struct {
 	Title     string     `json:"title" validate:"required"`
 	Excerpt   string     `json:"excerpt"`
 	Content   string     `json:"content" validate:"required"`
-	Slug      NullString `json:"slug"`
+	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
@@ -64,7 +64,7 @@ type DetailNewsResponse struct {
 	Title     string     `json:"title" validate:"required"`
 	Excerpt   string     `json:"excerpt"`
 	Content   string     `json:"content" validate:"required"`
-	Slug      NullString `json:"slug"`
+	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
@@ -88,6 +88,7 @@ type NewsUsecase interface {
 	GetByID(ctx context.Context, id int64) (News, error)
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
+	Store(context.Context, *News) error
 }
 
 // NewsRepository represent the news repository contract
@@ -99,4 +100,5 @@ type NewsRepository interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
+	Store(ctx context.Context, a *News) error
 }

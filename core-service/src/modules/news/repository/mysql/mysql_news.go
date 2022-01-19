@@ -193,3 +193,34 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 
 	return
 }
+
+func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.News) (err error) {
+	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?, source=?, status=?, type=?, author_id=?, created_by=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		n.Title,
+		n.Excerpt,
+		n.Content,
+		n.Slug,
+		n.Image.String,
+		n.Category,
+		n.Source.String,
+		n.Status,
+		"article",
+		n.Author.ID.String(),
+		n.Author.ID.String(),
+	)
+	if err != nil {
+		return
+	}
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		return
+	}
+	n.ID = lastID
+	return
+}

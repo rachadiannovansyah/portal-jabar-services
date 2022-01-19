@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 		CUsecase: us,
 	}
 	e.GET("/news", handler.FetchNews)
+	r.POST("/news", handler.Store)
 	e.GET("/news/:id", handler.GetByID)
 	e.GET("/news/slug/:slug", handler.GetBySlug)
 	e.GET("/news/banner", handler.FetchNewsBanner)
@@ -156,4 +158,36 @@ func (h *NewsHandler) AddShare(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully add share count",
 	})
+}
+
+// Store will store the news by given request body
+func (h *NewsHandler) Store(c echo.Context) (err error) {
+	n := new(domain.News)
+	if err = c.Bind(n); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	//var ok bool
+	//if ok, err = isRequestValid(f); !ok {
+	//	return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	//}
+
+	// FIXME: authenticated variables must be global variables to be accessible everywhere
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	n.Author.ID = auth.ID
+	n.Author.Name = auth.Name
+
+	ctx := c.Request().Context()
+	err = h.CUsecase.Store(ctx, n)
+	if err != nil {
+		return err
+	}
+
+	// Copy slice to slice
+	res := []domain.DetailNewsResponse{}
+	copier.Copy(&res, &n)
+
+	return c.JSON(http.StatusCreated, res)
 }
