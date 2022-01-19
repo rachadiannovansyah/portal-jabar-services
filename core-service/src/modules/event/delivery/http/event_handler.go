@@ -24,10 +24,11 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 
 	e.GET("/events", handler.Fetch)
 	e.GET("/events/:id", handler.GetByID)
-	e.GET("/events/calendar", handler.ListCalendar)
 	e.POST("/events", handler.Store)
 	e.DELETE("/events/:id", handler.Delete)
 	e.PUT("/events/:id", handler.Update)
+	e.GET("/events/calendar", handler.AgendaCalendar)
+	e.GET("/events/portal", handler.AgendaPortal)
 }
 
 // Validate domain
@@ -82,8 +83,8 @@ func (h *EventHandler) GetByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailEventRes})
 }
 
-// ListCalendar ..
-func (h *EventHandler) ListCalendar(c echo.Context) error {
+// AgendaCalendar ..
+func (h *EventHandler) AgendaCalendar(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 
@@ -163,4 +164,27 @@ func (h *EventHandler) Update(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, events)
+}
+
+// AgendaPortal for fetching data on portal agenda
+func (h *EventHandler) AgendaPortal(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"isPortal": true, // flagging is portal
+	}
+
+	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)
+
+	if err != nil {
+		return err
+	}
+
+	listEventRes := []domain.ListEventResponse{}
+	copier.Copy(&listEventRes, &listEvent)
+
+	res := helpers.Paginate(c, listEventRes, total, params)
+
+	return c.JSON(http.StatusOK, res)
 }
