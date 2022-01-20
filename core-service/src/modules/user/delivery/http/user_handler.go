@@ -19,7 +19,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	handler := &UserHandler{
 		UUsecase: uu,
 	}
-	e.POST("/users", handler.Store)
+	r.POST("/users", handler.Store)
 }
 
 func isRequestValid(f *domain.User) (bool, error) {

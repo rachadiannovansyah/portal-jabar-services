@@ -107,7 +107,7 @@ DROP TABLE IF EXISTS news;
 CREATE TABLE news (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   category varchar(30) NOT NULL,
-  title varchar(80) NOT NULL,
+  title varchar(255) NOT NULL,
   excerpt text NOT NULL,
   content text NOT NULL,
   slug varchar(100) UNIQUE NOT NULL,
@@ -117,9 +117,11 @@ CREATE TABLE news (
   status varchar(12) NOT NULL DEFAULT 'UNPUBLISHED',
   views bigint DEFAULT 0 NOT NULL,
   shared bigint DEFAULT 0 NOT NULL,
-  highlight tinyint(1) NOT NULL,
+  highlight tinyint(1) NOT NULL DEFAULT 0,
   type varchar(20) NOT NULL DEFAULT 'article',
   author_id varchar(36),
+  start_date date,
+  end_date date,
   created_by varchar(36),
   updated_by varchar(36),
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -138,6 +140,8 @@ CREATE INDEX idx_slug ON news (slug);
 CREATE INDEX idx_category ON news (category);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
+CREATE INDEX news_start_date_index ON news (views);
+CREATE INDEX news_end_date_index ON news (views);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (

@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"fmt"
+	"github.com/gosimple/slug"
 	"time"
 
 	"github.com/jinzhu/copier"
@@ -16,17 +18,19 @@ type newsUsecase struct {
 	newsRepo       domain.NewsRepository
 	categories     domain.CategoryRepository
 	userRepo       domain.UserRepository
-	tagsRepo       domain.DataTagRepository
+	tagRepo        domain.TagRepository
+	dataTagRepo    domain.DataTagRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.DataTagRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.TagRepository, dtr domain.DataTagRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
 		userRepo:       u,
-		tagsRepo:       tr,
+		tagRepo:        tr,
+		dataTagRepo:    dtr,
 		contextTimeout: timeout,
 	}
 }
@@ -46,7 +50,7 @@ func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]dom
 	for idx := range mapNews {
 		newsID := idx
 		g.Go(func() (err error) {
-			res, err := n.tagsRepo.FetchDataTags(ctx, newsID)
+			res, err := n.dataTagRepo.FetchDataTags(ctx, newsID)
 			chanTags <- res
 			return
 		})
@@ -94,7 +98,7 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	// Using goroutine to fetch the list tags
 	chanTags := make(chan []domain.DataTag)
 	g.Go(func() (err error) {
-		res, err := n.tagsRepo.FetchDataTags(ctx, data.ID)
+		res, err := n.dataTagRepo.FetchDataTags(ctx, data.ID)
 		chanTags <- res
 		return
 	})
@@ -358,4 +362,38 @@ func (n *newsUsecase) AddShare(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 	return n.newsRepo.AddShare(ctx, id)
+}
+
+func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	dt.Slug = fmt.Sprintf("%s-%s", slug.Make(dt.Title), uuid.New().String())
+	err = n.newsRepo.Store(ctx, dt)
+
+	for _, tagName := range dt.Tags {
+		tag := &domain.Tag{
+			Name: tagName,
+		}
+		err = n.tagRepo.StoreTag(ctx, tag)
+		if err != nil {
+			logrus.Println("bb", err)
+
+			return
+		}
+
+		dataTag := &domain.DataTag{
+			DataID:  dt.ID,
+			TagID:   tag.ID,
+			TagName: tagName,
+			Type:    "news",
+		}
+		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
+
+		if err != nil {
+			return
+		}
+	}
+
+	return
 }
