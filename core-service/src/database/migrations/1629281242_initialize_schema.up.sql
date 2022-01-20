@@ -121,6 +121,8 @@ CREATE TABLE news (
   type varchar(20) NOT NULL DEFAULT 'article',
   tags varchar(100) NOT NULL,
   author_id varchar(36),
+  start_date date,
+  end_date date,
   created_by varchar(36),
   updated_by varchar(36),
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -139,6 +141,8 @@ CREATE INDEX idx_slug ON news (slug);
 CREATE INDEX idx_category ON news (category);
 CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
+CREATE INDEX news_start_date_index ON news (views);
+CREATE INDEX news_end_date_index ON news (views);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
