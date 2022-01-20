@@ -194,8 +194,9 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 	return
 }
 
-func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.News) (err error) {
-	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?, source=?, status=?, type=?, author_id=?, created_by=?`
+func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest) (err error) {
+	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?,
+		source=?, status=?, type=?, start_date=?, end_date=?, author_id=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -206,11 +207,13 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.News) (err er
 		n.Excerpt,
 		n.Content,
 		n.Slug,
-		n.Image.String,
+		n.Image,
 		n.Category,
-		n.Source.String,
+		n.Source,
 		n.Status,
 		"article",
+		n.StartDate,
+		n.EndDate,
 		n.Author.ID.String(),
 		n.Author.ID.String(),
 	)

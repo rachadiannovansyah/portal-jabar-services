@@ -9,7 +9,7 @@ import (
 type News struct {
 	ID        int64      `json:"id"`
 	Title     string     `json:"title" validate:"required"`
-	Excerpt   string     `json:"excerpt"`
+	Excerpt   string     `json:"excerpt" validate:"required"`
 	Content   string     `json:"content" validate:"required"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
@@ -23,9 +23,30 @@ type News struct {
 	Tags      []DataTag  `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
+	StartDate time.Time  `json:"start_date"`
+	EndDate   time.Time  `json:"end_date"`
 	CreatedBy User       `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+type StoreNewsRequest struct {
+	ID        int64    `json:"id"`
+	Title     string   `json:"title" validate:"required"`
+	Excerpt   string   `json:"excerpt" validate:"required"`
+	Content   string   `json:"content" validate:"required"`
+	Slug      string   `json:"slug"`
+	Image     string   `json:"image"`
+	Video     string   `json:"video"`
+	Source    string   `json:"source"`
+	Status    string   `json:"status,omitempty"`
+	Type      string   `json:"type"`
+	Category  string   `json:"category" validate:"required"`
+	Author    User     `json:"author" validate:"required"`
+	StartDate string   `json:"start_date"`
+	EndDate   string   `json:"end_date"`
+	Tags      []string `json:"tags"`
+	CreatedBy User     `json:"created_by"`
 }
 
 // NewsListResponse ...
@@ -88,7 +109,7 @@ type NewsUsecase interface {
 	GetByID(ctx context.Context, id int64) (News, error)
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
-	Store(context.Context, *News) error
+	Store(context.Context, *StoreNewsRequest) error
 }
 
 // NewsRepository represent the news repository contract
@@ -100,5 +121,5 @@ type NewsRepository interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
-	Store(ctx context.Context, a *News) error
+	Store(ctx context.Context, a *StoreNewsRequest) error
 }
