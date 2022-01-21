@@ -95,7 +95,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query += ` ORDER BY date DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events `)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `)
 
 	query = querySelectAgenda + query + ` LIMIT ?,? `
 
