@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mitchellh/mapstructure"
+
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jinzhu/copier"
@@ -24,7 +26,7 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 
 	e.GET("/events", handler.Fetch)
 	e.GET("/events/:id", handler.GetByID)
-	e.POST("/events", handler.Store)
+	r.POST("/events", handler.Store)
 	e.DELETE("/events/:id", handler.Delete)
 	e.PUT("/events/:id", handler.Update)
 	e.GET("/events/calendar", handler.AgendaCalendar)
@@ -108,6 +110,9 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 		return c.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
 	var ok bool
 	if ok, err = isRequestValid(&events); !ok {
 		return c.JSON(http.StatusBadRequest, err.Error())
@@ -145,6 +150,10 @@ func (h *EventHandler) Delete(c echo.Context) (err error) {
 func (h *EventHandler) Update(c echo.Context) (err error) {
 	var events domain.UpdateRequestEvent
 	err = c.Bind(&events)
+
+	if events.EndHour < events.StartHour {
+		return c.JSON(http.StatusUnprocessableEntity, "end hour cannot be earlier than start hour.")
+	}
 
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, err.Error())
