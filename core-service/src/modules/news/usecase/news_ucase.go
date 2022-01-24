@@ -396,28 +396,8 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	dt.Slug = fmt.Sprintf("%s-%s", slug.Make(dt.Title), uuid.New().String())
 	err = n.newsRepo.Store(ctx, dt)
 
-	for _, tagName := range dt.Tags {
-		tag := &domain.Tag{
-			Name: tagName,
-		}
-		err = n.tagRepo.StoreTag(ctx, tag)
-		if err != nil {
-			logrus.Println("bb", err)
-
-			return
-		}
-
-		dataTag := &domain.DataTag{
-			DataID:  dt.ID,
-			TagID:   tag.ID,
-			TagName: tagName,
-			Type:    "news",
-		}
-		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
-
-		if err != nil {
-			return
-		}
+	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
+		return
 	}
 
 	return

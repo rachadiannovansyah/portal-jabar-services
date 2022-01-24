@@ -253,17 +253,13 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		id,
 	)
 	if err != nil {
-		fmt.Println("aaaa", err)
 		return
 	}
 
 	affect, err := res.RowsAffected()
 	if err != nil {
-		fmt.Println("wwwww", err)
 		return
 	}
-
-	fmt.Println("affect", affect)
 
 	if affect != 1 {
 		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", affect)
