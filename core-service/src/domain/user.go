@@ -16,6 +16,7 @@ type User struct {
 	Password  string     `json:"password"`
 	Photo     NullString `json:"photo"`
 	UnitID    NullInt64  `json:"unit_id"`
+	UnitName  string     `json:"unit_name"`
 	RoleID    NullInt64  `json:"role_id"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
@@ -35,8 +36,8 @@ type UserInfo struct {
 
 // Author ...
 type Author struct {
-	Name string `json:"name"`
-	// FIXME: add unit
+	Name     string `json:"name"`
+	UnitName string `json:"unit_name"`
 }
 
 // UserRepository represent the unit repository contract
