@@ -265,6 +265,31 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 	return
 }
 
+func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
+	for _, tagName := range tags {
+		tag := &domain.Tag{
+			Name: tagName,
+		}
+		err = n.tagRepo.StoreTag(ctx, tag)
+		if err != nil {
+			return
+		}
+
+		dataTag := &domain.DataTag{
+			DataID:  newsId,
+			TagID:   tag.ID,
+			TagName: tagName,
+			Type:    "news",
+		}
+		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
+
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
 func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -393,6 +418,19 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		if err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRequest) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	err = n.newsRepo.Update(ctx, id, dt)
+
+	if err = n.storeTags(ctx, id, dt.Tags); err != nil {
+		return
 	}
 
 	return

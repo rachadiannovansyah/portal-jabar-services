@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -225,5 +226,49 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		return
 	}
 	n.ID = lastID
+	return
+}
+
+func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
+	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?,
+		source=?, status=?, type=?, start_date=?, end_date=?, updated_by=?, updated_at=? WHERE id=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		n.Title,
+		n.Excerpt,
+		n.Content,
+		n.Image,
+		n.Category,
+		n.Source,
+		n.Status,
+		"article",
+		n.StartDate,
+		n.EndDate,
+		n.Author.ID.String(),
+		time.Now(),
+		id,
+	)
+	if err != nil {
+		fmt.Println("aaaa", err)
+		return
+	}
+
+	affect, err := res.RowsAffected()
+	if err != nil {
+		fmt.Println("wwwww", err)
+		return
+	}
+
+	fmt.Println("affect", affect)
+
+	if affect != 1 {
+		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", affect)
+		return
+	}
+
 	return
 }
