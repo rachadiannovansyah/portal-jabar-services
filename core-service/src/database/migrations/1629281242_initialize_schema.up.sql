@@ -127,13 +127,7 @@ CREATE TABLE news (
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deleted_at datetime,
-  PRIMARY KEY (id),
-  KEY users_author_id_fk (author_id),
-  KEY users_created_by_fk (created_by),
-  KEY users_updated_by_fk (updated_by),
-  CONSTRAINT users_author_id_fk FOREIGN KEY (author_id) REFERENCES users (id),
-  CONSTRAINT users_created_by_fk FOREIGN KEY (created_by) REFERENCES users (id),
-  CONSTRAINT users_updated_by_fk FOREIGN KEY (updated_by) REFERENCES users (id)
+  PRIMARY KEY (id)
 );
 CREATE INDEX idx_title ON news (title);
 CREATE INDEX idx_slug ON news (slug);
@@ -142,6 +136,7 @@ CREATE INDEX idx_status ON news (status);
 CREATE INDEX news_views_index ON news (views);
 CREATE INDEX news_start_date_index ON news (views);
 CREATE INDEX news_end_date_index ON news (views);
+CREATE INDEX news_author_id ON news (author_id);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
