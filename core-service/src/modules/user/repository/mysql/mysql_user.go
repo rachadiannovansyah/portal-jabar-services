@@ -19,11 +19,12 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 	return &mysqlUserRepository{Conn}
 }
 
-var querySelect = `SELECT id, name, username, email, photo, password, unit_id, role_id FROM users WHERE 1=1`
+var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, u.unit_id, u.role_id, un.name as unit_name
+	FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
 
 // GetByID ...
 func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
-	query := querySelect + fmt.Sprintf(` AND id = '%s'`, id)
+	query := querySelect + fmt.Sprintf(` AND u.id = '%s'`, id)
 	err = m.scan(ctx, query, &res)
 
 	return
@@ -52,6 +53,7 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Password,
 		&res.UnitID,
 		&res.RoleID,
+		&res.UnitName,
 	)
 	if err != nil {
 		logrus.Error("Error found", err)
