@@ -267,3 +267,23 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequ
 
 	return
 }
+
+// AgendaPortal ...
+func (u *eventUcase) AgendaPortal(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, total, err = u.eventRepo.AgendaPortal(ctx, params)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err = u.fillDataTags(ctx, res)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return
+}

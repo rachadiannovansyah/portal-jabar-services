@@ -19,7 +19,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events WHERE deleted_at is null `
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -77,7 +77,7 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := ` AND 1=1`
+	query := ` WHERE deleted_at is NULL`
 
 	if params.Keyword != "" {
 		query += ` AND title LIKE '%` + params.Keyword + `%' `
@@ -89,8 +89,6 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
-	} else if params.Filters["isPortal"] == true {
-		query += ` ORDER BY date, start_hour, priority DESC `
 	} else {
 		query += ` ORDER BY date DESC `
 	}
@@ -256,6 +254,35 @@ func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.U
 	if rowAffected != 1 {
 		err = fmt.Errorf("Weird Behavior. Total affected: %d", rowAffected)
 		return
+	}
+
+	return
+}
+
+func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
+	query := ` WHERE deleted_at is NULL `
+
+	if params.Keyword != "" {
+		query += ` AND title LIKE '%` + params.Keyword + `%' `
+	}
+
+	if params.StartDate != "" && params.EndDate != "" {
+		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	}
+
+	if params.SortBy != "" {
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query += ` ORDER BY date, start_hour, priority DESC `
+	}
+
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events`+query)
+
+	query = querySelectAgenda + query + ` LIMIT ?,? `
+
+	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	return

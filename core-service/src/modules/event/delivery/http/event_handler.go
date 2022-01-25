@@ -184,7 +184,7 @@ func (h *EventHandler) AgendaPortal(c echo.Context) error {
 		"isPortal": true, // flagging is portal
 	}
 
-	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)
+	listEvent, total, err := h.EventUcase.AgendaPortal(ctx, &params)
 
 	if err != nil {
 		return err
