@@ -35,6 +35,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news", handler.FetchNews)
 	r.POST("/news", handler.Store)
 	e.GET("/news/:id", handler.GetByID)
+	r.PUT("/news/:id", handler.Update)
 	e.GET("/news/slug/:slug", handler.GetBySlug)
 	e.GET("/news/banner", handler.FetchNewsBanner)
 	e.GET("/news/headline", handler.FetchNewsHeadline)
@@ -200,4 +201,41 @@ func (h *NewsHandler) Store(c echo.Context) (err error) {
 	copier.Copy(&res, &n)
 
 	return c.JSON(http.StatusCreated, res)
+}
+
+// Update will update the news by given request body
+func (h *NewsHandler) Update(c echo.Context) (err error) {
+	n := new(domain.StoreNewsRequest)
+	if err = c.Bind(n); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(n); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	// FIXME: authenticated variables must be global variables to be accessible everywhere
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	n.Author.ID = auth.ID
+	n.Author.Name = auth.Name
+
+	ctx := c.Request().Context()
+	err = h.CUsecase.Update(ctx, int64(reqID), n)
+	if err != nil {
+		return err
+	}
+
+	// Copy slice to slice
+	res := []domain.DetailNewsResponse{}
+	copier.Copy(&res, &n)
+
+	return c.JSON(http.StatusOK, res)
 }

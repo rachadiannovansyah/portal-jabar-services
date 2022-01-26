@@ -26,6 +26,7 @@ type News struct {
 	StartDate time.Time  `json:"start_date"`
 	EndDate   time.Time  `json:"end_date"`
 	CreatedBy User       `json:"created_by"`
+	UpdatedBy User       `json:"updated_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }
@@ -47,6 +48,7 @@ type StoreNewsRequest struct {
 	EndDate   string   `json:"end_date"`
 	Tags      []string `json:"tags"`
 	CreatedBy User     `json:"created_by"`
+	UpdatedBy User     `json:"created_by"`
 }
 
 // NewsListResponse ...
@@ -110,6 +112,7 @@ type NewsUsecase interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
 	Store(context.Context, *StoreNewsRequest) error
+	Update(context.Context, int64, *StoreNewsRequest) error
 }
 
 // NewsRepository represent the news repository contract
@@ -121,5 +124,6 @@ type NewsRepository interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddView(ctx context.Context, id int64) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
-	Store(ctx context.Context, a *StoreNewsRequest) error
+	Store(ctx context.Context, n *StoreNewsRequest) error
+	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
 }
