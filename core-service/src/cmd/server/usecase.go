@@ -45,6 +45,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, timeoutContext),
 		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
 		UserUsecase:          _userUcase.NewUserkUsecase(r.UserRepo, timeoutContext),
-		MediaUsecase:         _mediaUcase.NewMediaUsecase(conn, timeoutContext),
+		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 	}
 }
