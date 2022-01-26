@@ -42,11 +42,11 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
-	err = h.MUsecase.Store(ctx, file, buf)
+	res, err := h.MUsecase.Store(ctx, file, buf)
 
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	return c.JSON(http.StatusCreated, "File Uploaded successfully.")
+	return c.JSON(http.StatusCreated, res)
 }
