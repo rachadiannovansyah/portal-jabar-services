@@ -3,8 +3,9 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"github.com/gosimple/slug"
 	"time"
+
+	"github.com/gosimple/slug"
 
 	"github.com/jinzhu/copier"
 
@@ -414,4 +415,11 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 	}
 
 	return
+}
+
+func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	return n.newsRepo.UpdateStatus(ctx, id, status)
 }

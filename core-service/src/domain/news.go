@@ -51,6 +51,11 @@ type StoreNewsRequest struct {
 	UpdatedBy User     `json:"created_by"`
 }
 
+// UpdateNewsStatusRequest ...
+type UpdateNewsStatusRequest struct {
+	Status string `json:"status"`
+}
+
 // NewsListResponse ...
 type NewsListResponse struct {
 	ID        int64      `json:"id"`
@@ -113,6 +118,7 @@ type NewsUsecase interface {
 	AddShare(ctx context.Context, id int64) error
 	Store(context.Context, *StoreNewsRequest) error
 	Update(context.Context, int64, *StoreNewsRequest) error
+	UpdateStatus(context.Context, int64, string) error
 }
 
 // NewsRepository represent the news repository contract
@@ -126,4 +132,5 @@ type NewsRepository interface {
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
+	UpdateStatus(ctx context.Context, id int64, stat string) error
 }

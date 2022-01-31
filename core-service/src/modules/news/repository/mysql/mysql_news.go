@@ -268,3 +268,18 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 
 	return
 }
+
+func (m *mysqlNewsRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
+	query := `UPDATE news SET status=? WHERE id=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, status, id)
+	if err != nil {
+		return
+	}
+
+	return
+}
