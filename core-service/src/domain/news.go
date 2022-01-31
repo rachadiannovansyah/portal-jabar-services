@@ -53,7 +53,7 @@ type StoreNewsRequest struct {
 
 // UpdateNewsStatusRequest ...
 type UpdateNewsStatusRequest struct {
-	Status string `json:"status"`
+	Status string `json:"status" validate:"required,alpha,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
 }
 
 // NewsListResponse ...
