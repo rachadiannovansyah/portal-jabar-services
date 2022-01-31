@@ -1,10 +1,11 @@
 package http
 
 import (
-	"github.com/mitchellh/mapstructure"
-	"gopkg.in/go-playground/validator.v9"
 	"net/http"
 	"strconv"
+
+	"github.com/mitchellh/mapstructure"
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
@@ -36,6 +37,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	r.POST("/news", handler.Store)
 	e.GET("/news/:id", handler.GetByID)
 	r.PUT("/news/:id", handler.Update)
+	r.PATCH("/news/:id/status", handler.UpdateStatus)
 	e.GET("/news/slug/:slug", handler.GetBySlug)
 	e.GET("/news/banner", handler.FetchNewsBanner)
 	e.GET("/news/headline", handler.FetchNewsHeadline)
@@ -238,4 +240,31 @@ func (h *NewsHandler) Update(c echo.Context) (err error) {
 	copier.Copy(&res, &n)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// UpdateStatus will update the news status by given request body
+func (h *NewsHandler) UpdateStatus(c echo.Context) (err error) {
+	n := new(domain.UpdateNewsStatusRequest)
+	if err = c.Bind(n); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err = validator.New().Struct(n); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	ctx := c.Request().Context()
+	err = h.CUsecase.UpdateStatus(ctx, int64(reqID), n.Status)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully update status",
+	})
 }
