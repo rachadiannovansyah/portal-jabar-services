@@ -115,7 +115,7 @@ func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domai
 	if err != nil {
 		return domain.Event{}, err
 	}
-	fmt.Println("hasil", query, id)
+
 	if len(list) > 0 {
 		res = list[0]
 	} else {
