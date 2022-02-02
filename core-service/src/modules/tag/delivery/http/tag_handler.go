@@ -29,13 +29,11 @@ func (h *TagHandler) FetchTag(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 
-	listTags, total, err := h.TagUsecase.FetchTag(ctx, &params)
+	listTags, _, err := h.TagUsecase.FetchTag(ctx, &params)
 
 	if err != nil {
 		return err
 	}
 
-	res := helpers.Paginate(c, listTags, total, params)
-
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, listTags)
 }

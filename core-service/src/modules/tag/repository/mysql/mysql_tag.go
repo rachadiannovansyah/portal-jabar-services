@@ -71,9 +71,7 @@ func (m *mysqlTagRepository) FetchTag(ctx context.Context, params *domain.Reques
 		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
 	}
 
-	query += ` ORDER BY created_at LIMIT ?,? `
-
-	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+	res, err = m.fetch(ctx, query)
 
 	if err != nil {
 		return nil, 0, err
