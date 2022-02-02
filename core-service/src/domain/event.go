@@ -15,7 +15,6 @@ type Event struct {
 	StartHour    string     `json:"start_hour"`
 	EndHour      string     `json:"end_hour"`
 	Image        NullString `json:"image"`
-	PublishedBy  NullString `json:"published_by"`
 	Type         string     `json:"type"`
 	Status       string     `json:"status"`
 	Address      NullString `json:"address"`
@@ -26,6 +25,7 @@ type Event struct {
 	CityCode     Area       `json:"city_code"`
 	DistrictCode Area       `json:"district_code"`
 	VillageCode  Area       `json:"village_code"`
+	CreatedBy    User       `json:"created_by"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
@@ -82,13 +82,13 @@ type DetailEventResponse struct {
 	Date        time.Time  `json:"date"`
 	StartHour   string     `json:"start_hour"`
 	EndHour     string     `json:"end_hour"`
-	PublishedBy NullString `json:"published_by"`
 	Type        string     `json:"type"`
 	Status      string     `json:"status"`
 	Address     NullString `json:"address"`
 	URL         NullString `json:"url"`
 	Category    string     `json:"category"`
 	Tags        []DataTag  `json:"tags"`
+	CreatedBy   Author     `json:"created_by"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }

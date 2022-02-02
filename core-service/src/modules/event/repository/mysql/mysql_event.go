@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -19,7 +20,7 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_at, updated_at FROM events WHERE deleted_at is null`
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_by, created_at, updated_at FROM events WHERE deleted_at is null`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -38,6 +39,7 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 	result = make([]domain.Event, 0)
 	for rows.Next() {
 		event := domain.Event{}
+		userID := uuid.UUID{}
 		err = rows.Scan(
 			&event.ID,
 			&event.Category,
@@ -50,6 +52,7 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			&event.Date,
 			&event.StartHour,
 			&event.EndHour,
+			&userID,
 			&event.CreatedAt,
 			&event.UpdatedAt,
 		)
@@ -58,7 +61,7 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 			logrus.Error(err)
 			return nil, err
 		}
-
+		event.CreatedBy = domain.User{ID: userID}
 		result = append(result, event)
 	}
 
@@ -106,7 +109,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 }
 
 func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domain.Event, err error) {
-	query := querySelectAgenda + ` AND ID = ?`
+	query := querySelectAgenda + ` AND ID =?`
 
 	list, err := r.fetchQuery(ctx, query, id)
 	if err != nil {
