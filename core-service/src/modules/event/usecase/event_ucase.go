@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -162,7 +161,6 @@ func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err
 		return
 	}
 
-	fmt.Println("this is user id", res.CreatedBy.ID)
 	userData, err := u.userRepo.GetByID(ctx, res.CreatedBy.ID)
 	if err != nil {
 		return
