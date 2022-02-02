@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -15,17 +16,19 @@ type eventUcase struct {
 	categories     domain.CategoryRepository
 	tagsRepo       domain.TagRepository
 	dataTagRepo    domain.DataTagRepository
+	userRepo       domain.UserRepository
 	contextTimeout time.Duration
 }
 
 // NewEventUsecase will create new an eventUsecase object representation of domain.eventUsecase interface
-func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tags domain.TagRepository, dtags domain.DataTagRepository, timeout time.Duration) domain.EventUsecase {
+func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository, tags domain.TagRepository, dtags domain.DataTagRepository, user domain.UserRepository, timeout time.Duration) domain.EventUsecase {
 	return &eventUcase{
 		eventRepo:      repo,
 		categories:     ctg,
-		contextTimeout: timeout,
 		tagsRepo:       tags,
 		dataTagRepo:    dtags,
+		userRepo:       user,
+		contextTimeout: timeout,
 	}
 }
 
@@ -159,7 +162,17 @@ func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err
 		return
 	}
 
+	fmt.Println("this is user id", res.CreatedBy.ID)
+	userData, err := u.userRepo.GetByID(ctx, res.CreatedBy.ID)
+	if err != nil {
+		return
+	}
+	res.CreatedBy = userData
+
 	res, err = u.fillDetailDataTags(ctx, res)
+	if err != nil {
+		return
+	}
 
 	return
 }
