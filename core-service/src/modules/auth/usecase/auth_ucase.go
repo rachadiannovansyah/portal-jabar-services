@@ -3,9 +3,10 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
@@ -16,14 +17,16 @@ import (
 type authUsecase struct {
 	config         *config.Config
 	userRepo       domain.UserRepository
+	unitRepo       domain.UnitRepository
 	contextTimeout time.Duration
 }
 
 // NewAuthUsecase will create new an authUsecase object representation of domain.AuthUsecase interface
-func NewAuthUsecase(c *config.Config, u domain.UserRepository, timeout time.Duration) domain.AuthUsecase {
+func NewAuthUsecase(c *config.Config, u domain.UserRepository, un domain.UnitRepository, timeout time.Duration) domain.AuthUsecase {
 	return &authUsecase{
 		config:         c,
 		userRepo:       u,
+		unitRepo:       un,
 		contextTimeout: timeout,
 	}
 }
@@ -137,6 +140,18 @@ func (n *authUsecase) UserProfile(c context.Context, id uuid.UUID) (res domain.U
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 
 	res, err = n.userRepo.GetByID(ctx, id)
+
+	if err != nil {
+		return
+	}
+
+	resUnit, err := n.unitRepo.GetByID(ctx, res.Unit.ID)
+
+	if err != nil {
+		return
+	}
+
+	res.Unit = resUnit
 
 	defer cancel()
 
