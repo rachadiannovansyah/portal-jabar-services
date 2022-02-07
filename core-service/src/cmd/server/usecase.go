@@ -15,6 +15,7 @@ import (
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
+	_tagUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
 	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
 )
@@ -32,6 +33,7 @@ type Usecases struct {
 	SearchUcase          domain.SearchUsecase
 	UserUsecase          domain.UserUsecase
 	MediaUsecase         domain.MediaUsecase
+	TagUsecase           domain.TagUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -47,5 +49,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
 		UserUsecase:          _userUcase.NewUserkUsecase(r.UserRepo, timeoutContext),
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
+		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
 	}
 }

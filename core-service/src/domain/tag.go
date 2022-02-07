@@ -8,7 +8,13 @@ type Tag struct {
 	Name string `json:"name"`
 }
 
+// TagUsecase represent the tag usecases
+type TagUsecase interface {
+	FetchTag(ctx context.Context, params *Request) ([]Tag, int64, error)
+}
+
 // TagRepository interface ..
 type TagRepository interface {
 	StoreTag(ctx context.Context, t *Tag) error
+	FetchTag(ctx context.Context, param *Request) ([]Tag, int64, error)
 }

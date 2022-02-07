@@ -1,8 +1,9 @@
 package server
 
 import (
-	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 	"net/http"
+
+	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
@@ -14,6 +15,7 @@ import (
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
+	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
 	_userHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/delivery/http"
 )
@@ -30,6 +32,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_searchHttpDelivery.NewSearchHandler(e, r, u.SearchUcase)
 	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(e, r, u.MediaUsecase)
+	_tagHttpDelivery.NewTagHandler(e, r, u.TagUsecase)
 }
 
 // ErrorHandler ...
