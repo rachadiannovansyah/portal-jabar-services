@@ -51,7 +51,7 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Email,
 		&res.Photo,
 		&res.Password,
-		&res.UnitID,
+		&res.Unit.ID,
 		&res.RoleID,
 		&res.UnitName,
 	)

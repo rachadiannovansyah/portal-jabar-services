@@ -15,7 +15,7 @@ type User struct {
 	Email     string     `json:"email"`
 	Password  string     `json:"password"`
 	Photo     NullString `json:"photo"`
-	UnitID    NullInt64  `json:"unit_id"`
+	Unit      Unit       `json:"unit"`
 	UnitName  string     `json:"unit_name"`
 	RoleID    NullInt64  `json:"role_id"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -30,7 +30,7 @@ type UserInfo struct {
 	Username string     `json:"username"`
 	Email    string     `json:"email"`
 	Photo    NullString `json:"photo"`
-	UnitID   NullInt64  `json:"unit_id"`
+	Unit     Unit       `json:"unit"`
 	RoleID   NullInt64  `json:"role_id"`
 }
 
