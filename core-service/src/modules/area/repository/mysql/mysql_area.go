@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -17,22 +18,90 @@ func NewMysqlAreaRepository(Conn *sql.DB) domain.AreaRepository {
 	return &mysqlAreaRepository{Conn}
 }
 
-func (m *mysqlAreaRepository) GetByID(ctx context.Context, id int64) (res domain.Area, err error) {
-	query := `SELECT id, depth, name, parent_code_kemendagri, code_kemendagri, code_bps, latitude, longtitude, meta FROM areas WHERE id = ?`
+var querySelectArea = `SELECT id, depth, name, parent_code_kemendagri, code_kemendagri, code_bps, latitude, longitude, meta FROM areas WHERE 1 = 1`
 
-	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
-		&res.ID,
-		&res.Depth,
-		&res.Name,
-		&res.ParentCodeKemendagri,
-		&res.CodeKemendagri,
-		&res.CodeBps,
-		&res.Latitude,
-		&res.Longtitude,
-		&res.Meta,
-	)
+func (m *mysqlAreaRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.Area, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
-		logrus.Error("Error found", err)
+		logrus.Error(err)
+		return nil, err
+	}
+
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
+
+	result = make([]domain.Area, 0)
+	for rows.Next() {
+		a := domain.Area{}
+		err = rows.Scan(
+			&a.ID,
+			&a.Depth,
+			&a.Name,
+			&a.ParentCodeKemendagri,
+			&a.CodeKemendagri,
+			&a.CodeBps,
+			&a.Latitude,
+			&a.Longtitude,
+			&a.Meta,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+		result = append(result, a)
+	}
+
+	return result, nil
+}
+
+func (m *mysqlAreaRepository) count(ctx context.Context, query string) (total int64, err error) {
+
+	err = m.Conn.QueryRow(query).Scan(&total)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return total, nil
+}
+
+func (m *mysqlAreaRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Area, total int64, err error) {
+	query := querySelectArea
+
+	if params.Keyword != "" {
+		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
+	}
+
+	query += ` ORDER BY name LIMIT ?,? `
+
+	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, _ = m.count(ctx, "SELECT COUNT(1) FROM areas")
+
+	return
+}
+
+func (m *mysqlAreaRepository) GetByID(ctx context.Context, id int64) (res domain.Area, err error) {
+	query := querySelectArea + ` WHERE id = ?`
+
+	list, err := m.fetch(ctx, query, id)
+	if err != nil {
+		return domain.Area{}, err
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
 	}
 
 	return

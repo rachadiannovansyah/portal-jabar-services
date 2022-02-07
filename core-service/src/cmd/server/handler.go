@@ -8,6 +8,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
 
+	_areaHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/delivery/http"
 	_authHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/delivery/http"
 	_eventHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/delivery/http"
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
@@ -22,6 +23,7 @@ import (
 
 // NewHandler will create a new handler for the given usecase
 func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
+	_areaHttpDelivery.NewAreaHandler(e, r, u.AreaUcase)
 	_newsHttpDelivery.NewNewsHandler(e, r, u.NewsUcase)
 	_informationHttpDelivery.NewInformationHandler(e, r, u.InformationUcase)
 	_unitHttpDelivery.NewUnitHandler(e, r, u.UnitUcase)
