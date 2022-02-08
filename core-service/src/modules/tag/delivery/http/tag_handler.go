@@ -29,6 +29,11 @@ func (h *TagHandler) FetchTag(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 
+	// throw if keyword is empty and saving our repo!
+	if len(params.Keyword) == 0 {
+		return c.JSON(http.StatusOK, []string{})
+	}
+
 	listTags, _, err := h.TagUsecase.FetchTag(ctx, &params)
 
 	if err != nil {
