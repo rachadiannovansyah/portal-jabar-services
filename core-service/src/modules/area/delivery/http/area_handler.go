@@ -29,6 +29,11 @@ func (h *AreaHandler) FetchAreas(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"code_kemendagri":        c.QueryParam("code_kemendagri"),
+		"parent_code_kemendagri": c.QueryParam("parent_code_kemendagri"),
+		"depth":                  c.QueryParam("depth"),
+	}
 
 	listArea, total, err := h.AUsecase.Fetch(ctx, &params)
 

@@ -74,7 +74,19 @@ func (m *mysqlAreaRepository) Fetch(ctx context.Context, params *domain.Request)
 	query := querySelectArea
 
 	if params.Keyword != "" {
-		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
+		query += ` AND name LIKE '%` + params.Keyword + `%' `
+	}
+
+	if v, ok := params.Filters["code_kemendagri"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND code_kemendagri = '%s'`, query, v)
+	}
+
+	if v, ok := params.Filters["parent_code_kemendagri"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND parent_code_kemendagri = '%s'`, query, v)
+	}
+
+	if v, ok := params.Filters["depth"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND depth = '%s'`, query, v)
 	}
 
 	query += ` ORDER BY name LIMIT ?,? `
