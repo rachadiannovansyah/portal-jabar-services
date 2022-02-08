@@ -39,3 +39,8 @@ services:
       -  "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - ../docker/config/redis.conf:/usr/local/etc/redis/redis.conf
+  
+networks:
+  default:
+    external: true
+    name: gateway
