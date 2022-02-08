@@ -71,6 +71,8 @@ func (m *mysqlTagRepository) FetchTag(ctx context.Context, params *domain.Reques
 		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
 	}
 
+	query += ` LIMIT 5`
+
 	res, err = m.fetch(ctx, query)
 
 	if err != nil {
