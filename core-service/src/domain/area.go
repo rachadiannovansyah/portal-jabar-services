@@ -15,12 +15,20 @@ type Area struct {
 	Meta                 NullString `json:"meta" validate:"required"`
 }
 
-// AreaUseCase ..
-type AreaUseCase interface {
-	GetByID(ctx context.Context, id int64) (Area, error)
+// AreaListResponse ...
+type AreaListResponse struct {
+	ID             int64      `json:"id"`
+	Name           NullString `json:"name"`
+	CodeKemendagri NullString `json:"code_kemendagri"`
+}
+
+// AreaUsecase ..
+type AreaUsecase interface {
+	Fetch(ctx context.Context, params *Request) ([]Area, int64, error)
 }
 
 // AreaRepository ..
 type AreaRepository interface {
+	Fetch(ctx context.Context, params *Request) (new []Area, total int64, err error)
 	GetByID(ctx context.Context, id int64) (Area, error)
 }

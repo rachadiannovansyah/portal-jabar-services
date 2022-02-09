@@ -86,6 +86,14 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
+	if v, ok := params.Filters["type"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
+	}
+
+	if v, ok := params.Filters["category"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
+	}
+
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}

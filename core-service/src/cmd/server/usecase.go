@@ -7,6 +7,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	_areaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/usecase"
 	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
 	_eventUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/usecase"
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
@@ -22,6 +23,7 @@ import (
 
 // Usecases ...
 type Usecases struct {
+	AreaUcase            domain.AreaUsecase
 	CategoryUcase        domain.CategoryUsecase
 	NewsUcase            domain.NewsUsecase
 	InformationUcase     domain.InformationUsecase
@@ -39,6 +41,7 @@ type Usecases struct {
 // NewUcase will create an object that represent all usecases interface
 func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
+		AreaUcase:            _areaUcase.NewAreaUsecase(r.AreaRepo, timeoutContext),
 		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagRepo, r.DataTagsRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
