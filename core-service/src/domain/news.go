@@ -108,6 +108,11 @@ type DetailNewsResponse struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 }
 
+type TabStatusResponse struct {
+	Status string `json:"status"`
+	Count  int    `json:"count"`
+}
+
 // NewsUsecase represent the news usecases
 type NewsUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]News, int64, error)
@@ -119,6 +124,7 @@ type NewsUsecase interface {
 	Store(context.Context, *StoreNewsRequest) error
 	Update(context.Context, int64, *StoreNewsRequest) error
 	UpdateStatus(context.Context, int64, string) error
+	TabStatus(context.Context) ([]TabStatusResponse, error)
 }
 
 // NewsRepository represent the news repository contract
@@ -133,4 +139,5 @@ type NewsRepository interface {
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
 	UpdateStatus(ctx context.Context, id int64, stat string) error
+	TabStatus(ctx context.Context) (res []TabStatusResponse, err error)
 }
