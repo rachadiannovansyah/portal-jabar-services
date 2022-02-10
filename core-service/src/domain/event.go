@@ -41,6 +41,7 @@ type StoreRequestEvent struct {
 	EndHour   string   `json:"end_hour" validate:"required"`
 	Category  string   `json:"category" validate:"required"`
 	Tags      []string `json:"tags"`
+	CreatedBy User     `json:"created_by" validate:"required"`
 }
 
 // UpdateRequestEvent ..
