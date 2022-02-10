@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"runtime"
 
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/config"
@@ -12,19 +11,13 @@ import (
 )
 
 func main() {
-	log.Println("Service RUN on DEBUG mode")
 	cfg := config.NewConfig()
 	conn := utils.NewDBConn(cfg)
-	// defer func() {
-	// 	err := conn.Mysql.Close()
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// }()
 
 	c := cron.New()
-	// run cron every minute
-	c.AddFunc("@every 1m", func() { job.NewsArchiveJob(conn) })
+	// run cron @daily
+	c.AddFunc("@daily", func() { job.NewsArchiveJob(conn) })
+	c.AddFunc("@daily", func() { job.NewsPublishingJob(conn) })
 
 	c.Start()
 
