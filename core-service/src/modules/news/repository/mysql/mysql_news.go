@@ -87,6 +87,56 @@ func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value str
 	return
 }
 
+func (m *mysqlNewsRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	query := "SELECT status, COUNT(status) FROM news GROUP BY status"
+
+	list, err := m.fetchTabs(ctx, query)
+
+	if err != nil {
+		return []domain.TabStatusResponse{}, err
+	}
+
+	if len(list) > 0 {
+		res = list
+	} else {
+		return res, domain.ErrNotFound
+	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) fetchTabs(ctx context.Context, query string, args ...interface{}) (result []domain.TabStatusResponse, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
+
+	result = make([]domain.TabStatusResponse, 0)
+	for rows.Next() {
+		t := domain.TabStatusResponse{}
+		err = rows.Scan(
+			&t.Status,
+			&t.Count,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
 func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)

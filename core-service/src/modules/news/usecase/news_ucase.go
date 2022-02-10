@@ -266,6 +266,16 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 	return
 }
 
+func (n *newsUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	res, err = n.newsRepo.TabStatus(ctx)
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
 	for _, tagName := range tags {
 		tag := &domain.Tag{

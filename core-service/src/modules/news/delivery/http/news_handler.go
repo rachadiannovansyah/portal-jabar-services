@@ -42,6 +42,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news/banner", handler.FetchNewsBanner)
 	e.GET("/news/headline", handler.FetchNewsHeadline)
 	e.PATCH("/news/:id/share", handler.AddShare)
+	e.GET("/news/tabs", handler.TabStatus)
 }
 
 // FetchNews will fetch the content based on given params
@@ -132,6 +133,14 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
+}
+
+func (h *NewsHandler) TabStatus(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	tabs, err := h.CUsecase.TabStatus(ctx)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }
 
 // GetBySlug will get article by given slug
