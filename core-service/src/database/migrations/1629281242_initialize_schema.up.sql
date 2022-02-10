@@ -142,7 +142,6 @@ DROP TABLE IF EXISTS events;
 CREATE TABLE events (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   title varchar(80) NOT NULL,
-  description varchar(255),
   date date NOT NULL,
   priority tinyint(1) DEFAULT 1 NOT NULL,
   start_hour time NOT NULL,
