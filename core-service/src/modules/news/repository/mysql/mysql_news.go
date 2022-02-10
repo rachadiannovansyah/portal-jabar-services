@@ -117,6 +117,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
 	}
 
+	if v, ok := params.Filters["is_live"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND is_live = "%s"`, query, v)
+	}
+
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
@@ -197,10 +201,19 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 
 func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest) (err error) {
 	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?,
-		source=?, status=?, type=?, start_date=?, end_date=?, author_id=?, created_by=?`
+		source=?, status=?, type=?, start_date=?, end_date=?, area_id=?, author_id=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
+	}
+
+	// tricky to set nil time
+	var startDate, endDate *string
+	if n.StartDate != "" {
+		startDate = &n.StartDate
+	}
+	if n.EndDate != "" {
+		endDate = &n.EndDate
 	}
 
 	res, err := stmt.ExecContext(ctx,
@@ -213,16 +226,19 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.Source,
 		n.Status,
 		"article",
-		n.StartDate,
-		n.EndDate,
+		startDate,
+		endDate,
+		n.AreaID,
 		n.Author.ID.String(),
 		n.Author.ID.String(),
 	)
 	if err != nil {
+		logrus.Error("A", err)
 		return
 	}
 	lastID, err := res.LastInsertId()
 	if err != nil {
+		logrus.Error("B", err)
 		return
 	}
 	n.ID = lastID
@@ -231,7 +247,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 
 func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
 	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?,
-		source=?, status=?, type=?, start_date=?, end_date=?, updated_by=?, updated_at=? WHERE id=?`
+		source=?, status=?, type=?, start_date=?, end_date=?, area_id=?, updated_by=?, updated_at=? WHERE id=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -248,6 +264,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		"article",
 		n.StartDate,
 		n.EndDate,
+		n.AreaID,
 		n.Author.ID.String(),
 		time.Now(),
 		id,

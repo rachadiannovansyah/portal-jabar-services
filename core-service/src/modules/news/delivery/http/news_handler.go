@@ -57,6 +57,10 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		"tags":      c.QueryParam("tags"),
 	}
 
+	if c.Get("auth:user") == nil {
+		params.Filters["is_live"] = "1"
+	}
+
 	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
 
 	if err != nil {
