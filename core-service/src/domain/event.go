@@ -9,7 +9,6 @@ import (
 type Event struct {
 	ID           int64      `json:"id"`
 	Title        string     `json:"title"`
-	Description  string     `json:"description"`
 	Priority     string     `json:"priority"`
 	Date         time.Time  `json:"date"`
 	StartHour    string     `json:"start_hour"`
@@ -76,21 +75,20 @@ type ListEventResponse struct {
 }
 
 type DetailEventResponse struct {
-	ID          int64      `json:"id"`
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	Date        time.Time  `json:"date"`
-	StartHour   string     `json:"start_hour"`
-	EndHour     string     `json:"end_hour"`
-	Type        string     `json:"type"`
-	Status      string     `json:"status"`
-	Address     NullString `json:"address"`
-	URL         NullString `json:"url"`
-	Category    string     `json:"category"`
-	Tags        []DataTag  `json:"tags"`
-	CreatedBy   Author     `json:"created_by"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID        int64      `json:"id"`
+	Title     string     `json:"title"`
+	Date      time.Time  `json:"date"`
+	StartHour string     `json:"start_hour"`
+	EndHour   string     `json:"end_hour"`
+	Type      string     `json:"type"`
+	Status    string     `json:"status"`
+	Address   NullString `json:"address"`
+	URL       NullString `json:"url"`
+	Category  string     `json:"category"`
+	Tags      []DataTag  `json:"tags"`
+	CreatedBy Author     `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 //ListEventCalendarReponse ..
