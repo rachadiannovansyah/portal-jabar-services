@@ -198,13 +198,23 @@ func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (re
 }
 
 func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequestEvent) (err error) {
-	query := `INSERT events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=?`
+	query := `INSERT events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , created_by=?`
 	stmt, err := r.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, m.Title, m.Type, m.URL, m.Address, m.Date, m.StartHour, m.EndHour, m.Category)
+	res, err := stmt.ExecContext(ctx,
+		m.Title,
+		m.Type,
+		m.URL,
+		m.Address,
+		m.Date,
+		m.StartHour,
+		m.EndHour,
+		m.Category,
+		m.CreatedBy.ID.String(),
+	)
 	if err != nil {
 		return
 	}

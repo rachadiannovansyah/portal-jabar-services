@@ -114,13 +114,16 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 		return c.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	auth := domain.JwtCustomClaims{}
-	mapstructure.Decode(c.Get("auth:user"), &auth)
-
 	var ok bool
 	if ok, err = isRequestValid(&events); !ok {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	events.CreatedBy.ID = auth.ID
+	events.CreatedBy.Name = auth.Name
 
 	ctx := c.Request().Context()
 	err = h.EventUcase.Store(ctx, &events)
