@@ -233,12 +233,10 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.Author.ID.String(),
 	)
 	if err != nil {
-		logrus.Error("A", err)
 		return
 	}
 	lastID, err := res.LastInsertId()
 	if err != nil {
-		logrus.Error("B", err)
 		return
 	}
 	n.ID = lastID
