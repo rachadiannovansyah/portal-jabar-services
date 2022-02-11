@@ -120,8 +120,10 @@ CREATE TABLE news (
   highlight tinyint(1) NOT NULL DEFAULT 0,
   type varchar(20) NOT NULL DEFAULT 'article',
   author_id varchar(36),
+  area_id bigint(20),
   start_date date,
   end_date date,
+  is_live tinyint(1),
   created_by varchar(36),
   updated_by varchar(36),
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -137,6 +139,7 @@ CREATE INDEX news_views_index ON news (views);
 CREATE INDEX news_start_date_index ON news (views);
 CREATE INDEX news_end_date_index ON news (views);
 CREATE INDEX news_author_id ON news (author_id);
+CREATE INDEX idx_is_live ON news (is_live);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
