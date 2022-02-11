@@ -171,6 +171,10 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND is_live = "%s"`, query, v)
 	}
 
+	if v, ok := params.Filters["status"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND status = "%s"`, query, v)
+	}
+
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
