@@ -56,6 +56,7 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		"category":  c.QueryParam("cat"),
 		"type":      c.QueryParam("type"),
 		"tags":      c.QueryParam("tags"),
+		"status":    c.QueryParam("status"),
 	}
 
 	if c.Get("auth:user") == nil {
