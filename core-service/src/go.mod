@@ -15,7 +15,7 @@ require (
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/gosimple/slug v1.12.0 // indirect
+	github.com/gosimple/slug v1.12.0
 	github.com/jinzhu/copier v0.3.2
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"log"
 	"time"
+
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"

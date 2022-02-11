@@ -114,14 +114,16 @@ CREATE TABLE news (
   image varchar(255) DEFAULT NULL,
   video varchar(80) DEFAULT NULL,
   source varchar(80) DEFAULT NULL,
-  status varchar(12) NOT NULL DEFAULT 'UNPUBLISHED',
+  status varchar(12) NOT NULL DEFAULT 'DRAFT',
   views bigint DEFAULT 0 NOT NULL,
   shared bigint DEFAULT 0 NOT NULL,
   highlight tinyint(1) NOT NULL DEFAULT 0,
   type varchar(20) NOT NULL DEFAULT 'article',
   author_id varchar(36),
+  area_id bigint(20),
   start_date date,
   end_date date,
+  is_live tinyint(1),
   created_by varchar(36),
   updated_by varchar(36),
   created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -137,6 +139,7 @@ CREATE INDEX news_views_index ON news (views);
 CREATE INDEX news_start_date_index ON news (views);
 CREATE INDEX news_end_date_index ON news (views);
 CREATE INDEX news_author_id ON news (author_id);
+CREATE INDEX idx_is_live ON news (is_live);
 
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
@@ -160,7 +163,7 @@ CREATE TABLE events (
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at datetime,
-  PRIMARY KEY (id),
+  PRIMARY KEY (id)
 );
 CREATE INDEX idx_title ON events (title);
 CREATE INDEX idx_start_hour ON events (start_hour);
@@ -196,7 +199,6 @@ CREATE TABLE featured_programs (
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 );
-CREATE INDEX idx_categories_program on featured_programs (categories);
 
 DROP TABLE IF EXISTS tags;
 CREATE TABLE tags (

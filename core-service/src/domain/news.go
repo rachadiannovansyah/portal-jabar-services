@@ -23,8 +23,10 @@ type News struct {
 	Tags      []DataTag  `json:"tags"`
 	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
+	Area      Area       `json:"area" validate:"required"`
 	StartDate time.Time  `json:"start_date"`
 	EndDate   time.Time  `json:"end_date"`
+	IsLive    int8       `json:"is_live"`
 	CreatedBy User       `json:"created_by"`
 	UpdatedBy User       `json:"updated_by"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -34,19 +36,21 @@ type News struct {
 type StoreNewsRequest struct {
 	ID        int64    `json:"id"`
 	Title     string   `json:"title" validate:"required"`
-	Excerpt   string   `json:"excerpt" validate:"required"`
-	Content   string   `json:"content" validate:"required"`
+	Excerpt   string   `json:"excerpt"`
+	Content   string   `json:"content"`
 	Slug      string   `json:"slug"`
 	Image     string   `json:"image"`
 	Video     string   `json:"video"`
 	Source    string   `json:"source"`
-	Status    string   `json:"status,omitempty"`
+	Status    string   `json:"status"`
 	Type      string   `json:"type"`
-	Category  string   `json:"category" validate:"required"`
-	Author    User     `json:"author" validate:"required"`
+	Category  string   `json:"category"`
+	Author    User     `json:"author"`
 	StartDate string   `json:"start_date"`
 	EndDate   string   `json:"end_date"`
 	Tags      []string `json:"tags"`
+	AreaID    int64    `json:"area_id"`
+	IsLive    int8     `json:"is_live"`
 	CreatedBy User     `json:"created_by"`
 	UpdatedBy User     `json:"created_by"`
 }
@@ -68,6 +72,7 @@ type NewsListResponse struct {
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
 	Tags      []DataTag  `json:"tags"`
+	Area      Area       `json:"area"`
 	Status    string     `json:"status"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -89,21 +94,21 @@ type NewsBanner struct {
 // DetailNewsResponse ...
 type DetailNewsResponse struct {
 	ID        int64      `json:"id"`
-	Title     string     `json:"title" validate:"required"`
+	Title     string     `json:"title"`
 	Excerpt   string     `json:"excerpt"`
-	Content   string     `json:"content" validate:"required"`
+	Content   string     `json:"content"`
 	Slug      string     `json:"slug"`
 	Image     NullString `json:"image"`
 	Video     NullString `json:"video"`
 	Source    NullString `json:"source"`
-	Status    string     `json:"status,omitempty"`
+	Status    string     `json:"status"`
 	Views     int64      `json:"views"`
 	Shared    int64      `json:"shared"`
 	Highlight int8       `json:"highlight,omitempty"`
 	Type      string     `json:"type"`
 	Tags      []DataTag  `json:"tags"`
-	Category  string     `json:"category" validate:"required"`
-	Author    Author     `json:"author" validate:"required"`
+	Category  string     `json:"category"`
+	Author    Author     `json:"author"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 }
