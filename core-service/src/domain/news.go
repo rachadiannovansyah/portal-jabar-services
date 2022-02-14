@@ -34,25 +34,27 @@ type News struct {
 }
 
 type StoreNewsRequest struct {
-	ID        int64    `json:"id"`
-	Title     string   `json:"title" validate:"required"`
-	Excerpt   string   `json:"excerpt"`
-	Content   string   `json:"content"`
-	Slug      string   `json:"slug"`
-	Image     string   `json:"image"`
-	Video     string   `json:"video"`
-	Source    string   `json:"source"`
-	Status    string   `json:"status"`
-	Type      string   `json:"type"`
-	Category  string   `json:"category"`
-	Author    User     `json:"author"`
-	StartDate string   `json:"start_date"`
-	EndDate   string   `json:"end_date"`
-	Tags      []string `json:"tags"`
-	AreaID    int64    `json:"area_id"`
-	IsLive    int8     `json:"is_live"`
-	CreatedBy User     `json:"created_by"`
-	UpdatedBy User     `json:"created_by"`
+	ID        int64     `json:"id"`
+	Title     string    `json:"title" validate:"required"`
+	Excerpt   string    `json:"excerpt"`
+	Content   string    `json:"content"`
+	Slug      string    `json:"slug"`
+	Image     string    `json:"image"`
+	Video     string    `json:"video"`
+	Source    string    `json:"source"`
+	Status    string    `json:"status"`
+	Type      string    `json:"type"`
+	Category  string    `json:"category"`
+	Author    User      `json:"author"`
+	StartDate string    `json:"start_date"`
+	EndDate   string    `json:"end_date"`
+	Tags      []string  `json:"tags"`
+	AreaID    int64     `json:"area_id"`
+	IsLive    int8      `json:"is_live"`
+	CreatedBy User      `json:"created_by"`
+	UpdatedBy User      `json:"created_by"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // UpdateNewsStatusRequest ...
