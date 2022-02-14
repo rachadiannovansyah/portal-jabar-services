@@ -193,6 +193,8 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
+	m.CreatedAt = time.Now()
+	m.UpdatedAt = time.Now()
 	err = u.eventRepo.Store(ctx, m)
 	if err != nil {
 		return
