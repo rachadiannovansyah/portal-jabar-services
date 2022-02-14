@@ -105,3 +105,20 @@ func (m *mysqlTagRepository) StoreTag(ctx context.Context, t *domain.Tag) (err e
 
 	return
 }
+
+func (m *mysqlTagRepository) GetTagByName(ctx context.Context, name string) (res domain.Tag, err error) {
+	query := querySelectTags + ` WHERE name = ?`
+
+	list, err := m.fetch(ctx, query, name)
+	if err != nil {
+		return
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
+
+	return
+}
