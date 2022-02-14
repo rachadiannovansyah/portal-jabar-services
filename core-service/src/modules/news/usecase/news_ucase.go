@@ -405,6 +405,8 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	defer cancel()
 
 	dt.Slug = fmt.Sprintf("%s-%s", slug.Make(dt.Title), uuid.New().String())
+	dt.CreatedAt = time.Now()
+	dt.UpdatedAt = time.Now()
 	err = n.newsRepo.Store(ctx, dt)
 
 	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
