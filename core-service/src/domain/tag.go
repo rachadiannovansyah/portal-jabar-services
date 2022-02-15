@@ -17,4 +17,5 @@ type TagUsecase interface {
 type TagRepository interface {
 	StoreTag(ctx context.Context, t *Tag) error
 	FetchTag(ctx context.Context, param *Request) ([]Tag, int64, error)
+	GetTagByName(ctx context.Context, name string) (Tag, error)
 }
