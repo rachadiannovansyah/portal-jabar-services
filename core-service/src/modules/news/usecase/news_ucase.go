@@ -281,9 +281,16 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 		tag := &domain.Tag{
 			Name: tagName,
 		}
-		err = n.tagRepo.StoreTag(ctx, tag)
-		if err != nil {
-			return
+
+		// check tags already exists
+		var checkTag domain.Tag
+		checkTag, _ = n.tagRepo.GetTagByName(ctx, tagName)
+
+		if checkTag.Name == "" {
+			err = n.tagRepo.StoreTag(ctx, tag)
+			if err != nil {
+				return
+			}
 		}
 
 		dataTag := &domain.DataTag{

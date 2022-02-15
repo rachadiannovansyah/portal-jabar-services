@@ -202,9 +202,16 @@ func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err 
 		tag := &domain.Tag{
 			Name: tagName,
 		}
-		err = u.tagsRepo.StoreTag(ctx, tag)
-		if err != nil {
-			return
+
+		// check tags already exists
+		var checkTag domain.Tag
+		checkTag, err = u.tagsRepo.GetTagByName(ctx, tagName)
+
+		if checkTag.Name == "" {
+			err = u.tagsRepo.StoreTag(ctx, tag)
+			if err != nil {
+				return
+			}
 		}
 
 		dataTag := &domain.DataTag{
