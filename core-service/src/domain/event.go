@@ -31,17 +31,19 @@ type Event struct {
 
 // StoreRequestEvent ..
 type StoreRequestEvent struct {
-	ID        int64    `json:"id"`
-	Title     string   `json:"title" validate:"required"`
-	Type      string   `json:"type" validate:"required"`
-	URL       string   `json:"url"`
-	Address   string   `json:"address"`
-	Date      string   `json:"date" validate:"required"`
-	StartHour string   `json:"start_hour" validate:"required"`
-	EndHour   string   `json:"end_hour" validate:"required"`
-	Category  string   `json:"category" validate:"required"`
-	Tags      []string `json:"tags"`
-	CreatedBy User     `json:"created_by" validate:"required"`
+	ID        int64     `json:"id"`
+	Title     string    `json:"title" validate:"required"`
+	Type      string    `json:"type" validate:"required"`
+	URL       string    `json:"url"`
+	Address   string    `json:"address"`
+	Date      string    `json:"date" validate:"required"`
+	StartHour string    `json:"start_hour" validate:"required"`
+	EndHour   string    `json:"end_hour" validate:"required"`
+	Category  string    `json:"category" validate:"required"`
+	Tags      []string  `json:"tags"`
+	CreatedBy User      `json:"created_by" validate:"required"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // UpdateRequestEvent ..

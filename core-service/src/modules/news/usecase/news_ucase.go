@@ -409,9 +409,11 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	if dt.Status == "PUBLISHED" {
+  if dt.Status == "PUBLISHED" {
 		dt.Slug = makeSlug(dt.Title)
 	}
+	dt.CreatedAt = time.Now()
+	dt.UpdatedAt = time.Now()
 
 	err = n.newsRepo.Store(ctx, dt)
 
