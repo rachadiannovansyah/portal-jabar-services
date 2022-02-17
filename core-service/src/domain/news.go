@@ -24,8 +24,8 @@ type News struct {
 	Category  string     `json:"category" validate:"required"`
 	Author    User       `json:"author" validate:"required"`
 	Area      Area       `json:"area" validate:"required"`
-	StartDate time.Time  `json:"start_date"`
-	EndDate   time.Time  `json:"end_date"`
+	StartDate NullTime   `json:"start_date"`
+	EndDate   NullTime   `json:"end_date"`
 	IsLive    int8       `json:"is_live"`
 	CreatedBy User       `json:"created_by"`
 	UpdatedBy User       `json:"updated_by"`

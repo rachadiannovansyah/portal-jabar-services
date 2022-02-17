@@ -200,6 +200,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 		params := domain.Request{PerPage: 4}
 		params.Filters = map[string]interface{}{
 			"highlight": "0",
+			"is_live":   "1",
 			"category":  category,
 		}
 		g.Go(func() (err error) {
@@ -416,7 +417,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-  if dt.Status == "PUBLISHED" {
+	if dt.Status == "PUBLISHED" {
 		dt.Slug = makeSlug(dt.Title)
 	}
 	dt.CreatedAt = time.Now()
@@ -465,8 +466,8 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	}
 
 	newsRequest := domain.StoreNewsRequest{
-		StartDate: helpers.ConvertTimeToString(news.StartDate),
-		EndDate:   helpers.ConvertTimeToString(news.EndDate),
+		StartDate: helpers.ConvertTimeToString(news.StartDate.Time),
+		EndDate:   helpers.ConvertTimeToString(news.EndDate.Time),
 	}
 	copier.Copy(&newsRequest, &news)
 
