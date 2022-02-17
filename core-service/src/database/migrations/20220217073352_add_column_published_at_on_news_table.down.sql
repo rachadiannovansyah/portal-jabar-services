@@ -1,0 +1,1 @@
+ALTER TABLE news DROP COLUMN published_at;
