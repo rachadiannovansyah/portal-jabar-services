@@ -59,7 +59,7 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		"status":    c.QueryParam("status"),
 	}
 
-	if c.Request().Header.Get("Authorization") != "" {
+	if c.Request().Header.Get("Authorization") == "" {
 		params.Filters["is_live"] = "1"
 	}
 
