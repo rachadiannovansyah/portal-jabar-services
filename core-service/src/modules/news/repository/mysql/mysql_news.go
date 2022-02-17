@@ -20,7 +20,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, status, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -54,6 +54,8 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Views,
 			&t.Shared,
 			&t.Source,
+			&t.StartDate,
+			&t.EndDate,
 			&t.Status,
 			&t.CreatedAt,
 			&t.UpdatedAt,
@@ -298,7 +300,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 }
 
 func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
-	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?,
+	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?,
 		source=?, status=?, type=?, start_date=?, end_date=?, area_id=?, updated_by=?, updated_at=? WHERE id=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -311,6 +313,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.Content,
 		n.Image,
 		n.Category,
+		n.Slug,
 		n.Source,
 		n.Status,
 		"article",
