@@ -433,5 +433,5 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	return n.newsRepo.UpdateStatus(ctx, id, status)
+	return n.newsRepo.UpdateStatus(ctx, id, status, time.Now())
 }

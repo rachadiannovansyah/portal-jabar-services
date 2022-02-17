@@ -339,14 +339,15 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 	return
 }
 
-func (m *mysqlNewsRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
-	query := `UPDATE news SET status=? WHERE id=?`
+func (m *mysqlNewsRepository) UpdateStatus(ctx context.Context, id int64, status string, updatedAt time.Time) (err error) {
+	query := `UPDATE news SET status=?, updated_at=? WHERE id=?`
+
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	_, err = stmt.ExecContext(ctx, status, id)
+	_, err = stmt.ExecContext(ctx, status, updatedAt, id)
 	if err != nil {
 		return
 	}
