@@ -76,6 +76,7 @@ type NewsListResponse struct {
 	Tags      []DataTag  `json:"tags"`
 	Area      Area       `json:"area"`
 	Status    string     `json:"status"`
+	IsLive    int8       `json:"is_live"`
 	CreatedBy NullString `json:"created_by"`
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
