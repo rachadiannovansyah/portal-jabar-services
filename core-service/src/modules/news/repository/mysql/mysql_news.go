@@ -20,7 +20,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -57,6 +57,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.StartDate,
 			&t.EndDate,
 			&t.Status,
+			&t.IsLive,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
@@ -226,7 +227,7 @@ func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error
 
 func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
 	query := querySelectNews + ` WHERE id IN (
-		SELECT MAX(id) FROM news WHERE highlight = ? GROUP BY category 
+		SELECT MAX(id) FROM news WHERE highlight = ? and is_live=1 GROUP BY category 
 	)`
 
 	res, err = m.fetch(ctx, query, 1)
@@ -241,10 +242,10 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 	query := querySelectNews + ` WHERE id IN (
 		SELECT MAX(id) FROM news WHERE id NOT IN (
 			SELECT id from news  WHERE id IN (
-				SELECT MAX(id) FROM news WHERE highlight = 1 
+				SELECT MAX(id) FROM news WHERE highlight = 1 and is_live=1
 				GROUP BY category 
 			)
-		) AND highlight = 1 GROUP BY category
+		) AND highlight = 1 and is_live=1 GROUP BY category
 	)`
 
 	res, err = m.fetch(ctx, query)
