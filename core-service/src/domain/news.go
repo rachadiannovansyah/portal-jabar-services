@@ -149,6 +149,5 @@ type NewsRepository interface {
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
-	UpdateStatus(ctx context.Context, id int64, stat string, updatedAt time.Time) error
 	TabStatus(ctx context.Context) (res []TabStatusResponse, err error)
 }
