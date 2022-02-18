@@ -7,30 +7,31 @@ import (
 
 // News ...
 type News struct {
-	ID        int64      `json:"id"`
-	Title     string     `json:"title" validate:"required"`
-	Excerpt   string     `json:"excerpt" validate:"required"`
-	Content   string     `json:"content" validate:"required"`
-	Slug      string     `json:"slug"`
-	Image     NullString `json:"image"`
-	Video     NullString `json:"video"`
-	Source    NullString `json:"source"`
-	Status    string     `json:"status,omitempty"`
-	Views     int64      `json:"views"`
-	Shared    int64      `json:"shared"`
-	Highlight int8       `json:"highlight,omitempty"`
-	Type      string     `json:"type"`
-	Tags      []DataTag  `json:"tags"`
-	Category  string     `json:"category" validate:"required"`
-	Author    User       `json:"author" validate:"required"`
-	Area      Area       `json:"area" validate:"required"`
-	StartDate NullTime   `json:"start_date"`
-	EndDate   NullTime   `json:"end_date"`
-	IsLive    int8       `json:"is_live"`
-	CreatedBy User       `json:"created_by"`
-	UpdatedBy User       `json:"updated_by"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title" validate:"required"`
+	Excerpt     string     `json:"excerpt" validate:"required"`
+	Content     string     `json:"content" validate:"required"`
+	Slug        string     `json:"slug"`
+	Image       NullString `json:"image"`
+	Video       NullString `json:"video"`
+	Source      NullString `json:"source"`
+	Status      string     `json:"status,omitempty"`
+	Views       int64      `json:"views"`
+	Shared      int64      `json:"shared"`
+	Highlight   int8       `json:"highlight,omitempty"`
+	Type        string     `json:"type"`
+	Tags        []DataTag  `json:"tags"`
+	Category    string     `json:"category" validate:"required"`
+	Author      User       `json:"author" validate:"required"`
+	Area        Area       `json:"area" validate:"required"`
+	StartDate   NullTime   `json:"start_date"`
+	EndDate     NullTime   `json:"end_date"`
+	IsLive      int8       `json:"is_live"`
+	CreatedBy   User       `json:"created_by"`
+	UpdatedBy   User       `json:"updated_by"`
+	PublishedAt NullTime   `json:"published_at"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type StoreNewsRequest struct {
@@ -52,7 +53,7 @@ type StoreNewsRequest struct {
 	AreaID    int64     `json:"area_id"`
 	IsLive    int8      `json:"is_live"`
 	CreatedBy User      `json:"created_by"`
-	UpdatedBy User      `json:"created_by"`
+	UpdatedBy User      `json:"updated_by"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -64,22 +65,23 @@ type UpdateNewsStatusRequest struct {
 
 // NewsListResponse ...
 type NewsListResponse struct {
-	ID        int64      `json:"id"`
-	Title     string     `json:"title"`
-	Excerpt   string     `json:"excerpt"`
-	Slug      NullString `json:"slug"`
-	Image     NullString `json:"image"`
-	Category  string     `json:"category"`
-	Author    Author     `json:"author"`
-	Video     NullString `json:"video"`
-	Source    NullString `json:"source"`
-	Tags      []DataTag  `json:"tags"`
-	Area      Area       `json:"area"`
-	Status    string     `json:"status"`
-	IsLive    int8       `json:"is_live"`
-	CreatedBy NullString `json:"created_by"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	Excerpt     string     `json:"excerpt"`
+	Slug        NullString `json:"slug"`
+	Image       NullString `json:"image"`
+	Category    string     `json:"category"`
+	Author      Author     `json:"author"`
+	Video       NullString `json:"video"`
+	Source      NullString `json:"source"`
+	Tags        []DataTag  `json:"tags"`
+	Area        Area       `json:"area"`
+	Status      string     `json:"status"`
+	IsLive      int8       `json:"is_live"`
+	CreatedBy   NullString `json:"created_by"`
+	PublishedAt NullTime   `json:"published_at"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 // NewsBanner ...
@@ -96,24 +98,25 @@ type NewsBanner struct {
 
 // DetailNewsResponse ...
 type DetailNewsResponse struct {
-	ID        int64      `json:"id"`
-	Title     string     `json:"title"`
-	Excerpt   string     `json:"excerpt"`
-	Content   string     `json:"content"`
-	Slug      string     `json:"slug"`
-	Image     NullString `json:"image"`
-	Video     NullString `json:"video"`
-	Source    NullString `json:"source"`
-	Status    string     `json:"status"`
-	Views     int64      `json:"views"`
-	Shared    int64      `json:"shared"`
-	Highlight int8       `json:"highlight,omitempty"`
-	Type      string     `json:"type"`
-	Tags      []DataTag  `json:"tags"`
-	Category  string     `json:"category"`
-	Author    Author     `json:"author"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title"`
+	Excerpt     string     `json:"excerpt"`
+	Content     string     `json:"content"`
+	Slug        string     `json:"slug"`
+	Image       NullString `json:"image"`
+	Video       NullString `json:"video"`
+	Source      NullString `json:"source"`
+	Status      string     `json:"status"`
+	Views       int64      `json:"views"`
+	Shared      int64      `json:"shared"`
+	Highlight   int8       `json:"highlight,omitempty"`
+	Type        string     `json:"type"`
+	Tags        []DataTag  `json:"tags"`
+	Category    string     `json:"category"`
+	Author      Author     `json:"author"`
+	PublishedAt time.Time  `json:"published_at"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type TabStatusResponse struct {
@@ -146,6 +149,5 @@ type NewsRepository interface {
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
-	UpdateStatus(ctx context.Context, id int64, stat string) error
 	TabStatus(ctx context.Context) (res []TabStatusResponse, err error)
 }

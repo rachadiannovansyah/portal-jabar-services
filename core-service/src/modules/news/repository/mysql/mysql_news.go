@@ -21,7 +21,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -59,6 +59,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.EndDate,
 			&t.Status,
 			&t.IsLive,
+			&t.PublishedAt,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
@@ -340,21 +341,6 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 
 	if affect != 1 {
 		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", affect)
-		return
-	}
-
-	return
-}
-
-func (m *mysqlNewsRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
-	query := `UPDATE news SET status=? WHERE id=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	_, err = stmt.ExecContext(ctx, status, id)
-	if err != nil {
 		return
 	}
 
