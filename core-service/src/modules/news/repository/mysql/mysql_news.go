@@ -57,8 +57,8 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.StartDate,
 			&t.EndDate,
 			&t.Status,
-			&t.PublishedAt,
 			&t.IsLive,
+			&t.PublishedAt,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
