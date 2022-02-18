@@ -53,7 +53,7 @@ type StoreNewsRequest struct {
 	AreaID    int64     `json:"area_id"`
 	IsLive    int8      `json:"is_live"`
 	CreatedBy User      `json:"created_by"`
-	UpdatedBy User      `json:"created_by"`
+	UpdatedBy User      `json:"updated_by"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
