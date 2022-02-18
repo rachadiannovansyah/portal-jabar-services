@@ -2,10 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
-
-	"github.com/gosimple/slug"
 
 	"github.com/jinzhu/copier"
 
@@ -310,10 +307,6 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 	return
 }
 
-func makeSlug(title string) string {
-	return fmt.Sprintf("%s-%s", slug.Make(title), uuid.New().String())
-}
-
 func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
@@ -417,13 +410,17 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	if dt.Status == "PUBLISHED" {
-		dt.Slug = makeSlug(dt.Title)
-	}
 	dt.CreatedAt = time.Now()
 	dt.UpdatedAt = time.Now()
 
-	err = n.newsRepo.Store(ctx, dt)
+	if err = n.newsRepo.Store(ctx, dt); err != nil {
+		return
+	}
+
+	if dt.Status == "PUBLISHED" {
+		dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
+		n.newsRepo.Update(ctx, dt.ID, dt)
+	}
 
 	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
 		return
@@ -462,7 +459,7 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	news.Status = status
 
 	if status == "PUBLISHED" {
-		news.Slug = makeSlug(news.Title)
+		news.Slug = helpers.MakeSlug(news.Title, news.ID)
 	}
 
 	newsRequest := domain.StoreNewsRequest{
