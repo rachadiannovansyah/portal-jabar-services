@@ -46,13 +46,13 @@ func TestFetch(t *testing.T) {
 		},
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "category", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "views", "shared", "source", "start_date", "end_date", "status", "is_live", "created_at", "updated_at"}).
+	rows := sqlmock.NewRows([]string{"id", "category", "title", "excerpt", "content", "image", "video", "slug", "author_id", "type", "views", "shared", "source", "start_date", "end_date", "status", "is_live", "published_at", "created_at", "updated_at"}).
 		AddRow(mockNews[0].ID, mockNews[0].Category, mockNews[0].Title, mockNews[0].Excerpt, mockNews[0].Content,
-			nil, nil, mockNews[0].Slug, "", "", mockNews[0].Views, mockNews[0].Shared, mockNews[0].Source.String, mockNews[0].StartDate.Time, mockNews[0].EndDate.Time, mockNews[0].Status, 0, mockNews[0].CreatedAt, mockNews[0].UpdatedAt).
+			nil, nil, mockNews[0].Slug, "", "", mockNews[0].Views, mockNews[0].Shared, mockNews[0].Source.String, mockNews[0].StartDate.Time, mockNews[0].EndDate.Time, mockNews[0].Status, 0, mockNews[0].PublishedAt.Time, mockNews[0].CreatedAt, mockNews[0].UpdatedAt).
 		AddRow(mockNews[1].ID, mockNews[1].Category, mockNews[1].Title, mockNews[1].Excerpt, mockNews[1].Content,
-			nil, nil, mockNews[1].Slug, "", "", mockNews[1].Views, mockNews[1].Shared, mockNews[1].Source.String, mockNews[1].StartDate.Time, mockNews[1].EndDate.Time, mockNews[1].Status, 0, mockNews[1].CreatedAt, mockNews[1].UpdatedAt)
+			nil, nil, mockNews[1].Slug, "", "", mockNews[1].Views, mockNews[1].Shared, mockNews[1].Source.String, mockNews[1].StartDate.Time, mockNews[1].EndDate.Time, mockNews[1].Status, 0, mockNews[1].PublishedAt.Time, mockNews[1].CreatedAt, mockNews[1].UpdatedAt)
 
-	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, created_at, updated_at FROM news"
+	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := mysqlRepo.NewMysqlNewsRepository(db)
