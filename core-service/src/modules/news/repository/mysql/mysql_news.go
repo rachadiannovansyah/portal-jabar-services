@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -273,11 +274,14 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		endDate = &n.EndDate
 	}
 
+	// temporary unique slug
+	slug := helpers.MakeSlug(n.Title, time.Now().Unix())
+
 	res, err := stmt.ExecContext(ctx,
 		n.Title,
 		n.Excerpt,
 		n.Content,
-		n.Slug,
+		slug,
 		n.Image,
 		n.Category,
 		n.Source,
