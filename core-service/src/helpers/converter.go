@@ -7,6 +7,8 @@ import (
 	"github.com/gosimple/slug"
 )
 
+var dateFormat = "2006-01-02"
+
 // SetPointerString ...
 func SetPointerString(val string) *string {
 	if val == "" {
@@ -25,7 +27,16 @@ func SetPointerInt64(val int64) *int64 {
 
 // ConvertTimeToString ...
 func ConvertTimeToString(t time.Time) string {
-	return t.Format("2006-01-02")
+	return t.Format(dateFormat)
+}
+
+// ConvertStringToTime ...
+func ConvertStringToTime(ts string) time.Time {
+	t, err := time.Parse(dateFormat, ts)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return t
 }
 
 // MakeSlug ...
