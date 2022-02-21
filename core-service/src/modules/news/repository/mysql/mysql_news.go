@@ -307,7 +307,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 
 func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
 	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?,
-		source=?, status=?, type=?, start_date=?, end_date=?, area_id=?, updated_by=?, updated_at=? WHERE id=?`
+		source=?, status=?, type=?, start_date=?, end_date=?, area_id=?, is_live=?, published_at=?, updated_by=?, updated_at=? WHERE id=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -326,7 +326,9 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.StartDate,
 		n.EndDate,
 		n.AreaID,
-		n.Author.ID.String(),
+		n.IsLive,
+		n.PublishedAt.Time,
+		n.Author.ID,
 		time.Now(),
 		id,
 	)

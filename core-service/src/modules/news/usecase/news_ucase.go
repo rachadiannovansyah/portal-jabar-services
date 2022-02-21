@@ -419,6 +419,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 
 	if dt.Status == "PUBLISHED" {
 		dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
+		helpers.SetPropLiveNews(dt)
 		n.newsRepo.Update(ctx, dt.ID, dt)
 	}
 
@@ -458,15 +459,16 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 
 	news.Status = status
 
-	if status == "PUBLISHED" {
-		news.Slug = helpers.MakeSlug(news.Title, news.ID)
-	}
-
 	newsRequest := domain.StoreNewsRequest{
 		StartDate: helpers.ConvertTimeToString(news.StartDate.Time),
 		EndDate:   helpers.ConvertTimeToString(news.EndDate.Time),
 	}
 	copier.Copy(&newsRequest, &news)
+
+	if status == "PUBLISHED" {
+		newsRequest.Slug = helpers.MakeSlug(newsRequest.Title, newsRequest.ID)
+		helpers.SetPropLiveNews(&newsRequest)
+	}
 
 	return n.newsRepo.Update(ctx, id, &newsRequest)
 }
