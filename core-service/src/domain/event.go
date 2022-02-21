@@ -104,11 +104,11 @@ type ListEventCalendarReponse struct {
 // EventUsecase ..
 type EventUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
-	Store(context.Context, *StoreRequestEvent) error
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
-	Delete(ctx context.Context, id int64) error
+	Store(context.Context, *StoreRequestEvent) error
 	Update(context.Context, int64, *UpdateRequestEvent) error
+	Delete(ctx context.Context, id int64) error
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	AgendaPortal(ctx context.Context, params *Request) ([]Event, int64, error)
 }
@@ -116,11 +116,11 @@ type EventUsecase interface {
 // EventRepository ..
 type EventRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []Event, total int64, err error)
-	Store(ctx context.Context, body *StoreRequestEvent) error
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
-	Delete(ctx context.Context, id int64) error
+	Store(ctx context.Context, body *StoreRequestEvent) error
 	Update(ctx context.Context, id int64, body *UpdateRequestEvent) error
+	Delete(ctx context.Context, id int64) error
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	AgendaPortal(ctx context.Context, params *Request) (new []Event, total int64, err error)
 }
