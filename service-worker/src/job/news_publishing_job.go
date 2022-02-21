@@ -8,7 +8,7 @@ import (
 // NewsPublishingJob ...
 func NewsPublishingJob(conn *utils.Conn) {
 	logrus.Println("NewsPublishingJob is running")
-	res, err := conn.Mysql.Exec("update news set is_live=1, published_at = now() where status='PUBLISHED' and is_live=0 and start_date <= now()")
+	res, err := conn.Mysql.Exec("UPDATE news SET is_live=1, published_at = now() WHERE status='PUBLISHED' AND is_live=0 AND start_date <= NOW()")
 	if err != nil {
 		logrus.Error(err)
 	}
