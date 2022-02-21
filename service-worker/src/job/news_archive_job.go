@@ -8,9 +8,19 @@ import (
 // NewsArchiveJob ...
 func NewsArchiveJob(conn *utils.Conn) {
 	logrus.Println("NewsArchiveJob is running")
-	_, err := conn.Mysql.Exec("update news set is_live=0, status='ARCHIVED' where end_date < now() and status='PUBLISHED'")
+	res, err := conn.Mysql.Exec("UPDATE news SET is_live=0, status='ARCHIVED' WHERE status='PUBLISHED' AND end_date > NOW()")
 	if err != nil {
 		logrus.Error(err)
 	}
+
+	// rows affected
+	ra, err := res.RowsAffected()
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	logrus.Println("NewsArchiveJob: Rows affected: ", ra)
+
 	return
 }
