@@ -215,7 +215,7 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 	return
 }
 
-func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.UpdateRequestEvent) (err error) {
+func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.StoreRequestEvent) (err error) {
 	query := `UPDATE events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , updated_at=? WHERE id = ?`
 	stmt, err := r.Conn.PrepareContext(ctx, query)
 	if err != nil {

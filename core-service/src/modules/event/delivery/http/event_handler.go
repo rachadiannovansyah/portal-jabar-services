@@ -120,7 +120,7 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 
 // Update an event ..
 func (h *EventHandler) Update(c echo.Context) (err error) {
-	var events domain.UpdateRequestEvent
+	var events domain.StoreRequestEvent
 	err = c.Bind(&events)
 
 	if events.EndHour < events.StartHour {

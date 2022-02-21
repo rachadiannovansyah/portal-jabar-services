@@ -242,7 +242,7 @@ func (u *eventUcase) Store(c context.Context, body *domain.StoreRequestEvent) (e
 }
 
 // Update will set up an update existing object
-func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequestEvent) (err error) {
+func (u *eventUcase) Update(c context.Context, id int64, body *domain.StoreRequestEvent) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 

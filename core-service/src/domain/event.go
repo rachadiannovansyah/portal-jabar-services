@@ -46,21 +46,6 @@ type StoreRequestEvent struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// UpdateRequestEvent ..
-type UpdateRequestEvent struct {
-	ID        int64     `json:"id"`
-	Title     string    `json:"title" validate:"required"`
-	Type      string    `json:"type" validate:"required"`
-	URL       string    `json:"url"`
-	Address   string    `json:"address"`
-	Date      string    `json:"date" validate:"required"`
-	StartHour string    `json:"start_hour" validate:"required"`
-	EndHour   string    `json:"end_hour" validate:"required"`
-	Category  string    `json:"category" validate:"required"`
-	Tags      []string  `json:"tags"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
 // ListEventResponse model ..
 type ListEventResponse struct {
 	ID        int64      `json:"id"`
@@ -107,7 +92,7 @@ type EventUsecase interface {
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	Store(context.Context, *StoreRequestEvent) error
-	Update(context.Context, int64, *UpdateRequestEvent) error
+	Update(context.Context, int64, *StoreRequestEvent) error
 	Delete(ctx context.Context, id int64) error
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	AgendaPortal(ctx context.Context, params *Request) ([]Event, int64, error)
@@ -119,7 +104,7 @@ type EventRepository interface {
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	Store(ctx context.Context, body *StoreRequestEvent) error
-	Update(ctx context.Context, id int64, body *UpdateRequestEvent) error
+	Update(ctx context.Context, id int64, body *StoreRequestEvent) error
 	Delete(ctx context.Context, id int64) error
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	AgendaPortal(ctx context.Context, params *Request) (new []Event, total int64, err error)
