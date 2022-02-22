@@ -31,6 +31,7 @@ func NewEventUsecase(repo domain.EventRepository, ctg domain.CategoryRepository,
 	}
 }
 
+// Private function to fill value of data tags
 func (u *eventUcase) fillDataTags(c context.Context, data []domain.Event) ([]domain.Event, error) {
 	g, ctx := errgroup.WithContext(c)
 
@@ -83,6 +84,7 @@ func (u *eventUcase) fillDataTags(c context.Context, data []domain.Event) ([]dom
 	return data, nil
 }
 
+// Private function to fill value of detail data tags
 func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (domain.Event, error) {
 	g, ctx := errgroup.WithContext(c)
 
@@ -131,7 +133,39 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 	return data, nil
 }
 
-// Fetch ...
+// Private function to store tags
+func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string) (err error) {
+	for _, tagName := range tags {
+		tag := &domain.Tag{
+			Name: tagName,
+		}
+
+		// check tags already exists
+		var checkTag domain.Tag
+		checkTag, _ = u.tagsRepo.GetTagByName(ctx, tagName)
+
+		if checkTag.Name == "" {
+			err = u.tagsRepo.StoreTag(ctx, tag)
+			if err != nil {
+				return
+			}
+		}
+
+		dataTag := &domain.DataTag{
+			DataID:  eventID,
+			TagID:   tag.ID,
+			TagName: tagName,
+			Type:    "events",
+		}
+		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+// Fetch will get all data
 func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
@@ -151,7 +185,7 @@ func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []dom
 	return
 }
 
-// GetByID ...
+// GetByID will find an object by given id
 func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
@@ -175,62 +209,7 @@ func (u *eventUcase) GetByID(c context.Context, id int64) (res domain.Event, err
 	return
 }
 
-// ListCalendar will get data without paginate
-func (u *eventUcase) ListCalendar(c context.Context, params *domain.Request) (res []domain.Event, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, err = u.eventRepo.ListCalendar(ctx, params)
-	if err != nil {
-		return nil, err
-	}
-
-	return
-}
-
-// Store an events
-func (u *eventUcase) Store(c context.Context, m *domain.StoreRequestEvent) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	m.CreatedAt = time.Now()
-	m.UpdatedAt = time.Now()
-	err = u.eventRepo.Store(ctx, m)
-	if err != nil {
-		return
-	}
-
-	for _, tagName := range m.Tags {
-		tag := &domain.Tag{
-			Name: tagName,
-		}
-
-		// check tags already exists
-		var checkTag domain.Tag
-		checkTag, err = u.tagsRepo.GetTagByName(ctx, tagName)
-
-		if checkTag.Name == "" {
-			err = u.tagsRepo.StoreTag(ctx, tag)
-			if err != nil {
-				return
-			}
-		}
-
-		dataTag := &domain.DataTag{
-			DataID:  m.ID,
-			TagID:   tag.ID,
-			TagName: tagName,
-			Type:    "events",
-		}
-		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
+// GetByTitle will find an object by given name or title
 func (u *eventUcase) GetByTitle(c context.Context, title string) (res domain.Event, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
@@ -243,14 +222,27 @@ func (u *eventUcase) GetByTitle(c context.Context, title string) (res domain.Eve
 	return
 }
 
-func (u *eventUcase) Delete(c context.Context, id int64) (err error) {
+// Store will create you a new object, and store into database
+func (u *eventUcase) Store(c context.Context, body *domain.StoreRequestEvent) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	return u.eventRepo.Delete(ctx, id)
+	body.CreatedAt = time.Now()
+	body.UpdatedAt = time.Now()
+	err = u.eventRepo.Store(ctx, body)
+	if err != nil {
+		return
+	}
+
+	if err = u.storeTags(ctx, body.ID, body.Tags); err != nil {
+		return
+	}
+
+	return
 }
 
-func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequestEvent) (err error) {
+// Update will set up an update existing object
+func (u *eventUcase) Update(c context.Context, id int64, body *domain.StoreRequestEvent) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
@@ -263,32 +255,22 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.UpdateRequ
 		return
 	}
 
-	for _, tagName := range body.Tags {
-		tag := &domain.Tag{
-			Name: tagName,
-		}
-		err = u.tagsRepo.StoreTag(ctx, tag)
-		if err != nil {
-			return
-		}
-
-		dataTag := &domain.DataTag{
-			DataID:  id,
-			TagID:   tag.ID,
-			TagName: tagName,
-			Type:    "events",
-		}
-
-		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
-		if err != nil {
-			return
-		}
+	if err = u.storeTags(ctx, id, body.Tags); err != nil {
+		return
 	}
 
 	return
 }
 
-// AgendaPortal ...
+// Delete an object and destroy it from database
+func (u *eventUcase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	return u.eventRepo.Delete(ctx, id)
+}
+
+// AgendaPortal will get all object for portal endpoint
 func (u *eventUcase) AgendaPortal(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
@@ -303,6 +285,19 @@ func (u *eventUcase) AgendaPortal(c context.Context, params *domain.Request) (re
 
 	if err != nil {
 		return nil, 0, err
+	}
+
+	return
+}
+
+// ListCalendar will get data event for calendar without paginate
+func (u *eventUcase) ListCalendar(c context.Context, params *domain.Request) (res []domain.Event, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.eventRepo.ListCalendar(ctx, params)
+	if err != nil {
+		return nil, err
 	}
 
 	return

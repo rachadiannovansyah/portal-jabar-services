@@ -89,23 +89,6 @@ func (h *EventHandler) GetByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailEventRes})
 }
 
-// AgendaCalendar ..
-func (h *EventHandler) AgendaCalendar(c echo.Context) error {
-	ctx := c.Request().Context()
-	params := helpers.GetRequestParams(c)
-
-	listEvents, err := h.EventUcase.ListCalendar(ctx, &params)
-
-	if err != nil {
-		return nil
-	}
-
-	listEventCalendar := []domain.ListEventCalendarReponse{}
-	copier.Copy(&listEventCalendar, &listEvents)
-
-	return c.JSON(http.StatusOK, listEventCalendar)
-}
-
 // Store a new event ..
 func (h *EventHandler) Store(c echo.Context) (err error) {
 	var events domain.StoreRequestEvent
@@ -135,27 +118,9 @@ func (h *EventHandler) Store(c echo.Context) (err error) {
 	return c.JSON(http.StatusCreated, events)
 }
 
-// Delete an event ..
-func (h *EventHandler) Delete(c echo.Context) (err error) {
-	reqID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
-	}
-
-	id := int64(reqID)
-	ctx := c.Request().Context()
-
-	err = h.EventUcase.Delete(ctx, id)
-	if err != nil {
-		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
-	}
-
-	return c.NoContent(http.StatusNoContent)
-}
-
 // Update an event ..
 func (h *EventHandler) Update(c echo.Context) (err error) {
-	var events domain.UpdateRequestEvent
+	var events domain.StoreRequestEvent
 	err = c.Bind(&events)
 
 	if events.EndHour < events.StartHour {
@@ -182,6 +147,24 @@ func (h *EventHandler) Update(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, events)
 }
 
+// Delete an event ..
+func (h *EventHandler) Delete(c echo.Context) (err error) {
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.EventUcase.Delete(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
 // AgendaPortal for fetching data on portal agenda
 func (h *EventHandler) AgendaPortal(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -203,4 +186,21 @@ func (h *EventHandler) AgendaPortal(c echo.Context) error {
 	res := helpers.Paginate(c, listEventRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// AgendaCalendar for fetching data for calendar
+func (h *EventHandler) AgendaCalendar(c echo.Context) error {
+	ctx := c.Request().Context()
+	params := helpers.GetRequestParams(c)
+
+	listEvents, err := h.EventUcase.ListCalendar(ctx, &params)
+
+	if err != nil {
+		return nil
+	}
+
+	listEventCalendar := []domain.ListEventCalendarReponse{}
+	copier.Copy(&listEventCalendar, &listEvents)
+
+	return c.JSON(http.StatusOK, listEventCalendar)
 }

@@ -68,6 +68,40 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 	return result, nil
 }
 
+func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query string) (result []domain.Event, err error) {
+	rows, err := r.Conn.QueryContext(ctx, query)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
+
+	result = make([]domain.Event, 0)
+	for rows.Next() {
+		event := domain.Event{}
+		err = rows.Scan(
+			&event.ID,
+			&event.Title,
+			&event.Date,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+
+		result = append(result, event)
+	}
+
+	return result, nil
+}
+
 func (r *mysqlEventRepository) count(ctx context.Context, query string) (total int64, err error) {
 
 	err = r.Conn.QueryRow(query).Scan(&total)
@@ -133,54 +167,6 @@ func (r *mysqlEventRepository) GetByID(ctx context.Context, id int64) (res domai
 	return
 }
 
-func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query string) (result []domain.Event, err error) {
-	rows, err := r.Conn.QueryContext(ctx, query)
-	if err != nil {
-		logrus.Error(err)
-		return nil, err
-	}
-
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
-	result = make([]domain.Event, 0)
-	for rows.Next() {
-		event := domain.Event{}
-		err = rows.Scan(
-			&event.ID,
-			&event.Title,
-			&event.Date,
-		)
-
-		if err != nil {
-			logrus.Error(err)
-			return nil, err
-		}
-
-		result = append(result, event)
-	}
-
-	return result, nil
-}
-
-func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
-	query := `SELECT id, title, date FROM events WHERE 1=1`
-
-	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
-	}
-
-	query = query + ` ORDER BY date DESC `
-
-	res, err = r.fetchQueryCalendar(ctx, query)
-
-	return
-}
-
 func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (res domain.Event, err error) {
 	query := querySelectAgenda + ` AND title = ?`
 
@@ -229,6 +215,31 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 	return
 }
 
+func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.StoreRequestEvent) (err error) {
+	query := `UPDATE events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , updated_at=? WHERE id = ?`
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, m.Title, m.Type, m.URL, m.Address, m.Date, m.StartHour, m.EndHour, m.Category, m.UpdatedAt, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total affected: %d", rowAffected)
+		return
+	}
+
+	return
+}
+
 func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error) {
 	query := "UPDATE events SET deleted_at=? WHERE id = ?"
 	stmt, err := r.Conn.PrepareContext(ctx, query)
@@ -249,31 +260,6 @@ func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error)
 
 	if rowAffected != 1 {
 		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
-		return
-	}
-
-	return
-}
-
-func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.UpdateRequestEvent) (err error) {
-	query := `UPDATE events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , updated_at=? WHERE id = ?`
-	stmt, err := r.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx, m.Title, m.Type, m.URL, m.Address, m.Date, m.StartHour, m.EndHour, m.Category, m.UpdatedAt, id)
-	if err != nil {
-		return
-	}
-
-	rowAffected, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-
-	if rowAffected != 1 {
-		err = fmt.Errorf("Weird Behavior. Total affected: %d", rowAffected)
 		return
 	}
 
@@ -305,6 +291,20 @@ func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.
 	if err != nil {
 		return nil, 0, err
 	}
+
+	return
+}
+
+func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
+	query := `SELECT id, title, date FROM events WHERE 1=1`
+
+	if params.StartDate != "" && params.EndDate != "" {
+		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	}
+
+	query = query + ` ORDER BY date DESC `
+
+	res, err = r.fetchQueryCalendar(ctx, query)
 
 	return
 }
