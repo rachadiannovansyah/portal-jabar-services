@@ -21,7 +21,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, type, views, shared, source, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, views, shared, source, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -41,6 +41,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	for rows.Next() {
 		t := domain.News{}
 		authorID := uuid.UUID{}
+		areaID := int64(0)
 		err = rows.Scan(
 			&t.ID,
 			&t.Category,
@@ -51,6 +52,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Video,
 			&t.Slug,
 			&authorID,
+			&areaID,
 			&t.Type,
 			&t.Views,
 			&t.Shared,
@@ -69,6 +71,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			return nil, err
 		}
 		t.Author = domain.User{ID: authorID}
+		t.Area = domain.Area{ID: areaID}
 		result = append(result, t)
 	}
 

@@ -24,6 +24,7 @@ type News struct {
 	Category    string     `json:"category" validate:"required"`
 	Author      User       `json:"author" validate:"required"`
 	Area        Area       `json:"area" validate:"required"`
+	Duration    int8       `json:"duration"`
 	StartDate   NullTime   `json:"start_date"`
 	EndDate     NullTime   `json:"end_date"`
 	IsLive      int8       `json:"is_live"`
@@ -47,6 +48,7 @@ type StoreNewsRequest struct {
 	Type        string    `json:"type"`
 	Category    string    `json:"category"`
 	Author      User      `json:"author"`
+	Duration    int8      `json:"duration"`
 	StartDate   string    `json:"start_date"`
 	EndDate     string    `json:"end_date"`
 	Tags        []string  `json:"tags"`
@@ -76,7 +78,6 @@ type NewsListResponse struct {
 	Video       NullString `json:"video"`
 	Source      NullString `json:"source"`
 	Tags        []DataTag  `json:"tags"`
-	Area        Area       `json:"area"`
 	Status      string     `json:"status"`
 	IsLive      int8       `json:"is_live"`
 	CreatedBy   NullString `json:"created_by"`
@@ -99,25 +100,29 @@ type NewsBanner struct {
 
 // DetailNewsResponse ...
 type DetailNewsResponse struct {
-	ID          int64      `json:"id"`
-	Title       string     `json:"title"`
-	Excerpt     string     `json:"excerpt"`
-	Content     string     `json:"content"`
-	Slug        string     `json:"slug"`
-	Image       NullString `json:"image"`
-	Video       NullString `json:"video"`
-	Source      NullString `json:"source"`
-	Status      string     `json:"status"`
-	Views       int64      `json:"views"`
-	Shared      int64      `json:"shared"`
-	Highlight   int8       `json:"highlight,omitempty"`
-	Type        string     `json:"type"`
-	Tags        []DataTag  `json:"tags"`
-	Category    string     `json:"category"`
-	Author      Author     `json:"author"`
-	PublishedAt time.Time  `json:"published_at"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          int64            `json:"id"`
+	Title       string           `json:"title"`
+	Excerpt     string           `json:"excerpt"`
+	Content     string           `json:"content"`
+	Slug        string           `json:"slug"`
+	Image       NullString       `json:"image"`
+	Video       NullString       `json:"video"`
+	Source      NullString       `json:"source"`
+	Status      string           `json:"status"`
+	Views       int64            `json:"views"`
+	Shared      int64            `json:"shared"`
+	Highlight   int8             `json:"highlight,omitempty"`
+	Type        string           `json:"type"`
+	Tags        []DataTag        `json:"tags"`
+	Category    string           `json:"category"`
+	Author      Author           `json:"author"`
+	Duration    int8             `json:"duration"`
+	StartDate   string           `json:"start_date"`
+	EndDate     string           `json:"end_date"`
+	Area        AreaListResponse `json:"area"`
+	PublishedAt time.Time        `json:"published_at"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
 }
 
 type TabStatusResponse struct {

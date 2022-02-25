@@ -103,7 +103,7 @@ func (m *mysqlAreaRepository) Fetch(ctx context.Context, params *domain.Request)
 }
 
 func (m *mysqlAreaRepository) GetByID(ctx context.Context, id int64) (res domain.Area, err error) {
-	query := querySelectArea + ` WHERE id = ?`
+	query := querySelectArea + ` AND id = ?`
 
 	list, err := m.fetch(ctx, query, id)
 	if err != nil {
