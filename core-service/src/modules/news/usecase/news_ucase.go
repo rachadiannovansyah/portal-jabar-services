@@ -19,17 +19,20 @@ type newsUsecase struct {
 	userRepo       domain.UserRepository
 	tagRepo        domain.TagRepository
 	dataTagRepo    domain.DataTagRepository
+	areaRepo       domain.AreaRepository
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
-func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.TagRepository, dtr domain.DataTagRepository, timeout time.Duration) domain.NewsUsecase {
+func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.TagRepository,
+	dtr domain.DataTagRepository, ar domain.AreaRepository, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
 		userRepo:       u,
 		tagRepo:        tr,
 		dataTagRepo:    dtr,
+		areaRepo:       ar,
 		contextTimeout: timeout,
 	}
 }
@@ -261,6 +264,13 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 	if err != nil {
 		return
 	}
+
+	detailArea, err := n.areaRepo.GetByID(ctx, res.Area.ID)
+	if err != nil {
+		logrus.Println("get area error:", err)
+		return
+	}
+	res.Area = detailArea
 
 	return
 }

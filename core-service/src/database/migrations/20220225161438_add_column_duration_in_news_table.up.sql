@@ -1,0 +1,1 @@
+ALTER TABLE news ADD duration TINYINT AFTER `area_id`;
