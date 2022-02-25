@@ -117,8 +117,8 @@ type DetailNewsResponse struct {
 	Category    string           `json:"category"`
 	Author      Author           `json:"author"`
 	Duration    int8             `json:"duration"`
-	StartDate   string           `json:"start_date"`
-	EndDate     string           `json:"end_date"`
+	StartDate   NullTime         `json:"start_date"`
+	EndDate     NullTime         `json:"end_date"`
 	Area        AreaListResponse `json:"area"`
 	PublishedAt time.Time        `json:"published_at"`
 	CreatedAt   time.Time        `json:"created_at"`
