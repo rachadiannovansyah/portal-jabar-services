@@ -7,6 +7,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 // userHandler ...
@@ -20,6 +21,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 		UUsecase: uu,
 	}
 	r.POST("/users", handler.Store)
+	r.PUT("/users/profile", handler.UpdateProfile)
 }
 
 func isRequestValid(f *domain.User) (bool, error) {
@@ -47,4 +49,22 @@ func (h *UserHandler) Store(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusCreated, u)
+}
+
+func (h *UserHandler) UpdateProfile(c echo.Context) (err error) {
+	u := new(domain.User)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+
+	u.ID = au.ID
+	err = h.UUsecase.UpdateProfile(ctx, u)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, u)
 }

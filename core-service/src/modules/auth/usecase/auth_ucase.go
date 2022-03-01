@@ -10,6 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
@@ -145,13 +146,13 @@ func (n *authUsecase) UserProfile(c context.Context, id uuid.UUID) (res domain.U
 		return
 	}
 
-	resUnit, err := n.unitRepo.GetByID(ctx, res.Unit.ID)
+	unit, err := n.unitRepo.GetByID(ctx, res.Unit.ID)
 
 	if err != nil {
 		return
 	}
 
-	res.Unit = resUnit
+	res.Unit = helpers.GetUnitInfo(unit)
 
 	defer cancel()
 
