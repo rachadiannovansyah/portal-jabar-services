@@ -44,6 +44,7 @@ func (m *mysqlUserRepository) GetByEmail(ctx context.Context, email string) (res
 }
 
 func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domain.User) (err error) {
+	roleID := int8(0)
 	err = m.Conn.QueryRowContext(ctx, query).Scan(
 		&res.ID,
 		&res.Name,
@@ -54,12 +55,14 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Nip,
 		&res.Occupation,
 		&res.Unit.ID,
-		&res.RoleID,
+		&roleID,
 		&res.UnitName,
 	)
 	if err != nil {
 		logrus.Error("Error found", err)
 	}
+
+	res.Role.ID = roleID
 
 	return
 }
@@ -88,7 +91,7 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 	}
 
 	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.Nip.String, u.Occupation.String,
-		u.Photo.String, u.Unit.ID, u.RoleID.Int64, u.ID)
+		u.Photo.String, u.Unit.ID, u.Role.ID, u.ID)
 	if err != nil {
 		return
 	}

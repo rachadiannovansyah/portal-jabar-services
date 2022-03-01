@@ -19,7 +19,7 @@ type User struct {
 	Photo      NullString `json:"photo"`
 	Unit       UnitInfo   `json:"unit"`
 	UnitName   string     `json:"unit_name"`
-	RoleID     NullInt64  `json:"role_id"`
+	Role       RoleInfo   `json:"role"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
 	DeletedAt  time.Time  `json:"deleted_at"`
@@ -35,7 +35,7 @@ type UserInfo struct {
 	Occupation NullString `json:"occupation"`
 	Photo      NullString `json:"photo"`
 	Unit       UnitInfo   `json:"unit"`
-	RoleID     NullInt64  `json:"role_id"`
+	Role       RoleInfo   `json:"role"`
 }
 
 // Author ...

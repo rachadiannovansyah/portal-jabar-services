@@ -11,6 +11,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// ResponseError represent the reseponse error struct
+type ResponseError struct {
+	Message string `json:"message"`
+}
+
 // GetCurrentURI ...
 func GetCurrentURI(c echo.Context) string {
 	req := c.Request()
@@ -114,14 +119,17 @@ func GetAuthenticatedUser(c echo.Context) *domain.JwtCustomClaims {
 }
 
 // GetUnitInfo ...
-func GetUnitInfo(unit domain.Unit) domain.UnitInfo {
+func GetUnitInfo(u domain.Unit) domain.UnitInfo {
 	return domain.UnitInfo{
-		ID:   unit.ID,
-		Name: unit.Name,
+		ID:   u.ID,
+		Name: u.Name,
 	}
 }
 
-// ResponseError represent the reseponse error struct
-type ResponseError struct {
-	Message string `json:"message"`
+// GetRoleInfo ...
+func GetRoleInfo(r domain.Role) domain.RoleInfo {
+	return domain.RoleInfo{
+		ID:   r.ID,
+		Name: r.Name,
+	}
 }

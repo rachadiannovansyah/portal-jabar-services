@@ -12,6 +12,7 @@ import (
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_roleRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role/repository/mysql"
 	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
 	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
@@ -32,6 +33,7 @@ type Repository struct {
 	DataTagsRepo        domain.DataTagRepository
 	TagRepo             domain.TagRepository
 	SearchRepo          domain.SearchRepository
+	RoleRepo            domain.RoleRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -49,5 +51,6 @@ func NewRepository(conn *utils.Conn) *Repository {
 		DataTagsRepo:        _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
 		TagRepo:             _tagRepo.NewMysqlTagRepository(conn.Mysql),
 		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
+		RoleRepo:            _roleRepo.NewMysqlRoleRepository(conn.Mysql),
 	}
 }

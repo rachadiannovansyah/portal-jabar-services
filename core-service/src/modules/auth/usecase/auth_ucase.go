@@ -19,15 +19,17 @@ type authUsecase struct {
 	config         *config.Config
 	userRepo       domain.UserRepository
 	unitRepo       domain.UnitRepository
+	roleRepo       domain.RoleRepository
 	contextTimeout time.Duration
 }
 
 // NewAuthUsecase will create new an authUsecase object representation of domain.AuthUsecase interface
-func NewAuthUsecase(c *config.Config, u domain.UserRepository, un domain.UnitRepository, timeout time.Duration) domain.AuthUsecase {
+func NewAuthUsecase(c *config.Config, u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, timeout time.Duration) domain.AuthUsecase {
 	return &authUsecase{
 		config:         c,
 		userRepo:       u,
 		unitRepo:       un,
+		roleRepo:       r,
 		contextTimeout: timeout,
 	}
 }
@@ -146,13 +148,11 @@ func (n *authUsecase) UserProfile(c context.Context, id uuid.UUID) (res domain.U
 		return
 	}
 
-	unit, err := n.unitRepo.GetByID(ctx, res.Unit.ID)
-
-	if err != nil {
-		return
-	}
+	unit, _ := n.unitRepo.GetByID(ctx, res.Unit.ID)
+	role, _ := n.roleRepo.GetByID(ctx, res.Role.ID)
 
 	res.Unit = helpers.GetUnitInfo(unit)
+	res.Role = helpers.GetRoleInfo(role)
 
 	defer cancel()
 
