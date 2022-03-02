@@ -482,3 +482,10 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 
 	return n.newsRepo.Update(ctx, id, &newsRequest)
 }
+
+func (u *newsUsecase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	return u.newsRepo.Delete(ctx, id)
+}

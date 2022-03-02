@@ -142,6 +142,7 @@ type NewsUsecase interface {
 	Update(context.Context, int64, *StoreNewsRequest) error
 	UpdateStatus(context.Context, int64, string) error
 	TabStatus(context.Context) ([]TabStatusResponse, error)
+	Delete(ctx context.Context, id int64) error
 }
 
 // NewsRepository represent the news repository contract
@@ -156,4 +157,5 @@ type NewsRepository interface {
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
 	TabStatus(ctx context.Context) (res []TabStatusResponse, err error)
+	Delete(ctx context.Context, id int64) error
 }
