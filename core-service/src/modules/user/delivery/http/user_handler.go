@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -21,7 +22,8 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 		UUsecase: uu,
 	}
 	r.POST("/users", handler.Store)
-	r.PUT("/users/profile", handler.UpdateProfile)
+	r.GET("/users/me", handler.UserProfile)
+	r.PUT("/users/me", handler.UpdateProfile)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -71,4 +73,20 @@ func (h *UserHandler) UpdateProfile(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, u)
+}
+
+func (h *UserHandler) UserProfile(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	au := helpers.GetAuthenticatedUser(c)
+
+	res, err := h.UUsecase.GetByID(ctx, au.ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	userinfo := domain.UserInfo{}
+	copier.Copy(&userinfo, &res)
+
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &userinfo})
 }

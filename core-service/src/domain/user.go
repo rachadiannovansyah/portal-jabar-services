@@ -55,5 +55,6 @@ type UserRepository interface {
 // UserUsecase ...
 type UserUsecase interface {
 	Store(context.Context, *User) error
+	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateProfile(context.Context, *User) error
 }
