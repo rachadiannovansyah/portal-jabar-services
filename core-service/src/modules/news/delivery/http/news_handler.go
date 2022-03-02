@@ -43,6 +43,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	e.GET("/news/headline", handler.FetchNewsHeadline)
 	e.PATCH("/news/:id/share", handler.AddShare)
 	e.GET("/news/tabs", handler.TabStatus)
+	e.DELETE("/news/:id", handler.Delete)
 }
 
 // FetchNews will fetch the content based on given params
@@ -281,4 +282,22 @@ func (h *NewsHandler) UpdateStatus(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully update status",
 	})
+}
+
+// Delete will delete the news by given id and status is DRAFT
+func (h *NewsHandler) Delete(c echo.Context) (err error) {
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.CUsecase.Delete(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
