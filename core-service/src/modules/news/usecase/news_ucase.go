@@ -265,11 +265,7 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 		return
 	}
 
-	detailArea, err := n.areaRepo.GetByID(ctx, res.Area.ID)
-	if err != nil {
-		logrus.Println("get area error:", err)
-		return
-	}
+	detailArea, _ := n.areaRepo.GetByID(ctx, res.Area.ID)
 	res.Area = detailArea
 
 	return
@@ -472,6 +468,7 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	newsRequest := domain.StoreNewsRequest{
 		StartDate: helpers.ConvertTimeToString(news.StartDate.Time),
 		EndDate:   helpers.ConvertTimeToString(news.EndDate.Time),
+		AreaID:    news.Area.ID,
 	}
 	copier.Copy(&newsRequest, &news)
 
