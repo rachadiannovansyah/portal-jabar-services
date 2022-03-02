@@ -39,7 +39,7 @@ func (h *UnitHandler) FetchUnits(c echo.Context) error {
 	}
 
 	// Copy slice to slice
-	listUnitRes := []domain.UnitListResponse{}
+	listUnitRes := []domain.UnitInfo{}
 	copier.Copy(&listUnitRes, &listUnit)
 
 	res := helpers.Paginate(c, listUnitRes, total, params)

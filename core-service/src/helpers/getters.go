@@ -7,8 +7,14 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 )
+
+// ResponseError represent the reseponse error struct
+type ResponseError struct {
+	Message string `json:"message"`
+}
 
 // GetCurrentURI ...
 func GetCurrentURI(c echo.Context) string {
@@ -105,7 +111,25 @@ func GetStatusCode(err error) int {
 	}
 }
 
-// ResponseError represent the reseponse error struct
-type ResponseError struct {
-	Message string `json:"message"`
+// GetAuthenticatedUser ...
+func GetAuthenticatedUser(c echo.Context) *domain.JwtCustomClaims {
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+	return &auth
+}
+
+// GetUnitInfo ...
+func GetUnitInfo(u domain.Unit) domain.UnitInfo {
+	return domain.UnitInfo{
+		ID:   u.ID,
+		Name: u.Name,
+	}
+}
+
+// GetRoleInfo ...
+func GetRoleInfo(r domain.Role) domain.RoleInfo {
+	return domain.RoleInfo{
+		ID:   r.ID,
+		Name: r.Name,
+	}
 }

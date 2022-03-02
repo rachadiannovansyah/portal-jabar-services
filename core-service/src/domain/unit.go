@@ -20,8 +20,8 @@ type Unit struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-// UnitListResponse ...
-type UnitListResponse struct {
+// UnitInfo ...
+type UnitInfo struct {
 	ID   int64      `json:"id"`
 	Name NullString `json:"name" validate:"required"`
 }
