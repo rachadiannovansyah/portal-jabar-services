@@ -28,6 +28,18 @@ func NewUserkUsecase(u domain.UserRepository, un domain.UnitRepository, r domain
 	}
 }
 
+func encryptPassword(password string) (string, error) {
+	encryptedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(password),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return string(encryptedPassword), nil
+}
+
 func (u *userUsecase) Store(c context.Context, usr *domain.User) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
@@ -35,14 +47,11 @@ func (u *userUsecase) Store(c context.Context, usr *domain.User) (err error) {
 	// generate uuid v4
 	usr.ID = uuid.New()
 
-	encryptedPassword, err := bcrypt.GenerateFromPassword(
-		[]byte(usr.Password),
-		bcrypt.DefaultCost,
-	)
-
+	encryptedPassword, err := encryptPassword(usr.Password)
 	if err != nil {
 		return err
 	}
+
 	usr.Password = string(encryptedPassword)
 
 	err = u.userRepo.Store(ctx, usr)
@@ -82,6 +91,31 @@ func (n *userUsecase) GetByID(c context.Context, id uuid.UUID) (res domain.User,
 	res.Role = helpers.GetRoleInfo(role)
 
 	defer cancel()
+
+	return
+}
+
+func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domain.ChangePasswordRequest) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	user, err := n.userRepo.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.CurrentPassword))
+	if err != nil {
+		return err
+	}
+
+	encryptedPassword, err := encryptPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	user.Password = string(encryptedPassword)
+	err = n.userRepo.Update(ctx, &user)
 
 	return
 }
