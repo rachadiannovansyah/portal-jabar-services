@@ -24,9 +24,9 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/profile", handler.UpdateProfile)
 }
 
-func isRequestValid(f *domain.User) (bool, error) {
+func isRequestValid(u *domain.User) (bool, error) {
 	validate := validator.New()
-	err := validate.Struct(f)
+	err := validate.Struct(u)
 	if err != nil {
 		return false, err
 	}
@@ -55,6 +55,10 @@ func (h *UserHandler) UpdateProfile(c echo.Context) (err error) {
 	u := new(domain.User)
 	if err = c.Bind(u); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if ok, err := isRequestValid(u); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	ctx := c.Request().Context()

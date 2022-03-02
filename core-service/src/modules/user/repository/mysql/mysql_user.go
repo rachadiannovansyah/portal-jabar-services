@@ -90,8 +90,8 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 		return
 	}
 
-	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.Nip.String, u.Occupation.String,
-		u.Photo.String, u.Unit.ID, u.Role.ID, u.ID)
+	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.Nip, u.Occupation,
+		u.Photo, u.Unit.ID, u.Role.ID, u.ID)
 	if err != nil {
 		return
 	}

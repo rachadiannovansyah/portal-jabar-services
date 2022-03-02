@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "core-service"
+		},
+		{
+			"path": "service-worker"
+		}
+	],
+	"settings": {}
+}
