@@ -22,7 +22,7 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 }
 
 var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, 
-	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news`
+	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news WHERE deleted_at is null`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -81,7 +81,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 }
 
 func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value string) (res domain.News, err error) {
-	query := fmt.Sprintf("%s WHERE %s=?", querySelectNews, key)
+	query := fmt.Sprintf("%s AND %s=?", querySelectNews, key)
 
 	list, err := m.fetch(ctx, query, value)
 	if err != nil {
@@ -159,7 +159,7 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-	query := ` WHERE 1=1 `
+	var query string
 
 	if params.Keyword != "" {
 		query += ` AND title LIKE '%` + params.Keyword + `%' `
@@ -233,7 +233,7 @@ func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error
 }
 
 func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
-	query := querySelectNews + ` WHERE id IN (
+	query := querySelectNews + ` AND id IN (
 		SELECT MAX(id) FROM news WHERE highlight = ? and is_live=1 GROUP BY category 
 	)`
 
@@ -246,7 +246,7 @@ func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain
 }
 
 func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []domain.News, err error) {
-	query := querySelectNews + ` WHERE id IN (
+	query := querySelectNews + ` AND id IN (
 		SELECT MAX(id) FROM news WHERE id NOT IN (
 			SELECT id from news  WHERE id IN (
 				SELECT MAX(id) FROM news WHERE highlight = 1 and is_live=1
@@ -350,6 +350,31 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 
 	if affect != 1 {
 		err = fmt.Errorf("Weird  Behavior. Total Affected: %d", affect)
+		return
+	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "DELETE FROM news WHERE id = ? AND status = ?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, id, "DRAFT")
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
 		return
 	}
 
