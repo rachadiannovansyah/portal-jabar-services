@@ -27,15 +27,15 @@ type User struct {
 
 // UserInfo ...
 type UserInfo struct {
-	ID         uuid.UUID  `json:"id"`
-	Name       string     `json:"name"`
-	Username   string     `json:"username"`
-	Email      string     `json:"email"`
-	Nip        NullString `json:"nip"`
-	Occupation NullString `json:"occupation"`
-	Photo      NullString `json:"photo"`
-	Unit       UnitInfo   `json:"unit"`
-	Role       RoleInfo   `json:"role"`
+	ID         uuid.UUID `json:"id"`
+	Name       string    `json:"name"`
+	Username   string    `json:"username"`
+	Email      string    `json:"email"`
+	Nip        *string   `json:"nip"`
+	Occupation *string   `json:"occupation"`
+	Photo      *string   `json:"photo"`
+	Unit       UnitInfo  `json:"unit"`
+	Role       RoleInfo  `json:"role"`
 }
 
 // Author ...
