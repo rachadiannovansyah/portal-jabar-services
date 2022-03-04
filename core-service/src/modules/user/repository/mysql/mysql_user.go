@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -84,14 +85,14 @@ func (m *mysqlUserRepository) Store(ctx context.Context, u *domain.User) (err er
 
 func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err error) {
 	query := `UPDATE users SET name=?, username=?, email=?, password=?, nip=?, occupation=?,
-		photo=?, unit_id=?, role_id=? WHERE id = ?`
+		photo=?, unit_id=?, role_id=?, updated_at=? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
 	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.Nip, u.Occupation,
-		u.Photo, u.Unit.ID, u.Role.ID, u.ID)
+		u.Photo, u.Unit.ID, u.Role.ID, time.Now(), u.ID)
 	if err != nil {
 		return
 	}

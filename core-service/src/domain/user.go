@@ -44,6 +44,12 @@ type Author struct {
 	UnitName string `json:"unit_name"`
 }
 
+// ChangePasswordRequest ...
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required"`
+}
+
 // UserRepository represent the unit repository contract
 type UserRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
@@ -57,4 +63,5 @@ type UserUsecase interface {
 	Store(context.Context, *User) error
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateProfile(context.Context, *User) error
+	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 }

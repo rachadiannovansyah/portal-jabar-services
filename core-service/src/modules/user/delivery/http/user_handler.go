@@ -24,6 +24,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.POST("/users", handler.Store)
 	r.GET("/users/me", handler.UserProfile)
 	r.PUT("/users/me", handler.UpdateProfile)
+	r.PUT("/users/me/change-password", handler.ChangePassword)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -89,4 +90,25 @@ func (h *UserHandler) UserProfile(c echo.Context) error {
 	copier.Copy(&userinfo, &res)
 
 	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &userinfo})
+}
+
+func (h *UserHandler) ChangePassword(c echo.Context) error {
+	req := new(domain.ChangePasswordRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+
+	err := h.UUsecase.ChangePassword(ctx, au.ID, req)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "password changed"})
 }
