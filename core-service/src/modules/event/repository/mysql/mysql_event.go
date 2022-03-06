@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -124,12 +125,17 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
 	}
 
-	if v, ok := params.Filters["category"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
-	}
-
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	}
+
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		// casting params for strings.Join to avoiding casting an interface type
+		castingParams := v.([]string)
+
+		// string.Join to concates element of strings
+		joinParams := strings.Join(castingParams, ", ")
+		query = fmt.Sprintf(`%s AND category IN (%s)`, query, joinParams)
 	}
 
 	if params.SortBy != "" {
