@@ -3,7 +3,6 @@ package http
 import (
 	"net/http"
 
-	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/go-playground/validator.v9"
 
@@ -68,12 +67,12 @@ func (h *UserHandler) UpdateProfile(c echo.Context) (err error) {
 	au := helpers.GetAuthenticatedUser(c)
 
 	u.ID = au.ID
-	err = h.UUsecase.UpdateProfile(ctx, u)
+	res, err := h.UUsecase.UpdateProfile(ctx, u)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, u)
+	return c.JSON(http.StatusOK, helpers.MapUserInfo(res))
 }
 
 func (h *UserHandler) UserProfile(c echo.Context) error {
@@ -86,10 +85,7 @@ func (h *UserHandler) UserProfile(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	userinfo := domain.UserInfo{}
-	copier.Copy(&userinfo, &res)
-
-	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &userinfo})
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: helpers.MapUserInfo(res)})
 }
 
 func (h *UserHandler) ChangePassword(c echo.Context) error {

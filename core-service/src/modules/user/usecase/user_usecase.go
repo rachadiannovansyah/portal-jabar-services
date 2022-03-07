@@ -58,18 +58,35 @@ func (u *userUsecase) Store(c context.Context, usr *domain.User) (err error) {
 	return
 }
 
-func (u *userUsecase) UpdateProfile(c context.Context, req *domain.User) (err error) {
+func (u *userUsecase) UpdateProfile(c context.Context, req *domain.User) (user domain.User, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	user, err := u.userRepo.GetByID(ctx, req.ID)
+	user, err = u.GetByID(ctx, req.ID)
 	if err != nil {
-		return err
+		return
 	}
 
-	user.Name = req.Name
-	user.Nip = req.Nip
-	user.Occupation = req.Occupation
+	// FIXME: make some utility function to separate this code
+	if req.Name != "" {
+		user.Name = req.Name
+	}
+
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+
+	if req.Email != "" {
+		user.Email = req.Email
+	}
+
+	if req.Nip != nil {
+		user.Nip = req.Nip
+	}
+
+	if req.Occupation != nil {
+		user.Occupation = req.Occupation
+	}
 
 	err = u.userRepo.Update(ctx, &user)
 	return
