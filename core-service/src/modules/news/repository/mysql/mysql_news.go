@@ -196,7 +196,7 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY created_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news WHERE deleted_at is NULL `+query)
 
 	query = querySelectNews + query + ` LIMIT ?,? `
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
