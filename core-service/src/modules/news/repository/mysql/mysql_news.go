@@ -181,13 +181,16 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND status = "%s"`, query, v)
 	}
 
-	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		categories := params.Filters["categories"].([]string)
+
+		if len(categories) > 0 {
+			query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+		}
 	}
 
-	categories := params.Filters["categories"].([]string)
-	if len(categories) > 0 {
-		query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+	if params.StartDate != "" && params.EndDate != "" {
+		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	if params.SortBy != "" {
