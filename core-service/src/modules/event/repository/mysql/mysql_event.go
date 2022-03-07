@@ -129,12 +129,9 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
-	if v, ok := params.Filters["categories"]; ok && v != "" {
-		// casting params for strings.Join to avoiding casting an interface type
-		castingParams := v.([]string)
-
-		// string.Join to concates element of strings
-		joinParams := strings.Join(castingParams, ", ")
+	categories := params.Filters["categories"].([]string)
+	if len(categories) > 0 {
+		joinParams := strings.Join(categories, ", ")
 		query = fmt.Sprintf(`%s AND category IN (%s)`, query, joinParams)
 	}
 
@@ -146,7 +143,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
 
-	query = querySelectAgenda + query + ` LIMIT ?,? `
+	query = querySelectAgenda + query + `LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
