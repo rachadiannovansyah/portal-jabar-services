@@ -282,6 +282,11 @@ func (n *newsUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResp
 }
 
 func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
+
+	if err := n.dataTagRepo.DeleteDataTag(ctx, newsId); err != nil {
+		logrus.Error(err)
+	}
+
 	for _, tagName := range tags {
 		tag := &domain.Tag{
 			Name: tagName,
@@ -451,7 +456,7 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		return
 	}
 
-	return
+	return n.newsRepo.Update(ctx, id, dt)
 }
 
 func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {

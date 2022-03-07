@@ -334,7 +334,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.EndDate,
 		n.AreaID,
 		n.IsLive,
-		n.PublishedAt.Time,
+		n.PublishedAt,
 		n.Author.ID,
 		time.Now(),
 		id,
