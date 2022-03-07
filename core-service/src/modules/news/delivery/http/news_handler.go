@@ -53,11 +53,11 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"highlight": c.QueryParam("highlight"),
-		"category":  c.QueryParam("cat"),
-		"type":      c.QueryParam("type"),
-		"tags":      c.QueryParam("tags"),
-		"status":    c.QueryParam("status"),
+		"categories": c.Request().URL.Query()["cat[]"],
+		"highlight":  c.QueryParam("highlight"),
+		"type":       c.QueryParam("type"),
+		"tags":       c.QueryParam("tags"),
+		"status":     c.QueryParam("status"),
 	}
 
 	if c.Request().Header.Get("Authorization") == "" {
