@@ -131,8 +131,8 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	categories := params.Filters["categories"].([]string)
 	if len(categories) > 0 {
-		joinParams := strings.Join(categories, ", ")
-		query = fmt.Sprintf(`%s AND category IN (%s)`, query, joinParams)
+		joinParams := strings.Join(categories, "','")
+		query = fmt.Sprintf(`%s AND category IN ('%s')`, query, joinParams)
 	}
 
 	if params.SortBy != "" {
