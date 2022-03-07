@@ -50,8 +50,8 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"type":     c.QueryParam("type"),
-		"category": c.QueryParam("cat"),
+		"type":       c.QueryParam("type"),
+		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
 	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)

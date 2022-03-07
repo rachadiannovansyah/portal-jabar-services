@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -124,12 +125,13 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
 	}
 
-	if v, ok := params.Filters["category"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
-	}
-
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	}
+
+	categories := params.Filters["categories"].([]string)
+	if len(categories) > 0 {
+		query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
 	}
 
 	if params.SortBy != "" {
@@ -138,9 +140,9 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 		query += ` ORDER BY date DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
 
-	query = querySelectAgenda + query + ` LIMIT ?,? `
+	query = querySelectAgenda + query + `LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {

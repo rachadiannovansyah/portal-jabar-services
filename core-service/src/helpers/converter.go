@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gosimple/slug"
@@ -46,4 +47,9 @@ func MakeSlug(title string, newsID int64) string {
 		title = title[:90]
 	}
 	return fmt.Sprintf("%v-%v", slug.Make(title), newsID)
+}
+
+// ConvertSliceToString ...
+func ConverSliceToString(slice []string, delimiter string) string {
+	return strings.Join(slice, delimiter)
 }
