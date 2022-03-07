@@ -10,13 +10,13 @@ import (
 // User ...
 type User struct {
 	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name"`
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
+	Name       string    `json:"name" validate:"omitempty,required,max=100"`
+	Username   string    `json:"username" validate:"omitempty,required,max=62"`
+	Email      string    `json:"email" validate:"omitempty,required,max=64"`
 	Password   string    `json:"password"`
-	Nip        *string   `json:"nip" validate:"omitempty,len=18"`
+	Nip        *string   `json:"nip" validate:"omitempty,len=0|len=18"`
 	Occupation *string   `json:"occupation" validate:"omitempty,max=35"`
-	Photo      *string   `json:"photo"`
+	Photo      *string   `json:"photo" validate:"omitempty,max=255"`
 	Unit       UnitInfo  `json:"unit"`
 	UnitName   string    `json:"unit_name"`
 	Role       RoleInfo  `json:"role"`
@@ -62,6 +62,6 @@ type UserRepository interface {
 type UserUsecase interface {
 	Store(context.Context, *User) error
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
-	UpdateProfile(context.Context, *User) error
+	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 }
