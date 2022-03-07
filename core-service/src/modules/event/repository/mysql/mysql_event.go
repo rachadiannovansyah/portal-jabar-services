@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -131,8 +131,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	categories := params.Filters["categories"].([]string)
 	if len(categories) > 0 {
-		joinParams := strings.Join(categories, "','")
-		query = fmt.Sprintf(`%s AND category IN ('%s')`, query, joinParams)
+		query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
 	}
 
 	if params.SortBy != "" {
