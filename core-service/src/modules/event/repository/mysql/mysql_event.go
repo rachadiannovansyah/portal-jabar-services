@@ -147,7 +147,7 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 
 	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
 
-	query = querySelectAgenda + query + `LIMIT ?,? `
+	query = querySelectAgenda + query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
