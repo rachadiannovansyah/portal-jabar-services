@@ -50,7 +50,7 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"type":       c.QueryParam("type"),
+		"type":       c.Request().URL.Query()["type[]"],
 		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
