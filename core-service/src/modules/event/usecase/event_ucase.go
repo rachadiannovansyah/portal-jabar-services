@@ -155,7 +155,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 			DataID:  eventID,
 			TagID:   tag.ID,
 			TagName: tagName,
-			Type:    "events",
+			Type:    "event",
 		}
 		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
 		if err != nil {
@@ -250,7 +250,7 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.StoreReque
 
 	err = u.eventRepo.Update(ctx, id, body)
 
-	err = u.dataTagRepo.DeleteDataTag(ctx, id)
+	err = u.dataTagRepo.DeleteDataTag(ctx, id, "event")
 	if err != nil {
 		return
 	}
