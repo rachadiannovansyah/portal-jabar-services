@@ -169,10 +169,6 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND highlight = '%s'`, query, v)
 	}
 
-	if v, ok := params.Filters["category"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
-	}
-
 	if v, ok := params.Filters["type"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
 	}
@@ -185,6 +181,14 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query = fmt.Sprintf(`%s AND status = "%s"`, query, v)
 	}
 
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		categories := params.Filters["categories"].([]string)
+
+		if len(categories) > 0 {
+			query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+		}
+	}
+
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
@@ -195,10 +199,9 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY created_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news WHERE deleted_at is NULL `+query)
 
 	query = querySelectNews + query + ` LIMIT ?,? `
-
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
