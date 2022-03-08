@@ -30,35 +30,35 @@ type News struct {
 	IsLive      int8       `json:"is_live"`
 	CreatedBy   User       `json:"created_by"`
 	UpdatedBy   User       `json:"updated_by"`
-	PublishedAt NullTime   `json:"published_at"`
+	PublishedAt *time.Time `json:"published_at"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type StoreNewsRequest struct {
-	ID          int64     `json:"id"`
-	Title       string    `json:"title" validate:"required"`
-	Excerpt     string    `json:"excerpt"`
-	Content     string    `json:"content"`
-	Slug        string    `json:"slug"`
-	Image       string    `json:"image"`
-	Video       string    `json:"video"`
-	Source      string    `json:"source"`
-	Status      string    `json:"status"`
-	Type        string    `json:"type"`
-	Category    string    `json:"category"`
-	Author      User      `json:"author"`
-	Duration    int8      `json:"duration"`
-	StartDate   string    `json:"start_date"`
-	EndDate     string    `json:"end_date"`
-	Tags        []string  `json:"tags"`
-	AreaID      int64     `json:"area_id"`
-	IsLive      int8      `json:"is_live"`
-	PublishedAt NullTime  `json:"published_at"`
-	CreatedBy   User      `json:"created_by"`
-	UpdatedBy   User      `json:"updated_by"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int64      `json:"id"`
+	Title       string     `json:"title" validate:"required"`
+	Excerpt     string     `json:"excerpt"`
+	Content     string     `json:"content"`
+	Slug        string     `json:"slug"`
+	Image       string     `json:"image"`
+	Video       string     `json:"video"`
+	Source      string     `json:"source"`
+	Status      string     `json:"status"`
+	Type        string     `json:"type"`
+	Category    string     `json:"category"`
+	Author      User       `json:"author"`
+	Duration    int8       `json:"duration"`
+	StartDate   string     `json:"start_date"`
+	EndDate     string     `json:"end_date"`
+	Tags        []string   `json:"tags"`
+	AreaID      int64      `json:"area_id"`
+	IsLive      int8       `json:"is_live"`
+	PublishedAt *time.Time `json:"published_at"`
+	CreatedBy   User       `json:"created_by"`
+	UpdatedBy   User       `json:"updated_by"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 // UpdateNewsStatusRequest ...
@@ -81,7 +81,7 @@ type NewsListResponse struct {
 	Status      string     `json:"status"`
 	IsLive      int8       `json:"is_live"`
 	CreatedBy   NullString `json:"created_by"`
-	PublishedAt NullTime   `json:"published_at"`
+	PublishedAt *time.Time `json:"published_at"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
