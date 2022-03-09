@@ -2,11 +2,14 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/elastic/go-elasticsearch/v8"
-	"log"
+	"github.com/go-redis/redis/v8"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
@@ -15,6 +18,7 @@ type Conn struct {
 	Mysql   *sql.DB
 	Elastic *elasticsearch.Client
 	AWS     *session.Session
+	Redis   *redis.Client
 }
 
 func NewDBConn(cfg *config.Config) *Conn {
@@ -22,6 +26,7 @@ func NewDBConn(cfg *config.Config) *Conn {
 		Mysql:   initMysql(cfg),
 		Elastic: initELastClient(cfg),
 		AWS:     initAWSClient(cfg),
+		Redis:   initRedisClient(cfg),
 	}
 }
 
@@ -39,6 +44,20 @@ func initMysql(cfg *config.Config) *sql.DB {
 	}
 
 	return db
+}
+
+// initRedisClient ...
+func initRedisClient(cfg *config.Config) *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", cfg.Redis.Host, cfg.Redis.Port),
+	})
+
+	_, err := rdb.Ping(rdb.Context()).Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rdb
 }
 
 func initELastClient(cfg *config.Config) *elasticsearch.Client {

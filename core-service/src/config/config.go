@@ -17,6 +17,7 @@ type Config struct {
 	Cors    middleware.CORSConfig
 	ELastic elasticsearch.Config
 	AWS     AwsConfig
+	Redis   RedisConfig
 }
 
 // NewConfig creates a new Config struct
@@ -36,5 +37,6 @@ func NewConfig() *Config {
 		Cors:    LoadCorsConfig(),
 		ELastic: LoadElasticConfig(),
 		AWS:     LoadAwsConfig(),
+		Redis:   LoadRedisConfig(),
 	}
 }
