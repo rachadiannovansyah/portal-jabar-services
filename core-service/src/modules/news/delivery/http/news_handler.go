@@ -60,6 +60,10 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		"status":     c.QueryParam("status"),
 	}
 
+	if params.SortBy == "author" {
+		params.SortBy = "name"
+	}
+
 	if c.Request().Header.Get("Authorization") == "" {
 		params.Filters["is_live"] = "1"
 	}
