@@ -139,7 +139,7 @@ type NewsUsecase interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
 	Store(context.Context, *StoreNewsRequest) error
-	Update(context.Context, int64, *StoreNewsRequest) (News, error)
+	Update(context.Context, int64, *StoreNewsRequest) error
 	UpdateStatus(context.Context, int64, string) error
 	TabStatus(context.Context) ([]TabStatusResponse, error)
 	Delete(ctx context.Context, id int64) error
