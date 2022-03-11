@@ -437,11 +437,11 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	return
 }
 
-func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRequest) (err error) {
+func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRequest) (news domain.News, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	news, err := n.newsRepo.GetByID(ctx, id)
+	news, err = n.newsRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
@@ -456,7 +456,9 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		logrus.Error(err)
 	}
 
-	return n.newsRepo.Update(ctx, id, dt)
+	err = n.newsRepo.Update(ctx, id, dt)
+
+	return
 }
 
 func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {

@@ -245,14 +245,14 @@ func (h *NewsHandler) Update(c echo.Context) (err error) {
 	n.Author.Name = auth.Name
 
 	ctx := c.Request().Context()
-	err = h.CUsecase.Update(ctx, int64(reqID), n)
+	news, err := h.CUsecase.Update(ctx, int64(reqID), n)
 	if err != nil {
 		return err
 	}
 
 	// Copy slice to slice
 	res := []domain.DetailNewsResponse{}
-	copier.Copy(&res, &n)
+	copier.Copy(&res, &news)
 
 	return c.JSON(http.StatusOK, res)
 }

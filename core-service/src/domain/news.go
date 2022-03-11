@@ -49,8 +49,8 @@ type StoreNewsRequest struct {
 	Category    string     `json:"category"`
 	Author      User       `json:"author"`
 	Duration    int8       `json:"duration"`
-	StartDate   string     `json:"start_date"`
-	EndDate     string     `json:"end_date"`
+	StartDate   *string    `json:"start_date"`
+	EndDate     *string    `json:"end_date"`
 	Tags        []string   `json:"tags"`
 	AreaID      int64      `json:"area_id"`
 	IsLive      int8       `json:"is_live"`
@@ -139,7 +139,7 @@ type NewsUsecase interface {
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
 	Store(context.Context, *StoreNewsRequest) error
-	Update(context.Context, int64, *StoreNewsRequest) error
+	Update(context.Context, int64, *StoreNewsRequest) (News, error)
 	UpdateStatus(context.Context, int64, string) error
 	TabStatus(context.Context) ([]TabStatusResponse, error)
 	Delete(ctx context.Context, id int64) error
