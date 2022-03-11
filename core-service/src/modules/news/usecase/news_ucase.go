@@ -199,9 +199,9 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	for category := range mapCategories {
 		params := domain.Request{PerPage: 4}
 		params.Filters = map[string]interface{}{
-			"highlight": "0",
-			"is_live":   "1",
-			"category":  category,
+			"highlight":  "0",
+			"is_live":    "1",
+			"categories": []string{category},
 		}
 		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
