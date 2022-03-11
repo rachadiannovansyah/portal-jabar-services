@@ -11,6 +11,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211104170603-75263a5e99d2
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/google/go-cmp v0.5.6 // indirect
