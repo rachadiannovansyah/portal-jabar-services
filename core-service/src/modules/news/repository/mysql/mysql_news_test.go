@@ -52,7 +52,7 @@ func TestFetch(t *testing.T) {
 		AddRow(mockNews[1].ID, mockNews[1].Category, mockNews[1].Title, mockNews[1].Excerpt, mockNews[1].Content,
 			nil, nil, mockNews[1].Slug, "", 0, "", mockNews[1].Views, mockNews[1].Shared, mockNews[1].Source.String, 0, mockNews[1].StartDate.Time, mockNews[1].EndDate.Time, mockNews[1].Status, 0, mockNews[1].PublishedAt, mockNews[1].CreatedAt, mockNews[1].UpdatedAt)
 
-	query := "SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news"
+	query := "SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author_id, n.area_id, n.type, n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_at, n.updated_at FROM news n LEFT JOIN users u ON n.author_id = u.id WHERE n.deleted_at is NULL"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	a := mysqlRepo.NewMysqlNewsRepository(db)

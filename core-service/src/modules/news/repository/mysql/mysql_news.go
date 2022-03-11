@@ -24,6 +24,12 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, 
 	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news WHERE deleted_at is null`
 
+var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author_id, n.area_id, n.type, 
+	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_at, n.updated_at FROM news n
+	LEFT JOIN users u
+	ON n.author_id = u.id
+	WHERE n.deleted_at is NULL`
+
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -200,8 +206,8 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	}
 
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news WHERE deleted_at is NULL `+query)
+	query = queryJoinNews + query + ` LIMIT ?,? `
 
-	query = querySelectNews + query + ` LIMIT ?,? `
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
