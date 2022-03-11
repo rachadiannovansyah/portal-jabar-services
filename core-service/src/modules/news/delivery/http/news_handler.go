@@ -251,10 +251,10 @@ func (h *NewsHandler) Update(c echo.Context) (err error) {
 	}
 
 	// Copy slice to slice
-	res := []domain.DetailNewsResponse{}
+	res := domain.DetailNewsResponse{}
 	copier.Copy(&res, &n)
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, &res)
 }
 
 // UpdateStatus will update the news status by given request body

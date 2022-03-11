@@ -49,8 +49,8 @@ type StoreNewsRequest struct {
 	Category    string     `json:"category"`
 	Author      User       `json:"author"`
 	Duration    int8       `json:"duration"`
-	StartDate   string     `json:"start_date"`
-	EndDate     string     `json:"end_date"`
+	StartDate   *string    `json:"start_date"`
+	EndDate     *string    `json:"end_date"`
 	Tags        []string   `json:"tags"`
 	AreaID      int64      `json:"area_id"`
 	IsLive      int8       `json:"is_live"`

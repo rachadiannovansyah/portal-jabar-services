@@ -274,15 +274,6 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		return
 	}
 
-	// tricky to set nil time
-	var startDate, endDate *string
-	if n.StartDate != "" {
-		startDate = &n.StartDate
-	}
-	if n.EndDate != "" {
-		endDate = &n.EndDate
-	}
-
 	// temporary unique slug
 	slug := helpers.MakeSlug(n.Title, time.Now().Unix())
 
@@ -297,8 +288,8 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.Status,
 		"article",
 		n.Duration,
-		startDate,
-		endDate,
+		n.StartDate,
+		n.EndDate,
 		n.AreaID,
 		n.Author.ID.String(),
 		n.Author.ID.String(),

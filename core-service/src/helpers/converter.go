@@ -27,13 +27,14 @@ func SetPointerInt64(val int64) *int64 {
 }
 
 // ConvertTimeToString ...
-func ConvertTimeToString(t time.Time) string {
-	return t.Format(dateFormat)
+func ConvertTimeToString(t time.Time) *string {
+	timeString := t.Format(dateFormat)
+	return &timeString
 }
 
 // ConvertStringToTime ...
-func ConvertStringToTime(ts string) time.Time {
-	t, err := time.Parse(dateFormat, ts)
+func ConvertStringToTime(ts *string) time.Time {
+	t, err := time.Parse(dateFormat, *ts)
 	if err != nil {
 		fmt.Println(err)
 	}
