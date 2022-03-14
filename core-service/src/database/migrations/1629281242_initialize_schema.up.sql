@@ -144,7 +144,7 @@ CREATE INDEX idx_is_live ON news (is_live);
 DROP TABLE IF EXISTS events;
 CREATE TABLE events (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  title varchar(80) NOT NULL,
+  title varchar(255) NOT NULL,
   date date NOT NULL,
   priority tinyint(1) DEFAULT 1 NOT NULL,
   start_hour time NOT NULL,
