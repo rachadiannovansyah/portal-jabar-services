@@ -37,7 +37,7 @@ type News struct {
 
 type StoreNewsRequest struct {
 	ID          int64     `json:"id"`
-	Title       string    `json:"title" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=255"`
 	Excerpt     string    `json:"excerpt"`
 	Content     string    `json:"content"`
 	Slug        string    `json:"slug"`
