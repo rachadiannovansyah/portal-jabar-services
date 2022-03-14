@@ -131,7 +131,9 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 		return err
 	}
 
+	currentTime := time.Now()
 	user.Password = string(encryptedPassword)
+	user.LastPasswordChanged = &currentTime
 	err = n.userRepo.Update(ctx, &user)
 
 	return
