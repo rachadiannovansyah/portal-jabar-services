@@ -9,33 +9,35 @@ import (
 
 // User ...
 type User struct {
-	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name" validate:"omitempty,required,max=100"`
-	Username   string    `json:"username" validate:"omitempty,required,max=62"`
-	Email      string    `json:"email" validate:"omitempty,required,max=64"`
-	Password   string    `json:"password"`
-	Nip        *string   `json:"nip" validate:"omitempty,len=0|len=18"`
-	Occupation *string   `json:"occupation" validate:"omitempty,max=35"`
-	Photo      *string   `json:"photo" validate:"omitempty,max=255"`
-	Unit       UnitInfo  `json:"unit"`
-	UnitName   string    `json:"unit_name"`
-	Role       RoleInfo  `json:"role"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	DeletedAt  time.Time `json:"deleted_at"`
+	ID                  uuid.UUID  `json:"id"`
+	Name                string     `json:"name" validate:"omitempty,required,max=100"`
+	Username            string     `json:"username" validate:"omitempty,required,max=62"`
+	Email               string     `json:"email" validate:"omitempty,required,max=64"`
+	Password            string     `json:"password"`
+	LastPasswordChanged *time.Time `json:"last_password_changed"`
+	Nip                 *string    `json:"nip" validate:"omitempty,len=0|len=18"`
+	Occupation          *string    `json:"occupation" validate:"omitempty,max=35"`
+	Photo               *string    `json:"photo" validate:"omitempty,max=255"`
+	Unit                UnitInfo   `json:"unit"`
+	UnitName            string     `json:"unit_name"`
+	Role                RoleInfo   `json:"role"`
+	CreatedAt           time.Time  `json:"created_at"`
+	UpdatedAt           time.Time  `json:"updated_at"`
+	DeletedAt           time.Time  `json:"deleted_at"`
 }
 
 // UserInfo ...
 type UserInfo struct {
-	ID         uuid.UUID `json:"id"`
-	Name       string    `json:"name"`
-	Username   string    `json:"username"`
-	Email      string    `json:"email"`
-	Nip        *string   `json:"nip"`
-	Occupation *string   `json:"occupation"`
-	Photo      *string   `json:"photo"`
-	Unit       UnitInfo  `json:"unit"`
-	Role       RoleInfo  `json:"role"`
+	ID                  uuid.UUID  `json:"id"`
+	Name                string     `json:"name"`
+	Username            string     `json:"username"`
+	Email               string     `json:"email"`
+	Nip                 *string    `json:"nip"`
+	Occupation          *string    `json:"occupation"`
+	Photo               *string    `json:"photo"`
+	Unit                UnitInfo   `json:"unit"`
+	Role                RoleInfo   `json:"role"`
+	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
 // Author ...

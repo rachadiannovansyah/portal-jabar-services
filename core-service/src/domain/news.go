@@ -12,7 +12,7 @@ type News struct {
 	Excerpt     string     `json:"excerpt" validate:"required"`
 	Content     string     `json:"content" validate:"required"`
 	Slug        string     `json:"slug"`
-	Image       NullString `json:"image"`
+	Image       *string    `json:"image"`
 	Video       NullString `json:"video"`
 	Source      NullString `json:"source"`
 	Status      string     `json:"status,omitempty"`
@@ -41,7 +41,7 @@ type StoreNewsRequest struct {
 	Excerpt     string     `json:"excerpt"`
 	Content     string     `json:"content"`
 	Slug        string     `json:"slug"`
-	Image       string     `json:"image"`
+	Image       *string    `json:"image"`
 	Video       string     `json:"video"`
 	Source      string     `json:"source"`
 	Status      string     `json:"status"`
@@ -72,7 +72,7 @@ type NewsListResponse struct {
 	Title       string     `json:"title"`
 	Excerpt     string     `json:"excerpt"`
 	Slug        NullString `json:"slug"`
-	Image       NullString `json:"image"`
+	Image       *string    `json:"image"`
 	Category    string     `json:"category"`
 	Author      Author     `json:"author"`
 	Video       NullString `json:"video"`
@@ -91,7 +91,7 @@ type NewsBanner struct {
 	ID          int64        `json:"id"`
 	Title       string       `json:"title"`
 	Category    string       `json:"category"`
-	Image       NullString   `json:"image"`
+	Image       *string      `json:"image"`
 	Slug        NullString   `json:"slug"`
 	Author      Author       `json:"author,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
@@ -105,7 +105,7 @@ type DetailNewsResponse struct {
 	Excerpt     string           `json:"excerpt"`
 	Content     string           `json:"content"`
 	Slug        string           `json:"slug"`
-	Image       NullString       `json:"image"`
+	Image       *string          `json:"image"`
 	Video       NullString       `json:"video"`
 	Source      NullString       `json:"source"`
 	Status      string           `json:"status"`

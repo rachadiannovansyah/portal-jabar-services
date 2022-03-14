@@ -20,7 +20,7 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 	return &mysqlUserRepository{Conn}
 }
 
-var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, u.nip, u.occupation,
+var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, last_password_changed, u.nip, u.occupation,
 	u.unit_id, u.role_id, un.name as unit_name FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
 
 // GetByID ...
@@ -53,6 +53,7 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Email,
 		&res.Photo,
 		&res.Password,
+		&res.LastPasswordChanged,
 		&res.Nip,
 		&res.Occupation,
 		&res.Unit.ID,
@@ -84,14 +85,14 @@ func (m *mysqlUserRepository) Store(ctx context.Context, u *domain.User) (err er
 }
 
 func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err error) {
-	query := `UPDATE users SET name=?, username=?, email=?, password=?, nip=?, occupation=?,
+	query := `UPDATE users SET name=?, username=?, email=?, password=?, last_password_changed=?, nip=?, occupation=?,
 		photo=?, unit_id=?, role_id=?, updated_at=? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.Nip, u.Occupation,
+	_, err = stmt.ExecContext(ctx, u.Name, u.Username, u.Email, u.Password, u.LastPasswordChanged, u.Nip, u.Occupation,
 		u.Photo, u.Unit.ID, u.Role.ID, time.Now(), u.ID)
 	if err != nil {
 		return
