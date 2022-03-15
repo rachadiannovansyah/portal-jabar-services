@@ -53,11 +53,15 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"highlight": c.QueryParam("highlight"),
-		"category":  c.QueryParam("cat"),
-		"type":      c.QueryParam("type"),
-		"tags":      c.QueryParam("tags"),
-		"status":    c.QueryParam("status"),
+		"categories": c.Request().URL.Query()["cat[]"],
+		"highlight":  c.QueryParam("highlight"),
+		"type":       c.QueryParam("type"),
+		"tags":       c.QueryParam("tags"),
+		"status":     c.QueryParam("status"),
+	}
+
+	if params.SortBy == "author" {
+		params.SortBy = "name"
 	}
 
 	if c.Request().Header.Get("Authorization") == "" {
@@ -251,10 +255,10 @@ func (h *NewsHandler) Update(c echo.Context) (err error) {
 	}
 
 	// Copy slice to slice
-	res := []domain.DetailNewsResponse{}
+	res := domain.DetailNewsResponse{}
 	copier.Copy(&res, &n)
 
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, &res)
 }
 
 // UpdateStatus will update the news status by given request body

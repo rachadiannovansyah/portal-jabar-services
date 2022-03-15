@@ -199,9 +199,9 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	for category := range mapCategories {
 		params := domain.Request{PerPage: 4}
 		params.Filters = map[string]interface{}{
-			"highlight": "0",
-			"is_live":   "1",
-			"category":  category,
+			"highlight":  "0",
+			"is_live":    "1",
+			"categories": []string{category},
 		}
 		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
@@ -282,6 +282,7 @@ func (n *newsUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResp
 }
 
 func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
+
 	for _, tagName := range tags {
 		tag := &domain.Tag{
 			Name: tagName,
@@ -447,11 +448,15 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 
 	dt.Slug = news.Slug
 
-	if err = n.storeTags(ctx, id, dt.Tags); err != nil {
-		return
+	if err := n.dataTagRepo.DeleteDataTag(ctx, id, "news"); err != nil {
+		logrus.Error(err)
 	}
 
-	return
+	if err = n.storeTags(ctx, id, dt.Tags); err != nil {
+		logrus.Error(err)
+	}
+
+	return n.newsRepo.Update(ctx, id, dt)
 }
 
 func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {

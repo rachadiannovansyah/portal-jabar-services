@@ -24,6 +24,12 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, 
 	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news WHERE deleted_at is null`
 
+var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author_id, n.area_id, n.type, 
+	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_at, n.updated_at FROM news n
+	LEFT JOIN users u
+	ON n.author_id = u.id
+	WHERE n.deleted_at is NULL`
+
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -162,42 +168,45 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 	var query string
 
 	if params.Keyword != "" {
-		query += ` AND title LIKE '%` + params.Keyword + `%' `
+		query += ` AND n.title LIKE '%` + params.Keyword + `%' `
 	}
 
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND highlight = '%s'`, query, v)
-	}
-
-	if v, ok := params.Filters["category"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND category = '%s'`, query, v)
+		query = fmt.Sprintf(`%s AND n.highlight = '%s'`, query, v)
 	}
 
 	if v, ok := params.Filters["type"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND type = "%s"`, query, v)
+		query = fmt.Sprintf(`%s AND n.type = "%s"`, query, v)
 	}
 
 	if v, ok := params.Filters["is_live"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND is_live = "%s"`, query, v)
+		query = fmt.Sprintf(`%s AND n.is_live = "%s"`, query, v)
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND status = "%s"`, query, v)
+		query = fmt.Sprintf(`%s AND n.status = "%s"`, query, v)
+	}
+
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		categories := params.Filters["categories"].([]string)
+
+		if len(categories) > 0 {
+			query = fmt.Sprintf(`%s AND n.category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+		}
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+		query += ` AND n.updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query += ` ORDER BY created_at DESC`
+		query += ` ORDER BY n.created_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news `+query)
-
-	query = querySelectNews + query + ` LIMIT ?,? `
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.author_id = u.id WHERE n.deleted_at is NULL `+query)
+	query = queryJoinNews + query + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
@@ -271,15 +280,6 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		return
 	}
 
-	// tricky to set nil time
-	var startDate, endDate *string
-	if n.StartDate != "" {
-		startDate = &n.StartDate
-	}
-	if n.EndDate != "" {
-		endDate = &n.EndDate
-	}
-
 	// temporary unique slug
 	slug := helpers.MakeSlug(n.Title, time.Now().Unix())
 
@@ -294,8 +294,8 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.Status,
 		"article",
 		n.Duration,
-		startDate,
-		endDate,
+		n.StartDate,
+		n.EndDate,
 		n.AreaID,
 		n.Author.ID.String(),
 		n.Author.ID.String(),
@@ -334,7 +334,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.EndDate,
 		n.AreaID,
 		n.IsLive,
-		n.PublishedAt.Time,
+		n.PublishedAt,
 		n.Author.ID,
 		time.Now(),
 		id,
