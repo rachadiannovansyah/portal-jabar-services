@@ -32,7 +32,7 @@ type Event struct {
 // StoreRequestEvent ..
 type StoreRequestEvent struct {
 	ID        int64     `json:"id"`
-	Title     string    `json:"title" validate:"required"`
+	Title     string    `json:"title" validate:"required,max=255"`
 	Type      string    `json:"type" validate:"required"`
 	URL       string    `json:"url"`
 	Address   string    `json:"address"`

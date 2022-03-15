@@ -303,7 +303,7 @@ func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.
 }
 
 func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
-	query := `SELECT id, title, date FROM events WHERE 1=1`
+	query := `SELECT id, title, date FROM events WHERE deleted_at is NULL`
 
 	if params.StartDate != "" && params.EndDate != "" {
 		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
