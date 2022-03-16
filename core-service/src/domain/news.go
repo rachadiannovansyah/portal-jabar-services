@@ -95,6 +95,7 @@ type NewsBanner struct {
 	Slug        NullString   `json:"slug"`
 	Author      Author       `json:"author,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
+	PublishedAt *time.Time   `json:"published_at"`
 	RelatedNews []NewsBanner `json:"related_news,omitempty"`
 }
 
