@@ -43,9 +43,10 @@ func ConvertStringToTime(ts *string) time.Time {
 
 // MakeSlug ...
 func MakeSlug(title string, newsID int64) string {
-	// max slug length is 100 characters: 90 for title + 10 for newsID
-	if len(title) > 90 {
-		title = title[:90]
+	// max slug length is 100 characters: 89 for title + 1 for delimiter + 10 for newsID
+	forTitleLength := 89
+	if len(title) > forTitleLength {
+		title = title[:forTitleLength]
 	}
 	return fmt.Sprintf("%v-%v", slug.Make(title), newsID)
 }
