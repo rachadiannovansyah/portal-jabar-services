@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
+	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
 
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"
@@ -22,6 +23,7 @@ import (
 
 func main() {
 	cfg := config.NewConfig()
+	apm := utils.NewApm(cfg)
 	conn := utils.NewDBConn(cfg)
 	defer func() {
 		err := conn.Mysql.Close()
@@ -31,6 +33,8 @@ func main() {
 	}()
 
 	e := echo.New()
+	e.Use(nrecho.Middleware(apm.NewRelic))
+
 	e.HTTPErrorHandler = server.ErrorHandler
 	middL := middl.InitMiddleware(cfg)
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
