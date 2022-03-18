@@ -33,7 +33,7 @@ type Event struct {
 type StoreRequestEvent struct {
 	ID        int64     `json:"id"`
 	Title     string    `json:"title" validate:"required,max=255"`
-	Type      string    `json:"type" validate:"required"`
+	Type      string    `json:"type" validate:"required,alpha,eq=online|eq=offline"`
 	URL       string    `json:"url"`
 	Address   string    `json:"address"`
 	Date      string    `json:"date" validate:"required"`
@@ -49,7 +49,7 @@ type StoreRequestEvent struct {
 // ListEventResponse model ..
 type ListEventResponse struct {
 	ID        int64      `json:"id"`
-	Title     string     `json:"title" validate:"required"`
+	Title     string     `json:"title"`
 	Date      time.Time  `json:"date"`
 	StartHour string     `json:"start_hour"`
 	EndHour   string     `json:"end_hour"`
@@ -58,7 +58,7 @@ type ListEventResponse struct {
 	Status    string     `json:"status"`
 	Address   NullString `json:"address"`
 	URL       NullString `json:"url"`
-	Category  string     `json:"category" validate:"required"`
+	Category  string     `json:"category"`
 	Tags      []DataTag  `json:"tags"`
 }
 
