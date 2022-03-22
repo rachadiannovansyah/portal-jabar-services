@@ -44,7 +44,7 @@ type StoreNewsRequest struct {
 	Image       *string    `json:"image"`
 	Video       string     `json:"video"`
 	Source      string     `json:"source"`
-	Status      string     `json:"status" validate:"required,alpha,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
+	Status      string     `json:"status" validate:"required,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
 	Type        string     `json:"type"`
 	Category    string     `json:"category"`
 	Author      User       `json:"author"`
@@ -63,7 +63,7 @@ type StoreNewsRequest struct {
 
 // UpdateNewsStatusRequest ...
 type UpdateNewsStatusRequest struct {
-	Status string `json:"status" validate:"required,alpha,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
+	Status string `json:"status" validate:"required,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
 }
 
 // NewsListResponse ...
