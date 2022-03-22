@@ -27,12 +27,13 @@ func (r *RegistrationInvitationHandler) Invite(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, domain.NewErrResponse(err))
 	}
 
-	_, err = r.IUsecase.Invite(ctx, regInvitation.Email)
+	res, err := r.IUsecase.Invite(ctx, regInvitation.Email)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, domain.NewErrResponse(err))
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "invitation sent",
+		"token":   res.Token, // FIXME: should be delete this response after implement email service
 	})
 }
