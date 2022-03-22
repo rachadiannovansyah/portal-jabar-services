@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -24,6 +25,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.GET("/users/me", handler.UserProfile)
 	r.PUT("/users/me", handler.UpdateProfile)
 	r.PUT("/users/me/change-password", handler.ChangePassword)
+	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -107,4 +109,17 @@ func (h *UserHandler) ChangePassword(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "password changed"})
+}
+
+func (h *UserHandler) AccountSubmission(c echo.Context) error {
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+
+	res, err := h.UUsecase.AccountSubmission(ctx, au.ID, "administrator")
+	if err != nil {
+		logrus.Error(err)
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: res})
 }

@@ -15,15 +15,17 @@ type userUsecase struct {
 	userRepo       domain.UserRepository
 	unitRepo       domain.UnitRepository
 	roleRepo       domain.RoleRepository
+	mailRepo       domain.MailRepository
 	contextTimeout time.Duration
 }
 
 // NewUserUsecase creates a new user usecase
-func NewUserkUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, timeout time.Duration) domain.UserUsecase {
+func NewUserUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, m domain.MailRepository, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
 		userRepo:       u,
 		unitRepo:       un,
 		roleRepo:       r,
+		mailRepo:       m,
 		contextTimeout: timeout,
 	}
 }
@@ -135,6 +137,29 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 	user.Password = string(encryptedPassword)
 	user.LastPasswordChanged = &currentTime
 	err = n.userRepo.Update(ctx, &user)
+
+	return
+}
+
+func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key string) (res domain.User, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.userRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	template, err := n.mailRepo.GetByTemplate(ctx, key)
+	if err != nil {
+		return
+	}
+
+	// TO DO add go routine here
+	err = helpers.SendMail(res, template)
+	if err != nil {
+		return
+	}
 
 	return
 }

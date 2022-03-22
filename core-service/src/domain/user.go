@@ -40,6 +40,11 @@ type UserInfo struct {
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
+type AccountSubmission struct {
+	ID   int64  `json:"id"`
+	Role string `json:"role"`
+}
+
 // Author ...
 type Author struct {
 	Name     string `json:"name"`
@@ -66,4 +71,5 @@ type UserUsecase interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
+	AccountSubmission(context.Context, uuid.UUID, string) (User, error)
 }
