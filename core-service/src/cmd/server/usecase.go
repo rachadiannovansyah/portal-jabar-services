@@ -13,6 +13,7 @@ import (
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
+	_mailUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mail/usecase"
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
@@ -36,6 +37,7 @@ type Usecases struct {
 	UserUsecase          domain.UserUsecase
 	MediaUsecase         domain.MediaUsecase
 	TagUsecase           domain.TagUsecase
+	MailUsecase          domain.MailUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -53,5 +55,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		UserUsecase:          _userUcase.NewUserkUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, timeoutContext),
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
+		MailUsecase:          _mailUcase.NewMailUsecase(r.MailRepo, timeoutContext),
 	}
 }
