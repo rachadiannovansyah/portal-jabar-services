@@ -15,6 +15,7 @@ import (
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
+	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
@@ -35,6 +36,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(e, r, u.MediaUsecase)
 	_tagHttpDelivery.NewTagHandler(e, r, u.TagUsecase)
+	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(e, r, u.RegInvitationUsecase)
 }
 
 // ErrorHandler ...
