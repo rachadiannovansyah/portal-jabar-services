@@ -20,6 +20,7 @@ type Config struct {
 	AWS      AwsConfig
 	Redis    RedisConfig
 	NewRelic newrelic.Config
+	Mail     MailConfig
 }
 
 // NewConfig creates a new Config struct
@@ -41,5 +42,6 @@ func NewConfig() *Config {
 		AWS:      LoadAwsConfig(),
 		Redis:    LoadRedisConfig(),
 		NewRelic: LoadNewRelicConfig(),
+		Mail:     LoadMailConfig(),
 	}
 }
