@@ -14,6 +14,11 @@ type RegistrationInvitation struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type RegistrationInvitationClaim struct {
+	Email string `json:"email"`
+	Token string `json:"token"`
+}
+
 type RegistrationInvitationRepository interface {
 	GetByEmail(ctx context.Context, email string) (RegistrationInvitation, error)
 	GetByToken(ctx context.Context, token string) (RegistrationInvitation, error)
@@ -23,4 +28,5 @@ type RegistrationInvitationRepository interface {
 
 type RegistrationInvitationUsecase interface {
 	Invite(ctx context.Context, email string) (RegistrationInvitation, error)
+	Authorize(ctx context.Context, token string) (RegistrationInvitationClaim, error)
 }
