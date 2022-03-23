@@ -141,11 +141,11 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 	return
 }
 
-func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key string) (res domain.User, err error) {
+func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key string) (res domain.AccountSubmission, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	res, err = n.userRepo.GetByID(ctx, id)
+	user, err := n.userRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
@@ -155,11 +155,12 @@ func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key str
 		return
 	}
 
-	// TO DO add go routine here
-	err = helpers.SendMail(res, template)
-	if err != nil {
-		return
-	}
+	go func() {
+		err = helpers.SendMail(user, template)
+		if err != nil {
+			return
+		}
+	}()
 
 	return
 }
