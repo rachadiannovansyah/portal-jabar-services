@@ -64,3 +64,27 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 
 	return
 }
+
+func (r *regInvitationUcase) Authorize(ctx context.Context,
+	token string) (claim domain.RegistrationInvitationClaim, err error) {
+
+	regInvitation, err := r.regInvitationRepo.GetByToken(ctx, token)
+	if err != nil {
+		return claim, err
+	}
+
+	if regInvitation.Token != token {
+		return claim, errors.New("invalid token")
+	}
+
+	if regInvitation.ExpiredAt.Before(time.Now()) {
+		return claim, errors.New("token has expired")
+	}
+
+	claim = domain.RegistrationInvitationClaim{
+		Email: regInvitation.Email,
+		Token: regInvitation.Token,
+	}
+
+	return
+}

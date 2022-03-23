@@ -16,6 +16,7 @@ func NewRegistrationInvitationHandler(e *echo.Group, r *echo.Group, us domain.Re
 		IUsecase: us,
 	}
 	r.POST("/registration-invitations", handler.Invite)
+	e.POST("/registration-invitations/authorize", handler.Authorize)
 }
 
 func (r *RegistrationInvitationHandler) Invite(c echo.Context) error {
@@ -36,4 +37,21 @@ func (r *RegistrationInvitationHandler) Invite(c echo.Context) error {
 		"message": "invitation sent",
 		"token":   res.Token, // FIXME: should be delete this response after implement email service
 	})
+}
+
+func (r *RegistrationInvitationHandler) Authorize(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var regInvitation domain.RegistrationInvitation
+	err := c.Bind(&regInvitation)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, domain.NewErrResponse(err))
+	}
+
+	res, err := r.IUsecase.Authorize(ctx, regInvitation.Token)
+	if err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, domain.NewErrResponse(err))
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
