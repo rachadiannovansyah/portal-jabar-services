@@ -16,6 +16,7 @@ import (
 	_mailUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mail/usecase"
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
+	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_tagUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
@@ -38,6 +39,7 @@ type Usecases struct {
 	MediaUsecase         domain.MediaUsecase
 	TagUsecase           domain.TagUsecase
 	MailUsecase          domain.MailUsecase
+	RegInvitationUsecase domain.RegistrationInvitationUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -56,5 +58,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
 		MailUsecase:          _mailUcase.NewMailUsecase(r.MailRepo, timeoutContext),
+		RegInvitationUsecase: _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, timeoutContext),
 	}
 }

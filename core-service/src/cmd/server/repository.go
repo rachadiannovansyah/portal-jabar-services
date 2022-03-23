@@ -13,6 +13,7 @@ import (
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_mailRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mail/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_regInvitationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/repository/mysql"
 	_roleRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role/repository/mysql"
 	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
 	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
@@ -36,6 +37,7 @@ type Repository struct {
 	SearchRepo          domain.SearchRepository
 	RoleRepo            domain.RoleRepository
 	MailRepo            domain.MailRepository
+	RegInvitationRepo   domain.RegistrationInvitationRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -55,5 +57,6 @@ func NewRepository(conn *utils.Conn) *Repository {
 		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
 		RoleRepo:            _roleRepo.NewMysqlRoleRepository(conn.Mysql),
 		MailRepo:            _mailRepo.NewMysqlMailRepository(conn.Mysql),
+		RegInvitationRepo:   _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
 	}
 }
