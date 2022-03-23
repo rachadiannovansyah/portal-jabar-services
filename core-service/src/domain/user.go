@@ -71,5 +71,5 @@ type UserUsecase interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
-	AccountSubmission(context.Context, uuid.UUID, string) (User, error)
+	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
 }

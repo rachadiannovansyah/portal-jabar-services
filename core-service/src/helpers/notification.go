@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"log"
+	"strings"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
@@ -14,7 +15,10 @@ func SendMail(res domain.User, template domain.Mail) (err error) {
 	mailer.SetHeader("From", viper.GetString("SENDER_NAME"))
 	mailer.SetHeader("To", viper.GetString("RECEIVER_NAME"))
 	mailer.SetHeader("Subject", template.Subject)
-	mailer.SetBody("text/html", template.Body)
+	messg := template.Body
+	messg = strings.ReplaceAll(messg, "{name}", res.Name)
+	messg = strings.ReplaceAll(messg, "{unitName}", res.UnitName)
+	mailer.SetBody("text/html", messg)
 
 	dialer := utils.InitMail()
 

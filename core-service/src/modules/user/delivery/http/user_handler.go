@@ -115,11 +115,13 @@ func (h *UserHandler) AccountSubmission(c echo.Context) error {
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 
-	res, err := h.UUsecase.AccountSubmission(ctx, au.ID, "administrator")
+	_, err := h.UUsecase.AccountSubmission(ctx, au.ID, "administrator")
 	if err != nil {
 		logrus.Error(err)
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultsData{Data: res})
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "mail sent.",
+	})
 }
