@@ -8,15 +8,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type mysqlMailRepository struct {
+type mysqlMailTemplateRepository struct {
 	Conn *sql.DB
 }
 
-func NewMysqlMailRepository(Conn *sql.DB) domain.MailRepository {
-	return &mysqlMailRepository{Conn}
+func NewMysqlMailTemplateRepository(Conn *sql.DB) domain.TemplateRepository {
+	return &mysqlMailTemplateRepository{Conn}
 }
 
-func (m *mysqlMailRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Mail, err error) {
+func (m *mysqlMailTemplateRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Template, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -30,9 +30,9 @@ func (m *mysqlMailRepository) fetchQuery(ctx context.Context, query string, args
 		}
 	}()
 
-	result = make([]domain.Mail, 0)
+	result = make([]domain.Template, 0)
 	for rows.Next() {
-		mail := domain.Mail{}
+		mail := domain.Template{}
 		err = rows.Scan(
 			&mail.ID,
 			&mail.From,
@@ -40,7 +40,7 @@ func (m *mysqlMailRepository) fetchQuery(ctx context.Context, query string, args
 			&mail.Subject,
 			&mail.CC,
 			&mail.Body,
-			&mail.Template,
+			&mail.Key,
 		)
 
 		if err != nil {
@@ -54,12 +54,12 @@ func (m *mysqlMailRepository) fetchQuery(ctx context.Context, query string, args
 	return result, nil
 }
 
-func (m *mysqlMailRepository) GetByTemplate(ctx context.Context, key string) (res domain.Mail, err error) {
+func (m *mysqlMailTemplateRepository) GetByTemplate(ctx context.Context, key string) (res domain.Template, err error) {
 	query := `SELECT * FROM mails WHERE template = ?`
 
 	list, err := m.fetchQuery(ctx, query, key)
 	if err != nil {
-		return domain.Mail{}, err
+		return domain.Template{}, err
 	}
 
 	if len(list) > 0 {

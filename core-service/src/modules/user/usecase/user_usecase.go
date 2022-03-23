@@ -12,21 +12,21 @@ import (
 )
 
 type userUsecase struct {
-	userRepo       domain.UserRepository
-	unitRepo       domain.UnitRepository
-	roleRepo       domain.RoleRepository
-	mailRepo       domain.MailRepository
-	contextTimeout time.Duration
+	userRepo         domain.UserRepository
+	unitRepo         domain.UnitRepository
+	roleRepo         domain.RoleRepository
+	mailTemplateRepo domain.TemplateRepository
+	contextTimeout   time.Duration
 }
 
 // NewUserUsecase creates a new user usecase
-func NewUserUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, m domain.MailRepository, timeout time.Duration) domain.UserUsecase {
+func NewUserUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, m domain.TemplateRepository, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
-		userRepo:       u,
-		unitRepo:       un,
-		roleRepo:       r,
-		mailRepo:       m,
-		contextTimeout: timeout,
+		userRepo:         u,
+		unitRepo:         un,
+		roleRepo:         r,
+		mailTemplateRepo: m,
+		contextTimeout:   timeout,
 	}
 }
 
@@ -150,7 +150,7 @@ func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key str
 		return
 	}
 
-	template, err := n.mailRepo.GetByTemplate(ctx, key)
+	template, err := n.mailTemplateRepo.GetByTemplate(ctx, key)
 	if err != nil {
 		return
 	}

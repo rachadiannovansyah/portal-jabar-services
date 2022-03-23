@@ -8,15 +8,15 @@ import (
 )
 
 type MailHandler struct {
-	MUsecase domain.MailUsecase
+	MUsecase domain.TemplateUsecase
 }
 
-func NewMailHandler(e *echo.Group, us domain.MailUsecase) {
+func NewMailHandler(e *echo.Group, us domain.TemplateUsecase) {
 	handler := &MailHandler{
 		MUsecase: us,
 	}
 
-	e.GET("/mail/template", handler.GetTemplate)
+	e.GET("/template/mail", handler.GetTemplate)
 }
 
 func (h *MailHandler) GetTemplate(c echo.Context) error {

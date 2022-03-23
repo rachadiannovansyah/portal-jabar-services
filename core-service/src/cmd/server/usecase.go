@@ -13,12 +13,12 @@ import (
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
-	_mailUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mail/usecase"
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_tagUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/usecase"
+	_templateUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
 	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
 )
@@ -38,7 +38,7 @@ type Usecases struct {
 	UserUsecase          domain.UserUsecase
 	MediaUsecase         domain.MediaUsecase
 	TagUsecase           domain.TagUsecase
-	MailUsecase          domain.MailUsecase
+	TemplateUsecase      domain.TemplateUsecase
 	RegInvitationUsecase domain.RegistrationInvitationUsecase
 }
 
@@ -54,10 +54,10 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, r.UnitRepo, r.RoleRepo, timeoutContext),
 		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
-		UserUsecase:          _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.MailRepo, timeoutContext),
+		UserUsecase:          _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, timeoutContext),
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
-		MailUsecase:          _mailUcase.NewMailUsecase(r.MailRepo, timeoutContext),
+		TemplateUsecase:      _templateUcase.NewMailTemplateUsecase(r.TemplateRepo, timeoutContext),
 		RegInvitationUsecase: _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, timeoutContext),
 	}
 }

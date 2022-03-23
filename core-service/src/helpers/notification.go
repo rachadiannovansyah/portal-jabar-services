@@ -10,14 +10,14 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func SendMail(res domain.User, template domain.Mail) (err error) {
+func SendMail(user domain.User, template domain.Template) (err error) {
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", viper.GetString("SENDER_NAME"))
 	mailer.SetHeader("To", viper.GetString("RECEIVER_NAME"))
 	mailer.SetHeader("Subject", template.Subject)
 	messg := template.Body
-	messg = strings.ReplaceAll(messg, "{name}", res.Name)
-	messg = strings.ReplaceAll(messg, "{unitName}", res.UnitName)
+	messg = strings.ReplaceAll(messg, "{name}", user.Name)
+	messg = strings.ReplaceAll(messg, "{unitName}", user.UnitName)
 	mailer.SetBody("text/html", messg)
 
 	dialer := utils.InitMail()
