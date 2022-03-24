@@ -24,6 +24,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.GET("/users/me", handler.UserProfile)
 	r.PUT("/users/me", handler.UpdateProfile)
 	r.PUT("/users/me/change-password", handler.ChangePassword)
+	e.POST("/users/register", handler.Register)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -107,4 +108,23 @@ func (h *UserHandler) ChangePassword(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "password changed"})
+}
+
+func (h *UserHandler) Register(c echo.Context) error {
+	req := new(domain.User)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if ok, err := isRequestValid(req); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	err := h.UUsecase.RegisterByInvitation(ctx, req)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, map[string]string{"message": "register success"})
 }

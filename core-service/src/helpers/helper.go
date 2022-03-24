@@ -13,7 +13,7 @@ func IsInvitationTokenValid(regInvitation domain.RegistrationInvitation, token s
 	}
 
 	// token expired after 5 days from updated_at
-	if time.Now().Sub(regInvitation.UpdatedAt) > (time.Hour * 24 * 5) {
+	if time.Now().Sub(regInvitation.InvitedAt) > (time.Hour * 24 * 5) {
 		return errors.New("token expired")
 	}
 

@@ -70,13 +70,17 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 }
 
 func (m *mysqlUserRepository) Store(ctx context.Context, u *domain.User) (err error) {
-	query := `INSERT users SET id = ?, name = ?, username = ?, email = ?, password = ?`
+	query := `INSERT users SET id = ?, name = ?, username = ?, email = ?, nip = ?, 
+		occupation = ?, unit_id = ?, role_id = ?, password = ?`
+
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	_, err = stmt.ExecContext(ctx, u.ID, u.Name, u.Username, u.Email, u.Password)
+	_, err = stmt.ExecContext(ctx, u.ID, u.Name, u.Username, u.Email,
+		u.Nip, u.Occupation, u.Unit.ID, u.Role.ID, u.Password)
+
 	if err != nil {
 		return
 	}

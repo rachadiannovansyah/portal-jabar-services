@@ -12,19 +12,22 @@ import (
 )
 
 type userUsecase struct {
-	userRepo       domain.UserRepository
-	unitRepo       domain.UnitRepository
-	roleRepo       domain.RoleRepository
-	contextTimeout time.Duration
+	userRepo          domain.UserRepository
+	unitRepo          domain.UnitRepository
+	roleRepo          domain.RoleRepository
+	regInvitationRepo domain.RegistrationInvitationRepository
+	contextTimeout    time.Duration
 }
 
 // NewUserUsecase creates a new user usecase
-func NewUserkUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, timeout time.Duration) domain.UserUsecase {
+func NewUserkUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository,
+	i domain.RegistrationInvitationRepository, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
-		userRepo:       u,
-		unitRepo:       un,
-		roleRepo:       r,
-		contextTimeout: timeout,
+		userRepo:          u,
+		unitRepo:          un,
+		roleRepo:          r,
+		regInvitationRepo: i,
+		contextTimeout:    timeout,
 	}
 }
 
@@ -135,6 +138,49 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 	user.Password = string(encryptedPassword)
 	user.LastPasswordChanged = &currentTime
 	err = n.userRepo.Update(ctx, &user)
+
+	return
+}
+
+func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	regInvitation, err := u.regInvitationRepo.GetByToken(ctx, req.Token)
+	if err != nil {
+		return
+	}
+
+	if err = helpers.IsInvitationTokenValid(regInvitation, req.Token); err != nil {
+		return
+	}
+
+	var RoleContributor int8 = 4
+	encryptedPassword, err := encryptPassword(req.Password)
+	if err != nil {
+		return err
+	}
+
+	nip := *req.Nip
+	occupation := *req.Occupation
+	payload := &domain.User{
+		ID:         uuid.New(),
+		Name:       req.Name,
+		Username:   regInvitation.Email,
+		Email:      regInvitation.Email,
+		Nip:        &nip,
+		Occupation: &occupation,
+		Unit:       domain.UnitInfo{ID: regInvitation.UnitID},
+		Role:       domain.RoleInfo{ID: RoleContributor},
+		Password:   string(encryptedPassword),
+	}
+
+	err = u.userRepo.Store(ctx, payload)
+	if err != nil {
+		return
+	}
+
+	err = u.regInvitationRepo.Delete(ctx, *regInvitation.ID)
 
 	return
 }

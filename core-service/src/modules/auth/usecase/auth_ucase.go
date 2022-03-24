@@ -45,11 +45,12 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
 	exp = time.Now().Add(time.Second * n.config.JWT.TTL).Unix()
 	claims := &domain.JwtCustomClaims{
-		user.ID,
-		user.Name,
-		user.Email,
-		jwt.StandardClaims{
-			ExpiresAt: exp,
+		ID:    user.ID,
+		Email: user.Email,
+		Unit:  user.Unit,
+		Role:  user.Role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
