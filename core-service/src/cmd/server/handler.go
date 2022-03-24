@@ -37,7 +37,7 @@ func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
 	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(e, r, u.MediaUsecase)
 	_tagHttpDelivery.NewTagHandler(e, r, u.TagUsecase)
-	_templateHttpDelivery.NewMailHandler(e, u.TemplateUsecase)
+	_templateHttpDelivery.NewMailHandler(e, r, u.TemplateUsecase)
 	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(e, r, u.RegInvitationUsecase)
 }
 
