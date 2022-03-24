@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type regInvitationUcase struct {
@@ -51,11 +52,10 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	// prepare registration invitation data
 	regInvitation.Email = email
 	regInvitation.Token, _ = r.generateInvitationToken()
-	regInvitation.ExpiredAt = time.Now().Add(time.Hour * 24 * 5) // expired in 5 days
 
 	// update invitation if email already exist
-	if regInvitation.ID > 0 {
-		err = r.regInvitationRepo.Update(ctx, regInvitation.ID, &regInvitation)
+	if regInvitation.ID != nil {
+		err = r.regInvitationRepo.Update(ctx, *regInvitation.ID, &regInvitation)
 	} else {
 		err = r.regInvitationRepo.Store(ctx, &regInvitation)
 	}
@@ -73,12 +73,8 @@ func (r *regInvitationUcase) Authorize(ctx context.Context,
 		return claim, err
 	}
 
-	if regInvitation.Token != token {
-		return claim, errors.New("invalid token")
-	}
-
-	if regInvitation.ExpiredAt.Before(time.Now()) {
-		return claim, errors.New("token has expired")
+	if err := helpers.IsInvitationTokenValid(regInvitation, token); err != nil {
+		return claim, err
 	}
 
 	claim = domain.RegistrationInvitationClaim{

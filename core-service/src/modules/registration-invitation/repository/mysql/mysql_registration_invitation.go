@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -17,7 +18,7 @@ func NewMysqlRegInvitationRepository(Conn *sql.DB) domain.RegistrationInvitation
 }
 
 var querySelectRegistrationInvitation = `
-	SELECT id, email, token, expired_at, created_at, updated_at FROM registration_invitations WHERE 1=1
+	SELECT id, email, token, created_at, updated_at FROM registration_invitations WHERE 1=1
 `
 
 func (m *mysqlRegInvitationRepository) findOne(ctx context.Context,
@@ -41,7 +42,6 @@ func (m *mysqlRegInvitationRepository) findOne(ctx context.Context,
 			&result.ID,
 			&result.Email,
 			&result.Token,
-			&result.ExpiredAt,
 			&result.CreatedAt,
 			&result.UpdatedAt,
 		)
@@ -71,41 +71,34 @@ func (m *mysqlRegInvitationRepository) GetByToken(ctx context.Context,
 func (m *mysqlRegInvitationRepository) Store(ctx context.Context,
 	registrationInvitation *domain.RegistrationInvitation) (err error) {
 
-	query := `INSERT INTO registration_invitations (email, token, expired_at) VALUES (?, ?, ?)`
-	res, err := m.Conn.ExecContext(
+	userID := uuid.New()
+	registrationInvitation.ID = &userID
+
+	query := `INSERT INTO registration_invitations (id, email, token) VALUES (?, ?, ?)`
+	_, err = m.Conn.ExecContext(
 		ctx,
 		query,
+		registrationInvitation.ID,
 		registrationInvitation.Email,
 		registrationInvitation.Token,
-		registrationInvitation.ExpiredAt,
 	)
 
 	if err != nil {
-		logrus.Error(err)
 		return err
 	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		logrus.Error(err)
-		return
-	}
-
-	registrationInvitation.ID = id
 
 	return
 }
 
 func (m *mysqlRegInvitationRepository) Update(ctx context.Context,
-	id int64, registrationInvitation *domain.RegistrationInvitation) (err error) {
+	id uuid.UUID, registrationInvitation *domain.RegistrationInvitation) (err error) {
 
-	query := `UPDATE registration_invitations SET email=?, token=?, expired_at=?, updated_at=? WHERE id=?`
+	query := `UPDATE registration_invitations SET email=?, token=?, updated_at=? WHERE id=?`
 	res, err := m.Conn.ExecContext(
 		ctx,
 		query,
 		registrationInvitation.Email,
 		registrationInvitation.Token,
-		registrationInvitation.ExpiredAt,
 		registrationInvitation.UpdatedAt,
 		id,
 	)
