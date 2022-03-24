@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type regInvitationUcase struct {
@@ -35,27 +36,28 @@ func (r *regInvitationUcase) generateInvitationToken() (string, error) {
 }
 
 func (r *regInvitationUcase) Invite(ctx context.Context,
-	email string) (regInvitation domain.RegistrationInvitation, err error) {
+	req domain.RegistrationInvitation) (regInvitation domain.RegistrationInvitation, err error) {
 
 	// validate if email is already registered in users table
-	if u, _ := r.userRepo.GetByEmail(ctx, email); u.Email != "" {
+	if u, _ := r.userRepo.GetByEmail(ctx, req.Email); u.Email != "" {
 		return regInvitation, errors.New("email already registered")
 	}
 
 	// find if email is already registered in registration_invitation table
-	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, email)
+	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return regInvitation, err
 	}
 
 	// prepare registration invitation data
-	regInvitation.Email = email
+	regInvitation.Email = req.Email
+	regInvitation.UnitID = req.UnitID
+	regInvitation.InvitedBy = req.InvitedBy
 	regInvitation.Token, _ = r.generateInvitationToken()
-	regInvitation.ExpiredAt = time.Now().Add(time.Hour * 24 * 5) // expired in 5 days
 
 	// update invitation if email already exist
-	if regInvitation.ID > 0 {
-		err = r.regInvitationRepo.Update(ctx, regInvitation.ID, &regInvitation)
+	if regInvitation.ID != nil {
+		err = r.regInvitationRepo.Update(ctx, *regInvitation.ID, &regInvitation)
 	} else {
 		err = r.regInvitationRepo.Store(ctx, &regInvitation)
 	}
@@ -73,12 +75,8 @@ func (r *regInvitationUcase) Authorize(ctx context.Context,
 		return claim, err
 	}
 
-	if regInvitation.Token != token {
-		return claim, errors.New("invalid token")
-	}
-
-	if regInvitation.ExpiredAt.Before(time.Now()) {
-		return claim, errors.New("token has expired")
+	if err := helpers.IsInvitationTokenValid(regInvitation, token); err != nil {
+		return claim, err
 	}
 
 	claim = domain.RegistrationInvitationClaim{

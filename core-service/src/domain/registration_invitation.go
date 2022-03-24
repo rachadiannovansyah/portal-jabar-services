@@ -3,15 +3,17 @@ package domain
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type RegistrationInvitation struct {
-	ID        int64     `json:"id"`
-	Email     string    `json:"email"`
-	Token     string    `json:"token"`
-	ExpiredAt time.Time `json:"expired_at"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        *uuid.UUID `json:"id"`
+	Email     string     `json:"email"`
+	Token     string     `json:"token"`
+	UnitID    int64      `json:"unit_id"`
+	InvitedBy uuid.UUID  `json:"created_by"`
+	InvitedAt time.Time  `json:"created_at"`
 }
 
 type RegistrationInvitationClaim struct {
@@ -23,10 +25,11 @@ type RegistrationInvitationRepository interface {
 	GetByEmail(ctx context.Context, email string) (RegistrationInvitation, error)
 	GetByToken(ctx context.Context, token string) (RegistrationInvitation, error)
 	Store(ctx context.Context, invitation *RegistrationInvitation) error
-	Update(ctx context.Context, id int64, invitation *RegistrationInvitation) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, id uuid.UUID, invitation *RegistrationInvitation) error
 }
 
 type RegistrationInvitationUsecase interface {
-	Invite(ctx context.Context, email string) (RegistrationInvitation, error)
+	Invite(context.Context, RegistrationInvitation) (RegistrationInvitation, error)
 	Authorize(ctx context.Context, token string) (RegistrationInvitationClaim, error)
 }

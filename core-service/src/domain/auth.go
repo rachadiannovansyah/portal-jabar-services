@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 )
@@ -10,6 +11,8 @@ type JwtCustomClaims struct {
 	ID    uuid.UUID `json:"id"`
 	Name  string    `json:"name"`
 	Email string    `json:"email"`
+	Unit  UnitInfo  `json:"unit"`
+	Role  RoleInfo  `json:"role"`
 	jwt.StandardClaims
 }
 
