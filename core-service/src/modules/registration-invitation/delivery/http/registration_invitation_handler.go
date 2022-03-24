@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/labstack/echo/v4"
 )
 
@@ -21,6 +22,7 @@ func NewRegistrationInvitationHandler(e *echo.Group, r *echo.Group, us domain.Re
 
 func (r *RegistrationInvitationHandler) Invite(c echo.Context) error {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
 	var regInvitation domain.RegistrationInvitation
 	err := c.Bind(&regInvitation)
@@ -28,7 +30,10 @@ func (r *RegistrationInvitationHandler) Invite(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, domain.NewErrResponse(err))
 	}
 
-	res, err := r.IUsecase.Invite(ctx, regInvitation.Email)
+	regInvitation.InvitedBy = au.ID
+	regInvitation.UnitID = au.Unit.ID
+
+	res, err := r.IUsecase.Invite(ctx, regInvitation)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, domain.NewErrResponse(err))
 	}

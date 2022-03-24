@@ -36,21 +36,23 @@ func (r *regInvitationUcase) generateInvitationToken() (string, error) {
 }
 
 func (r *regInvitationUcase) Invite(ctx context.Context,
-	email string) (regInvitation domain.RegistrationInvitation, err error) {
+	req domain.RegistrationInvitation) (regInvitation domain.RegistrationInvitation, err error) {
 
 	// validate if email is already registered in users table
-	if u, _ := r.userRepo.GetByEmail(ctx, email); u.Email != "" {
+	if u, _ := r.userRepo.GetByEmail(ctx, req.Email); u.Email != "" {
 		return regInvitation, errors.New("email already registered")
 	}
 
 	// find if email is already registered in registration_invitation table
-	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, email)
+	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return regInvitation, err
 	}
 
 	// prepare registration invitation data
-	regInvitation.Email = email
+	regInvitation.Email = req.Email
+	regInvitation.UnitID = req.UnitID
+	regInvitation.InvitedBy = req.InvitedBy
 	regInvitation.Token, _ = r.generateInvitationToken()
 
 	// update invitation if email already exist

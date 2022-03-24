@@ -18,7 +18,7 @@ func NewMysqlRegInvitationRepository(Conn *sql.DB) domain.RegistrationInvitation
 }
 
 var querySelectRegistrationInvitation = `
-	SELECT id, email, token, created_at, updated_at FROM registration_invitations WHERE 1=1
+	SELECT id, email, token, unit_id, invited_by, invited_at FROM registration_invitations WHERE 1=1
 `
 
 func (m *mysqlRegInvitationRepository) findOne(ctx context.Context,
@@ -42,8 +42,9 @@ func (m *mysqlRegInvitationRepository) findOne(ctx context.Context,
 			&result.ID,
 			&result.Email,
 			&result.Token,
-			&result.CreatedAt,
-			&result.UpdatedAt,
+			&result.UnitID,
+			&result.InvitedBy,
+			&result.InvitedAt,
 		)
 		if err != nil {
 			logrus.Error(err)
@@ -74,13 +75,15 @@ func (m *mysqlRegInvitationRepository) Store(ctx context.Context,
 	userID := uuid.New()
 	registrationInvitation.ID = &userID
 
-	query := `INSERT INTO registration_invitations (id, email, token) VALUES (?, ?, ?)`
+	query := `INSERT INTO registration_invitations (id, email, token, unit_id, invited_by) VALUES (?, ?, ?, ?, ?)`
 	_, err = m.Conn.ExecContext(
 		ctx,
 		query,
 		registrationInvitation.ID,
 		registrationInvitation.Email,
 		registrationInvitation.Token,
+		registrationInvitation.UnitID,
+		registrationInvitation.InvitedBy,
 	)
 
 	if err != nil {
@@ -93,15 +96,41 @@ func (m *mysqlRegInvitationRepository) Store(ctx context.Context,
 func (m *mysqlRegInvitationRepository) Update(ctx context.Context,
 	id uuid.UUID, registrationInvitation *domain.RegistrationInvitation) (err error) {
 
-	query := `UPDATE registration_invitations SET email=?, token=?, updated_at=? WHERE id=?`
+	query := `UPDATE registration_invitations SET email=?, token=?, unit_id=?, invited_by=?, invited_at=? WHERE id=?`
 	res, err := m.Conn.ExecContext(
 		ctx,
 		query,
 		registrationInvitation.Email,
 		registrationInvitation.Token,
-		registrationInvitation.UpdatedAt,
+		registrationInvitation.UnitID,
+		registrationInvitation.InvitedBy,
+		registrationInvitation.InvitedAt,
 		id,
 	)
+
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	if rowsAffected == 0 {
+		return domain.ErrNotFound
+	}
+
+	return
+}
+
+func (m *mysqlRegInvitationRepository) Delete(ctx context.Context,
+	id uuid.UUID) (err error) {
+
+	query := `DELETE FROM registration_invitations WHERE id=?`
+	res, err := m.Conn.ExecContext(ctx, query, id)
 
 	if err != nil {
 		logrus.Error(err)
