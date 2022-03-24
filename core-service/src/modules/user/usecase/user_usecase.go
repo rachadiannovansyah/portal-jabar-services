@@ -12,19 +12,21 @@ import (
 )
 
 type userUsecase struct {
-	userRepo       domain.UserRepository
-	unitRepo       domain.UnitRepository
-	roleRepo       domain.RoleRepository
-	contextTimeout time.Duration
+	userRepo         domain.UserRepository
+	unitRepo         domain.UnitRepository
+	roleRepo         domain.RoleRepository
+	mailTemplateRepo domain.TemplateRepository
+	contextTimeout   time.Duration
 }
 
 // NewUserUsecase creates a new user usecase
-func NewUserkUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, timeout time.Duration) domain.UserUsecase {
+func NewUserUsecase(u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, m domain.TemplateRepository, timeout time.Duration) domain.UserUsecase {
 	return &userUsecase{
-		userRepo:       u,
-		unitRepo:       un,
-		roleRepo:       r,
-		contextTimeout: timeout,
+		userRepo:         u,
+		unitRepo:         un,
+		roleRepo:         r,
+		mailTemplateRepo: m,
+		contextTimeout:   timeout,
 	}
 }
 
@@ -135,6 +137,30 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 	user.Password = string(encryptedPassword)
 	user.LastPasswordChanged = &currentTime
 	err = n.userRepo.Update(ctx, &user)
+
+	return
+}
+
+func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key string) (res domain.AccountSubmission, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	user, err := n.userRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	template, err := n.mailTemplateRepo.GetByTemplate(ctx, key)
+	if err != nil {
+		return
+	}
+
+	go func() {
+		err = helpers.SendMail(user, template)
+		if err != nil {
+			return
+		}
+	}()
 
 	return
 }
