@@ -21,6 +21,7 @@ type User struct {
 	Unit                UnitInfo   `json:"unit"`
 	UnitName            string     `json:"unit_name"`
 	Role                RoleInfo   `json:"role"`
+	Token               string     `json:"token"`
 	CreatedAt           time.Time  `json:"created_at"`
 	UpdatedAt           time.Time  `json:"updated_at"`
 	DeletedAt           time.Time  `json:"deleted_at"`
@@ -66,4 +67,5 @@ type UserUsecase interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
+	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
 }

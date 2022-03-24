@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"net/http"
 	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 
 	"github.com/labstack/echo/v4"
 )
