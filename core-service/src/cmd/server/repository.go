@@ -16,6 +16,7 @@ import (
 	_roleRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role/repository/mysql"
 	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
 	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
+	_templateRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
 	_userRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/repository/mysql"
 )
@@ -35,6 +36,7 @@ type Repository struct {
 	TagRepo             domain.TagRepository
 	SearchRepo          domain.SearchRepository
 	RoleRepo            domain.RoleRepository
+	TemplateRepo        domain.TemplateRepository
 	RegInvitationRepo   domain.RegistrationInvitationRepository
 }
 
@@ -54,6 +56,7 @@ func NewRepository(conn *utils.Conn) *Repository {
 		TagRepo:             _tagRepo.NewMysqlTagRepository(conn.Mysql),
 		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
 		RoleRepo:            _roleRepo.NewMysqlRoleRepository(conn.Mysql),
+		TemplateRepo:        _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
 		RegInvitationRepo:   _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
 	}
 }
