@@ -57,7 +57,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		UserUsecase:          _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, r.RegInvitationRepo, timeoutContext),
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
-		TemplateUsecase:      _templateUcase.NewMailTemplateUsecase(r.TemplateRepo, timeoutContext),
+		TemplateUsecase:      _templateUcase.NewTemplateUsecase(r.TemplateRepo, r.UserRepo, timeoutContext),
 		RegInvitationUsecase: _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, timeoutContext),
 	}
 }

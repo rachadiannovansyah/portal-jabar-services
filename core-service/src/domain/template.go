@@ -1,6 +1,10 @@
 package domain
 
-import "context"
+import (
+	"context"
+
+	"github.com/google/uuid"
+)
 
 // Template ..
 type Template struct {
@@ -14,7 +18,7 @@ type Template struct {
 }
 
 type TemplateUsecase interface {
-	GetByTemplate(context.Context, string) (Template, error)
+	GetByTemplate(context.Context, uuid.UUID, string) (Template, error)
 }
 
 type TemplateRepository interface {
