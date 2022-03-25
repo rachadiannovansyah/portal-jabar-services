@@ -9,21 +9,21 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
-type mailTemplateUsecase struct {
+type templateUsecase struct {
 	mailRepo       domain.TemplateRepository
 	userRepo       domain.UserRepository
 	contextTimeout time.Duration
 }
 
-func NewMailTemplateUsecase(m domain.TemplateRepository, u domain.UserRepository, timeout time.Duration) domain.TemplateUsecase {
-	return &mailTemplateUsecase{
+func NewTemplateUsecase(m domain.TemplateRepository, u domain.UserRepository, timeout time.Duration) domain.TemplateUsecase {
+	return &templateUsecase{
 		mailRepo:       m,
 		userRepo:       u,
 		contextTimeout: timeout,
 	}
 }
 
-func (m *mailTemplateUsecase) GetByTemplate(ctx context.Context, id uuid.UUID, key string) (res domain.Template, err error) {
+func (m *templateUsecase) GetByTemplate(ctx context.Context, id uuid.UUID, key string) (res domain.Template, err error) {
 	ctx, cancel := context.WithTimeout(ctx, m.contextTimeout)
 	defer cancel()
 

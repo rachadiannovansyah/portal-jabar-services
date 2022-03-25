@@ -17,7 +17,7 @@ func NewMailHandler(e *echo.Group, r *echo.Group, us domain.TemplateUsecase) {
 		MUsecase: us,
 	}
 
-	r.GET("/template/mail", handler.GetTemplate)
+	r.GET("/template/account-submission", handler.GetTemplate)
 }
 
 func (h *MailHandler) GetTemplate(c echo.Context) error {
