@@ -13,7 +13,7 @@ import (
 func SendMail(user domain.User, template domain.Template) (err error) {
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", viper.GetString("SENDER_NAME"))
-	mailer.SetHeader("To", viper.GetString("RECEIVER_NAME"))
+	mailer.SetHeader("To", user.Email)
 	mailer.SetHeader("Subject", template.Subject)
 	messg := template.Body
 	messg = strings.ReplaceAll(messg, "{name}", user.Name)
