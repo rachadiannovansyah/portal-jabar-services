@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -10,14 +10,22 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func SendMail(user domain.User, template domain.Template) (err error) {
+func ReplaceBodyParams(body string, params []string) string {
+
+	for i := 0; i < len(params); i++ {
+		param, value := fmt.Sprintf("{param%v}", i+1), params[i]
+		body = strings.ReplaceAll(body, param, value)
+	}
+
+	return body
+}
+
+func SendEmail(to string, template domain.Template, params []string) (err error) {
 	mailer := gomail.NewMessage()
 	mailer.SetHeader("From", viper.GetString("SENDER_NAME"))
-	mailer.SetHeader("To", user.Email)
+	mailer.SetHeader("To", to)
 	mailer.SetHeader("Subject", template.Subject)
-	messg := template.Body
-	messg = strings.ReplaceAll(messg, "{name}", user.Name)
-	messg = strings.ReplaceAll(messg, "{unitName}", user.UnitName)
+	messg := ReplaceBodyParams(template.Body, params)
 	mailer.SetBody("text/html", messg)
 
 	dialer := utils.InitMail()
@@ -26,8 +34,6 @@ func SendMail(user domain.User, template domain.Template) (err error) {
 	if err != nil {
 		return
 	}
-
-	log.Println("Mail sent!")
 
 	return
 }

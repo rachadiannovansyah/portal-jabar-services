@@ -9,19 +9,24 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type regInvitationUcase struct {
 	regInvitationRepo domain.RegistrationInvitationRepository
 	userRepo          domain.UserRepository
+	mailTemplateRepo  domain.TemplateRepository
 	contextTimeout    time.Duration
 }
 
 func NewRegInvitationUsecase(regInvitationRepo domain.RegistrationInvitationRepository,
-	userRepo domain.UserRepository, contextTimeout time.Duration) domain.RegistrationInvitationUsecase {
+	userRepo domain.UserRepository, mtemplateRepo domain.TemplateRepository,
+	contextTimeout time.Duration) domain.RegistrationInvitationUsecase {
 	return &regInvitationUcase{
 		regInvitationRepo: regInvitationRepo,
 		userRepo:          userRepo,
+		mailTemplateRepo:  mtemplateRepo,
 		contextTimeout:    contextTimeout,
 	}
 }
@@ -44,9 +49,9 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	}
 
 	// find if email is already registered in registration_invitation table
-	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, req.Email)
-	if err != nil {
-		return regInvitation, err
+	regInvitation, _ = r.regInvitationRepo.GetByEmail(ctx, req.Email)
+	if regInvitation.Email != "" {
+		return regInvitation, errors.New("email already invited")
 	}
 
 	// prepare registration invitation data
@@ -62,7 +67,14 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 		err = r.regInvitationRepo.Store(ctx, &regInvitation)
 	}
 
-	// TODO: dispatch job to send email invitation
+	t, _ := r.mailTemplateRepo.GetByTemplate(ctx, "registration_invitation")
+	registrationLink := fmt.Sprintf("%s/daftar?token=%s", viper.GetString("PORTAL_JABAR_CMS_URL"), regInvitation.Token)
+	go func() {
+		err = helpers.SendEmail(regInvitation.Email, t, []string{registrationLink})
+		if err != nil {
+			logrus.Error(err)
+		}
+	}()
 
 	return
 }

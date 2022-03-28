@@ -159,7 +159,7 @@ func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key str
 	}
 
 	go func() {
-		err = helpers.SendMail(user, template)
+		err = helpers.SendEmail(user.Email, template, []string{user.Name, user.UnitName})
 		if err != nil {
 			return
 		}
