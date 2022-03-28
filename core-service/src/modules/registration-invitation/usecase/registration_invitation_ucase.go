@@ -49,9 +49,9 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	}
 
 	// find if email is already registered in registration_invitation table
-	regInvitation, err = r.regInvitationRepo.GetByEmail(ctx, req.Email)
-	if err != nil {
-		return regInvitation, err
+	regInvitation, _ = r.regInvitationRepo.GetByEmail(ctx, req.Email)
+	if regInvitation.Email != "" {
+		return regInvitation, errors.New("email already invited")
 	}
 
 	// prepare registration invitation data
