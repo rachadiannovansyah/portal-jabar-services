@@ -210,3 +210,15 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 
 	return
 }
+
+func (u *userUsecase) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
+	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	defer cancel()
+
+	res, total, err = u.userRepo.MemberList(ctx, params)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return
+}
