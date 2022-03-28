@@ -44,6 +44,18 @@ func (m *mysqlUserRepository) GetByEmail(ctx context.Context, email string) (res
 	return res, nil
 }
 
+func (m *mysqlUserRepository) GetByNip(ctx context.Context, nip string) (res domain.User, err error) {
+	query := querySelect + fmt.Sprintf(` AND nip = '%s'`, nip)
+
+	err = m.scan(ctx, query, &res)
+
+	if err != sql.ErrNoRows {
+		return
+	}
+
+	return res, nil
+}
+
 func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domain.User) (err error) {
 	roleID := int8(0)
 	err = m.Conn.QueryRowContext(ctx, query).Scan(

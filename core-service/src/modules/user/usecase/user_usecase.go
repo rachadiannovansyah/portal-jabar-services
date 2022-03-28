@@ -210,3 +210,19 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 
 	return
 }
+
+func (u *userUsecase) CheckIfNipExists(c context.Context, nip string) (res bool, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetByNip(ctx, nip)
+	if err != nil {
+		return
+	}
+
+	if user.Nip != nil {
+		res = true
+	}
+
+	return
+}

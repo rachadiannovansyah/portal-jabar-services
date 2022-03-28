@@ -27,6 +27,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/me/change-password", handler.ChangePassword)
 	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 	e.POST("/users/register", handler.Register)
+	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -144,4 +145,25 @@ func (h *UserHandler) Register(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, map[string]string{"message": "register success"})
+}
+
+func (h *UserHandler) CheckNipExists(c echo.Context) error {
+	req := new(domain.CheckNipExistRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	res, err := h.UUsecase.CheckIfNipExists(ctx, req.Nip)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"exist": res,
+	})
 }

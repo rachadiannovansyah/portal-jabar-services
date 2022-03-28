@@ -41,6 +41,10 @@ type UserInfo struct {
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
+type CheckNipExistRequest struct {
+	Nip string `json:"nip" validate:"len=18"`
+}
+
 type AccountSubmission struct {
 	ID   int64  `json:"id"`
 	Role string `json:"role"`
@@ -61,6 +65,7 @@ type ChangePasswordRequest struct {
 // UserRepository represent the unit repository contract
 type UserRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
+	GetByNip(ctx context.Context, nip string) (User, error)
 	GetByEmail(ctx context.Context, email string) (User, error)
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
@@ -70,6 +75,7 @@ type UserRepository interface {
 type UserUsecase interface {
 	Store(context.Context, *User) error
 	GetByID(ctx context.Context, id uuid.UUID) (User, error)
+	CheckIfNipExists(ctx context.Context, nip string) (bool, error)
 	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
