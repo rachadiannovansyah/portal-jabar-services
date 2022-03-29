@@ -95,6 +95,13 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 
 	refreshToken, err := n.createRefreshToken(&user)
 
+	// write last active
+	timeNow := time.Now()
+	err = n.userRepo.WriteLastActive(c, timeNow, &user)
+	if err != nil {
+		return domain.LoginResponse{}, err
+	}
+
 	res = newLoginResponse(accessToken, refreshToken, exp)
 
 	return

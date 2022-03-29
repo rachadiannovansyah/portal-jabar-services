@@ -43,7 +43,7 @@ type UserInfo struct {
 
 type MemberList struct {
 	ID         uuid.UUID  `json:"id"`
-	Name       string     `json:"name"`
+	Name       *string    `json:"name"`
 	Email      string     `json:"email"`
 	Role       string     `json:"role"`
 	LastActive *time.Time `json:"last_active"`
@@ -74,6 +74,7 @@ type UserRepository interface {
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
 	MemberList(context.Context, *Request) ([]MemberList, int64, error)
+	WriteLastActive(context.Context, time.Time, *User) error
 }
 
 // UserUsecase ...
