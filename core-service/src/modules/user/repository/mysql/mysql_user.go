@@ -106,13 +106,13 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 }
 
 func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
-	queryUnion := `SELECT member.id, member.name, member.email, member.role_name 
+	queryUnion := `SELECT member.id, member.name, member.email, member.role_name , member.status
 	FROM (
-		select users.id, users.name, users.email, roles.name as role_name
+		select users.id, users.name, users.email, roles.name as role_name, "active" as status
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, ""
+		SELECT id, "", email, "Member", "waiting confirmation"
 		FROM registration_invitations
 	) member`
 
@@ -172,6 +172,7 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Name,
 			&t.Email,
 			&t.Role,
+			&t.Status,
 		)
 
 		if err != nil {

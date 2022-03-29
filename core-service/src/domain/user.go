@@ -47,7 +47,7 @@ type MemberList struct {
 	Email      string     `json:"email"`
 	Role       string     `json:"role"`
 	LastActive *time.Time `json:"last_active"`
-	Status     *string    `json:"status"`
+	Status     string     `json:"status"`
 }
 
 type AccountSubmission struct {
