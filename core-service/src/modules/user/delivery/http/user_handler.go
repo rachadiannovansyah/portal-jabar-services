@@ -27,6 +27,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/me/change-password", handler.ChangePassword)
 	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 	e.POST("/users/register", handler.Register)
+	r.GET("/users/member", handler.MemberList)
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -145,6 +146,21 @@ func (h *UserHandler) Register(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, map[string]string{"message": "register success"})
+}
+
+func (h *UserHandler) MemberList(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	params := helpers.GetRequestParams(c)
+
+	memberList, total, err := h.UUsecase.MemberList(ctx, &params)
+	if err != nil {
+		return err
+	}
+
+	res := helpers.Paginate(c, memberList, total, params)
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *UserHandler) CheckNipExists(c echo.Context) error {
