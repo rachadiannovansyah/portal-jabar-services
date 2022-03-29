@@ -112,7 +112,7 @@ func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Req
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, "Member", "waiting confirmation"
+		SELECT id, null, email, "Member", "waiting confirmation"
 		FROM registration_invitations
 	) member`
 
@@ -138,7 +138,7 @@ func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Req
 									UNION ALL
 									SELECT id
 									FROM registration_invitations
-							) member ORDER BY id ASC;`)
+							) member ORDER BY id ASC`)
 
 	queryUnion = queryUnion + ` LIMIT ?,? `
 
