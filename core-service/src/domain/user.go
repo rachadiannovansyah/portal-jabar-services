@@ -41,6 +41,15 @@ type UserInfo struct {
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
+type MemberList struct {
+	ID         uuid.UUID  `json:"id"`
+	Name       string     `json:"name"`
+	Email      string     `json:"email"`
+	Role       string     `json:"role"`
+	LastActive *time.Time `json:"last_active"`
+	Status     *string    `json:"status"`
+}
+
 type AccountSubmission struct {
 	ID   int64  `json:"id"`
 	Role string `json:"role"`
@@ -64,6 +73,7 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
+	MemberList(context.Context, *Request) ([]MemberList, int64, error)
 }
 
 // UserUsecase ...
@@ -74,4 +84,5 @@ type UserUsecase interface {
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
+	MemberList(ctx context.Context, params *Request) (res []MemberList, total int64, err error)
 }
