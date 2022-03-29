@@ -13,6 +13,8 @@ var (
 	ErrBadParamInput = errors.New("Given Param is not valid")
 	// ErrInvalidCredentials
 	ErrInvalidCredentials = errors.New("Invalid credentials")
+	// ErrDuplicateNIP
+	ErrDuplicateNIP = errors.New("NIP already exists")
 )
 
 type ErrResponse struct {

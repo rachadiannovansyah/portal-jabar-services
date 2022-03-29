@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -70,6 +71,12 @@ func (u *userUsecase) UpdateProfile(c context.Context, req *domain.User) (user d
 	user, err = u.GetByID(ctx, req.ID)
 	if err != nil {
 		return
+	}
+
+	if req.Nip != nil && *user.Nip != *req.Nip {
+		if res, _ := u.CheckIfNipExists(ctx, req.Nip); res {
+			return user, domain.ErrDuplicateNIP
+		}
 	}
 
 	// FIXME: make some utility function to separate this code
@@ -181,13 +188,18 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 		return
 	}
 
+	// check nip is not used
+	nip := *req.Nip
+	if exists, _ := u.CheckIfNipExists(ctx, req.Nip); exists {
+		return domain.ErrDuplicateNIP
+	}
+
 	var RoleContributor int8 = 4
 	encryptedPassword, err := encryptPassword(req.Password)
 	if err != nil {
 		return err
 	}
 
-	nip := *req.Nip
 	occupation := *req.Occupation
 	payload := &domain.User{
 		ID:         uuid.New(),
@@ -211,11 +223,12 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 	return
 }
 
-func (u *userUsecase) CheckIfNipExists(c context.Context, nip string) (res bool, err error) {
+func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
 	user, err := u.userRepo.GetByNip(ctx, nip)
+	fmt.Println("user", user)
 	if err != nil {
 		return
 	}

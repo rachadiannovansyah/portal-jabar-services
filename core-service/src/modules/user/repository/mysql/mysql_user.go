@@ -44,12 +44,10 @@ func (m *mysqlUserRepository) GetByEmail(ctx context.Context, email string) (res
 	return res, nil
 }
 
-func (m *mysqlUserRepository) GetByNip(ctx context.Context, nip string) (res domain.User, err error) {
-	query := querySelect + fmt.Sprintf(` AND nip = '%s'`, nip)
+func (m *mysqlUserRepository) GetByNip(ctx context.Context, nip *string) (res domain.User, err error) {
+	query := querySelect + fmt.Sprintf(` AND nip = '%v'`, *nip)
 
-	err = m.scan(ctx, query, &res)
-
-	if err != sql.ErrNoRows {
+	if err = m.scan(ctx, query, &res); err != sql.ErrNoRows {
 		return
 	}
 
