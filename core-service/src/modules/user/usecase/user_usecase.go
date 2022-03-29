@@ -240,7 +240,7 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 	defer cancel()
 
 	user, err := u.userRepo.GetByNip(ctx, nip)
-	fmt.Println("user", user)
+
 	if err != nil {
 		return
 	}
