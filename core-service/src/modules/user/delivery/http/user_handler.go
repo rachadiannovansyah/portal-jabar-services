@@ -28,6 +28,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 	e.POST("/users/register", handler.Register)
 	r.GET("/users/member", handler.MemberList)
+	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
 func isRequestValid(u *domain.User) (bool, error) {
@@ -160,4 +161,25 @@ func (h *UserHandler) MemberList(c echo.Context) error {
 	res := helpers.Paginate(c, memberList, total, params)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func (h *UserHandler) CheckNipExists(c echo.Context) error {
+	req := new(domain.CheckNipExistRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	res, err := h.UUsecase.CheckIfNipExists(ctx, req.Nip)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"exist": res,
+	})
 }

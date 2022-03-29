@@ -72,6 +72,12 @@ func (u *userUsecase) UpdateProfile(c context.Context, req *domain.User) (user d
 		return
 	}
 
+	if req.Nip != nil && *user.Nip != *req.Nip {
+		if res, _ := u.CheckIfNipExists(ctx, req.Nip); res {
+			return user, domain.ErrDuplicateNIP
+		}
+	}
+
 	// FIXME: make some utility function to separate this code
 	if req.Name != "" {
 		user.Name = req.Name
@@ -181,13 +187,18 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 		return
 	}
 
+	// check nip is not used
+	nip := *req.Nip
+	if exists, _ := u.CheckIfNipExists(ctx, req.Nip); exists {
+		return domain.ErrDuplicateNIP
+	}
+
 	var RoleContributor int8 = 4
 	encryptedPassword, err := encryptPassword(req.Password)
 	if err != nil {
 		return err
 	}
 
-	nip := *req.Nip
 	occupation := *req.Occupation
 	payload := &domain.User{
 		ID:         uuid.New(),
@@ -218,6 +229,23 @@ func (u *userUsecase) MemberList(ctx context.Context, params *domain.Request) (r
 	res, total, err = u.userRepo.MemberList(ctx, params)
 	if err != nil {
 		return nil, 0, err
+	}
+
+	return
+}
+
+func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	user, err := u.userRepo.GetByNip(ctx, nip)
+
+	if err != nil {
+		return
+	}
+
+	if user.Nip != nil {
+		res = true
 	}
 
 	return
