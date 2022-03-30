@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
@@ -154,12 +155,16 @@ func (h *UserHandler) MemberList(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 
-	memberList, total, err := h.UUsecase.MemberList(ctx, &params)
+	member, total, err := h.UUsecase.MemberList(ctx, &params)
 	if err != nil {
 		return err
 	}
 
-	res := helpers.Paginate(c, memberList, total, params)
+	// Copy slice to slice
+	memberListRes := []domain.MemberListResponse{}
+	copier.Copy(&memberListRes, &member)
+
+	res := helpers.Paginate(c, memberListRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
 }

@@ -222,7 +222,7 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 	return
 }
 
-func (u *userUsecase) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
+func (u *userUsecase) MemberList(ctx context.Context, params *domain.Request) (res []domain.Member, total int64, err error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -252,7 +252,7 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 }
 
 // GetMemberByID will find an object by given id
-func (u *userUsecase) GetMemberByID(c context.Context, id string) (res domain.MemberList, err error) {
+func (u *userUsecase) GetMemberByID(c context.Context, id string) (res domain.Member, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 

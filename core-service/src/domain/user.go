@@ -41,7 +41,17 @@ type UserInfo struct {
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
-type MemberList struct {
+type Member struct {
+	ID         uuid.UUID  `json:"id"`
+	Name       *string    `json:"name"`
+	Email      string     `json:"email"`
+	Role       string     `json:"role"`
+	LastActive *time.Time `json:"last_active"`
+	Status     string     `json:"status"`
+	Occupation *string    `json:"occupation"`
+	NIP        *string    `json:"nip"`
+}
+type MemberListResponse struct {
 	ID         uuid.UUID  `json:"id"`
 	Name       *string    `json:"name"`
 	Email      string     `json:"email"`
@@ -78,9 +88,9 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
-	MemberList(context.Context, *Request) ([]MemberList, int64, error)
+	MemberList(context.Context, *Request) ([]Member, int64, error)
 	WriteLastActive(context.Context, time.Time, *User) error
-	GetMemberByID(context.Context, string) (MemberList, error)
+	GetMemberByID(context.Context, string) (Member, error)
 }
 
 // UserUsecase ...
@@ -92,6 +102,6 @@ type UserUsecase interface {
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
-	MemberList(ctx context.Context, params *Request) (res []MemberList, total int64, err error)
-	GetMemberByID(ctx context.Context, id string) (res MemberList, err error)
+	MemberList(ctx context.Context, params *Request) (res []Member, total int64, err error)
+	GetMemberByID(ctx context.Context, id string) (res Member, err error)
 }

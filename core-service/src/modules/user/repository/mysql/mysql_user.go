@@ -22,13 +22,14 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 
 var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, last_password_changed, u.nip, u.occupation,
 	u.unit_id, u.role_id, un.name as unit_name FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
-var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_name , member.status, member.last_active
+var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_name , member.status, member.last_active, member.occupation, member.nip
 	FROM (
-		select users.id, users.name, users.email, roles.name as role_name, "active" as status, users.last_active
+		select users.id, users.name, users.email, roles.name as role_name, "active" as status, users.last_active,
+		users.occupation, users.nip
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, null, email, "Member", "waiting confirmation", null
+		SELECT id, null, email, "Member", "waiting confirmation", null, null, null
 		FROM registration_invitations
 	) member WHERE 1=1`
 
@@ -124,7 +125,7 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 	return
 }
 
-func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
+func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Request) (res []domain.Member, total int64, err error) {
 	var query string
 	if v, ok := params.Filters["name"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND member.name = "%s"`, query, v)
@@ -160,7 +161,7 @@ func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Req
 	return
 }
 
-func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.MemberList, err error) {
+func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.Member, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
@@ -174,9 +175,9 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 		}
 	}()
 
-	result = make([]domain.MemberList, 0)
+	result = make([]domain.Member, 0)
 	for rows.Next() {
-		t := domain.MemberList{}
+		t := domain.Member{}
 		err = rows.Scan(
 			&t.ID,
 			&t.Name,
@@ -184,6 +185,8 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Role,
 			&t.Status,
 			&t.LastActive,
+			&t.Occupation,
+			&t.NIP,
 		)
 
 		if err != nil {
@@ -215,12 +218,12 @@ func (m *mysqlUserRepository) WriteLastActive(ctx context.Context, time time.Tim
 	return
 }
 
-func (m *mysqlUserRepository) GetMemberByID(ctx context.Context, id string) (res domain.MemberList, err error) {
+func (m *mysqlUserRepository) GetMemberByID(ctx context.Context, id string) (res domain.Member, err error) {
 	query := querySelectUnion + ` AND id = ?`
 
 	list, err := m.fetch(ctx, query, id)
 	if err != nil {
-		return domain.MemberList{}, err
+		return domain.Member{}, err
 	}
 
 	if len(list) > 0 {
