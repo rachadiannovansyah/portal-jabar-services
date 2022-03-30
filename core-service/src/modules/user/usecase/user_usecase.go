@@ -250,3 +250,16 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 
 	return
 }
+
+// GetMemberByID will find an object by given id
+func (u *userUsecase) GetMemberByID(c context.Context, id string) (res domain.MemberList, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.userRepo.GetMemberByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	return
+}

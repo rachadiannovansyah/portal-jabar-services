@@ -28,6 +28,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 	e.POST("/users/register", handler.Register)
 	r.GET("/users/member", handler.MemberList)
+	r.GET("/users/member/:id", handler.GetMemberByID)
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -182,4 +183,15 @@ func (h *UserHandler) CheckNipExists(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"exist": res,
 	})
+}
+
+func (h *UserHandler) GetMemberByID(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	member, err := h.UUsecase.GetMemberByID(ctx, c.Param("id"))
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &member})
 }

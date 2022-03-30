@@ -22,6 +22,15 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 
 var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, last_password_changed, u.nip, u.occupation,
 	u.unit_id, u.role_id, un.name as unit_name FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
+var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_name , member.status, member.last_active
+	FROM (
+		select users.id, users.name, users.email, roles.name as role_name, "active" as status, users.last_active
+		FROM users
+		LEFT JOIN roles ON roles.id = users.role_id 
+		UNION ALL
+		SELECT id, null, email, "Member", "waiting confirmation", null
+		FROM registration_invitations
+	) member WHERE 1=1`
 
 // GetByID ...
 func (m *mysqlUserRepository) GetByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
@@ -116,29 +125,20 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 }
 
 func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
-	queryUnion := `SELECT member.id, member.name, member.email, member.role_name , member.status, member.last_active
-	FROM (
-		select users.id, users.name, users.email, roles.name as role_name, "active" as status, users.last_active
-		FROM users
-		LEFT JOIN roles ON roles.id = users.role_id 
-		UNION ALL
-		SELECT id, null, email, "Member", "waiting confirmation", null
-		FROM registration_invitations
-	) member`
-
+	var query string
 	if v, ok := params.Filters["name"]; ok && v != "" {
-		queryUnion = fmt.Sprintf(`%s AND member.name = "%s"`, queryUnion, v)
+		query = fmt.Sprintf(`%s AND member.name = "%s"`, query, v)
 	}
 
 	if v, ok := params.Filters["email"]; ok && v != "" {
-		queryUnion = fmt.Sprintf(`%s AND member.email = "%s"`, queryUnion, v)
+		query = fmt.Sprintf(`%s AND member.email = "%s"`, query, v)
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
-		queryUnion = fmt.Sprintf(`%s AND member.status = "%s"`, queryUnion, v)
+		query = fmt.Sprintf(`%s AND member.status = "%s"`, query, v)
 	}
 
-	queryUnion += ` ORDER BY name DESC`
+	query += ` ORDER BY name DESC`
 
 	total, _ = m.count(ctx, `SELECT COUNT(1) 
 							FROM (
@@ -150,9 +150,9 @@ func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Req
 									FROM registration_invitations
 							) member ORDER BY id ASC`)
 
-	queryUnion = queryUnion + ` LIMIT ?,? `
+	query = querySelectUnion + ` LIMIT ?,? `
 
-	res, err = m.fetch(ctx, queryUnion, params.Offset, params.PerPage)
+	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -211,6 +211,23 @@ func (m *mysqlUserRepository) WriteLastActive(ctx context.Context, time time.Tim
 	query := `UPDATE users SET last_active = ? WHERE id = ?`
 
 	_, err = m.Conn.ExecContext(ctx, query, time, user.ID)
+
+	return
+}
+
+func (m *mysqlUserRepository) GetMemberByID(ctx context.Context, id string) (res domain.MemberList, err error) {
+	query := querySelectUnion + ` AND id = ?`
+
+	list, err := m.fetch(ctx, query, id)
+	if err != nil {
+		return domain.MemberList{}, err
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
 
 	return
 }

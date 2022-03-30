@@ -80,6 +80,7 @@ type UserRepository interface {
 	Update(context.Context, *User) error
 	MemberList(context.Context, *Request) ([]MemberList, int64, error)
 	WriteLastActive(context.Context, time.Time, *User) error
+	GetMemberByID(context.Context, string) (MemberList, error)
 }
 
 // UserUsecase ...
@@ -92,4 +93,5 @@ type UserUsecase interface {
 	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
 	MemberList(ctx context.Context, params *Request) (res []MemberList, total int64, err error)
+	GetMemberByID(ctx context.Context, id string) (res MemberList, err error)
 }
