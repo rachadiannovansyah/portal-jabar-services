@@ -1,0 +1,1 @@
+ALTER TABLE users ADD last_active TIMESTAMP NULL AFTER last_password_changed;

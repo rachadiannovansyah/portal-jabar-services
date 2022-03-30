@@ -116,13 +116,13 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 }
 
 func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Request) (res []domain.MemberList, total int64, err error) {
-	queryUnion := `SELECT member.id, member.name, member.email, member.role_name 
+	queryUnion := `SELECT member.id, member.name, member.email, member.role_name , member.status, member.last_active
 	FROM (
-		select users.id, users.name, users.email, roles.name as role_name
+		select users.id, users.name, users.email, roles.name as role_name, "active" as status, users.last_active
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, ""
+		SELECT id, null, email, "Member", "waiting confirmation", null
 		FROM registration_invitations
 	) member`
 
@@ -148,7 +148,7 @@ func (m *mysqlUserRepository) MemberList(ctx context.Context, params *domain.Req
 									UNION ALL
 									SELECT id
 									FROM registration_invitations
-							) member ORDER BY id ASC;`)
+							) member ORDER BY id ASC`)
 
 	queryUnion = queryUnion + ` LIMIT ?,? `
 
@@ -182,6 +182,8 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Name,
 			&t.Email,
 			&t.Role,
+			&t.Status,
+			&t.LastActive,
 		)
 
 		if err != nil {
@@ -203,4 +205,12 @@ func (m *mysqlUserRepository) count(ctx context.Context, query string) (total in
 	}
 
 	return total, nil
+}
+
+func (m *mysqlUserRepository) WriteLastActive(ctx context.Context, time time.Time, user *domain.User) (err error) {
+	query := `UPDATE users SET last_active = ? WHERE id = ?`
+
+	_, err = m.Conn.ExecContext(ctx, query, time, user.ID)
+
+	return
 }
