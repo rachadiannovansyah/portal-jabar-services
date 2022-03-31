@@ -206,14 +206,3 @@ func (h *UserHandler) CheckNipExists(c echo.Context) error {
 		"exist": res,
 	})
 }
-
-// func (h *UserHandler) GetUserById(c echo.Context) error {
-// 	ctx := c.Request().Context()
-
-// 	member, err := h.UUsecase.GetUserByID(ctx, c.Param("id"))
-// 	if err != nil {
-// 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
-// 	}
-
-// 	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &member})
-// }
