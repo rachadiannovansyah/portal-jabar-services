@@ -3,6 +3,8 @@ package http
 import (
 	"net/http"
 
+	uuid "github.com/google/uuid"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
@@ -27,7 +29,8 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.PUT("/users/me/change-password", handler.ChangePassword)
 	r.PUT("/users/me/account-submission", handler.AccountSubmission)
 	e.POST("/users/register", handler.Register)
-	r.GET("/users/member", handler.MemberList)
+	r.GET("/users", handler.UserList)
+	r.GET("/users/:id", handler.GetByID)
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -93,6 +96,22 @@ func (h *UserHandler) UserProfile(c echo.Context) error {
 	return c.JSON(http.StatusOK, &domain.ResultsData{Data: helpers.MapUserInfo(res)})
 }
 
+func (h *UserHandler) GetByID(c echo.Context) error {
+	ctx := c.Request().Context()
+	reqId := uuid.MustParse(c.Param("id"))
+
+	member, err := h.UUsecase.GetUserByID(ctx, reqId)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// Copy slice to slice
+	UserDetailRes := []domain.UserDetailResponse{}
+	copier.Copy(&UserDetailRes, &member)
+
+	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &UserDetailRes})
+}
+
 func (h *UserHandler) ChangePassword(c echo.Context) error {
 	req := new(domain.ChangePasswordRequest)
 	if err := c.Bind(req); err != nil {
@@ -148,17 +167,21 @@ func (h *UserHandler) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]string{"message": "register success"})
 }
 
-func (h *UserHandler) MemberList(c echo.Context) error {
+func (h *UserHandler) UserList(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	params := helpers.GetRequestParams(c)
 
-	memberList, total, err := h.UUsecase.MemberList(ctx, &params)
+	list, total, err := h.UUsecase.UserList(ctx, &params)
 	if err != nil {
 		return err
 	}
 
-	res := helpers.Paginate(c, memberList, total, params)
+	// Copy slice to slice
+	UserListRes := []domain.UserListResponse{}
+	copier.Copy(&UserListRes, &list)
+
+	res := helpers.Paginate(c, UserListRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
 }

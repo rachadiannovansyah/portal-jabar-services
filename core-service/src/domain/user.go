@@ -15,6 +15,8 @@ type User struct {
 	Email               string     `json:"email" validate:"omitempty,required,max=64"`
 	Password            string     `json:"password"`
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
+	LastActive          *time.Time `json:"last_active"`
+	Status              string     `json:"status"`
 	Nip                 *string    `json:"nip" validate:"omitempty,len=0|len=18"`
 	Occupation          *string    `json:"occupation" validate:"omitempty,max=35"`
 	Photo               *string    `json:"photo" validate:"omitempty,max=255"`
@@ -41,15 +43,29 @@ type UserInfo struct {
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
-type MemberList struct {
+// UserListResponse ...
+type UserListResponse struct {
 	ID         uuid.UUID  `json:"id"`
-	Name       *string    `json:"name"`
+	Name       string     `json:"name"`
 	Email      string     `json:"email"`
-	Role       string     `json:"role"`
+	Role       RoleInfo   `json:"role"`
 	LastActive *time.Time `json:"last_active"`
 	Status     string     `json:"status"`
 }
 
+// UserDetailResponse ...
+type UserDetailResponse struct {
+	ID         uuid.UUID  `json:"id"`
+	Name       string     `json:"name"`
+	Email      string     `json:"email"`
+	Role       RoleInfo   `json:"role"`
+	LastActive *time.Time `json:"last_active"`
+	Status     string     `json:"status"`
+	Occupation *string    `json:"occupation"`
+	Nip        *string    `json:"nip"`
+}
+
+// AccountSubmission ...
 type AccountSubmission struct {
 	ID   int64  `json:"id"`
 	Role string `json:"role"`
@@ -78,8 +94,9 @@ type UserRepository interface {
 	GetByEmail(ctx context.Context, email string) (User, error)
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
-	MemberList(context.Context, *Request) ([]MemberList, int64, error)
 	WriteLastActive(context.Context, time.Time, *User) error
+	UserList(context.Context, *Request) ([]User, int64, error)
+	GetUserByID(context.Context, uuid.UUID) (User, error)
 }
 
 // UserUsecase ...
@@ -91,5 +108,6 @@ type UserUsecase interface {
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
-	MemberList(ctx context.Context, params *Request) (res []MemberList, total int64, err error)
+	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)
 }
