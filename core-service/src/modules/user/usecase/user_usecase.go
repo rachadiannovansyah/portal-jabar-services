@@ -222,14 +222,40 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 	return
 }
 
-func (u *userUsecase) MemberList(ctx context.Context, params *domain.Request) (res []domain.Member, total int64, err error) {
+func (u *userUsecase) UserList(ctx context.Context, params *domain.Request) (res []domain.User, total int64, err error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
-	res, total, err = u.userRepo.MemberList(ctx, params)
+	res, total, err = u.userRepo.UserList(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}
+
+	// looping user to assign roles object
+	for key, user := range res {
+		role, err := u.roleRepo.GetByID(ctx, user.Role.ID)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		res[key].Role = helpers.GetRoleInfo(role)
+	}
+
+	return
+}
+
+// GetUserByID will find an object by given id
+func (u *userUsecase) GetUserByID(c context.Context, id uuid.UUID) (res domain.User, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.userRepo.GetUserByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	role, _ := u.roleRepo.GetByID(ctx, res.Role.ID)
+	res.Role = helpers.GetRoleInfo(role)
 
 	return
 }
@@ -246,19 +272,6 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 
 	if user.Nip != nil {
 		res = true
-	}
-
-	return
-}
-
-// GetMemberByID will find an object by given id
-func (u *userUsecase) GetMemberByID(c context.Context, id string) (res domain.Member, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, err = u.userRepo.GetMemberByID(ctx, id)
-	if err != nil {
-		return
 	}
 
 	return
