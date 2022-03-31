@@ -31,6 +31,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	e.POST("/users/register", handler.Register)
 	r.GET("/users", handler.UserList)
 	r.GET("/users/:id", handler.GetByID)
+	r.PUT("/users/:id/set-as-admin", handler.SetAsAdmin)
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -205,4 +206,27 @@ func (h *UserHandler) CheckNipExists(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"exist": res,
 	})
+}
+
+func (h *UserHandler) SetAsAdmin(c echo.Context) error {
+	req := new(domain.CheckPasswordRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	roleID := int8(3)
+	userID := uuid.MustParse(c.Param("id"))
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+
+	err := h.UUsecase.SetAsAdmin(ctx, au.ID, req, userID, roleID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "role changed"})
 }

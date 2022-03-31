@@ -276,3 +276,22 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 
 	return
 }
+
+func (n *userUsecase) SetAsAdmin(c context.Context, currUser uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID, roleID int8) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	user, err := n.userRepo.GetByID(ctx, currUser)
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		return err
+	}
+
+	err = n.userRepo.SetAsAdmin(ctx, userID, roleID)
+
+	return
+}
