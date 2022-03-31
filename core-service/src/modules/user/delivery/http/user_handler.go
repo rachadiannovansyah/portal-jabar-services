@@ -106,7 +106,7 @@ func (h *UserHandler) GetByID(c echo.Context) error {
 	}
 
 	// Copy slice to slice
-	UserDetailRes := []domain.UserDetailResponse{}
+	UserDetailRes := domain.UserDetailResponse{}
 	copier.Copy(&UserDetailRes, &member)
 
 	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &UserDetailRes})
