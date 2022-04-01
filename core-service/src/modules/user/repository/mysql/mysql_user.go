@@ -252,3 +252,18 @@ func (m *mysqlUserRepository) SetAsAdmin(ctx context.Context, id uuid.UUID, role
 
 	return
 }
+
+func (m *mysqlUserRepository) ChangeEmail(ctx context.Context, id uuid.UUID, email string) (err error) {
+	query := `UPDATE users SET email=? WHERE id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, email, id)
+	if err != nil {
+		return
+	}
+
+	return
+}

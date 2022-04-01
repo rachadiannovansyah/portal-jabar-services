@@ -84,7 +84,8 @@ type ChangePasswordRequest struct {
 }
 
 type CheckPasswordRequest struct {
-	Password string `json:"password"`
+	NewEmail string `json:"new_email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type CheckNipExistRequest struct {
@@ -102,6 +103,7 @@ type UserRepository interface {
 	UserList(context.Context, *Request) ([]User, int64, error)
 	GetUserByID(context.Context, uuid.UUID) (User, error)
 	SetAsAdmin(context.Context, uuid.UUID, int8) error
+	ChangeEmail(context.Context, uuid.UUID, string) error
 }
 
 // UserUsecase ...
@@ -116,4 +118,5 @@ type UserUsecase interface {
 	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)
 	SetAsAdmin(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID, int8) error
+	ChangeEmail(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 }
