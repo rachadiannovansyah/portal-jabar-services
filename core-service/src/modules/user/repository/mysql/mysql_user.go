@@ -237,3 +237,18 @@ func (m *mysqlUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (re
 
 	return
 }
+
+func (m *mysqlUserRepository) SetAsAdmin(ctx context.Context, id uuid.UUID, role int8) (err error) {
+	query := `UPDATE users SET role_id=? WHERE id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, role, id)
+	if err != nil {
+		return
+	}
+
+	return
+}

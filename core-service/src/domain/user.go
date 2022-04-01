@@ -83,6 +83,10 @@ type ChangePasswordRequest struct {
 	NewPassword     string `json:"new_password" validate:"required"`
 }
 
+type CheckPasswordRequest struct {
+	Password string `json:"password"`
+}
+
 type CheckNipExistRequest struct {
 	Nip *string `json:"nip" validate:"len=18"`
 }
@@ -97,6 +101,7 @@ type UserRepository interface {
 	WriteLastActive(context.Context, time.Time, *User) error
 	UserList(context.Context, *Request) ([]User, int64, error)
 	GetUserByID(context.Context, uuid.UUID) (User, error)
+	SetAsAdmin(context.Context, uuid.UUID, int8) error
 }
 
 // UserUsecase ...
@@ -110,4 +115,5 @@ type UserUsecase interface {
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
 	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)
+	SetAsAdmin(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID, int8) error
 }
