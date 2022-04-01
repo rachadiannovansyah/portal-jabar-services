@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -312,6 +313,10 @@ func (n *userUsecase) ChangeEmail(c context.Context, id uuid.UUID, req *domain.C
 	_, err = n.isValidUser(ctx, req, id)
 	if err != nil {
 		return
+	}
+
+	if u, _ := n.userRepo.GetByEmail(ctx, req.NewEmail); u.Email != "" {
+		return errors.New("email already registered")
 	}
 
 	err = n.userRepo.ChangeEmail(ctx, userID, req.NewEmail)
