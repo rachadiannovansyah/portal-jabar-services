@@ -24,12 +24,12 @@ var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password
 	u.unit_id, u.role_id, un.name as unit_name FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
 var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_id , member.status, member.last_active, member.occupation, member.nip
 	FROM (
-		select users.id, users.name, users.email, roles.id as role_id, "active" as status, users.last_active,
+		select users.id, users.name, users.email, roles.id as role_id, users.status, users.last_active,
 		users.occupation, users.nip
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, 4, "waiting confirmation", null, null, null
+		SELECT id, "", email, 4, "PENDING", null, null, null
 		FROM registration_invitations
 	) member WHERE 1=1`
 
@@ -268,14 +268,14 @@ func (m *mysqlUserRepository) ChangeEmail(ctx context.Context, id uuid.UUID, ema
 	return
 }
 
-func (m *mysqlUserRepository) ActivateAccount(ctx context.Context, id uuid.UUID, isActive bool) (err error) {
-	query := `UPDATE users SET is_active = ? WHERE id = ?`
+func (m *mysqlUserRepository) ActivateAccount(ctx context.Context, id uuid.UUID, status string) (err error) {
+	query := `UPDATE users SET status = ? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	_, err = stmt.ExecContext(ctx, isActive, id)
+	_, err = stmt.ExecContext(ctx, status, id)
 	if err != nil {
 		return
 	}

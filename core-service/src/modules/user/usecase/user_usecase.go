@@ -338,7 +338,7 @@ func (n *userUsecase) ActivateAccount(c context.Context, id uuid.UUID, req *doma
 		return
 	}
 
-	err = n.userRepo.ActivateAccount(ctx, userID, req.IsActive)
+	err = n.userRepo.ActivateAccount(ctx, userID, req.Status)
 
 	return
 }

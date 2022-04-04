@@ -16,7 +16,6 @@ type User struct {
 	Password            string     `json:"password"`
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 	LastActive          *time.Time `json:"last_active"`
-	IsActive            bool       `json:"is_active"`
 	Status              string     `json:"status"`
 	Nip                 *string    `json:"nip" validate:"omitempty,len=0|len=18"`
 	Occupation          *string    `json:"occupation" validate:"omitempty,max=35"`
@@ -87,7 +86,7 @@ type ChangePasswordRequest struct {
 type CheckPasswordRequest struct {
 	Password string `json:"password" validate:"required"`
 	NewEmail string `json:"new_email"`
-	IsActive bool   `json:"is_active"`
+	Status   string `json:"status" validate:"required,eq=ACTIVE|eq=INACTIVE|eq=PENDING"`
 }
 
 type CheckNipExistRequest struct {
@@ -106,7 +105,7 @@ type UserRepository interface {
 	GetUserByID(context.Context, uuid.UUID) (User, error)
 	SetAsAdmin(context.Context, uuid.UUID, int8) error
 	ChangeEmail(context.Context, uuid.UUID, string) error
-	ActivateAccount(context.Context, uuid.UUID, bool) error
+	ActivateAccount(context.Context, uuid.UUID, string) error
 }
 
 // UserUsecase ...
