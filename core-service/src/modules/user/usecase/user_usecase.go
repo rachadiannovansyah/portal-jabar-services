@@ -315,11 +315,16 @@ func (n *userUsecase) ChangeEmail(c context.Context, id uuid.UUID, req *domain.C
 		return
 	}
 
-	if u, _ := n.userRepo.GetByEmail(ctx, req.NewEmail); u.Email != "" {
+	newEmail := req.NewEmail
+	if _, ok := helpers.IsValidMailAddress(newEmail); !ok {
+		return errors.New("invalid email format")
+	}
+
+	if u, _ := n.userRepo.GetByEmail(ctx, newEmail); u.Email != "" {
 		return errors.New("email already registered")
 	}
 
-	err = n.userRepo.ChangeEmail(ctx, userID, req.NewEmail)
+	err = n.userRepo.ChangeEmail(ctx, userID, newEmail)
 
 	return
 }
