@@ -267,3 +267,18 @@ func (m *mysqlUserRepository) ChangeEmail(ctx context.Context, id uuid.UUID, ema
 
 	return
 }
+
+func (m *mysqlUserRepository) ActivateAccount(ctx context.Context, id uuid.UUID, isActive bool) (err error) {
+	query := `UPDATE users SET is_active = ? WHERE id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, isActive, id)
+	if err != nil {
+		return
+	}
+
+	return
+}

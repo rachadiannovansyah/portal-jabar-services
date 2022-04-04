@@ -33,6 +33,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.GET("/users/:id", handler.GetByID)
 	r.PUT("/users/:id/set-as-admin", handler.SetAsAdmin)
 	r.PUT("/users/:id/change-email", handler.ChangeEmail)
+	r.PUT("/users/:id/activate-account", handler.ActivateAccount)
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -252,4 +253,26 @@ func (h *UserHandler) ChangeEmail(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "email changed"})
+}
+
+func (h *UserHandler) ActivateAccount(c echo.Context) error {
+	req := new(domain.CheckPasswordRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+	userID := uuid.MustParse(c.Param("id"))
+
+	err := h.UUsecase.ActivateAccount(ctx, au.ID, req, userID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "account status changed"})
 }
