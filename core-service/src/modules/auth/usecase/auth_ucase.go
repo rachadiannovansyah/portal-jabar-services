@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
@@ -20,16 +18,19 @@ type authUsecase struct {
 	userRepo       domain.UserRepository
 	unitRepo       domain.UnitRepository
 	roleRepo       domain.RoleRepository
+	rolePermRepo   domain.RolePermissionRepository
 	contextTimeout time.Duration
 }
 
 // NewAuthUsecase will create new an authUsecase object representation of domain.AuthUsecase interface
-func NewAuthUsecase(c *config.Config, u domain.UserRepository, un domain.UnitRepository, r domain.RoleRepository, timeout time.Duration) domain.AuthUsecase {
+func NewAuthUsecase(c *config.Config, u domain.UserRepository, un domain.UnitRepository,
+	r domain.RoleRepository, rp domain.RolePermissionRepository, timeout time.Duration) domain.AuthUsecase {
 	return &authUsecase{
 		config:         c,
 		userRepo:       u,
 		unitRepo:       un,
 		roleRepo:       r,
+		rolePermRepo:   rp,
 		contextTimeout: timeout,
 	}
 }
@@ -42,13 +43,17 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 	}
 }
 
-func (n *authUsecase) createAccessToken(user *domain.User) (accessToken string, exp int64, err error) {
+func (n *authUsecase) createAccessToken(user *domain.User, permission []string) (accessToken string, exp int64, err error) {
 	exp = time.Now().Add(time.Second * n.config.JWT.TTL).Unix()
+
+	//
+
 	claims := &domain.JwtCustomClaims{
-		ID:    user.ID,
-		Email: user.Email,
-		Unit:  user.Unit,
-		Role:  user.Role,
+		ID:          user.ID,
+		Email:       user.Email,
+		Unit:        user.Unit,
+		Role:        user.Role,
+		Permissions: permission,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
 		},
@@ -88,7 +93,8 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 		return domain.LoginResponse{}, domain.ErrInvalidCredentials
 	}
 
-	accessToken, exp, err := n.createAccessToken(&user)
+	permissions, _ := n.rolePermRepo.GetPermissionsByRoleID(ctx, user.Role.ID)
+	accessToken, exp, err := n.createAccessToken(&user, permissions)
 	if err != nil {
 		return domain.LoginResponse{}, err
 	}
@@ -134,7 +140,8 @@ func (n *authUsecase) RefreshToken(c context.Context, req *domain.RefreshRequest
 		return domain.LoginResponse{}, err
 	}
 
-	accessToken, exp, err := n.createAccessToken(&user)
+	permissions, _ := n.rolePermRepo.GetPermissionsByRoleID(ctx, user.Role.ID)
+	accessToken, exp, err := n.createAccessToken(&user, permissions)
 	if err != nil {
 		return domain.LoginResponse{}, err
 	}
@@ -146,23 +153,11 @@ func (n *authUsecase) RefreshToken(c context.Context, req *domain.RefreshRequest
 	return
 }
 
-func (n *authUsecase) UserProfile(c context.Context, id uuid.UUID) (res domain.User, err error) {
-
+func (n *authUsecase) GetPermissionsByRoleID(c context.Context, roleID int8) (res []string, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
-
-	res, err = n.userRepo.GetByID(ctx, id)
-
-	if err != nil {
-		return
-	}
-
-	unit, _ := n.unitRepo.GetByID(ctx, res.Unit.ID)
-	role, _ := n.roleRepo.GetByID(ctx, res.Role.ID)
-
-	res.Unit = helpers.GetUnitInfo(unit)
-	res.Role = helpers.GetRoleInfo(role)
-
 	defer cancel()
+
+	res, err = n.rolePermRepo.GetPermissionsByRoleID(ctx, roleID)
 
 	return
 }
