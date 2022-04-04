@@ -16,6 +16,7 @@ type User struct {
 	Password            string     `json:"password"`
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 	LastActive          *time.Time `json:"last_active"`
+	IsActive            bool       `json:"is_active"`
 	Status              string     `json:"status"`
 	Nip                 *string    `json:"nip" validate:"omitempty,len=0|len=18"`
 	Occupation          *string    `json:"occupation" validate:"omitempty,max=35"`

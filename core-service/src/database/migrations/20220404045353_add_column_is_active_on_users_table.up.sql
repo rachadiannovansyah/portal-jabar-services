@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN is_active BOOLEAN NULL AFTER last_active;
