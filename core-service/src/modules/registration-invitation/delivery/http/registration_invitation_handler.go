@@ -3,6 +3,8 @@ package http
 import (
 	"net/http"
 
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
+
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/labstack/echo/v4"
@@ -16,7 +18,7 @@ func NewRegistrationInvitationHandler(e *echo.Group, r *echo.Group, us domain.Re
 	handler := &RegistrationInvitationHandler{
 		IUsecase: us,
 	}
-	r.POST("/registration-invitations", handler.Invite)
+	r.POST("/registration-invitations", handler.Invite, middl.CheckPermission(domain.PermissionInviteUser))
 	e.POST("/registration-invitations/authorize", handler.Authorize)
 }
 

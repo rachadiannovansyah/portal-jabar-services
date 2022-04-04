@@ -8,11 +8,12 @@ import (
 )
 
 type JwtCustomClaims struct {
-	ID    uuid.UUID `json:"id"`
-	Name  string    `json:"name"`
-	Email string    `json:"email"`
-	Unit  UnitInfo  `json:"unit"`
-	Role  RoleInfo  `json:"role"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	Unit        UnitInfo  `json:"unit"`
+	Role        RoleInfo  `json:"role"`
+	Permissions []string  `json:"permissions"`
 	jwt.StandardClaims
 }
 
@@ -41,5 +42,5 @@ type LoginResponse struct {
 type AuthUsecase interface {
 	Login(ctx context.Context, req *LoginRequest) (LoginResponse, error)
 	RefreshToken(ctx context.Context, req *RefreshRequest) (LoginResponse, error)
-	UserProfile(ctx context.Context, id uuid.UUID) (User, error)
+	GetPermissionsByRoleID(ctx context.Context, id int8) ([]string, error)
 }

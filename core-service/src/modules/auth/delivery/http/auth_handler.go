@@ -1,11 +1,10 @@
 package http
 
 import (
-	"github.com/jinzhu/copier"
-	"github.com/labstack/echo/v4"
-	"github.com/mitchellh/mapstructure"
-	"gopkg.in/go-playground/validator.v9"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -24,7 +23,7 @@ func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase) {
 
 	e.POST("/auth/login", handler.Login)
 	e.POST("/auth/refresh", handler.RefreshToken)
-	r.GET("/auth/me", handler.UserProfile)
+	r.GET("/auth/permissions", handler.GetPermissions)
 }
 
 func isRequestValid(f *domain.LoginRequest) (bool, error) {
@@ -73,20 +72,14 @@ func (h *AuthHandler) RefreshToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (h *AuthHandler) UserProfile(c echo.Context) error {
+func (h *AuthHandler) GetPermissions(c echo.Context) error {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
-	// FIXME: authenticated variables must be global variables to be accessible everywhere
-	auth := domain.JwtCustomClaims{}
-	mapstructure.Decode(c.Get("auth:user"), &auth)
-
-	res, err := h.AUsecase.UserProfile(ctx, auth.ID)
+	res, err := h.AUsecase.GetPermissionsByRoleID(ctx, au.Role.ID)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	userinfo := domain.UserInfo{}
-	copier.Copy(&userinfo, &res)
-
-	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &userinfo})
+	return c.JSON(http.StatusOK, map[string]interface{}{"permissions": res})
 }
