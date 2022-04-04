@@ -84,8 +84,8 @@ type ChangePasswordRequest struct {
 }
 
 type CheckPasswordRequest struct {
-	NewEmail string `json:"new_email" validate:"required"`
 	Password string `json:"password" validate:"required"`
+	NewEmail string `json:"new_email"`
 }
 
 type CheckNipExistRequest struct {
