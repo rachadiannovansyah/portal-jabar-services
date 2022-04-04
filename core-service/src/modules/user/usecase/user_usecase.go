@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -43,6 +44,20 @@ func encryptPassword(password string) (string, error) {
 	}
 
 	return string(encryptedPassword), nil
+}
+
+func (n *userUsecase) isValidUser(ctx context.Context, req *domain.CheckPasswordRequest, id uuid.UUID) (ok bool, err error) {
+	user, err := n.userRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (u *userUsecase) Store(c context.Context, usr *domain.User) (err error) {
@@ -277,21 +292,39 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 	return
 }
 
-func (n *userUsecase) SetAsAdmin(c context.Context, currUser uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID, roleID int8) (err error) {
+func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID, roleID int8) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	user, err := n.userRepo.GetByID(ctx, currUser)
+	_, err = n.isValidUser(ctx, req, id)
 	if err != nil {
-		return err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
-	if err != nil {
-		return err
+		return
 	}
 
 	err = n.userRepo.SetAsAdmin(ctx, userID, roleID)
+
+	return
+}
+
+func (n *userUsecase) ChangeEmail(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	_, err = n.isValidUser(ctx, req, id)
+	if err != nil {
+		return
+	}
+
+	newEmail := req.NewEmail
+	if _, ok := helpers.IsValidMailAddress(newEmail); !ok {
+		return errors.New("invalid email format")
+	}
+
+	if u, _ := n.userRepo.GetByEmail(ctx, newEmail); u.Email != "" {
+		return errors.New("email already registered")
+	}
+
+	err = n.userRepo.ChangeEmail(ctx, userID, newEmail)
 
 	return
 }
