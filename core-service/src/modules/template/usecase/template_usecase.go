@@ -2,11 +2,11 @@ package usecase
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type templateUsecase struct {
@@ -38,9 +38,7 @@ func (m *templateUsecase) GetByTemplate(ctx context.Context, id uuid.UUID, key s
 	}
 
 	// append for response get account submission
-	bodyTmp := res.Body
-	bodyTmp = strings.ReplaceAll(bodyTmp, "{name}", user.Name)
-	bodyTmp = strings.ReplaceAll(bodyTmp, "{unitName}", user.UnitName)
+	bodyTmp := helpers.ReplaceBodyParams(res.Body, []string{user.Name, user.UnitName})
 
 	res.Body = bodyTmp
 
