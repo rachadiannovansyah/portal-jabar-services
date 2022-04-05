@@ -292,7 +292,7 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 	return
 }
 
-func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID, roleID int8) (err error) {
+func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
@@ -301,7 +301,8 @@ func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.Ch
 		return
 	}
 
-	err = n.userRepo.SetAsAdmin(ctx, userID, roleID)
+	var RoleAdmin int8 = 3
+	err = n.userRepo.SetAsAdmin(ctx, userID, RoleAdmin)
 
 	return
 }

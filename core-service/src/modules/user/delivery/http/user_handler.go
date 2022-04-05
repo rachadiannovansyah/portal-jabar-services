@@ -220,12 +220,11 @@ func (h *UserHandler) SetAsAdmin(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
-	roleID := int8(3)
 	userID := uuid.MustParse(c.Param("id"))
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 
-	err := h.UUsecase.SetAsAdmin(ctx, au.ID, req, userID, roleID)
+	err := h.UUsecase.SetAsAdmin(ctx, au.ID, req, userID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
