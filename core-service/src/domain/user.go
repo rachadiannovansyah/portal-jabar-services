@@ -85,8 +85,8 @@ type ChangePasswordRequest struct {
 
 type CheckPasswordRequest struct {
 	Password string `json:"password" validate:"required"`
-	NewEmail string `json:"new_email"`
-	Status   string `json:"status" validate:"required,eq=ACTIVE|eq=INACTIVE|eq=PENDING"`
+	NewEmail string `json:"new_email" validate:"omitempty,required"`
+	Status   string `json:"status" validate:"omitempty,required,eq=ACTIVE|eq=INACTIVE|eq=PENDING"`
 }
 
 type CheckNipExistRequest struct {
