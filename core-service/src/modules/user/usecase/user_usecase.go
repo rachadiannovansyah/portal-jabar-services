@@ -208,7 +208,6 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 		return domain.ErrDuplicateNIP
 	}
 
-	var RoleContributor int8 = 4
 	encryptedPassword, err := encryptPassword(req.Password)
 	if err != nil {
 		return err
@@ -223,7 +222,7 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 		Nip:        &nip,
 		Occupation: &occupation,
 		Unit:       domain.UnitInfo{ID: regInvitation.UnitID},
-		Role:       domain.RoleInfo{ID: RoleContributor},
+		Role:       domain.RoleInfo{ID: domain.RoleContributor},
 		Password:   string(encryptedPassword),
 	}
 
@@ -292,7 +291,7 @@ func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool
 	return
 }
 
-func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID, roleID int8) (err error) {
+func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
@@ -301,7 +300,7 @@ func (n *userUsecase) SetAsAdmin(c context.Context, id uuid.UUID, req *domain.Ch
 		return
 	}
 
-	err = n.userRepo.SetAsAdmin(ctx, userID, roleID)
+	err = n.userRepo.SetAsAdmin(ctx, userID, domain.RoleAdministrator)
 
 	return
 }
