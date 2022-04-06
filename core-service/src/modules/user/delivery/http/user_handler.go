@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	uuid "github.com/google/uuid"
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -27,13 +28,13 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.GET("/users/me", handler.UserProfile)
 	r.PUT("/users/me", handler.UpdateProfile)
 	r.PUT("/users/me/change-password", handler.ChangePassword)
-	r.PUT("/users/me/account-submission", handler.AccountSubmission)
+	r.PUT("/users/me/account-submission", handler.AccountSubmission, middl.CheckPermission(domain.PermissionRequestToBeAdmin))
 	e.POST("/users/register", handler.Register)
-	r.GET("/users", handler.UserList)
-	r.GET("/users/:id", handler.GetByID)
-	r.PUT("/users/:id/set-as-admin", handler.SetAsAdmin)
-	r.PUT("/users/:id/change-email", handler.ChangeEmail)
-	r.PUT("/users/:id/activate-account", handler.ActivateAccount)
+	r.GET("/users", handler.UserList, middl.CheckPermission(domain.PermissionManageUser))
+	r.GET("/users/:id", handler.GetByID, middl.CheckPermission(domain.PermissionManageUser))
+	r.PUT("/users/:id/set-as-admin", handler.SetAsAdmin, middl.CheckPermission(domain.PermissionSetAsAdmin))
+	r.PUT("/users/:id/change-email", handler.ChangeEmail, middl.CheckPermission(domain.PermissionChangeEmail))
+	r.PUT("/users/:id/activate-account", handler.ActivateAccount, middl.CheckPermission(domain.PermissionActivateAccount))
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
