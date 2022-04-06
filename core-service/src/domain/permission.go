@@ -1,10 +1,12 @@
 package domain
 
 const (
+	PermissionManageNews       = "news.manage"
+	PermissionManageEvent      = "event.manage"
+	PermissionManageUser       = "user.manage"
 	PermissionInviteUser       = "user.invite"
-	PermissionSetAsAdmin       = "user.set_as_admin"
-	PermissionChangeEmail      = "user.change_email"
-	PermissionActivateAccount  = "user.activate_account"
-	PermissionManageUser       = "user.manage_user"
-	PermissionRequestToBeAdmin = "user.request_to_be_admin"
+	PermissionSetAsAdmin       = "user.set-as-admin"
+	PermissionChangeEmail      = "user.change-email"
+	PermissionActivateAccount  = "user.activate-account"
+	PermissionRequestToBeAdmin = "user.request-to-be-admin"
 )
