@@ -1,6 +1,6 @@
 package domain
 
-var (
+const (
 	PermissionInviteUser       = "user.invite"
 	PermissionSetAsAdmin       = "user.set_as_admin"
 	PermissionChangeEmail      = "user.change_email"
