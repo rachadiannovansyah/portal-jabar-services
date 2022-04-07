@@ -12,6 +12,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 )
 
 // NewsHandler ...
@@ -33,17 +34,22 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	handler := &NewsHandler{
 		CUsecase: us,
 	}
-	e.GET("/news", handler.FetchNews)
-	r.POST("/news", handler.Store)
-	e.GET("/news/:id", handler.GetByID)
-	r.PUT("/news/:id", handler.Update)
-	r.PATCH("/news/:id/status", handler.UpdateStatus)
+	permManageNews := domain.PermissionManageNews
+
+	// Cms ...
+	e.GET("/news", handler.FetchNews) // TO DO separate this endpoint to fetch between CMS and PORTAL
+	r.POST("/news", handler.Store, middl.CheckPermission(permManageNews))
+	r.GET("/news/:id", handler.GetByID, middl.CheckPermission(permManageNews))
+	r.PUT("/news/:id", handler.Update, middl.CheckPermission(permManageNews))
+	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
+	r.PATCH("/news/:id/status", handler.UpdateStatus) // TO DO permission update status has multiple values
 	e.GET("/news/slug/:slug", handler.GetBySlug)
+	e.GET("/news/tabs", handler.TabStatus)
+
+	// Portal ...
 	e.GET("/news/banner", handler.FetchNewsBanner)
 	e.GET("/news/headline", handler.FetchNewsHeadline)
 	e.PATCH("/news/:id/share", handler.AddShare)
-	e.GET("/news/tabs", handler.TabStatus)
-	e.DELETE("/news/:id", handler.Delete)
 }
 
 // FetchNews will fetch the content based on given params

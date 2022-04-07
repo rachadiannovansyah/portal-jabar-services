@@ -8,6 +8,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -23,12 +24,16 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 	handler := &EventHandler{
 		EventUcase: us,
 	}
+	permManageEvent := domain.PermissionManageEvent
 
-	e.GET("/events", handler.Fetch)
-	e.GET("/events/:id", handler.GetByID)
-	r.POST("/events", handler.Store)
-	e.DELETE("/events/:id", handler.Delete)
-	e.PUT("/events/:id", handler.Update)
+	// Cms ...
+	r.GET("/events", handler.Fetch, middl.CheckPermission(permManageEvent))
+	r.GET("/events/:id", handler.GetByID, middl.CheckPermission(permManageEvent))
+	r.POST("/events", handler.Store, middl.CheckPermission(permManageEvent))
+	r.DELETE("/events/:id", handler.Delete, middl.CheckPermission(permManageEvent))
+	r.PUT("/events/:id", handler.Update, middl.CheckPermission(permManageEvent))
+
+	// Portal ...
 	e.GET("/events/calendar", handler.AgendaCalendar)
 	e.GET("/events/portal", handler.AgendaPortal)
 }
