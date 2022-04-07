@@ -7,6 +7,6 @@ const (
 	PermissionInviteUser       = "user.invite"
 	PermissionSetAsAdmin       = "user.set-as-admin"
 	PermissionChangeEmail      = "user.change-email"
-	PermissionActivateAccount  = "user.activate-account"
+	PermissionChangeStatus     = "user.change-status"
 	PermissionRequestToBeAdmin = "user.request-to-be-admin"
 )

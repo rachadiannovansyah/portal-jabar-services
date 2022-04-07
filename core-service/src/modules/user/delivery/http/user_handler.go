@@ -34,7 +34,7 @@ func NewUserHandler(e *echo.Group, r *echo.Group, uu domain.UserUsecase) {
 	r.GET("/users/:id", handler.GetByID, middl.CheckPermission(domain.PermissionManageUser))
 	r.PUT("/users/:id/set-as-admin", handler.SetAsAdmin, middl.CheckPermission(domain.PermissionSetAsAdmin))
 	r.PUT("/users/:id/change-email", handler.ChangeEmail, middl.CheckPermission(domain.PermissionChangeEmail))
-	r.PUT("/users/:id/activate-account", handler.ActivateAccount, middl.CheckPermission(domain.PermissionActivateAccount))
+	r.PUT("/users/:id/change-status", handler.ChangeStatus, middl.CheckPermission(domain.PermissionChangeStatus))
 	e.POST("/users/check-nip-exists", handler.CheckNipExists)
 }
 
@@ -255,7 +255,7 @@ func (h *UserHandler) ChangeEmail(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "email changed"})
 }
 
-func (h *UserHandler) ActivateAccount(c echo.Context) error {
+func (h *UserHandler) ChangeStatus(c echo.Context) error {
 	req := new(domain.CheckPasswordRequest)
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
@@ -269,7 +269,7 @@ func (h *UserHandler) ActivateAccount(c echo.Context) error {
 	au := helpers.GetAuthenticatedUser(c)
 	userID := uuid.MustParse(c.Param("id"))
 
-	err := h.UUsecase.ActivateAccount(ctx, au.ID, req, userID)
+	err := h.UUsecase.ChangeStatus(ctx, au.ID, req, userID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}

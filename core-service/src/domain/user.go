@@ -105,7 +105,7 @@ type UserRepository interface {
 	GetUserByID(context.Context, uuid.UUID) (User, error)
 	SetAsAdmin(context.Context, uuid.UUID, int8) error
 	ChangeEmail(context.Context, uuid.UUID, string) error
-	ActivateAccount(context.Context, uuid.UUID, string) error
+	ChangeStatus(context.Context, uuid.UUID, string) error
 }
 
 // UserUsecase ...
@@ -121,5 +121,5 @@ type UserUsecase interface {
 	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)
 	SetAsAdmin(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 	ChangeEmail(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
-	ActivateAccount(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
+	ChangeStatus(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 }
