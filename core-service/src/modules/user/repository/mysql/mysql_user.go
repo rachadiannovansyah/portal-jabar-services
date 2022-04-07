@@ -268,7 +268,7 @@ func (m *mysqlUserRepository) ChangeEmail(ctx context.Context, id uuid.UUID, ema
 	return
 }
 
-func (m *mysqlUserRepository) ActivateAccount(ctx context.Context, id uuid.UUID, status string) (err error) {
+func (m *mysqlUserRepository) ChangeStatus(ctx context.Context, id uuid.UUID, status string) (err error) {
 	query := `UPDATE users SET status = ? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {

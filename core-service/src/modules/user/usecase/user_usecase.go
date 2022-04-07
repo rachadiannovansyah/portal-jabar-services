@@ -328,7 +328,7 @@ func (n *userUsecase) ChangeEmail(c context.Context, id uuid.UUID, req *domain.C
 	return
 }
 
-func (n *userUsecase) ActivateAccount(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID) (err error) {
+func (n *userUsecase) ChangeStatus(c context.Context, id uuid.UUID, req *domain.CheckPasswordRequest, userID uuid.UUID) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
@@ -337,7 +337,7 @@ func (n *userUsecase) ActivateAccount(c context.Context, id uuid.UUID, req *doma
 		return
 	}
 
-	err = n.userRepo.ActivateAccount(ctx, userID, req.Status)
+	err = n.userRepo.ChangeStatus(ctx, userID, req.Status)
 
 	return
 }
