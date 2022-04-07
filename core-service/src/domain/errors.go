@@ -15,6 +15,8 @@ var (
 	ErrInvalidCredentials = errors.New("Invalid credentials")
 	// ErrDuplicateNIP
 	ErrDuplicateNIP = errors.New("NIP already exists")
+	// ErrUserIsNotActive
+	ErrUserIsNotActive = errors.New("Your account is not active")
 )
 
 type ErrResponse struct {

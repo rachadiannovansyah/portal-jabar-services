@@ -89,6 +89,10 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 		return domain.LoginResponse{}, err
 	}
 
+	if user.Status != "ACTIVE" {
+		return domain.LoginResponse{}, domain.ErrUserIsNotActive
+	}
+
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)) != nil {
 		return domain.LoginResponse{}, domain.ErrInvalidCredentials
 	}
