@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+// Constanta Role
+const (
+	RoleSuperAdmin    int8 = 1
+	RoleGroupAdmin    int8 = 2
+	RoleAdministrator int8 = 3
+	RoleContributor   int8 = 4
+)
+
 // Role ...
 type Role struct {
 	ID          int8      `json:"id"`
