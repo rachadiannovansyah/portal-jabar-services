@@ -24,9 +24,10 @@ import (
 )
 
 // NewHandler will create a new handler for the given usecase
-func NewHandler(e *echo.Group, r *echo.Group, u *Usecases) {
+func NewHandler(e *echo.Group, p *echo.Group, r *echo.Group, u *Usecases) {
 	_areaHttpDelivery.NewAreaHandler(e, r, u.AreaUcase)
 	_newsHttpDelivery.NewNewsHandler(e, r, u.NewsUcase)
+	_newsHttpDelivery.NewPublicNewsHandler(p, u.NewsUcase)
 	_informationHttpDelivery.NewInformationHandler(e, r, u.InformationUcase)
 	_unitHttpDelivery.NewUnitHandler(e, r, u.UnitUcase)
 	_eventHttpDelivery.NewEventHandler(e, r, u.EventUcase)

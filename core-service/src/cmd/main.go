@@ -43,10 +43,11 @@ func main() {
 
 	// api v1
 	v1 := e.Group("/v1")
+	publicPath := v1.Group("/public")
 
 	// restricted group
-	r := v1.Group("")
-	r.Use(middL.JWT)
+	restrictedPath := v1.Group("")
+	restrictedPath.Use(middL.JWT)
 
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:              cfg.Sentry.DSN,
@@ -65,7 +66,7 @@ func main() {
 	// init repo category repo
 	mysqlRepos := server.NewRepository(conn)
 	usecases := server.NewUcase(cfg, conn, mysqlRepos, timeoutContext)
-	server.NewHandler(v1, r, usecases)
+	server.NewHandler(v1, publicPath, restrictedPath, usecases)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
