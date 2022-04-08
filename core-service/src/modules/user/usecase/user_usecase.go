@@ -323,6 +323,10 @@ func (n *userUsecase) ChangeEmail(c context.Context, id uuid.UUID, req *domain.C
 		return errors.New("email already registered")
 	}
 
+	if reg, _ := n.regInvitationRepo.GetByEmail(ctx, newEmail); reg.Email != "" {
+		return errors.New("email already registered on invitation")
+	}
+
 	err = n.userRepo.ChangeEmail(ctx, userID, newEmail)
 
 	return
