@@ -12,6 +12,7 @@ import (
 
 // Config is the struct for the config
 type Config struct {
+	App      AppConfig
 	DB       DBConfig
 	JWT      JWTConfig
 	Sentry   SentryConfig
@@ -34,6 +35,7 @@ func NewConfig() *Config {
 	}
 
 	return &Config{
+		App:      LoadAppConfig(),
 		DB:       LoadDBConfig(),
 		JWT:      LoadJWTConfig(),
 		Sentry:   LoadSentryConfig(),

@@ -6,19 +6,14 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
-	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
 
 	"github.com/getsentry/sentry-go"
-	sentryecho "github.com/getsentry/sentry-go/echo"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/cmd/server"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 )
 
 func main() {
@@ -32,22 +27,6 @@ func main() {
 		}
 	}()
 
-	e := echo.New()
-	e.Use(nrecho.Middleware(apm.NewRelic))
-
-	e.HTTPErrorHandler = server.ErrorHandler
-	middL := middl.InitMiddleware(cfg)
-	e.Use(middleware.CORSWithConfig(cfg.Cors))
-	e.Use(middL.SENTRY)
-	e.Use(middleware.Logger())
-
-	// api v1
-	v1 := e.Group("/v1")
-
-	// restricted group
-	r := v1.Group("")
-	r.Use(middL.JWT)
-
 	if err := sentry.Init(sentry.ClientOptions{
 		Dsn:              cfg.Sentry.DSN,
 		TracesSampleRate: cfg.Sentry.TracesSampleRate,
@@ -56,16 +35,10 @@ func main() {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 
-	e.Use(sentryecho.New(sentryecho.Options{
-		Repanic: true,
-	}))
-
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
 	mysqlRepos := server.NewRepository(conn)
 	usecases := server.NewUcase(cfg, conn, mysqlRepos, timeoutContext)
-	server.NewHandler(v1, r, usecases)
-
-	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
+	server.NewHandler(cfg, apm, usecases)
 }
