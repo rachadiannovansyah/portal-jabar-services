@@ -21,13 +21,13 @@ func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{Conn}
 }
 
-var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author_id, area_id, type, 
-	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_at, updated_at FROM news WHERE deleted_at is null`
+var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author, reporter, editor, area_id, type, 
+	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_by, created_at, updated_at FROM news WHERE deleted_at is null`
 
-var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author_id, n.area_id, n.type, 
-	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_at, n.updated_at FROM news n
+var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author, n.reporter, n.editor, n.area_id, n.type, 
+	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_by, n.created_at, n.updated_at FROM news n
 	LEFT JOIN users u
-	ON n.author_id = u.id
+	ON n.created_by = u.id
 	WHERE n.deleted_at is NULL`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
@@ -47,7 +47,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 	result = make([]domain.News, 0)
 	for rows.Next() {
 		t := domain.News{}
-		authorID := uuid.UUID{}
+		createdByID := uuid.UUID{}
 		areaID := int64(0)
 		err = rows.Scan(
 			&t.ID,
@@ -58,7 +58,9 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Image,
 			&t.Video,
 			&t.Slug,
-			&authorID,
+			&t.Author,
+			&t.Reporter,
+			&t.Editor,
 			&areaID,
 			&t.Type,
 			&t.Views,
@@ -70,6 +72,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.Status,
 			&t.IsLive,
 			&t.PublishedAt,
+			&createdByID,
 			&t.CreatedAt,
 			&t.UpdatedAt,
 		)
@@ -78,8 +81,9 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			logrus.Error(err)
 			return nil, err
 		}
-		t.Author = domain.User{ID: authorID}
+		t.CreatedBy = domain.User{ID: createdByID}
 		t.Area = domain.Area{ID: areaID}
+
 		result = append(result, t)
 	}
 
@@ -205,9 +209,8 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY n.created_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.author_id = u.id WHERE n.deleted_at is NULL `+query)
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.created_by = u.id WHERE n.deleted_at is NULL `+query)
 	query = queryJoinNews + query + ` LIMIT ?,? `
-
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
@@ -274,7 +277,7 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 
 func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest) (err error) {
 	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?,
-		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, author_id=?, created_by=?`
+		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, author=?, reporter=?, editor=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -297,8 +300,10 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.StartDate,
 		n.EndDate,
 		n.AreaID,
-		n.Author.ID.String(),
-		n.Author.ID.String(),
+		n.Author,
+		n.Reporter,
+		n.Editor,
+		n.CreatedBy.ID.String(),
 	)
 	if err != nil {
 		return
@@ -312,7 +317,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 }
 
 func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
-	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?,
+	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?, author=?, reporter=?, editor=?,
 		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, is_live=?, published_at=?, updated_by=?, updated_at=? WHERE id=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -326,6 +331,9 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.Image,
 		n.Category,
 		n.Slug,
+		n.Author,
+		n.Reporter,
+		n.Editor,
 		n.Source,
 		n.Status,
 		"article",
@@ -335,7 +343,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.AreaID,
 		n.IsLive,
 		n.PublishedAt,
-		n.Author.ID,
+		n.CreatedBy.ID,
 		time.Now(),
 		id,
 	)
