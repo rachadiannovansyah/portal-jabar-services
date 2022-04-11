@@ -36,7 +36,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	}
 	permManageNews := domain.PermissionManageNews
 
-	e.GET("/news", handler.FetchNews) // TO DO separate this endpoint to fetch between CMS and PORTAL
+	r.GET("/news", handler.FetchNews)
 	r.POST("/news", handler.Store, middl.CheckPermission(permManageNews))
 	r.GET("/news/:id", handler.GetByID, middl.CheckPermission(permManageNews))
 	r.PUT("/news/:id", handler.Update, middl.CheckPermission(permManageNews))
@@ -66,11 +66,6 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	if params.SortBy == "author" {
 		params.SortBy = "name"
-	}
-
-	// remove this line of code after frontend is ready
-	if c.Request().Header.Get("Authorization") == "" {
-		params.Filters["is_live"] = "1"
 	}
 
 	listNews, total, err := h.CUsecase.Fetch(ctx, au, &params)

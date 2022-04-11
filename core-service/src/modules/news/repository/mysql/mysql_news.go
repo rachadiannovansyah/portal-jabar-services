@@ -27,7 +27,7 @@ var querySelectNews = `SELECT id, category, title, excerpt, content, image, vide
 var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author_id, n.area_id, n.type, 
 	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_at, n.updated_at FROM news n
 	LEFT JOIN users u
-	ON n.author_id = u.id
+	ON n.created_by = u.id
 	WHERE n.deleted_at is NULL`
 
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {

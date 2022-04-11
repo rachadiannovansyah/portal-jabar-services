@@ -342,7 +342,7 @@ func (n *newsUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, param
 	res []domain.News, total int64, err error) {
 
 	if au.Role.ID == domain.RoleContributor {
-		params.Filters["author_id"] = au.ID
+		params.Filters["created_by"] = au.ID
 	} else if au.Role.ID == domain.RoleGroupAdmin {
 		params.Filters["unit_id"] = au.Unit.ID
 	}

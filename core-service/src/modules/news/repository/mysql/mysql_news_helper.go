@@ -18,6 +18,14 @@ func buildQueryFetchNews(params *domain.Request) string {
 		query += ` AND n.title LIKE '%` + params.Keyword + `%' `
 	}
 
+	if v, ok := params.Filters["created_by"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND n.created_by = '%v'`, query, v)
+	}
+
+	if v, ok := params.Filters["unit_id"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND u.unit_id = '%v'`, query, v)
+	}
+
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND n.highlight = '%s'`, query, v)
 	}
