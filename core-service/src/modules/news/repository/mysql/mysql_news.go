@@ -169,46 +169,7 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-	var query string
-
-	if params.Keyword != "" {
-		query += ` AND n.title LIKE '%` + params.Keyword + `%' `
-	}
-
-	if v, ok := params.Filters["highlight"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.highlight = '%s'`, query, v)
-	}
-
-	if v, ok := params.Filters["type"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.type = "%s"`, query, v)
-	}
-
-	if v, ok := params.Filters["is_live"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.is_live = "%s"`, query, v)
-	}
-
-	if v, ok := params.Filters["status"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.status = "%s"`, query, v)
-	}
-
-	if v, ok := params.Filters["categories"]; ok && v != "" {
-		categories := params.Filters["categories"].([]string)
-
-		if len(categories) > 0 {
-			query = fmt.Sprintf(`%s AND n.category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
-		}
-	}
-
-	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND n.updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
-	}
-
-	if params.SortBy != "" {
-		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
-	} else {
-		query += ` ORDER BY n.created_at DESC`
-	}
-
+	query := buildQueryFetchNews(params)
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.created_by = u.id WHERE n.deleted_at is NULL `+query)
 	query = queryJoinNews + query + ` LIMIT ?,? `
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)

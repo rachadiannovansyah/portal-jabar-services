@@ -36,26 +36,24 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	}
 	permManageNews := domain.PermissionManageNews
 
-	// Cms ...
-	e.GET("/news", handler.FetchNews) // TO DO separate this endpoint to fetch between CMS and PORTAL
+	r.GET("/news", handler.FetchNews)
 	r.POST("/news", handler.Store, middl.CheckPermission(permManageNews))
 	r.GET("/news/:id", handler.GetByID, middl.CheckPermission(permManageNews))
 	r.PUT("/news/:id", handler.Update, middl.CheckPermission(permManageNews))
 	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
 	r.PATCH("/news/:id/status", handler.UpdateStatus) // TO DO permission update status has multiple values
-	e.GET("/news/slug/:slug", handler.GetBySlug)
+	e.GET("/news/slug/:slug", handler.GetBySlug)      // to be removed after frontend is ready
 	e.GET("/news/tabs", handler.TabStatus)
-
-	// Portal ...
-	e.GET("/news/banner", handler.FetchNewsBanner)
-	e.GET("/news/headline", handler.FetchNewsHeadline)
-	e.PATCH("/news/:id/share", handler.AddShare)
+	e.GET("/news/banner", handler.FetchNewsBanner)     // to be removed after frontend is ready
+	e.GET("/news/headline", handler.FetchNewsHeadline) // to be removed after frontend is ready
+	e.PATCH("/news/:id/share", handler.AddShare)       // to be removed after frontend is ready
 }
 
 // FetchNews will fetch the content based on given params
 func (h *NewsHandler) FetchNews(c echo.Context) error {
 
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
@@ -70,11 +68,7 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 		params.SortBy = "name"
 	}
 
-	if c.Request().Header.Get("Authorization") == "" {
-		params.Filters["is_live"] = "1"
-	}
-
-	listNews, total, err := h.CUsecase.Fetch(ctx, &params)
+	listNews, total, err := h.CUsecase.Fetch(ctx, au, &params)
 
 	if err != nil {
 		return err

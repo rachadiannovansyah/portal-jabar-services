@@ -142,7 +142,8 @@ type TabStatusResponse struct {
 
 // NewsUsecase represent the news usecases
 type NewsUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]News, int64, error)
+	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) ([]News, int64, error)
+	FetchPublished(ctx context.Context, params *Request) ([]News, int64, error)
 	FetchNewsBanner(ctx context.Context) ([]NewsBanner, error)
 	FetchNewsHeadline(ctx context.Context) ([]News, error)
 	GetByID(ctx context.Context, id int64) (News, error)
