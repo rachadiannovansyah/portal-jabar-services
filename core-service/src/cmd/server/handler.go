@@ -1,12 +1,23 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
+	"github.com/spf13/viper"
 
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
+
+	sentryecho "github.com/getsentry/sentry-go/echo"
+
+	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 
 	_areaHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/delivery/http"
 	_authHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/delivery/http"
@@ -23,23 +34,53 @@ import (
 	_userHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/delivery/http"
 )
 
+func newAppHandler(e *echo.Echo) {
+	cfg := config.NewConfig()
+	e.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{
+			"app":     cfg.App.Name,
+			"version": cfg.App.Version,
+		})
+	})
+}
+
 // NewHandler will create a new handler for the given usecase
-func NewHandler(e *echo.Group, p *echo.Group, r *echo.Group, u *Usecases) {
-	_areaHttpDelivery.NewAreaHandler(e, r, u.AreaUcase)
-	_newsHttpDelivery.NewNewsHandler(e, r, u.NewsUcase)
+func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
+
+	e := echo.New()
+	e.HTTPErrorHandler = ErrorHandler
+	middL := middl.InitMiddleware(cfg)
+
+	v1 := e.Group("/v1")
+	r := v1.Group("")
+	p := v1.Group("/public")
+
+	r.Use(middL.JWT)
+	e.Use(middL.SENTRY)
+	e.Use(middleware.Logger())
+	e.Use(nrecho.Middleware(apm.NewRelic))
+	e.Use(middleware.CORSWithConfig(cfg.Cors))
+	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+
+	newAppHandler(e)
+	_areaHttpDelivery.NewAreaHandler(v1, r, u.AreaUcase)
+	_newsHttpDelivery.NewNewsHandler(v1, r, u.NewsUcase)
 	_newsHttpDelivery.NewPublicNewsHandler(p, u.NewsUcase)
-	_informationHttpDelivery.NewInformationHandler(e, r, u.InformationUcase)
-	_unitHttpDelivery.NewUnitHandler(e, r, u.UnitUcase)
-	_eventHttpDelivery.NewEventHandler(e, r, u.EventUcase)
-	_feedbackHttpDelivery.NewFeedbackHandler(e, r, u.FeedbackUcase)
-	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(e, r, u.FeaturedProgramUcase)
-	_authHttpDelivery.NewAuthHandler(e, r, u.AuthUcase)
-	_searchHttpDelivery.NewSearchHandler(e, r, u.SearchUcase)
-	_userHttpDelivery.NewUserHandler(e, r, u.UserUsecase)
-	_galleryHttpDelivery.NewMediaHandler(e, r, u.MediaUsecase)
-	_tagHttpDelivery.NewTagHandler(e, r, u.TagUsecase)
-	_templateHttpDelivery.NewMailHandler(e, r, u.TemplateUsecase)
-	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(e, r, u.RegInvitationUsecase)
+	_informationHttpDelivery.NewInformationHandler(v1, r, u.InformationUcase)
+	_unitHttpDelivery.NewUnitHandler(v1, r, u.UnitUcase)
+	_eventHttpDelivery.NewEventHandler(v1, r, u.EventUcase)
+	_feedbackHttpDelivery.NewFeedbackHandler(v1, r, u.FeedbackUcase)
+	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
+	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
+	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase)
+	_userHttpDelivery.NewUserHandler(v1, r, u.UserUsecase)
+	_galleryHttpDelivery.NewMediaHandler(v1, r, u.MediaUsecase)
+	_tagHttpDelivery.NewTagHandler(v1, r, u.TagUsecase)
+	_templateHttpDelivery.NewMailHandler(v1, r, u.TemplateUsecase)
+	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(v1, r, u.RegInvitationUsecase)
+
+	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
 
 // ErrorHandler ...
