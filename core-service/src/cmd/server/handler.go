@@ -53,6 +53,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 
 	v1 := e.Group("/v1")
 	r := v1.Group("")
+	p := v1.Group("/public")
 
 	r.Use(middL.JWT)
 	e.Use(middL.SENTRY)
@@ -65,6 +66,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	newAppHandler(e)
 	_areaHttpDelivery.NewAreaHandler(v1, r, u.AreaUcase)
 	_newsHttpDelivery.NewNewsHandler(v1, r, u.NewsUcase)
+	_newsHttpDelivery.NewPublicNewsHandler(p, u.NewsUcase)
 	_informationHttpDelivery.NewInformationHandler(v1, r, u.InformationUcase)
 	_unitHttpDelivery.NewUnitHandler(v1, r, u.UnitUcase)
 	_eventHttpDelivery.NewEventHandler(v1, r, u.EventUcase)

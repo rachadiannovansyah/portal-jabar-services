@@ -314,8 +314,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 	return
 }
 
-func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-
+func (n *newsUsecase) get(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
@@ -337,6 +336,23 @@ func (n *newsUsecase) Fetch(c context.Context, params *domain.Request) (res []do
 	}
 
 	return
+}
+
+func (n *newsUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
+	res []domain.News, total int64, err error) {
+
+	if au.Role.ID == domain.RoleContributor {
+		params.Filters["created_by"] = au.ID
+	} else if au.Role.ID == domain.RoleGroupAdmin {
+		params.Filters["unit_id"] = au.Unit.ID
+	}
+
+	return n.get(c, params)
+}
+
+func (n *newsUsecase) FetchPublished(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
+	params.Filters["is_live"] = "1" // only published news that is live
+	return n.get(c, params)
 }
 
 func (n *newsUsecase) GetByID(c context.Context, id int64) (res domain.News, err error) {
