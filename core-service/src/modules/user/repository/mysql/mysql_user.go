@@ -29,7 +29,7 @@ var querySelectUnion = `SELECT member.id, member.name, member.email, member.role
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, 4, "PENDING", null, null, null
+		SELECT id, "", email, 4, ` + domain.PendingUser + `, null, null, null
 		FROM registration_invitations
 	) member WHERE 1=1`
 
