@@ -7,6 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+// Constanta User Status
+const (
+	ActiveUser   string = "ACTIVE"
+	InactiveUser string = "INACTIVE"
+	PendingUser  string = "PENDING"
+)
+
 // User ...
 type User struct {
 	ID                  uuid.UUID  `json:"id"`
