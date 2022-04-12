@@ -36,4 +36,4 @@ jobs:
         context: .
         file: docker/Dockerfile
         push: true
-        tags: ${{ secrets.SERVICE_IMAGE }}:${{ steps.vars.outputs.sha_short }}
+        tags: ${{ secrets.IMAGE }}:${{ steps.vars.outputs.sha_short }}
