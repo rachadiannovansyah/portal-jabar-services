@@ -208,8 +208,8 @@ func (h *NewsHandler) Store(c echo.Context) (err error) {
 	auth := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 
-	n.Author.ID = auth.ID
-	n.Author.Name = auth.Name
+	n.CreatedBy.ID = auth.ID
+	n.CreatedBy.Name = auth.Name
 
 	ctx := c.Request().Context()
 	err = h.CUsecase.Store(ctx, n)
@@ -245,8 +245,8 @@ func (h *NewsHandler) Update(c echo.Context) (err error) {
 	auth := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 
-	n.Author.ID = auth.ID
-	n.Author.Name = auth.Name
+	n.CreatedBy.ID = auth.ID
+	n.CreatedBy.Name = auth.Name
 
 	ctx := c.Request().Context()
 	err = h.CUsecase.Update(ctx, int64(reqID), n)
