@@ -23,6 +23,10 @@ func CheckPermission(permission string) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			au := helpers.GetAuthenticatedUser(c)
 
+			if au.Role.ID == domain.RoleSuperAdmin {
+				return next(c)
+			}
+
 			if !hasPermission(permission, au.Permissions) {
 				return c.JSON(http.StatusForbidden, domain.NewErrResponse(errors.New("permission denied")))
 			}
