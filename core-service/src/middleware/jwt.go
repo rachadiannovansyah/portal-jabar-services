@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -31,7 +30,6 @@ func (m *GoMiddleware) JWT(next echo.HandlerFunc) echo.HandlerFunc {
 		// if the token is invalid (if it has expired according to the expiry time we set on sign in),
 		// or if the signature does not match
 		tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			fmt.Println("JWT_KEY", m.JWTKey)
 			return m.JWTKey, nil
 		})
 		if err != nil {

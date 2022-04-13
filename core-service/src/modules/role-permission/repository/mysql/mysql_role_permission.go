@@ -25,7 +25,7 @@ var querySelectRolePermisson = `
 
 func (m *mysqlRolePermissionRepository) GetPermissionsByRoleID(ctx context.Context, roleID int8) (result []string, err error) {
 	var query = fmt.Sprintf("%s", querySelectRolePermisson) // if super admin, return all permissions
-	if roleID != 1 {
+	if roleID != domain.RoleSuperAdmin {
 		query = fmt.Sprintf("%s AND rp.role_id=?", querySelectRolePermisson)
 	}
 

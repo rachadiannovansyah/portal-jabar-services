@@ -17,6 +17,8 @@ var (
 	ErrDuplicateNIP = errors.New("NIP already exists")
 	// ErrUserIsNotActive
 	ErrUserIsNotActive = errors.New("Your account is not active")
+	// Forbidden
+	ErrForbidden = errors.New("You are not authorized to access this resource")
 )
 
 type ErrResponse struct {

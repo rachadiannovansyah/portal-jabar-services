@@ -43,17 +43,15 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 	}
 }
 
-func (n *authUsecase) createAccessToken(user *domain.User, permission []string) (accessToken string, exp int64, err error) {
+func (n *authUsecase) createAccessToken(user *domain.User, permissions []string) (accessToken string, exp int64, err error) {
 	exp = time.Now().Add(time.Second * n.config.JWT.TTL).Unix()
-
-	//
 
 	claims := &domain.JwtCustomClaims{
 		ID:          user.ID,
 		Email:       user.Email,
 		Unit:        user.Unit,
 		Role:        user.Role,
-		Permissions: permission,
+		Permissions: permissions,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
 		},
@@ -85,6 +83,10 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 	defer cancel()
 
 	user, err := n.userRepo.GetByEmail(ctx, req.Email)
+	// append unit name to response
+	unit, _ := n.unitRepo.GetByID(ctx, user.Unit.ID)
+	user.Unit.Name = unit.Name
+
 	if err != nil {
 		return domain.LoginResponse{}, err
 	}

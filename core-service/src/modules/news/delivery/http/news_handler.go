@@ -13,6 +13,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 )
 
 // NewsHandler ...
@@ -126,6 +127,8 @@ func (h *NewsHandler) FetchNewsHeadline(c echo.Context) error {
 // GetByID will get article by given id
 func (h *NewsHandler) GetByID(c echo.Context) error {
 	idP, err := strconv.Atoi(c.Param("id"))
+	au := helpers.GetAuthenticatedUser(c)
+
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
@@ -136,6 +139,10 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 	news, err := h.CUsecase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	if !policies.AllowNewsAccess(au, news) {
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: domain.ErrForbidden.Error()})
 	}
 
 	// Copy slice to slice
