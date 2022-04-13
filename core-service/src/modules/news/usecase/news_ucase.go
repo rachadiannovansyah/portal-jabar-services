@@ -131,14 +131,14 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	return data, nil
 }
 
-func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) ([]domain.News, error) {
+func (n *newsUsecase) fillUserDetails(c context.Context, data []domain.News) ([]domain.News, error) {
 	g, ctx := errgroup.WithContext(c)
 
 	// Get the user's id
 	mapUsers := map[uuid.UUID]domain.User{}
 
 	for _, news := range data {
-		mapUsers[news.Author.ID] = domain.User{}
+		mapUsers[news.CreatedBy.ID] = domain.User{}
 	}
 
 	// Using goroutine to fetch the user's detail
@@ -176,8 +176,8 @@ func (n *newsUsecase) fillAuthorDetails(c context.Context, data []domain.News) (
 
 	// merge the user's data
 	for index, item := range data {
-		if a, ok := mapUsers[item.Author.ID]; ok {
-			data[index].Author = a
+		if a, ok := mapUsers[item.CreatedBy.ID]; ok {
+			data[index].CreatedBy = a
 		}
 	}
 
@@ -253,11 +253,11 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 		return
 	}
 
-	resAuthor, err := n.userRepo.GetByID(ctx, res.Author.ID)
+	resCreatedBy, err := n.userRepo.GetByID(ctx, res.CreatedBy.ID)
 	if err != nil {
 		return
 	}
-	res.Author = resAuthor
+	res.CreatedBy = resCreatedBy
 
 	res, err = n.fillDataTagsDetail(ctx, res)
 
@@ -323,7 +323,7 @@ func (n *newsUsecase) get(c context.Context, params *domain.Request) (res []doma
 		return nil, 0, err
 	}
 
-	res, err = n.fillAuthorDetails(ctx, res)
+	res, err = n.fillUserDetails(ctx, res)
 
 	if err != nil {
 		return nil, 0, err
@@ -390,7 +390,7 @@ func (n *newsUsecase) FetchNewsBanner(c context.Context) (res []domain.NewsBanne
 		return nil, err
 	}
 
-	news, err = n.fillAuthorDetails(ctx, news)
+	news, err = n.fillUserDetails(ctx, news)
 	if err != nil {
 		return nil, err
 	}
@@ -415,7 +415,7 @@ func (n *newsUsecase) FetchNewsHeadline(c context.Context) (res []domain.News, e
 		return nil, err
 	}
 
-	res, err = n.fillAuthorDetails(ctx, res)
+	res, err = n.fillUserDetails(ctx, res)
 	if err != nil {
 		return nil, err
 	}

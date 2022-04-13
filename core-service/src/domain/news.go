@@ -22,7 +22,9 @@ type News struct {
 	Type        string     `json:"type"`
 	Tags        []DataTag  `json:"tags"`
 	Category    string     `json:"category" validate:"required"`
-	Author      User       `json:"author" validate:"required"`
+	Author      *string    `json:"author" validate:"required"`
+	Reporter    *string    `json:"reporter"`
+	Editor      *string    `json:"editor"`
 	Area        Area       `json:"area" validate:"required"`
 	Duration    int8       `json:"duration"`
 	StartDate   NullTime   `json:"start_date"`
@@ -47,7 +49,9 @@ type StoreNewsRequest struct {
 	Status      string     `json:"status" validate:"required,eq=DRAFT|eq=REVIEW|eq=PUBLISHED|eq=ARCHIVED"`
 	Type        string     `json:"type"`
 	Category    string     `json:"category"`
-	Author      User       `json:"author"`
+	Author      string     `json:"author"`
+	Reporter    string     `json:"reporter"`
+	Editor      string     `json:"editor"`
 	Duration    int8       `json:"duration"`
 	StartDate   *string    `json:"start_date"`
 	EndDate     *string    `json:"end_date"`
@@ -74,13 +78,15 @@ type NewsListResponse struct {
 	Slug        NullString `json:"slug"`
 	Image       *string    `json:"image"`
 	Category    string     `json:"category"`
-	Author      Author     `json:"author"`
+	Author      string     `json:"author"`
+	Reporter    string     `json:"reporter"`
+	Editor      string     `json:"editor"`
 	Video       NullString `json:"video"`
 	Source      NullString `json:"source"`
 	Tags        []DataTag  `json:"tags"`
 	Status      string     `json:"status"`
 	IsLive      int8       `json:"is_live"`
-	CreatedBy   NullString `json:"created_by"`
+	CreatedBy   Author     `json:"created_by"`
 	PublishedAt *time.Time `json:"published_at"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
@@ -93,7 +99,7 @@ type NewsBanner struct {
 	Category    string       `json:"category"`
 	Image       *string      `json:"image"`
 	Slug        NullString   `json:"slug"`
-	Author      Author       `json:"author,omitempty"`
+	CreatedBy   Author       `json:"created_by,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
 	PublishedAt *time.Time   `json:"published_at"`
 	RelatedNews []NewsBanner `json:"related_news,omitempty"`
@@ -116,12 +122,15 @@ type DetailNewsResponse struct {
 	Type        string           `json:"type"`
 	Tags        []DataTag        `json:"tags"`
 	Category    string           `json:"category"`
-	Author      Author           `json:"author"`
+	Author      string           `json:"author"`
+	Reporter    string           `json:"reporter"`
+	Editor      string           `json:"editor"`
 	Duration    int8             `json:"duration"`
 	StartDate   NullTime         `json:"start_date"`
 	EndDate     NullTime         `json:"end_date"`
 	Area        AreaListResponse `json:"area"`
 	PublishedAt time.Time        `json:"published_at"`
+	CreatedBy   Author           `json:"created_by"`
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
 }
