@@ -106,6 +106,8 @@ func GetStatusCode(err error) int {
 		return http.StatusConflict
 	case domain.ErrInvalidCredentials:
 		return http.StatusUnauthorized
+	case domain.ErrUserIsNotActive:
+		return http.StatusUnauthorized
 	default:
 		return http.StatusInternalServerError
 	}
