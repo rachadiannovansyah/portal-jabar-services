@@ -42,8 +42,8 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	r.PUT("/news/:id", handler.Update, middl.CheckPermission(permManageNews))
 	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
 	r.PATCH("/news/:id/status", handler.UpdateStatus) // TO DO permission update status has multiple values
-	e.GET("/news/slug/:slug", handler.GetBySlug)      // to be removed after frontend is ready
-	e.GET("/news/tabs", handler.TabStatus)
+	r.GET("/news/tabs", handler.TabStatus)
+	e.GET("/news/slug/:slug", handler.GetBySlug)       // to be removed after frontend is ready
 	e.GET("/news/banner", handler.FetchNewsBanner)     // to be removed after frontend is ready
 	e.GET("/news/headline", handler.FetchNewsHeadline) // to be removed after frontend is ready
 	e.PATCH("/news/:id/share", handler.AddShare)       // to be removed after frontend is ready
@@ -147,8 +147,12 @@ func (h *NewsHandler) GetByID(c echo.Context) error {
 
 func (h *NewsHandler) TabStatus(c echo.Context) (err error) {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
-	tabs, err := h.CUsecase.TabStatus(ctx)
+	tabs, err := h.CUsecase.TabStatus(ctx, au)
+	if err != nil {
+		return
+	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }

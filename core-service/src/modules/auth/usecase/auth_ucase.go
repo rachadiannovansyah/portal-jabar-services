@@ -93,7 +93,7 @@ func (n *authUsecase) Login(c context.Context, req *domain.LoginRequest) (res do
 		return domain.LoginResponse{}, domain.ErrInvalidCredentials
 	}
 
-	if user.Status != "ACTIVE" {
+	if user.Status != domain.ActiveUser {
 		return domain.LoginResponse{}, domain.ErrUserIsNotActive
 	}
 

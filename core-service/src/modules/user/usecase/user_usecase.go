@@ -233,6 +233,11 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 
 	err = u.regInvitationRepo.Delete(ctx, *regInvitation.ID)
 
+	err = u.userRepo.ChangeStatus(ctx, payload.ID, domain.ActiveUser)
+	if err != nil {
+		return
+	}
+
 	return
 }
 

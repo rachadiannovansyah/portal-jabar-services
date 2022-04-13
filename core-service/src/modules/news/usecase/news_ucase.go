@@ -271,8 +271,12 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 	return
 }
 
-func (n *newsUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
-	res, err = n.newsRepo.TabStatus(ctx)
+func (n *newsUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims) (res []domain.TabStatusResponse, err error) {
+	var key string
+	if au.Role.ID == domain.RoleContributor {
+		key = "contributor"
+	}
+	res, err = n.newsRepo.TabStatus(ctx, au.ID, key)
 
 	if err != nil {
 		return
