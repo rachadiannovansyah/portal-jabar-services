@@ -107,10 +107,17 @@ func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value str
 	return
 }
 
-func (m *mysqlNewsRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
-	query := "SELECT status, COUNT(status) FROM news GROUP BY status"
+func (m *mysqlNewsRepository) TabStatus(ctx context.Context, id uuid.UUID, key string) (res []domain.TabStatusResponse, err error) {
+	var query string
+	var list []domain.TabStatusResponse
 
-	list, err := m.fetchTabs(ctx, query)
+	if key == "contributor" {
+		query = "SELECT status, COUNT(status) FROM news WHERE created_by = ? GROUP BY status"
+		list, err = m.fetchTabs(ctx, query, id)
+	} else {
+		query = "SELECT status, COUNT(status) FROM news GROUP BY status"
+		list, err = m.fetchTabs(ctx, query)
+	}
 
 	if err != nil {
 		return []domain.TabStatusResponse{}, err
