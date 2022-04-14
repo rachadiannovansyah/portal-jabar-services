@@ -272,17 +272,7 @@ func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface
 }
 
 func (n *newsUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims) (res []domain.TabStatusResponse, err error) {
-	var key string
-	if au.Role.ID == domain.RoleContributor {
-		key = "contributor"
-	}
-	res, err = n.newsRepo.TabStatus(ctx, au.ID, key)
-
-	if err != nil {
-		return
-	}
-
-	return
+	return n.newsRepo.TabStatus(ctx, filterByRoleAcces(au, &domain.Request{}))
 }
 
 func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
@@ -342,16 +332,24 @@ func (n *newsUsecase) get(c context.Context, params *domain.Request) (res []doma
 	return
 }
 
-func (n *newsUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
-	res []domain.News, total int64, err error) {
+func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *domain.Request {
+
+	if params.Filters == nil {
+		params.Filters = map[string]interface{}{}
+	}
 
 	if au.Role.ID == domain.RoleContributor {
 		params.Filters["created_by"] = au.ID
-	} else if au.Role.ID == domain.RoleGroupAdmin {
+	} else if helpers.IsAdminOPD(au) {
 		params.Filters["unit_id"] = au.Unit.ID
 	}
 
-	return n.get(c, params)
+	return params
+}
+
+func (n *newsUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
+	res []domain.News, total int64, err error) {
+	return n.get(c, filterByRoleAcces(au, params))
 }
 
 func (n *newsUsecase) FetchPublished(c context.Context, params *domain.Request) (res []domain.News, total int64, err error) {

@@ -3,8 +3,6 @@ package domain
 import (
 	"context"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // News ...
@@ -169,6 +167,6 @@ type NewsRepository interface {
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
-	TabStatus(ctx context.Context, id uuid.UUID, key string) (res []TabStatusResponse, err error)
+	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
 	Delete(ctx context.Context, id int64) error
 }
