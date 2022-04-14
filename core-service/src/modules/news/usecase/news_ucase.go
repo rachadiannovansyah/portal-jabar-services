@@ -278,8 +278,11 @@ func (n *newsUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims)
 func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
 
 	for _, tagName := range tags {
+		// 20 is max length of tags name
+		tagName = helpers.Substr(tagName, 20)
+
 		tag := &domain.Tag{
-			Name: tagName[:20],
+			Name: tagName,
 		}
 
 		// check tags already exists
@@ -296,7 +299,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 		dataTag := &domain.DataTag{
 			DataID:  newsId,
 			TagID:   tag.ID,
-			TagName: tagName[:20],
+			TagName: tagName,
 			Type:    "news",
 		}
 		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
