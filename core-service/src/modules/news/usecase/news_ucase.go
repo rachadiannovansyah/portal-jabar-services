@@ -289,7 +289,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 
 	for _, tagName := range tags {
 		tag := &domain.Tag{
-			Name: tagName,
+			Name: tagName[:20],
 		}
 
 		// check tags already exists
@@ -306,7 +306,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 		dataTag := &domain.DataTag{
 			DataID:  newsId,
 			TagID:   tag.ID,
-			TagName: tagName,
+			TagName: tagName[:20],
 			Type:    "news",
 		}
 		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)

@@ -137,7 +137,7 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string) (err error) {
 	for _, tagName := range tags {
 		tag := &domain.Tag{
-			Name: tagName,
+			Name: tagName[:20],
 		}
 
 		// check tags already exists
@@ -154,7 +154,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 		dataTag := &domain.DataTag{
 			DataID:  eventID,
 			TagID:   tag.ID,
-			TagName: tagName,
+			TagName: tagName[:20],
 			Type:    "event",
 		}
 		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
