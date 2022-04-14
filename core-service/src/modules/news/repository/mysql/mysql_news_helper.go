@@ -11,7 +11,7 @@ import (
  * this block of code is used to generate the query for the news
  * need to be refactored later to be more generic and reduce the code complexity (go generic tech debt)
  */
-func buildQueryFetchNews(params *domain.Request) string {
+func filterNewsQuery(params *domain.Request) string {
 	var query string
 
 	if params.Keyword != "" {
@@ -52,12 +52,6 @@ func buildQueryFetchNews(params *domain.Request) string {
 
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND n.updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
-	}
-
-	if params.SortBy != "" {
-		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
-	} else {
-		query += ` ORDER BY n.created_at DESC`
 	}
 
 	return query
