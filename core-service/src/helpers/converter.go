@@ -56,7 +56,7 @@ func ConverSliceToString(slice []string, delimiter string) string {
 	return strings.Join(slice, delimiter)
 }
 
-func SubString(s string, n int) string {
+func Substr(s string, n int) string {
 	if len(s) > n {
 		s = s[:n]
 	}

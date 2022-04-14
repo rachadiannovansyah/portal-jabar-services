@@ -138,7 +138,7 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string) (err error) {
 	for _, tagName := range tags {
 		// 20 is max length of tags name
-		tagName = helpers.SubString(tagName, 20)
+		tagName = helpers.Substr(tagName, 20)
 
 		tag := &domain.Tag{
 			Name: tagName,

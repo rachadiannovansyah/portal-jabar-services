@@ -279,7 +279,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 
 	for _, tagName := range tags {
 		// 20 is max length of tags name
-		tagName = helpers.SubString(tagName, 20)
+		tagName = helpers.Substr(tagName, 20)
 
 		tag := &domain.Tag{
 			Name: tagName,
