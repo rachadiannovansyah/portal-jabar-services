@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jinzhu/copier"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
@@ -136,8 +137,11 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 // Private function to store tags
 func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string) (err error) {
 	for _, tagName := range tags {
+		// 20 is max length of tags name
+		tagName = helpers.SubString(tagName, 20)
+
 		tag := &domain.Tag{
-			Name: tagName[:20],
+			Name: tagName,
 		}
 
 		// check tags already exists
@@ -154,7 +158,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 		dataTag := &domain.DataTag{
 			DataID:  eventID,
 			TagID:   tag.ID,
-			TagName: tagName[:20],
+			TagName: tagName,
 			Type:    "event",
 		}
 		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
