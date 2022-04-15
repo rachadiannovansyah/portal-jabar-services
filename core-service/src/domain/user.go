@@ -47,6 +47,8 @@ type UserInfo struct {
 	Photo               *string    `json:"photo"`
 	Unit                UnitInfo   `json:"unit"`
 	Role                RoleInfo   `json:"role"`
+	Status              string     `json:"status"`
+	LastActive          *time.Time `json:"last_active"`
 	LastPasswordChanged *time.Time `json:"last_password_changed"`
 }
 
@@ -58,18 +60,6 @@ type UserListResponse struct {
 	Role       RoleInfo   `json:"role"`
 	LastActive *time.Time `json:"last_active"`
 	Status     string     `json:"status"`
-}
-
-// UserDetailResponse ...
-type UserDetailResponse struct {
-	ID         uuid.UUID  `json:"id"`
-	Name       string     `json:"name"`
-	Email      string     `json:"email"`
-	Role       RoleInfo   `json:"role"`
-	LastActive *time.Time `json:"last_active"`
-	Status     string     `json:"status"`
-	Occupation *string    `json:"occupation"`
-	Nip        *string    `json:"nip"`
 }
 
 // AccountSubmission ...
@@ -109,7 +99,6 @@ type UserRepository interface {
 	Update(context.Context, *User) error
 	WriteLastActive(context.Context, time.Time, *User) error
 	UserList(context.Context, *Request) ([]User, int64, error)
-	GetUserByID(context.Context, uuid.UUID) (User, error)
 	SetAsAdmin(context.Context, uuid.UUID, int8) error
 	ChangeEmail(context.Context, uuid.UUID, string) error
 	ChangeStatus(context.Context, uuid.UUID, string) error
@@ -125,7 +114,6 @@ type UserUsecase interface {
 	AccountSubmission(context.Context, *JwtCustomClaims, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
 	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
-	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)
 	SetAsAdmin(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 	ChangeEmail(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 	ChangeStatus(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error

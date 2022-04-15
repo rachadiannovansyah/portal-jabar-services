@@ -264,22 +264,6 @@ func (u *userUsecase) UserList(ctx context.Context, params *domain.Request) (res
 	return
 }
 
-// GetUserByID will find an object by given id
-func (u *userUsecase) GetUserByID(c context.Context, id uuid.UUID) (res domain.User, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, err = u.userRepo.GetUserByID(ctx, id)
-	if err != nil {
-		return
-	}
-
-	role, _ := u.roleRepo.GetByID(ctx, res.Role.ID)
-	res.Role = helpers.GetRoleInfo(role)
-
-	return
-}
-
 func (u *userUsecase) CheckIfNipExists(c context.Context, nip *string) (res bool, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()

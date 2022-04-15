@@ -222,23 +222,6 @@ func (m *mysqlUserRepository) WriteLastActive(ctx context.Context, time time.Tim
 	return
 }
 
-func (m *mysqlUserRepository) GetUserByID(ctx context.Context, id uuid.UUID) (res domain.User, err error) {
-	query := querySelectUnion + ` AND id = ?`
-
-	list, err := m.fetch(ctx, query, id)
-	if err != nil {
-		return domain.User{}, err
-	}
-
-	if len(list) > 0 {
-		res = list[0]
-	} else {
-		return res, domain.ErrNotFound
-	}
-
-	return
-}
-
 func (m *mysqlUserRepository) SetAsAdmin(ctx context.Context, id uuid.UUID, role int8) (err error) {
 	query := `UPDATE users SET role_id=? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
