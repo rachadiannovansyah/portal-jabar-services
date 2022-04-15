@@ -9,6 +9,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	validator "gopkg.in/go-playground/validator.v9"
@@ -77,6 +78,8 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 // GetByID will get event by given id
 func (h *EventHandler) GetByID(c echo.Context) error {
 	reqID, err := strconv.Atoi(c.Param("id"))
+	au := helpers.GetAuthenticatedUser(c)
+
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
@@ -87,6 +90,10 @@ func (h *EventHandler) GetByID(c echo.Context) error {
 	event, err := h.EventUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	if !policies.AllowEventAccess(au, event) {
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: domain.ErrForbidden.Error()})
 	}
 
 	detailEventRes := domain.DetailEventResponse{}
