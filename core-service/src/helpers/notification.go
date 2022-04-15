@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
-	"github.com/spf13/viper"
 	"gopkg.in/gomail.v2"
 )
 
@@ -22,7 +22,7 @@ func ReplaceBodyParams(body string, params []string) string {
 
 func SendEmail(to string, template domain.Template, params []string) (err error) {
 	mailer := gomail.NewMessage()
-	mailer.SetHeader("From", viper.GetString("SENDER_NAME"))
+	mailer.SetHeader("From", config.LoadMailConfig().SenderName)
 	mailer.SetHeader("To", to)
 	mailer.SetHeader("Subject", template.Subject)
 	messg := ReplaceBodyParams(template.Body, params)

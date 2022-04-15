@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
@@ -165,11 +166,11 @@ func (n *userUsecase) ChangePassword(c context.Context, id uuid.UUID, req *domai
 	return
 }
 
-func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key string) (res domain.AccountSubmission, err error) {
+func (n *userUsecase) AccountSubmission(c context.Context, au *domain.JwtCustomClaims, key string) (res domain.AccountSubmission, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	user, err := n.userRepo.GetByID(ctx, id)
+	user, err := n.userRepo.GetByID(ctx, au.ID)
 	if err != nil {
 		return
 	}
@@ -180,7 +181,7 @@ func (n *userUsecase) AccountSubmission(c context.Context, id uuid.UUID, key str
 	}
 
 	go func() {
-		err = helpers.SendEmail(user.Email, template, []string{user.Name, user.UnitName})
+		err = helpers.SendEmail(config.LoadMailConfig().ReceiverName, template, []string{user.Name, user.UnitName})
 		if err != nil {
 			return
 		}
