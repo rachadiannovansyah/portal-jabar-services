@@ -88,7 +88,7 @@ type ListEventCalendarReponse struct {
 
 // EventUsecase ..
 type EventUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
+	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) ([]Event, int64, error)
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	Store(context.Context, *StoreRequestEvent) error

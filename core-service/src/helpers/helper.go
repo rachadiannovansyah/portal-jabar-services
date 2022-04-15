@@ -25,3 +25,7 @@ func IsValidMailAddress(address string) (string, bool) {
 func IsAdminOPD(au *domain.JwtCustomClaims) bool {
 	return au.Role.ID == domain.RoleAdministrator || au.Role.ID == domain.RoleGroupAdmin
 }
+
+func IsSameOPD(au *domain.JwtCustomClaims) bool {
+	return au.Role.ID == domain.RoleAdministrator || au.Role.ID == domain.RoleGroupAdmin || au.Role.ID == domain.RoleContributor
+}

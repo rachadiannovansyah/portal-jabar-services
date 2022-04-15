@@ -20,7 +20,13 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_by, created_at, updated_at FROM events WHERE deleted_at is null`
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, 
+	created_by, created_at, updated_at FROM events WHERE deleted_at is null`
+var queryJoinAgenda = `SELECT e.id, e.category, e.title, e.priority, e.type, e.status, e.address, e.url, e.date, e.start_hour, e.end_hour, 
+	e.created_by, e.created_at, e.updated_at FROM events e 
+	LEFT JOIN users u
+	ON e.created_by = u.id
+	WHERE e.deleted_at is null`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -119,12 +125,13 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query += ` ORDER BY date DESC `
+		query += ` ORDER BY e.date DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events e LEFT JOIN users u ON e.created_by = u.id 
+			WHERE e.deleted_at is NULL `+query)
 
-	query = querySelectAgenda + query + ` LIMIT ?,? `
+	query = queryJoinAgenda + query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
