@@ -193,7 +193,7 @@ func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *doma
 		params.Filters = map[string]interface{}{}
 	}
 
-	if helpers.IsSameOPD(au) {
+	if !helpers.IsSuperAdmin(au) {
 		params.Filters["unit_id"] = au.Unit.ID
 	}
 
