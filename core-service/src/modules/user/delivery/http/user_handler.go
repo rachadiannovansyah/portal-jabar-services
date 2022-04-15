@@ -5,6 +5,7 @@ import (
 
 	uuid "github.com/google/uuid"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -104,13 +105,17 @@ func (h *UserHandler) GetByID(c echo.Context) error {
 	ctx := c.Request().Context()
 	reqId := uuid.MustParse(c.Param("id"))
 
-	member, err := h.UUsecase.GetUserByID(ctx, reqId)
+	member, err := h.UUsecase.GetByID(ctx, reqId)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
+	if !policies.AllowUserAccess(helpers.GetAuthenticatedUser(c), member) {
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: domain.ErrForbidden.Error()})
+	}
+
 	// Copy slice to slice
-	UserDetailRes := domain.UserDetailResponse{}
+	UserDetailRes := domain.UserInfo{}
 	copier.Copy(&UserDetailRes, &member)
 
 	return c.JSON(http.StatusOK, &domain.ResultsData{Data: &UserDetailRes})
