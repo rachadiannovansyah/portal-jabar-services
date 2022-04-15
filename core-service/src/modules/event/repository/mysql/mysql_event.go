@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +20,13 @@ func NewMysqlEventRepository(Conn *sql.DB) domain.EventRepository {
 	return &mysqlEventRepository{Conn}
 }
 
-var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, created_by, created_at, updated_at FROM events WHERE deleted_at is null`
+var querySelectAgenda = `SELECT id, category, title, priority, type, status, address, url, date, start_hour, end_hour, 
+	created_by, created_at, updated_at FROM events WHERE deleted_at is null`
+var queryJoinAgenda = `SELECT e.id, e.category, e.title, e.priority, e.type, e.status, e.address, e.url, e.date, e.start_hour, e.end_hour, 
+	e.created_by, e.created_at, e.updated_at FROM events e 
+	LEFT JOIN users u
+	ON e.created_by = u.id
+	WHERE e.deleted_at is null`
 
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
@@ -115,39 +120,18 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string) (total i
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	var query string
-
-	if params.Keyword != "" {
-		query += ` AND title LIKE '%` + params.Keyword + `%' `
-	}
-
-	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
-	}
-
-	if v, ok := params.Filters["type"]; ok && v != "" {
-		types := params.Filters["type"].([]string)
-		if len(types) > 0 {
-			query = fmt.Sprintf(`%s AND type IN ('%s')`, query, helpers.ConverSliceToString(types, "','"))
-		}
-	}
-
-	if v, ok := params.Filters["categories"]; ok && v != "" {
-		categories := params.Filters["categories"].([]string)
-		if len(categories) > 0 {
-			query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
-		}
-	}
+	query := filterEventQuery(params)
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query += ` ORDER BY date DESC `
+		query += ` ORDER BY e.date DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events e LEFT JOIN users u ON e.created_by = u.id 
+			WHERE e.deleted_at is NULL `+query)
 
-	query = querySelectAgenda + query + ` LIMIT ?,? `
+	query = queryJoinAgenda + query + ` LIMIT ?,? `
 
 	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
 	if err != nil {

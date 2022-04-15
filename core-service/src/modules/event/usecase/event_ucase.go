@@ -169,9 +169,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 	return
 }
 
-// Fetch will get all data
-func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-
+func (u *eventUcase) get(c context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
@@ -187,6 +185,25 @@ func (u *eventUcase) Fetch(c context.Context, params *domain.Request) (res []dom
 	}
 
 	return
+}
+
+func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *domain.Request {
+
+	if params.Filters == nil {
+		params.Filters = map[string]interface{}{}
+	}
+
+	if !helpers.IsSuperAdmin(au) {
+		params.Filters["unit_id"] = au.Unit.ID
+	}
+
+	return params
+}
+
+// Fetch will fetch data events
+func (u *eventUcase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (res []domain.Event, total int64, err error) {
+
+	return u.get(c, filterByRoleAcces(au, params))
 }
 
 // GetByID will find an object by given id

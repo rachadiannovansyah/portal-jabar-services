@@ -35,7 +35,7 @@ type StoreRequestEvent struct {
 	Title     string    `json:"title" validate:"required,max=255"`
 	Type      string    `json:"type" validate:"required,alpha,eq=online|eq=offline"`
 	URL       string    `json:"url"`
-	Address   string    `json:"address"`
+	Address   string    `json:"address" validate:"max=255"`
 	Date      string    `json:"date" validate:"required"`
 	StartHour string    `json:"start_hour" validate:"required"`
 	EndHour   string    `json:"end_hour" validate:"required"`
@@ -88,7 +88,7 @@ type ListEventCalendarReponse struct {
 
 // EventUsecase ..
 type EventUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]Event, int64, error)
+	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) ([]Event, int64, error)
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
 	Store(context.Context, *StoreRequestEvent) error

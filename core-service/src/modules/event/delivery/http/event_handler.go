@@ -52,6 +52,7 @@ func isRequestValid(m *domain.StoreRequestEvent) (bool, error) {
 func (h *EventHandler) Fetch(c echo.Context) error {
 
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
@@ -59,7 +60,7 @@ func (h *EventHandler) Fetch(c echo.Context) error {
 		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
-	listEvent, total, err := h.EventUcase.Fetch(ctx, &params)
+	listEvent, total, err := h.EventUcase.Fetch(ctx, au, &params)
 
 	if err != nil {
 		return err
