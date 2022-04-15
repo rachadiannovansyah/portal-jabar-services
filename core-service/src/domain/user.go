@@ -122,7 +122,7 @@ type UserUsecase interface {
 	CheckIfNipExists(ctx context.Context, nip *string) (bool, error)
 	UpdateProfile(context.Context, *User) (User, error)
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
-	AccountSubmission(context.Context, uuid.UUID, string) (AccountSubmission, error)
+	AccountSubmission(context.Context, *JwtCustomClaims, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
 	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (res User, err error)

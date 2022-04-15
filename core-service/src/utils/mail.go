@@ -3,18 +3,18 @@ package utils
 import (
 	"strconv"
 
-	"github.com/spf13/viper"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"gopkg.in/gomail.v2"
 )
 
 func InitMail() *gomail.Dialer {
-	port, _ := strconv.Atoi(viper.GetString("SMTP_PORT"))
+	port, _ := strconv.Atoi(config.LoadMailConfig().SMTPPort)
 
 	dialer := gomail.NewDialer(
-		viper.GetString("SMTP_HOST"),
+		config.LoadMailConfig().SMTPHost,
 		port,
-		viper.GetString("AUTH_EMAIL"),
-		viper.GetString("AUTH_PASSWORD"),
+		config.LoadMailConfig().AuthEmail,
+		config.LoadMailConfig().AuthPassword,
 	)
 
 	return dialer

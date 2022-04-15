@@ -141,7 +141,7 @@ func (h *UserHandler) AccountSubmission(c echo.Context) error {
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 
-	_, err := h.UUsecase.AccountSubmission(ctx, au.ID, "administrator")
+	_, err := h.UUsecase.AccountSubmission(ctx, au, "administrator")
 	if err != nil {
 		logrus.Error(err)
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})

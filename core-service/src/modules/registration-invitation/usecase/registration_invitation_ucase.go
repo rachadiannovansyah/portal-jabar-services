@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 type regInvitationUcase struct {
@@ -68,7 +68,7 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	}
 
 	t, _ := r.mailTemplateRepo.GetByTemplate(ctx, "registration_invitation")
-	registrationLink := fmt.Sprintf("%s/daftar?token=%s", viper.GetString("PORTAL_JABAR_CMS_URL"), regInvitation.Token)
+	registrationLink := fmt.Sprintf("%s/daftar?token=%s", config.LoadAppConfig().CmsUrl, regInvitation.Token)
 	go func() {
 		err = helpers.SendEmail(regInvitation.Email, t, []string{registrationLink})
 		if err != nil {
