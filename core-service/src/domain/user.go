@@ -98,7 +98,7 @@ type UserRepository interface {
 	Store(context.Context, *User) error
 	Update(context.Context, *User) error
 	WriteLastActive(context.Context, time.Time, *User) error
-	UserList(context.Context, *Request) ([]User, int64, error)
+	Fetch(context.Context, *Request) ([]User, int64, error)
 	SetAsAdmin(context.Context, uuid.UUID, int8) error
 	ChangeEmail(context.Context, uuid.UUID, string) error
 	ChangeStatus(context.Context, uuid.UUID, string) error
@@ -113,7 +113,7 @@ type UserUsecase interface {
 	ChangePassword(context.Context, uuid.UUID, *ChangePasswordRequest) error
 	AccountSubmission(context.Context, *JwtCustomClaims, string) (AccountSubmission, error)
 	RegisterByInvitation(ctx context.Context, user *User) error // domain mana yach?
-	UserList(ctx context.Context, params *Request) (res []User, total int64, err error)
+	Fetch(context.Context, *JwtCustomClaims, *Request) (res []User, total int64, err error)
 	SetAsAdmin(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 	ChangeEmail(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error
 	ChangeStatus(context.Context, uuid.UUID, *CheckPasswordRequest, uuid.UUID) error

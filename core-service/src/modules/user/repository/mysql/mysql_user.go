@@ -25,11 +25,11 @@ var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password
 var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_id , member.status, member.last_active, member.occupation, member.nip
 	FROM (
 		select users.id, users.name, users.email, roles.id as role_id, users.status, users.last_active,
-		users.occupation, users.nip
+		users.occupation, users.nip, users.unit_id
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, 4, "` + domain.PendingUser + `" , null, null, null
+		SELECT id, "", email, 4, "` + domain.PendingUser + `" , null, null, null, unit_id
 		FROM registration_invitations
 	) member WHERE 1=1`
 
@@ -126,33 +126,20 @@ func (m *mysqlUserRepository) Update(ctx context.Context, u *domain.User) (err e
 	return
 }
 
-func (m *mysqlUserRepository) UserList(ctx context.Context, params *domain.Request) (res []domain.User, total int64, err error) {
-	var query string
-	if v, ok := params.Filters["name"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND member.name = "%s"`, query, v)
+func (m *mysqlUserRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.User, total int64, err error) {
+	query := querySelectUnion
+
+	if v, ok := params.Filters["unit_id"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND member.unit_id = "%v"`, query, v)
 	}
 
-	if v, ok := params.Filters["email"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND member.email = "%s"`, query, v)
+	if v, ok := params.Filters["exclude_user_id"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND member.id <> "%v"`, query, v)
 	}
 
-	if v, ok := params.Filters["status"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND member.status = "%s"`, query, v)
-	}
+	total, _ = m.count(ctx, query)
 
-	query += ` ORDER BY name DESC`
-
-	total, _ = m.count(ctx, `SELECT COUNT(1) 
-							FROM (
-									SELECT users.id
-									FROM users
-									LEFT JOIN roles ON roles.id = users.role_id 
-									UNION ALL
-									SELECT id
-									FROM registration_invitations
-							) member ORDER BY id ASC`)
-
-	query = querySelectUnion + ` LIMIT ?,? `
+	query += ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 	if err != nil {
@@ -205,7 +192,7 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 
 func (m *mysqlUserRepository) count(ctx context.Context, query string) (total int64, err error) {
 
-	err = m.Conn.QueryRow(query).Scan(&total)
+	err = m.Conn.QueryRow(fmt.Sprintf(`SELECT COUNT(1) FROM (%s) AS t`, query)).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
