@@ -25,11 +25,11 @@ var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password
 var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_id , member.status, member.last_active, member.occupation, member.nip
 	FROM (
 		select users.id, users.name, users.email, roles.id as role_id, users.status, users.last_active,
-		users.occupation, users.nip, users.unit_id
+		users.occupation, users.nip, users.unit_id, users.created_at
 		FROM users
 		LEFT JOIN roles ON roles.id = users.role_id 
 		UNION ALL
-		SELECT id, "", email, 4, "` + domain.PendingUser + `" , null, null, null, unit_id
+		SELECT id, "", email, 4, "` + domain.PendingUser + `" , null, null, null, unit_id, invited_at
 		FROM registration_invitations
 	) member WHERE 1=1`
 
@@ -135,6 +135,12 @@ func (m *mysqlUserRepository) Fetch(ctx context.Context, params *domain.Request)
 
 	if v, ok := params.Filters["exclude_user_id"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND member.id <> "%v"`, query, v)
+	}
+
+	if params.SortBy != "" {
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query += ` ORDER BY member.created_at DESC`
 	}
 
 	total, _ = m.count(ctx, query)
