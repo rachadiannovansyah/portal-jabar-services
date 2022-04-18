@@ -26,17 +26,11 @@ func NewEventHandler(e *echo.Group, r *echo.Group, us domain.EventUsecase) {
 		EventUcase: us,
 	}
 	permManageEvent := domain.PermissionManageEvent
-
-	// Cms ...
 	r.GET("/events", handler.Fetch, middl.CheckPermission(permManageEvent))
 	r.GET("/events/:id", handler.GetByID, middl.CheckPermission(permManageEvent))
 	r.POST("/events", handler.Store, middl.CheckPermission(permManageEvent))
 	r.DELETE("/events/:id", handler.Delete, middl.CheckPermission(permManageEvent))
 	r.PUT("/events/:id", handler.Update, middl.CheckPermission(permManageEvent))
-
-	// Portal ...
-	e.GET("/events/calendar", handler.AgendaCalendar)
-	e.GET("/events/portal", handler.AgendaPortal)
 }
 
 // Validate domain
@@ -176,44 +170,4 @@ func (h *EventHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
-}
-
-// AgendaPortal for fetching data on portal agenda
-func (h *EventHandler) AgendaPortal(c echo.Context) error {
-	ctx := c.Request().Context()
-
-	params := helpers.GetRequestParams(c)
-	params.Filters = map[string]interface{}{
-		"isPortal": true, // flagging is portal
-	}
-
-	listEvent, total, err := h.EventUcase.AgendaPortal(ctx, &params)
-
-	if err != nil {
-		return err
-	}
-
-	listEventRes := []domain.ListEventResponse{}
-	copier.Copy(&listEventRes, &listEvent)
-
-	res := helpers.Paginate(c, listEventRes, total, params)
-
-	return c.JSON(http.StatusOK, res)
-}
-
-// AgendaCalendar for fetching data for calendar
-func (h *EventHandler) AgendaCalendar(c echo.Context) error {
-	ctx := c.Request().Context()
-	params := helpers.GetRequestParams(c)
-
-	listEvents, err := h.EventUcase.ListCalendar(ctx, &params)
-
-	if err != nil {
-		return nil
-	}
-
-	listEventCalendar := []domain.ListEventCalendarReponse{}
-	copier.Copy(&listEventCalendar, &listEvents)
-
-	return c.JSON(http.StatusOK, listEventCalendar)
 }

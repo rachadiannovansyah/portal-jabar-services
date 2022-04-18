@@ -70,6 +70,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_informationHttpDelivery.NewInformationHandler(v1, r, u.InformationUcase)
 	_unitHttpDelivery.NewUnitHandler(v1, r, u.UnitUcase)
 	_eventHttpDelivery.NewEventHandler(v1, r, u.EventUcase)
+	_eventHttpDelivery.NewPublicEventHandler(p, u.EventUcase)
 	_feedbackHttpDelivery.NewFeedbackHandler(v1, r, u.FeedbackUcase)
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
