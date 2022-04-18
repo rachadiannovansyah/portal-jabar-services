@@ -242,11 +242,19 @@ func (u *userUsecase) RegisterByInvitation(c context.Context, req *domain.User) 
 	return
 }
 
-func (u *userUsecase) UserList(ctx context.Context, params *domain.Request) (res []domain.User, total int64, err error) {
+func (u *userUsecase) Fetch(ctx context.Context, au *domain.JwtCustomClaims,
+	params *domain.Request) (res []domain.User, total int64, err error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
-	res, total, err = u.userRepo.UserList(ctx, params)
+	// exclude current user
+	params.Filters["exclude_user_id"] = au.ID
+
+	if helpers.IsAdminOPD(au) {
+		params.Filters["unit_id"] = au.Unit.ID
+	}
+
+	res, total, err = u.userRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, 0, err
 	}

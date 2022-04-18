@@ -178,10 +178,12 @@ func (h *UserHandler) Register(c echo.Context) error {
 
 func (h *UserHandler) UserList(c echo.Context) error {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{}
 
-	list, total, err := h.UUsecase.UserList(ctx, &params)
+	list, total, err := h.UUsecase.Fetch(ctx, au, &params)
 	if err != nil {
 		return err
 	}
