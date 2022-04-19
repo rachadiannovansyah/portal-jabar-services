@@ -205,6 +205,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 		}
 		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
+			res, _ = n.fillUserDetails(ctx, res)
 
 			chanNews <- res
 			return

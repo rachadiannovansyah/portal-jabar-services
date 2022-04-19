@@ -99,6 +99,9 @@ type NewsBanner struct {
 	Category    string       `json:"category"`
 	Image       *string      `json:"image"`
 	Slug        NullString   `json:"slug"`
+	Author      string       `json:"author"`
+	Reporter    string       `json:"reporter"`
+	Editor      string       `json:"editor"`
 	CreatedBy   Author       `json:"created_by,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
 	PublishedAt *time.Time   `json:"published_at"`
