@@ -7,26 +7,22 @@ import (
 
 // Event ...
 type Event struct {
-	ID           int64      `json:"id"`
-	Title        string     `json:"title"`
-	Priority     string     `json:"priority"`
-	Date         time.Time  `json:"date"`
-	StartHour    string     `json:"start_hour"`
-	EndHour      string     `json:"end_hour"`
-	Image        NullString `json:"image"`
-	Type         string     `json:"type"`
-	Status       string     `json:"status"`
-	Address      NullString `json:"address"`
-	URL          NullString `json:"url"`
-	Category     string     `json:"category"`
-	Tags         []DataTag  `json:"tags"`
-	ProvinceCode Area       `json:"province_code"`
-	CityCode     Area       `json:"city_code"`
-	DistrictCode Area       `json:"district_code"`
-	VillageCode  Area       `json:"village_code"`
-	CreatedBy    User       `json:"created_by"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
+	ID        int64      `json:"id"`
+	Title     string     `json:"title"`
+	Priority  int8       `json:"priority"`
+	Date      time.Time  `json:"date"`
+	StartHour string     `json:"start_hour"`
+	EndHour   string     `json:"end_hour"`
+	Image     NullString `json:"image"`
+	Type      string     `json:"type"`
+	Status    string     `json:"status"`
+	Address   NullString `json:"address"`
+	URL       NullString `json:"url"`
+	Category  string     `json:"category"`
+	Tags      []DataTag  `json:"tags"`
+	CreatedBy User       `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 // StoreRequestEvent ..
@@ -53,7 +49,7 @@ type ListEventResponse struct {
 	Date      time.Time  `json:"date"`
 	StartHour string     `json:"start_hour"`
 	EndHour   string     `json:"end_hour"`
-	Priority  string     `json:"priority"`
+	Priority  int8       `json:"priority"`
 	Type      string     `json:"type"`
 	Status    string     `json:"status"`
 	Address   NullString `json:"address"`
