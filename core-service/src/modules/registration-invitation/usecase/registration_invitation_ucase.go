@@ -62,11 +62,11 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	regInvitation.Token, _ = r.generateInvitationToken()
 
 	// update invitation if email already exist
-	// if regInvitation.ID != nil {
-	// 	err = r.regInvitationRepo.Update(ctx, *regInvitation.ID, &regInvitation)
-	// } else {
-	// 	err = r.regInvitationRepo.Store(ctx, &regInvitation)
-	// }
+	if regInvitation.ID != nil {
+		err = r.regInvitationRepo.Update(ctx, *regInvitation.ID, &regInvitation)
+	} else {
+		err = r.regInvitationRepo.Store(ctx, &regInvitation)
+	}
 
 	t, _ := r.mailTemplateRepo.GetByTemplate(ctx, "registration_invitation")
 	registrationLink := fmt.Sprintf("%s/daftar?token=%s", config.LoadAppConfig().CmsUrl, regInvitation.Token)
