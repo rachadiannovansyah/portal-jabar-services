@@ -2,21 +2,27 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"strconv"
 
+	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/config"
+	"gopkg.in/gomail.v2"
 )
 
 // Conn ...
 type Conn struct {
 	Mysql *sql.DB
+	Redis *redis.Client
 }
 
 // NewDBConn ...
 func NewDBConn(cfg *config.Config) *Conn {
 	return &Conn{
 		Mysql: Initialize(cfg),
+		Redis: initRedisClient(cfg),
 	}
 }
 
@@ -33,4 +39,31 @@ func Initialize(cfg *config.Config) *sql.DB {
 	}
 
 	return db
+}
+
+// initRedisClient ...
+func initRedisClient(cfg *config.Config) *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", cfg.Redis.Host, cfg.Redis.Port),
+	})
+
+	_, err := rdb.Ping(rdb.Context()).Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return rdb
+}
+
+func InitMail() *gomail.Dialer {
+	port, _ := strconv.Atoi(config.LoadMailConfig().SMTPPort)
+
+	dialer := gomail.NewDialer(
+		config.LoadMailConfig().SMTPHost,
+		port,
+		config.LoadMailConfig().AuthEmail,
+		config.LoadMailConfig().AuthPassword,
+	)
+
+	return dialer
 }
