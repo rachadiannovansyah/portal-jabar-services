@@ -38,6 +38,8 @@ func main() {
 	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn) })
 	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn) })
 
+	fmt.Println("service-worker is running")
+
 	c.Start()
 	runtime.Goexit()
 }
@@ -58,7 +60,7 @@ func (w *worker) listenForMessages() {
 				fmt.Println(err.Error())
 			} else {
 				// FIXME: make data type of params to stuct
-				job.SendEmailJob(params["email"].(string), params["subject"].(string), params["body"].(string))
+				job.SendEmailJob(params["to"].(string), params["subject"].(string), params["body"].(string))
 			}
 		}
 	}
