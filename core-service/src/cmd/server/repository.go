@@ -11,6 +11,7 @@ import (
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
+	_mailRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mail/repository/redis"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_regInvitationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/repository/mysql"
 	_rolePermRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role-permission/repository/mysql"
@@ -40,6 +41,7 @@ type Repository struct {
 	RolePermRepo        domain.RolePermissionRepository
 	TemplateRepo        domain.TemplateRepository
 	RegInvitationRepo   domain.RegistrationInvitationRepository
+	MailRepo            domain.MailRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -61,5 +63,6 @@ func NewRepository(conn *utils.Conn) *Repository {
 		RolePermRepo:        _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
 		TemplateRepo:        _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
 		RegInvitationRepo:   _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
+		MailRepo:            _mailRepo.NewRedisMailRepository(conn.Redis),
 	}
 }
