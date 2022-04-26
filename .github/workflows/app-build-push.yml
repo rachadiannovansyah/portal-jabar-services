@@ -1,10 +1,10 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-name: CD
+name: Build-push
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - core-service/**
 
 defaults:
   run:
@@ -40,4 +40,4 @@ jobs:
         file: core-service/docker/Dockerfile
         context: ./core-service
         push: true
-        tags: ${{ secrets.IMAGE }}:${{ steps.vars.outputs.sha_short }}
+        tags: ${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}
