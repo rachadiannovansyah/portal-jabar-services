@@ -33,6 +33,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
+		"category":   c.QueryParam("cat"),
 		"categories": c.Request().URL.Query()["cat[]"],
 		"highlight":  c.QueryParam("highlight"),
 		"type":       c.QueryParam("type"),
