@@ -19,7 +19,7 @@ func NewMysqlAwardRepository(Conn *sql.DB) domain.AwardRepository {
 	return &mysqlAwardRepository{Conn}
 }
 
-var querySelectAward = `SELECT id, title, logo, appreciator, description, category, created_at, updated_at FROM awards`
+var querySelectAward = `SELECT id, title, logo, appreciator, description, category, created_at, updated_at FROM awards WHERE 1=1`
 
 func (m *mysqlAwardRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.Award, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -71,13 +71,25 @@ func (m *mysqlAwardRepository) count(ctx context.Context, query string) (total i
 }
 
 func (m *mysqlAwardRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Award, total int64, err error) {
-	query := querySelectAward
+	var query string
 
 	if params.Keyword != "" {
-		query += ` WHERE title LIKE '%` + params.Keyword + `%' `
+		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
-	query += ` ORDER BY created_at LIMIT ?,? `
+	if v, ok := params.Filters["category"]; ok && v != "" {
+		query += fmt.Sprintf(`%s AND category = '%s'`, query, v)
+	}
+
+	if params.SortBy != "" {
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query += ` ORDER BY created_at DESC`
+	}
+
+	total, _ = m.count(ctx, "SELECT COUNT(1) FROM awards WHERE 1=1"+query)
+
+	query = querySelectAward + query + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
@@ -85,13 +97,11 @@ func (m *mysqlAwardRepository) Fetch(ctx context.Context, params *domain.Request
 		return nil, 0, err
 	}
 
-	total, _ = m.count(ctx, "SELECT COUNT(1) FROM awards")
-
 	return
 }
 
 func (m *mysqlAwardRepository) GetByID(ctx context.Context, id int64) (res domain.Award, err error) {
-	query := querySelectAward + ` WHERE id = ?`
+	query := querySelectAward + ` AND id = ?`
 
 	list, err := m.fetch(ctx, query, id)
 	if err != nil {
