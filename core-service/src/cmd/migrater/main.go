@@ -313,9 +313,9 @@ func DoMapping(cfg *config.Config, command string) error {
         "views" : {
           "type" : "long"
         },
-				"is_active" : {
-					"type" : "boolean"
-				}
+        "is_active" : {
+          "type" : "boolean"
+        }
       }
     }
   }
