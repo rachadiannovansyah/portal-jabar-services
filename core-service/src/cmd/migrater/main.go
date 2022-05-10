@@ -124,7 +124,7 @@ func Migrate(dsn string, command string) error {
 }
 
 func DoTruncate(cfg *config.Config, command string) error {
-	es, err := elasticsearch.NewClient(cfg.ELastic)
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
 		return err
@@ -139,7 +139,7 @@ func DoTruncate(cfg *config.Config, command string) error {
 	mappingsBytes, _ := json.Marshal(&mappings)
 
 	req := esapi.DeleteByQueryRequest{
-		Index: []string{"ipj-content-dev"},
+		Index: []string{cfg.ELastic.IndexContent},
 		Body:  bytes.NewReader(mappingsBytes),
 	}
 	resMap, errMap := req.Do(context.Background(), es)
@@ -157,7 +157,7 @@ func DoTruncate(cfg *config.Config, command string) error {
 }
 
 func DoSyncElastic(cfg *config.Config, command string) error {
-	es, err := elasticsearch.NewClient(cfg.ELastic)
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
 		return err
@@ -235,7 +235,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
-				Index:      "ipj-content-dev",
+				Index:      cfg.ELastic.IndexContent,
 				DocumentID: uuid.New().String(),
 				Body:       strings.NewReader(b.String()),
 				Refresh:    "true",
@@ -269,7 +269,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 }
 
 func DoMapping(cfg *config.Config, command string) error {
-	es, _ := elasticsearch.NewClient(cfg.ELastic)
+	es, _ := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 
 	mappings := `
 	{
@@ -324,7 +324,7 @@ func DoMapping(cfg *config.Config, command string) error {
 	// indices.create
 
 	req := esapi.IndicesCreateRequest{
-		Index: "ipj-content-dev",
+		Index: cfg.ELastic.IndexContent,
 		Body:  strings.NewReader(mappings),
 	}
 

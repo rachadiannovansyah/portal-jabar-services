@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 
-	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/labstack/echo/v4/middleware"
 	newrelic "github.com/newrelic/go-agent"
 
@@ -17,7 +16,7 @@ type Config struct {
 	JWT      JWTConfig
 	Sentry   SentryConfig
 	Cors     middleware.CORSConfig
-	ELastic  elasticsearch.Config
+	ELastic  ElasticConfig
 	AWS      AwsConfig
 	Redis    RedisConfig
 	NewRelic newrelic.Config

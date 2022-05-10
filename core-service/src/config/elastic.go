@@ -5,10 +5,18 @@ import (
 	"github.com/spf13/viper"
 )
 
+type ElasticConfig struct {
+	ElasticConfig *elasticsearch.Config
+	IndexContent  string
+}
+
 // LoadElasticConfig loads the elasticsearch configuration
-func LoadElasticConfig() elasticsearch.Config {
-	return elasticsearch.Config{
-		CloudID: viper.GetString("ELASTIC_CLOUD_ID"),
-		APIKey:  viper.GetString("ELASTIC_API_KEY"),
+func LoadElasticConfig() ElasticConfig {
+	return ElasticConfig{
+		ElasticConfig: &elasticsearch.Config{
+			CloudID: viper.GetString("ELASTIC_CLOUD_ID"),
+			APIKey:  viper.GetString("ELASTIC_API_KEY"),
+		},
+		IndexContent: viper.GetString("ELASTIC_CONTENT_INDEX"),
 	}
 }

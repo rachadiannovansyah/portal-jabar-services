@@ -55,7 +55,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
 		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, r.UnitRepo, r.RoleRepo, r.RolePermRepo, timeoutContext),
-		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, timeoutContext),
+		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, cfg, timeoutContext),
 		UserUsecase:          _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, r.RegInvitationRepo, timeoutContext),
 		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),

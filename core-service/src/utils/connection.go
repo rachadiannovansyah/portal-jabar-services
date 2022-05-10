@@ -61,7 +61,7 @@ func initRedisClient(cfg *config.Config) *redis.Client {
 }
 
 func initELastClient(cfg *config.Config) *elasticsearch.Client {
-	es, err := elasticsearch.NewClient(cfg.ELastic)
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
