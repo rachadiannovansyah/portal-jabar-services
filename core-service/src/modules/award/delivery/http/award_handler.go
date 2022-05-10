@@ -31,7 +31,7 @@ func (h *AwardHandler) FetchAwards(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"category": c.QueryParam("cat"),
+		"categories": c.Request().URL.Query()["cat[]"],
 	}
 
 	listAward, total, err := h.UUsecase.Fetch(ctx, &params)
