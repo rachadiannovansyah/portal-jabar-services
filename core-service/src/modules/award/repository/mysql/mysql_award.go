@@ -156,7 +156,6 @@ func (m *mysqlAwardRepository) fetchCategories(ctx context.Context, query string
 		)
 
 		if err != nil {
-			logrus.Error(err)
 			return nil, err
 		}
 
