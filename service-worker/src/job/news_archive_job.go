@@ -93,4 +93,5 @@ func NewsArchiveJob(conn *utils.Conn, cfg *config.Config) {
 	defer esRes.Body.Close()
 	fmt.Println(esRes.String())
 
+	return
 }
