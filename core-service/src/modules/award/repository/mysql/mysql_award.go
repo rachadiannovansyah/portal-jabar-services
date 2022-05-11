@@ -120,3 +120,48 @@ func (m *mysqlAwardRepository) GetByID(ctx context.Context, id int64) (res domai
 
 	return
 }
+
+func (m *mysqlAwardRepository) FetchCategories(ctx context.Context) (res []domain.AwardCategoryAggregation, err error) {
+	query := `SELECT category, COUNT(1) FROM awards GROUP BY category`
+
+	res, err = m.fetchCategories(ctx, query)
+	if err != nil {
+		return []domain.AwardCategoryAggregation{}, err
+	}
+
+	return
+}
+
+// fetchCategories will fetch categories from database
+func (m *mysqlAwardRepository) fetchCategories(ctx context.Context, query string) (res []domain.AwardCategoryAggregation, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
+
+	result := make([]domain.AwardCategoryAggregation, 0)
+	for rows.Next() {
+		u := domain.AwardCategoryAggregation{}
+		err = rows.Scan(
+			&u.Category,
+			&u.Count,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+
+		result = append(result, u)
+	}
+
+	return result, nil
+}
