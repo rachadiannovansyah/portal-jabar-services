@@ -44,6 +44,6 @@ type SearchUsecase interface {
 
 // SearchRepository represent the search repository contract
 type SearchRepository interface {
-	Fetch(ctx context.Context, params *Request) (docs []SearchListResponse, total int64, aggs interface{}, err error)
-	SearchSuggestion(ctx context.Context, params *Request) (res []SuggestResponse, err error)
+	Fetch(ctx context.Context, indices string, params *Request) (docs []SearchListResponse, total int64, aggs interface{}, err error)
+	SearchSuggestion(ctx context.Context, indices string, params *Request) (res []SuggestResponse, err error)
 }

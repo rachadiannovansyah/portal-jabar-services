@@ -98,14 +98,14 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 	return
 }
 
-func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
+func (es *elasticSearchRepository) Fetch(ctx context.Context, indices string, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
 	esClient := es.Conn
 	query := buildQuery(params)
 
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esClient.Search(
 		esClient.Search.WithContext(ctx),
-		esClient.Search.WithIndex("ipj-content-staging"), // FIXME: this should use env
+		esClient.Search.WithIndex(indices), // FIXME: this should use env
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
 		esClient.Search.WithSize(int(params.PerPage)),
@@ -125,7 +125,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, params *domain.Req
 	return
 }
 
-func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params *domain.Request) (res []domain.SuggestResponse, err error) {
+func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, indices string, params *domain.Request) (res []domain.SuggestResponse, err error) {
 	var buf bytes.Buffer
 	key := params.Filters["suggestions"]
 
@@ -153,7 +153,7 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, params 
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esclient.Search(
 		esclient.Search.WithContext(ctx),
-		esclient.Search.WithIndex("ipj-content-staging"),
+		esclient.Search.WithIndex(indices),
 		esclient.Search.WithBody(&buf),
 		esclient.Search.WithSize(5),
 	)
