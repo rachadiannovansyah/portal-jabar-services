@@ -35,7 +35,8 @@ func main() {
 	go w.listenForMessages()
 
 	c := cron.New()
-	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn) })
+	cfg := config.NewConfig()
+	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn, cfg) })
 	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn) })
 
 	fmt.Println("service-worker is running")

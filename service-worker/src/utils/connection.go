@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/config"
@@ -14,15 +15,17 @@ import (
 
 // Conn ...
 type Conn struct {
-	Mysql *sql.DB
-	Redis *redis.Client
+	Mysql   *sql.DB
+	Redis   *redis.Client
+	Elastic *elasticsearch.Client
 }
 
 // NewDBConn ...
 func NewDBConn(cfg *config.Config) *Conn {
 	return &Conn{
-		Mysql: Initialize(cfg),
-		Redis: initRedisClient(cfg),
+		Mysql:   Initialize(cfg),
+		Redis:   initRedisClient(cfg),
+		Elastic: initELastClient(cfg),
 	}
 }
 
@@ -66,4 +69,20 @@ func InitMail() *gomail.Dialer {
 	)
 
 	return dialer
+}
+
+func initELastClient(cfg *config.Config) *elasticsearch.Client {
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 1. Get cluster info
+	res, err := es.Info()
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	return es
 }

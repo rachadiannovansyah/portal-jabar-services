@@ -5,6 +5,8 @@ go 1.16
 require (
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/cncf/xds/go v0.0.0-20211130200136-a8f946100490 // indirect
+	github.com/elastic/go-elasticsearch v0.0.0 // indirect
+	github.com/elastic/go-elasticsearch/v8 v8.2.0
 	github.com/envoyproxy/go-control-plane v0.10.1 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.6.2 // indirect
 	github.com/go-redis/redis/v8 v8.11.5
