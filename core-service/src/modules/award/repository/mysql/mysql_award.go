@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type mysqlAwardRepository struct {
@@ -77,8 +78,11 @@ func (m *mysqlAwardRepository) Fetch(ctx context.Context, params *domain.Request
 		query += ` AND title LIKE '%` + params.Keyword + `%' `
 	}
 
-	if v, ok := params.Filters["category"]; ok && v != "" {
-		query += fmt.Sprintf(`%s AND category = '%s'`, query, v)
+	if v, ok := params.Filters["categories"]; ok && v != "" {
+		categories := params.Filters["categories"].([]string)
+		if len(categories) > 0 {
+			query = fmt.Sprintf(`%s AND category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+		}
 	}
 
 	if params.SortBy != "" {
