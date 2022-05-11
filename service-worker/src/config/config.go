@@ -8,8 +8,9 @@ import (
 
 // Config is the struct for the config
 type Config struct {
-	DB    DBConfig
-	Redis RedisConfig
+	DB      DBConfig
+	Redis   RedisConfig
+	ELastic ElasticConfig
 }
 
 // NewConfig creates a new Config struct
@@ -23,7 +24,8 @@ func NewConfig() *Config {
 	}
 
 	return &Config{
-		DB:    LoadDBConfig(),
-		Redis: LoadRedisConfig(),
+		DB:      LoadDBConfig(),
+		Redis:   LoadRedisConfig(),
+		ELastic: LoadElasticConfig(),
 	}
 }
