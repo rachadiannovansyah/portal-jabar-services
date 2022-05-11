@@ -44,3 +44,16 @@ func (n *awardUsecase) GetByID(c context.Context, id int64) (res domain.Award, e
 
 	return
 }
+
+// FetchCategories will fetch all categories
+func (n *awardUsecase) FetchCategories(c context.Context) (res []domain.AwardCategoryAggregation, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.awardRepo.FetchCategories(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}

@@ -22,6 +22,7 @@ func NewAwardHandler(e *echo.Group, us domain.AwardUsecase) {
 	}
 	e.GET("/awards", handler.FetchAwards)
 	e.GET("/awards/:id", handler.GetByID)
+	e.GET("/awards/categories", handler.FetchCategories)
 }
 
 // FetchAwards will fetch the content based on given params
@@ -61,4 +62,16 @@ func (h *AwardHandler) GetByID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &award})
+}
+
+// FetchCategories will fetch the aggregation category
+func (h *AwardHandler) FetchCategories(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	listCategories, err := h.UUsecase.FetchCategories(ctx)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, listCategories)
 }
