@@ -48,7 +48,7 @@ type Usecases struct {
 func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
 		AreaUcase:            _areaUcase.NewAreaUsecase(r.AreaRepo, timeoutContext),
-		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagRepo, r.DataTagsRepo, r.AreaRepo, timeoutContext),
+		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagRepo, r.DataTagsRepo, r.AreaRepo, r.SearchRepo, timeoutContext),
 		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
 		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
 		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.TagRepo, r.DataTagsRepo, r.UserRepo, timeoutContext),

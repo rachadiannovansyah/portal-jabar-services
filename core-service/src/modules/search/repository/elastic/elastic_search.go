@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/mitchellh/mapstructure"
@@ -191,6 +195,119 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, indices
 			res = append(res, suggestData)
 		}
 	}
+
+	return
+}
+
+func (es *elasticSearchRepository) Store(ctx context.Context, indices string, data *domain.Search) (err error) {
+	esclient := es.Conn
+
+	req := esapi.IndexRequest{
+		Index:      indices,
+		DocumentID: uuid.New().String(),
+		Body:       strings.NewReader(data.Content),
+		Refresh:    "true",
+	}
+
+	res, err := req.Do(ctx, esclient)
+	if err != nil {
+		return
+	}
+
+	defer res.Body.Close()
+	if res.IsError() {
+		return fmt.Errorf("[%s] %s", res.Status(), res.String())
+	} else {
+		logrus.Printf("[%s] Index created", res.Status())
+	}
+
+	return
+}
+
+func (es *elasticSearchRepository) Update(ctx context.Context, indices string, id int, data *domain.Search) (err error) {
+	esclient := es.Conn
+
+	doc := q{
+		"query": q{
+			"bool": q{
+				"must": []q{
+					q{
+						"match": q{
+							"id": id,
+						},
+					},
+					q{
+						"match": q{
+							"domain": data.Domain,
+						},
+					},
+				},
+			},
+		},
+		"script": q{
+			"source": "ctx._source.content = params.content",
+			"params": q{
+				"content": data.Content,
+			},
+		},
+	}
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(doc); err != nil {
+		return err
+	}
+
+	esRes, esErr := esclient.UpdateByQuery(
+		[]string{indices},
+		esclient.UpdateByQuery.WithBody(&buf),
+		esclient.UpdateByQuery.WithContext(context.Background()),
+	)
+
+	if esErr != nil {
+		return esErr
+	}
+
+	defer esRes.Body.Close()
+	fmt.Println(esRes.String())
+
+	return
+}
+
+func (es *elasticSearchRepository) Delete(ctx context.Context, indices string, id int, domain string) (err error) {
+	esclient := es.Conn
+
+	doc := q{
+		"query": q{
+			"bool": q{
+				"must": []q{
+					q{
+						"match": q{
+							"id": id,
+						},
+					},
+					q{
+						"match": q{
+							"domain": domain,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(doc); err != nil {
+		return err
+	}
+
+	esRes, esErr := esclient.DeleteByQuery([]string{indices}, &buf)
+
+	if esErr != nil {
+		return esErr
+	}
+
+	defer esRes.Body.Close()
+	fmt.Println(esRes.String())
 
 	return
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/copier"
 
 	"github.com/google/uuid"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
@@ -20,12 +21,14 @@ type newsUsecase struct {
 	tagRepo        domain.TagRepository
 	dataTagRepo    domain.DataTagRepository
 	areaRepo       domain.AreaRepository
+	searchRepo     domain.SearchRepository
+	cfg            *config.Config
 	contextTimeout time.Duration
 }
 
 // NewNewsUsecase will create new an newsUsecase object representation of domain.newsUsecase interface
 func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u domain.UserRepository, tr domain.TagRepository,
-	dtr domain.DataTagRepository, ar domain.AreaRepository, timeout time.Duration) domain.NewsUsecase {
+	dtr domain.DataTagRepository, ar domain.AreaRepository, sr domain.SearchRepository, cfg *config.Config, timeout time.Duration) domain.NewsUsecase {
 	return &newsUsecase{
 		newsRepo:       n,
 		categories:     nc,
@@ -33,6 +36,8 @@ func NewNewsUsecase(n domain.NewsRepository, nc domain.CategoryRepository, u dom
 		tagRepo:        tr,
 		dataTagRepo:    dtr,
 		areaRepo:       ar,
+		searchRepo:     sr,
+		cfg:            cfg,
 		contextTimeout: timeout,
 	}
 }
@@ -455,6 +460,20 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
 		return
 	}
+
+	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
+		ID:        int(dt.ID),
+		Domain:    "news",
+		Title:     dt.Title,
+		Excerpt:   dt.Excerpt,
+		Content:   dt.Content,
+		Slug:      dt.Slug,
+		Category:  dt.Category,
+		Thumbnail: *dt.Image,
+		CreatedAt: dt.CreatedAt,
+		UpdatedAt: dt.UpdatedAt,
+		IsActive:  dt.IsLive == 1,
+	})
 
 	return
 }
