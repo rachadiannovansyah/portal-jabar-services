@@ -37,7 +37,7 @@ func main() {
 	c := cron.New()
 	cfg := config.NewConfig()
 	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn, cfg) })
-	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn) })
+	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn, cfg) })
 
 	fmt.Println("service-worker is running")
 
