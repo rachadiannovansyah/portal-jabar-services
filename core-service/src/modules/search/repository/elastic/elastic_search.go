@@ -69,12 +69,23 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 			q{"created_at": q{"order": params.SortOrder}},
 		},
 		"query": q{
-			"multi_match": q{
-				"query":         params.Keyword,
-				"fields":        []string{"title", "content"},
-				"type":          "best_fields",
-				"fuzziness":     "AUTO",
-				"prefix_length": 2,
+			"bool": q{
+				"must": []q{
+					q{
+						"match": q{
+							"is_active": true,
+						},
+					},
+					q{
+						"multi_match": q{
+							"query":         params.Keyword,
+							"fields":        []string{"title", "content"},
+							"type":          "best_fields",
+							"fuzziness":     "AUTO",
+							"prefix_length": 2,
+						},
+					},
+				},
 			},
 		},
 		"aggs": q{
