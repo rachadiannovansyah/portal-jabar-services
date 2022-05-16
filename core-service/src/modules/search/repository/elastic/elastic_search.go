@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -202,10 +202,29 @@ func (es *elasticSearchRepository) SearchSuggestion(ctx context.Context, indices
 func (es *elasticSearchRepository) Store(ctx context.Context, indices string, data *domain.Search) (err error) {
 	esclient := es.Conn
 
+	//format time
+	formatTime := "2006-01-02 15:04:05"
+
+	// prepare the data to be indexed
+	doc := q{
+		"id":         data.ID,
+		"domain":     data.Domain,
+		"title":      data.Title,
+		"excerpt":    data.Excerpt,
+		"slug":       data.Slug,
+		"category":   data.Category,
+		"thumbnail":  data.Thumbnail,
+		"created_at": data.CreatedAt.Format(formatTime),
+		"updated_at": data.UpdatedAt.Format(formatTime),
+		"is_active":  data.IsActive,
+	}
+
+	jsonString, err := json.Marshal(doc)
+
 	req := esapi.IndexRequest{
 		Index:      indices,
 		DocumentID: uuid.New().String(),
-		Body:       strings.NewReader(data.Content),
+		Body:       strings.NewReader(string(jsonString)),
 		Refresh:    "true",
 	}
 
@@ -244,10 +263,18 @@ func (es *elasticSearchRepository) Update(ctx context.Context, indices string, i
 				},
 			},
 		},
+		// update all fields
 		"script": q{
-			"source": "ctx._source.content = params.content",
+			"source": "ctx._source.title = params.title; ctx._source.excerpt = params.excerpt; ctx._source.slug = params.slug; ctx._source.category = params.category; ctx._source.thumbnail = params.thumbnail; ctx._source.updated_at = params.updated_at; ctx._source.is_active = params.is_active;",
+			"lang":   "painless",
 			"params": q{
-				"content": data.Content,
+				"title":      data.Title,
+				"excerpt":    data.Excerpt,
+				"slug":       data.Slug,
+				"category":   data.Category,
+				"thumbnail":  data.Thumbnail,
+				"updated_at": data.UpdatedAt.Format("2006-01-02 15:04:05"),
+				"is_active":  data.IsActive,
 			},
 		},
 	}

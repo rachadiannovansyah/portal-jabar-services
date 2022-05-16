@@ -461,6 +461,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		return
 	}
 
+	// FIXME: make a function to prepare data for search index
 	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
 		ID:        int(dt.ID),
 		Domain:    "news",
@@ -497,6 +498,20 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		logrus.Error(err)
 	}
 
+	if esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
+		Domain:    "news",
+		Title:     dt.Title,
+		Excerpt:   dt.Excerpt,
+		Content:   dt.Content,
+		Slug:      dt.Slug,
+		Category:  dt.Category,
+		Thumbnail: *dt.Image,
+		UpdatedAt: time.Now(),
+		IsActive:  news.IsLive == 1,
+	}); esErr != nil {
+		logrus.Error(esErr)
+	}
+
 	return n.newsRepo.Update(ctx, id, dt)
 }
 
@@ -523,12 +538,41 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		helpers.SetPropLiveNews(&newsRequest)
 	}
 
-	return n.newsRepo.Update(ctx, id, &newsRequest)
+	err = n.newsRepo.Update(ctx, id, &newsRequest)
+	if err != nil {
+		return
+	}
+
+	esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
+		Domain:    "news",
+		Title:     news.Title,
+		Excerpt:   news.Excerpt,
+		Content:   news.Content,
+		Slug:      news.Slug,
+		Category:  news.Category,
+		Thumbnail: *news.Image,
+		UpdatedAt: time.Now(),
+		IsActive:  news.IsLive == 1,
+	})
+	if esErr != nil {
+		logrus.Error(esErr)
+	}
+
+	return
 }
 
 func (u *newsUsecase) Delete(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	return u.newsRepo.Delete(ctx, id)
+	if err = u.newsRepo.Delete(ctx, id); err != nil {
+		return
+	}
+
+	esErr := u.searchRepo.Delete(ctx, u.cfg.ELastic.IndexContent, int(id), "news")
+	if err != nil {
+		logrus.Error(esErr)
+	}
+
+	return
 }
