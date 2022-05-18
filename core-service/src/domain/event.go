@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const ConstEvent string = "event"
+
 // Event ...
 type Event struct {
 	ID        int64      `json:"id"`

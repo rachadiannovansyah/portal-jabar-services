@@ -48,7 +48,7 @@ func (u *eventUcase) fillDataTags(c context.Context, data []domain.Event) ([]dom
 	for idx := range mapTags {
 		eventID := idx
 		g.Go(func() (err error) {
-			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID)
+			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID, domain.ConstEvent)
 			chanTags <- res
 			return
 		})
@@ -99,7 +99,7 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 	for idx := range mapTags {
 		eventID := idx
 		g.Go(func() (err error) {
-			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID)
+			res, err := u.dataTagRepo.FetchDataTags(ctx, eventID, domain.ConstEvent)
 			chanTags <- res
 			return
 		})
@@ -159,7 +159,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 			DataID:  eventID,
 			TagID:   tag.ID,
 			TagName: tagName,
-			Type:    "event",
+			Type:    domain.ConstEvent,
 		}
 		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
 		if err != nil {
@@ -271,7 +271,7 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.StoreReque
 
 	err = u.eventRepo.Update(ctx, id, body)
 
-	err = u.dataTagRepo.DeleteDataTag(ctx, id, "event")
+	err = u.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstEvent)
 	if err != nil {
 		return
 	}

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const ConstNews string = "news"
+
 // News ...
 type News struct {
 	ID          int64      `json:"id"`
