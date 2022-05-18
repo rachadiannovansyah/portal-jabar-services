@@ -52,7 +52,7 @@ func (n *newsUsecase) fillDataTags(c context.Context, data []domain.News) ([]dom
 	for idx := range mapNews {
 		newsID := idx
 		g.Go(func() (err error) {
-			res, err := n.dataTagRepo.FetchDataTags(ctx, newsID)
+			res, err := n.dataTagRepo.FetchDataTags(ctx, newsID, domain.ConstNews)
 			chanTags <- res
 			return
 		})
@@ -100,7 +100,7 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	// Using goroutine to fetch the list tags
 	chanTags := make(chan []domain.DataTag)
 	g.Go(func() (err error) {
-		res, err := n.dataTagRepo.FetchDataTags(ctx, data.ID)
+		res, err := n.dataTagRepo.FetchDataTags(ctx, data.ID, domain.ConstNews)
 		chanTags <- res
 		return
 	})
@@ -301,7 +301,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 			DataID:  newsId,
 			TagID:   tag.ID,
 			TagName: tagName,
-			Type:    "news",
+			Type:    domain.ConstNews,
 		}
 		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
 
@@ -470,7 +470,7 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 
 	dt.Slug = news.Slug
 
-	if err := n.dataTagRepo.DeleteDataTag(ctx, id, "news"); err != nil {
+	if err := n.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstNews); err != nil {
 		logrus.Error(err)
 	}
 

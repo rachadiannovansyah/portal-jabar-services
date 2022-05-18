@@ -52,10 +52,10 @@ func (m *mysqlDataTagRepository) fetch(ctx context.Context, query string, args .
 	return res, nil
 }
 
-func (m *mysqlDataTagRepository) FetchDataTags(ctx context.Context, id int64) (res []domain.DataTag, err error) {
-	query := `SELECT id, data_id, tag_id, tag_name, type FROM data_tags WHERE data_id = ?`
+func (m *mysqlDataTagRepository) FetchDataTags(ctx context.Context, id int64, domain string) (res []domain.DataTag, err error) {
+	query := `SELECT id, data_id, tag_id, tag_name, type FROM data_tags WHERE data_id = ? AND type = ?`
 
-	res, err = m.fetch(ctx, query, id)
+	res, err = m.fetch(ctx, query, id, domain)
 	if err != nil {
 		return nil, err
 	}
