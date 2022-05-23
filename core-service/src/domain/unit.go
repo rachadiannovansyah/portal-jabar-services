@@ -22,8 +22,12 @@ type Unit struct {
 
 // UnitInfo ...
 type UnitInfo struct {
-	ID   int64      `json:"id"`
-	Name NullString `json:"name" validate:"required"`
+	ID      int64      `json:"id"`
+	Name    NullString `json:"name" validate:"required"`
+	Chief   NullString `json:"chief"`
+	Address NullString `json:"address"`
+	Website NullString `json:"website"`
+	Logo    NullString `json:"logo"`
 }
 
 // UnitUsecase represent the unit usecases

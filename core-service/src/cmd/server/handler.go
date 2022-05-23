@@ -22,6 +22,7 @@ import (
 	_areaHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/delivery/http"
 	_authHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/delivery/http"
 	_awardHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/award/delivery/http"
+	_districtHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/district/delivery/http"
 	_eventHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/delivery/http"
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
@@ -82,6 +83,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_templateHttpDelivery.NewMailHandler(v1, r, u.TemplateUsecase)
 	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(v1, r, u.RegInvitationUsecase)
 	_awardHttpDelivery.NewAwardHandler(v1, u.AwardUsecase)
+	_districtHttpDelivery.NewDistrictHandler(v1, u.DistrictUsecase)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

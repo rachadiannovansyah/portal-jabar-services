@@ -10,6 +10,7 @@ import (
 	_areaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/usecase"
 	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
 	_awardUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/award/usecase"
+	_districtUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/district/usecase"
 	_eventUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/usecase"
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
@@ -42,6 +43,7 @@ type Usecases struct {
 	TemplateUsecase      domain.TemplateUsecase
 	RegInvitationUsecase domain.RegistrationInvitationUsecase
 	AwardUsecase         domain.AwardUsecase
+	DistrictUsecase      domain.DistrictUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -62,5 +64,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		TemplateUsecase:      _templateUcase.NewTemplateUsecase(r.TemplateRepo, r.UserRepo, timeoutContext),
 		RegInvitationUsecase: _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, r.MailRepo, r.TemplateRepo, timeoutContext),
 		AwardUsecase:         _awardUcase.NewAwardUsecase(r.AwardRepo, timeoutContext),
+		DistrictUsecase:      _districtUcase.NewDistrictUsecase(r.DistrictRepo, timeoutContext),
 	}
 }

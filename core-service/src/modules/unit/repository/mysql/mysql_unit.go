@@ -81,7 +81,13 @@ func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
 	}
 
-	query += ` ORDER BY created_at LIMIT ?,? `
+	if params.SortBy != "" {
+		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		query += ` ORDER BY created_at DESC `
+	}
+
+	query += ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 

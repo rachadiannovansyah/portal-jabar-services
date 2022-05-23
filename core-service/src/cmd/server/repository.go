@@ -8,6 +8,7 @@ import (
 	_awardRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/award/repository/mysql"
 	_categoryRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/category/repository/mysql"
 	_dataTagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/data-tag/repository/mysql"
+	_districtRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/district/repository/mysql"
 	_eventRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/repository/mysql"
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
@@ -44,6 +45,7 @@ type Repository struct {
 	RegInvitationRepo   domain.RegistrationInvitationRepository
 	MailRepo            domain.MailRepository
 	AwardRepo           domain.AwardRepository
+	DistrictRepo        domain.DistrictRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -67,5 +69,6 @@ func NewRepository(conn *utils.Conn) *Repository {
 		RegInvitationRepo:   _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
 		MailRepo:            _mailRepo.NewRedisMailRepository(conn.Redis),
 		AwardRepo:           _awardRepo.NewMysqlAwardRepository(conn.Mysql),
+		DistrictRepo:        _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
 	}
 }
