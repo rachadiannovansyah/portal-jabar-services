@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"github.com/golang-migrate/migrate"
@@ -174,7 +175,6 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 		logrus.Fatalf("Error getting response: %s", err)
 	}
 	defer res.Body.Close()
-	logrus.Println(res)
 
 	dbConn := utils.NewDBConn(cfg)
 
@@ -217,6 +217,12 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 
 			//format time
 			layout := "2006-01-02 15:04:05"
+
+			body, err := goquery.NewDocumentFromReader(strings.NewReader(data.Content))
+			if err != nil {
+				log.Fatal(err)
+			}
+			content = strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
 
 			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
 			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "news"))

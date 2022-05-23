@@ -40,9 +40,6 @@ type SuggestResponse struct {
 // SearchUsecase represent the search usecases
 type SearchUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]SearchListResponse, int64, interface{}, error)
-	Store(ctx context.Context, indices string, body *Search) error
-	Update(ctx context.Context, indices string, id int, body *Search) error
-	Delete(ctx context.Context, indices string, id int, domain string) error
 	SearchSuggestion(ctx context.Context, params *Request) ([]SuggestResponse, error)
 }
 
