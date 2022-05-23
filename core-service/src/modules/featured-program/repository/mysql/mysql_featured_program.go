@@ -20,7 +20,7 @@ func NewMysqlFeaturedProgramRepository(Conn *sql.DB) domain.FeaturedProgramRepos
 	return &mysqlFeaturedProgramRepository{Conn}
 }
 
-var querySelect = `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo FROM featured_programs`
+var querySelect = `SELECT id, title, excerpt, description, organization, categories, service_type, websites, social_media, logo, created_at, updated_at FROM featured_programs`
 
 func getJSONSearch(params *domain.Request) (query string) {
 	query = ` WHERE 1=1`
@@ -69,6 +69,8 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 			&fp.Websites,
 			&fp.SocialMedia,
 			&fp.Logo,
+			&fp.CreatedAt,
+			&fp.UpdatedAt,
 		)
 
 		if err != nil {

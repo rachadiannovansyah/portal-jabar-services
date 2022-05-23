@@ -20,6 +20,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	_fProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/pkg/errors"
@@ -56,6 +57,8 @@ func run() error {
 		err = DoMapping(cfg, os.Args[2])
 	case "es:sync":
 		err = DoSyncElastic(cfg, os.Args[2])
+	case "es:fpsync":
+		err = DoSyncElasticFeaturedProgram(cfg, os.Args[2])
 	case "es:truncate":
 		err = DoTruncate(cfg, os.Args[2])
 	default:
@@ -264,6 +267,111 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 					log.Printf("Error parsing the response body: %s", err)
 				} else {
 					// Print the response status and indexed document version.
+					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
+				}
+			}
+		}(i, data)
+	}
+	wg.Wait()
+
+	return nil
+}
+
+func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+	log.SetFlags(0)
+
+	var (
+		wg sync.WaitGroup
+	)
+
+	// 1. Get cluster info
+	res, err := es.Info()
+	if err != nil {
+		logrus.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	dbConn := utils.NewDBConn(cfg)
+
+	defer func() {
+		err := dbConn.Mysql.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	_fProgramRepo := _fProgramRepo.NewMysqlFeaturedProgramRepository(dbConn.Mysql)
+	featuredProgram, err := _fProgramRepo.Fetch(context.TODO(), &domain.Request{PerPage: 100, Filters: map[string]interface{}{
+		"categories": []string{},
+	}})
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	// 3. Index documents concurrently
+	for i, data := range featuredProgram {
+		wg.Add(1)
+
+		go func(i int, data domain.FeaturedProgram) {
+			defer wg.Done()
+
+			// Build the request body.
+			var b strings.Builder
+
+			//format time
+			layout := "2006-01-02 15:04:05"
+
+			re := regexp.MustCompile(`\r?\n`)
+			excerpt := strings.ReplaceAll(re.ReplaceAllString(data.Excerpt, " "), `"`, "")
+			content := strings.ReplaceAll(re.ReplaceAllString(data.Description, " "), `"`, "")
+			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
+			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "featured_program"))
+			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Title))
+			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, excerpt))
+			b.WriteString(fmt.Sprintf(`"content" : "%v",`, content))
+			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"category" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"views" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.Logo.String))
+			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
+			// fmt.Println(b.String())
+
+			// Set up the request object.
+			req := esapi.IndexRequest{
+				Index:      cfg.ELastic.IndexContent,
+				DocumentID: uuid.New().String(),
+				Body:       strings.NewReader(b.String()),
+				Refresh:    "true",
+			}
+
+			// Perform the request with the client.
+			res, err := req.Do(context.Background(), es)
+			if err != nil {
+				log.Fatalf("Error getting response: %s", err)
+			}
+			defer res.Body.Close()
+
+			if res.IsError() {
+				log.Println(res)
+				log.Printf("[%s] Error indexing document ID=%d", res.Status(), data.ID)
+			} else {
+				// Deserialize the response into a map.
+				var r map[string]interface{}
+				if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+					log.Printf("Error parsing the response body: %s", err)
+				} else {
+					// Print the response status and indexed document version.
+					// fmt.Println(b.String())
+
 					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
 				}
 			}
