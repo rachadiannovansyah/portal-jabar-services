@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/google/uuid"
@@ -205,12 +207,20 @@ func (es *elasticSearchRepository) Store(ctx context.Context, indices string, da
 	//format time
 	formatTime := "2006-01-02 15:04:05"
 
+	body, err := goquery.NewDocumentFromReader(strings.NewReader(data.Content))
+	if err != nil {
+		return
+	}
+	re := regexp.MustCompile(`\r?\n`)
+	content := strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
+
 	// prepare the data to be indexed
 	doc := q{
 		"id":         data.ID,
 		"domain":     data.Domain,
 		"title":      data.Title,
 		"excerpt":    data.Excerpt,
+		"content":    content,
 		"slug":       data.Slug,
 		"category":   data.Category,
 		"thumbnail":  data.Thumbnail,
@@ -246,6 +256,13 @@ func (es *elasticSearchRepository) Store(ctx context.Context, indices string, da
 func (es *elasticSearchRepository) Update(ctx context.Context, indices string, id int, data *domain.Search) (err error) {
 	esclient := es.Conn
 
+	body, err := goquery.NewDocumentFromReader(strings.NewReader(data.Content))
+	if err != nil {
+		return
+	}
+	re := regexp.MustCompile(`\r?\n`)
+	content := strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
+
 	doc := q{
 		"query": q{
 			"bool": q{
@@ -265,11 +282,12 @@ func (es *elasticSearchRepository) Update(ctx context.Context, indices string, i
 		},
 		// update all fields
 		"script": q{
-			"source": "ctx._source.title = params.title; ctx._source.excerpt = params.excerpt; ctx._source.slug = params.slug; ctx._source.category = params.category; ctx._source.thumbnail = params.thumbnail; ctx._source.updated_at = params.updated_at; ctx._source.is_active = params.is_active;",
+			"source": "ctx._source.title = params.title; ctx._source.excerpt = params.excerpt; ctx._source.content = params.content; ctx._source.slug = params.slug; ctx._source.category = params.category; ctx._source.thumbnail = params.thumbnail; ctx._source.updated_at = params.updated_at; ctx._source.is_active = params.is_active;",
 			"lang":   "painless",
 			"params": q{
 				"title":      data.Title,
 				"excerpt":    data.Excerpt,
+				"content":    content,
 				"slug":       data.Slug,
 				"category":   data.Category,
 				"thumbnail":  data.Thumbnail,
