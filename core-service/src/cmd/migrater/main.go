@@ -189,7 +189,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 	}()
 
 	newsRepo := _newsRepo.NewMysqlNewsRepository(dbConn.Mysql)
-	news, _, err := newsRepo.Fetch(context.TODO(), &domain.Request{PerPage: 100})
+	news, _, err := newsRepo.Fetch(context.TODO(), &domain.Request{PerPage: 10000})
 
 	if err != nil {
 		logrus.Error(err)
