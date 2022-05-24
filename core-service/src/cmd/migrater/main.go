@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/elastic/go-elasticsearch/v8"
@@ -197,6 +198,8 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 
 	// 3. Index documents concurrently
 	for i, data := range news {
+		time.Sleep(600 * time.Millisecond)
+	
 		wg.Add(1)
 
 		go func(i int, data domain.News) {
@@ -240,7 +243,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.Image))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, data.IsLive == 1))
-			fmt.Println(b.String())
+			//fmt.Println(b.String())
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
@@ -258,7 +261,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			defer res.Body.Close()
 
 			if res.IsError() {
-				log.Println(res)
+				// log.Println(res)
 				log.Printf("[%s] Error indexing document ID=%d", res.Status(), i+1)
 			} else {
 				// Deserialize the response into a map.
