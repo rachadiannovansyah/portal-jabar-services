@@ -20,7 +20,7 @@ func NewMysqlUnitRepository(Conn *sql.DB) domain.UnitRepository {
 }
 
 var querySelectUnit = `SELECT id, parent_id, name, description, logo, website, phone, address, chief, 
-	created_at, updated_at FROM units`
+	created_at, updated_at FROM units WHERE 1=1`
 
 func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.Unit, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -75,10 +75,10 @@ func (m *mysqlUnitRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Unit, total int64, err error) {
-	query := querySelectUnit
+	var query string
 
 	if params.Keyword != "" {
-		query += ` WHERE name LIKE '%` + params.Keyword + `%' `
+		query += ` AND name LIKE '%` + params.Keyword + `%' `
 	}
 
 	if params.SortBy != "" {
@@ -87,15 +87,15 @@ func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY created_at DESC `
 	}
 
-	query += ` LIMIT ?,? `
+	total, _ = m.count(ctx, `SELECT COUNT(1) FROM units WHERE 1=1`+query)
+
+	query = querySelectUnit + query + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
 		return nil, 0, err
 	}
-
-	total, _ = m.count(ctx, "SELECT COUNT(1) FROM units")
 
 	return
 }
