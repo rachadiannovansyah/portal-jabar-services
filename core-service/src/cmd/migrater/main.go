@@ -22,6 +22,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	_fProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_pServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -59,6 +60,8 @@ func run() error {
 		err = DoSyncElastic(cfg, os.Args[2])
 	case "es:fpsync":
 		err = DoSyncElasticFeaturedProgram(cfg, os.Args[2])
+	case "es:pssync":
+		err = DoSyncElasticPublicService(cfg, os.Args[2])
 	case "es:truncate":
 		err = DoTruncate(cfg, os.Args[2])
 	default:
@@ -372,6 +375,107 @@ func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
 					// Print the response status and indexed document version.
 					// fmt.Println(b.String())
 
+					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
+				}
+			}
+		}(i, data)
+	}
+	wg.Wait()
+
+	return nil
+}
+
+func DoSyncElasticPublicService(cfg *config.Config, command string) error {
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	var (
+		wg sync.WaitGroup
+	)
+
+	// 1. Get cluster info
+	res, err := es.Info()
+	// fmt.Println("THIS IS RES", res, err)
+	if err != nil {
+		logrus.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	dbConn := utils.NewDBConn(cfg)
+
+	defer func() {
+		err := dbConn.Mysql.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	_pServiceRepo := _pServiceRepo.NewMysqlPublicServiceRepository(dbConn.Mysql)
+	publicService, err := _pServiceRepo.Fetch(context.TODO(), &domain.Request{PerPage: 100, Filters: map[string]interface{}{
+		"categories": []string{},
+	}})
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	// 3. Index documents concurrently
+	for i, data := range publicService {
+		wg.Add(1)
+
+		go func(i int, data domain.PublicService) {
+			defer wg.Done()
+
+			// Build the request body.
+			var b strings.Builder
+
+			//format time
+			layout := "2006-01-02 15:04:05"
+
+			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
+			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "public_service"))
+			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Name))
+			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"content" : "%v",`, data.Description.String))
+			b.WriteString(fmt.Sprintf(`"unit" : "%v",`, data.Unit.String))
+			b.WriteString(fmt.Sprintf(`"url" : "%v",`, data.Url.String))
+			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"category" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"views" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
+
+			// Set up the request object.
+			req := esapi.IndexRequest{
+				Index:      cfg.ELastic.IndexContent,
+				DocumentID: uuid.New().String(),
+				Body:       strings.NewReader(b.String()),
+				Refresh:    "true",
+			}
+
+			// Perform the request with the client.
+			res, err := req.Do(context.Background(), es)
+			if err != nil {
+				log.Fatalf("Error getting response: %s", err)
+			}
+			defer res.Body.Close()
+
+			if res.IsError() {
+				log.Println(res)
+				log.Printf("[%s] Error indexing document ID=%d", res.Status(), data.ID)
+			} else {
+				// Deserialize the response into a map.
+				var r map[string]interface{}
+				if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+					log.Printf("Error parsing the response body: %s", err)
+				} else {
+					// Print the response status and indexed document version.
 					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
 				}
 			}
