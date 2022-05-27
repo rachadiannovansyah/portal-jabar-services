@@ -199,7 +199,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 	// 3. Index documents concurrently
 	for i, data := range news {
 		time.Sleep(600 * time.Millisecond)
-	
+
 		wg.Add(1)
 
 		go func(i int, data domain.News) {
@@ -209,17 +209,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			var b strings.Builder
 			re := regexp.MustCompile(`\r?\n`)
 
-			excerpt := ""
-			if err != nil {
-				panic(err)
-			}
-
-			content := "" //html2text.HTML2Text(data.Content)
-			if err != nil {
-				panic(err)
-			}
-			excerpt = strings.ReplaceAll(re.ReplaceAllString(excerpt, " "), `"`, "")
-			content = strings.ReplaceAll(re.ReplaceAllString(content, " "), `"`, "")
+			excerpt := strings.ReplaceAll(re.ReplaceAllString(data.Excerpt, " "), `"`, "")
 
 			//format time
 			layout := "2006-01-02 15:04:05"
@@ -228,8 +218,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			if err != nil {
 				log.Fatal(err)
 			}
-			content = strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
-
+			content := strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
 			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
 			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "news"))
 			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Title))
@@ -241,7 +230,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, data.Shared))
 			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
-			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.Image))
+			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, *data.Image))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, data.IsLive == 1))
 			//fmt.Println(b.String())
 
