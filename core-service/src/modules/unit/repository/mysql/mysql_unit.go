@@ -101,7 +101,7 @@ func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request)
 }
 
 func (m *mysqlUnitRepository) GetByID(ctx context.Context, id int64) (res domain.Unit, err error) {
-	query := querySelectUnit + ` WHERE id = ?`
+	query := querySelectUnit + ` AND id = ?`
 
 	list, err := m.fetch(ctx, query, id)
 	if err != nil {
