@@ -15,6 +15,9 @@ type Search struct {
 	Slug      string    `json:"slug"`
 	Category  string    `json:"category"`
 	Thumbnail string    `json:"thumbnail"`
+	Unit      string    `json:"unit"`
+	Url       string    `json:"url"`
+	Highlight []string  `json:"highlight"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	IsActive  bool      `json:"is_active"`
@@ -22,14 +25,18 @@ type Search struct {
 
 // SearchListResponse ...
 type SearchListResponse struct {
-	ID        int       `json:"id"`
-	Domain    string    `json:"domain"`
-	Title     string    `json:"title"`
-	Excerpt   string    `json:"excerpt"`
-	Slug      string    `json:"slug"`
-	Category  string    `json:"category"`
-	Thumbnail string    `json:"thumbnail"`
-	CreatedAt time.Time `json:"created_at" mapstructure:"created_at"`
+	ID        int         `json:"id"`
+	Domain    string      `json:"domain"`
+	Title     string      `json:"title"`
+	Excerpt   string      `json:"excerpt"`
+	Content   string      `json:"content"`
+	Slug      string      `json:"slug"`
+	Category  string      `json:"category"`
+	Thumbnail string      `json:"thumbnail"`
+	Unit      string      `json:"unit"`
+	Url       string      `json:"url"`
+	Highlight interface{} `json:"highlight"`
+	CreatedAt time.Time   `json:"created_at" mapstructure:"created_at"`
 }
 
 // SuggestResponse ..

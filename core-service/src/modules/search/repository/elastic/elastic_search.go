@@ -45,6 +45,7 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 
 		// The "_source" data is another map interface nested inside of doc
 		source := doc["_source"].(map[string]interface{})
+		highlight := doc["highlight"]
 
 		// mapstructure
 		searchData := domain.SearchListResponse{}
@@ -52,6 +53,7 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 
 		// parsing the date string to time.Time
 		searchData.CreatedAt = helpers.ParseESDate(source["created_at"].(string))
+		searchData.Highlight = highlight
 
 		res = append(res, searchData)
 	}
@@ -69,7 +71,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 	}
 	query := q{
 		"_source": q{
-			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "created_at"},
+			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "created_at"},
 		},
 		"sort": []map[string]interface{}{
 			q{"created_at": q{"order": params.SortOrder}},
@@ -106,6 +108,13 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 				"domain": domain,
 			},
 		},
+		"highlight": q{
+			"pre_tags":  []string{"<strong>"},
+			"post_tags": []string{"</strong>"},
+			"fields": q{
+				"content": q{"number_of_fragments": 4, "order": "score"},
+			},
+		},
 	}
 
 	if err := json.NewEncoder(&buf).Encode(query); err != nil {
@@ -122,7 +131,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, indices string, pa
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esClient.Search(
 		esClient.Search.WithContext(ctx),
-		esClient.Search.WithIndex(indices), // FIXME: this should use env
+		esClient.Search.WithIndex(indices),
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
 		esClient.Search.WithSize(int(params.PerPage)),
