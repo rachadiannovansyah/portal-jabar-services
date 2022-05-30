@@ -427,11 +427,18 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 			//format time
 			layout := "2006-01-02 15:04:05"
 
+			var excerpt string
+			description := data.Description.String
+			forExcerptLength := 160
+			if len(description) > forExcerptLength {
+				excerpt = description[:forExcerptLength]
+			}
+
 			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
 			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "public_service"))
 			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Name))
-			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, ""))
-			b.WriteString(fmt.Sprintf(`"content" : "%v",`, data.Description.String))
+			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, excerpt))
+			b.WriteString(fmt.Sprintf(`"content" : "%v",`, description))
 			b.WriteString(fmt.Sprintf(`"unit" : "%v",`, data.Unit.String))
 			b.WriteString(fmt.Sprintf(`"url" : "%v",`, data.Url.String))
 			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, ""))
