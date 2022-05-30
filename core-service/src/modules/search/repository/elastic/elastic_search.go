@@ -65,16 +65,22 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 type q map[string]interface{}
 
 func buildQuery(params *domain.Request) (buf bytes.Buffer) {
-	domain := []string{"news", "information", "public_service", "announcement", "about"}
+	domain := []string{"news", "featured_program", "public_service"}
 	if domainFilter := params.Filters["domain"].([]string); len(domainFilter) > 0 {
 		domain = domainFilter
 	}
+
+	paramsSort := q{"created_at": q{"order": params.SortOrder}}
+	if sortFilter := params.SortBy; len(sortFilter) > 0 {
+		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
+	}
+
 	query := q{
 		"_source": q{
 			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "created_at"},
 		},
 		"sort": []map[string]interface{}{
-			q{"created_at": q{"order": params.SortOrder}},
+			paramsSort,
 		},
 		"query": q{
 			"bool": q{
