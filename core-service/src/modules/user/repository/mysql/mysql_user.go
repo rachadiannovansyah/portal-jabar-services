@@ -20,7 +20,7 @@ func NewMysqlUserRepository(Conn *sql.DB) domain.UserRepository {
 	return &mysqlUserRepository{Conn}
 }
 
-var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, last_password_changed, u.status, u.nip, u.occupation,
+var querySelect = `SELECT u.id, u.name, u.username, u.email, u.photo, u.password, last_password_changed, u.last_active, u.status, u.nip, u.occupation,
 	u.unit_id, u.role_id, un.name as unit_name FROM users u LEFT JOIN units un ON un.id = u.unit_id WHERE 1=1`
 var querySelectUnion = `SELECT member.id, member.name, member.email, member.role_id , member.status, member.last_active, member.occupation, member.nip
 	FROM (
@@ -74,6 +74,7 @@ func (m *mysqlUserRepository) scan(ctx context.Context, query string, res *domai
 		&res.Photo,
 		&res.Password,
 		&res.LastPasswordChanged,
+		&res.LastActive,
 		&res.Status,
 		&res.Nip,
 		&res.Occupation,
