@@ -53,7 +53,7 @@ func filterNewsQuery(params *domain.Request) string {
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND n.updated_at BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+		query += ` AND DATE(n.updated_at) BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
 	}
 
 	return query
