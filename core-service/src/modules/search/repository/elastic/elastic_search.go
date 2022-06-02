@@ -115,7 +115,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 			"pre_tags":  []string{"<strong>"},
 			"post_tags": []string{"</strong>"},
 			"fields": q{
-				"content": q{"number_of_fragments": 4, "order": "score"},
+				"content": q{"fragment_size": 100, "order": "score"},
 			},
 		},
 	}
@@ -130,6 +130,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 func (es *elasticSearchRepository) Fetch(ctx context.Context, indices string, params *domain.Request) (docs []domain.SearchListResponse, total int64, aggs interface{}, err error) {
 	esClient := es.Conn
 	query := buildQuery(params)
+	fmt.Println(query.String())
 
 	// Pass the JSON query to the Golang client's Search() method
 	resp, err := esClient.Search(
