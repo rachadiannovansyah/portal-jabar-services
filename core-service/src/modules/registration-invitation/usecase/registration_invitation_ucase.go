@@ -10,6 +10,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/sirupsen/logrus"
 )
 
 type regInvitationUcase struct {
@@ -71,11 +72,12 @@ func (r *regInvitationUcase) Invite(ctx context.Context,
 	t, _ := r.mailTemplateRepo.GetByTemplate(ctx, "registration_invitation")
 	registrationLink := fmt.Sprintf("%s/daftar?token=%s", config.LoadAppConfig().CmsUrl, regInvitation.Token)
 
-	r.mailRepo.Enqueue(ctx, domain.Mail{
-		To:      regInvitation.Email,
-		Subject: t.Subject,
-		Body:    helpers.ReplaceBodyParams(t.Body, []string{registrationLink}),
-	})
+	go func() {
+		err = helpers.SendEmail(regInvitation.Email, t, []string{registrationLink})
+		if err != nil {
+			logrus.Error(err)
+		}
+	}()
 
 	return
 }
