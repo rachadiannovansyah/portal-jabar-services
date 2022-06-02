@@ -25,7 +25,7 @@ type User struct {
 	LastActive          *time.Time `json:"last_active"`
 	Status              string     `json:"status"`
 	Nip                 *string    `json:"nip" validate:"omitempty,len=0|len=18"`
-	Occupation          *string    `json:"occupation" validate:"omitempty,max=35"`
+	Occupation          *string    `json:"occupation" validate:"omitempty,max=100"`
 	Photo               *string    `json:"photo" validate:"omitempty,max=255"`
 	Unit                UnitInfo   `json:"unit"`
 	UnitName            string     `json:"unit_name"`

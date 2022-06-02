@@ -1,0 +1,2 @@
+ALTER TABLE users
+MODIFY COLUMN occupation VARCHAR(35);
