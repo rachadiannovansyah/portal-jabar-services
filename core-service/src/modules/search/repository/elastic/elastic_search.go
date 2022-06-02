@@ -115,7 +115,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 			"pre_tags":  []string{"<strong>"},
 			"post_tags": []string{"</strong>"},
 			"fields": q{
-				"content": q{"fragment_size": 100, "order": "score"},
+				"content": q{"number_of_fragments": 4},
 			},
 		},
 	}
