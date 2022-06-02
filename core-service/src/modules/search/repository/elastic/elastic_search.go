@@ -111,11 +111,16 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 				"domain": domain,
 			},
 		},
+
 		"highlight": q{
 			"pre_tags":  []string{"<strong>"},
 			"post_tags": []string{"</strong>"},
 			"fields": q{
-				"content": q{"number_of_fragments": 4},
+				"content": q{
+					"fragment_size":       150,
+					"number_of_fragments": 1,
+					"type":                "plain",
+				},
 			},
 		},
 	}
