@@ -92,11 +92,8 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 					},
 					q{
 						"multi_match": q{
-							"query":         params.Keyword,
-							"fields":        []string{"title", "content"},
-							"type":          "best_fields",
-							"fuzziness":     "AUTO",
-							"prefix_length": 2,
+							"query":  params.Keyword,
+							"fields": []string{"title", "content"},
 						},
 					},
 				},
