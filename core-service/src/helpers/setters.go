@@ -13,7 +13,9 @@ func SetPropLiveNews(news *domain.StoreNewsRequest) {
 	startDate := ConvertStringToTime(news.StartDate)
 
 	// if startDate is less than equal to today, set live to true
-	if startDate.Unix() <= time.Now().Unix() {
+	if news.Status == "ARCHIVED" {
+		news.IsLive = 0
+	} else if startDate.Unix() <= time.Now().Unix() {
 		news.IsLive = 1
 		news.PublishedAt = &currentTime
 	}
