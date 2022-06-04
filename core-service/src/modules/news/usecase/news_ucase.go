@@ -533,6 +533,7 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	}
 	copier.Copy(&newsRequest, &news)
 
+	newsRequest.IsLive = 0
 	if status == "PUBLISHED" {
 		newsRequest.Slug = helpers.MakeSlug(newsRequest.Title, newsRequest.ID)
 		helpers.SetPropLiveNews(&newsRequest)
