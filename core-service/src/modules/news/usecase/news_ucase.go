@@ -530,6 +530,7 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		StartDate: helpers.ConvertTimeToString(news.StartDate.Time),
 		EndDate:   helpers.ConvertTimeToString(news.EndDate.Time),
 		AreaID:    news.Area.ID,
+		IsLive:    0,
 	}
 	copier.Copy(&newsRequest, &news)
 
