@@ -42,6 +42,10 @@ func filterNewsQuery(params *domain.Request) string {
 		query = fmt.Sprintf(`%s AND n.status = "%s"`, query, v)
 	}
 
+	if v, ok := params.Filters["exclude"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND n.id <> "%s"`, query, v)
+	}
+
 	if v, ok := params.Filters["category"]; ok && v != "" {
 		query = fmt.Sprintf(`%s AND n.category = '%s'`, query, v)
 	} else if v, ok := params.Filters["categories"]; ok && v != "" {
