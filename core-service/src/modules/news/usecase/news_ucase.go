@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jinzhu/copier"
@@ -540,27 +539,25 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		helpers.SetPropLiveNews(&newsRequest)
 	}
 
-	fmt.Println(status, newsRequest.IsLive)
-
 	err = n.newsRepo.Update(ctx, id, &newsRequest)
 	if err != nil {
 		return
 	}
 
-	// esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
-	// 	Domain:    "news",
-	// 	Title:     news.Title,
-	// 	Excerpt:   news.Excerpt,
-	// 	Content:   news.Content,
-	// 	Slug:      news.Slug,
-	// 	Category:  news.Category,
-	// 	Thumbnail: *news.Image,
-	// 	UpdatedAt: time.Now(),
-	// 	IsActive:  news.IsLive == 1,
-	// })
-	// if esErr != nil {
-	// 	logrus.Error(esErr)
-	// }
+	esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
+		Domain:    "news",
+		Title:     news.Title,
+		Excerpt:   news.Excerpt,
+		Content:   news.Content,
+		Slug:      news.Slug,
+		Category:  news.Category,
+		Thumbnail: *news.Image,
+		UpdatedAt: time.Now(),
+		IsActive:  news.IsLive == 1,
+	})
+	if esErr != nil {
+		logrus.Error(esErr)
+	}
 
 	return
 }
