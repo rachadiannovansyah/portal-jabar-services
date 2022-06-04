@@ -39,6 +39,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 		"type":       c.QueryParam("type"),
 		"tags":       c.QueryParam("tags"),
 		"status":     c.QueryParam("status"),
+		"exclude":    c.QueryParam("exclude"),
 	}
 
 	listNews, total, err := h.CUsecase.FetchPublished(ctx, &params)
