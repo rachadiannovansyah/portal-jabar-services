@@ -18,7 +18,7 @@ func NewsArchiveJob(conn *utils.Conn, cfg *config.Config) {
 
 	// Get news ids from news will be archived
 	var newsIDs []string
-	query := `SELECT id FROM news WHERE status='PUBLISHED' AND is_live=1 AND end_date < NOW()`
+	query := `SELECT id FROM news WHERE status='PUBLISHED' AND is_live=1 AND end_date > NOW()`
 	rows, err := conn.Mysql.Query(query)
 	if err != nil {
 		logrus.Error(err)
