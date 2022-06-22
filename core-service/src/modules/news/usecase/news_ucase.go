@@ -537,6 +537,8 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	if status == "PUBLISHED" {
 		newsRequest.Slug = helpers.MakeSlug(newsRequest.Title, newsRequest.ID)
 		helpers.SetPropLiveNews(&newsRequest)
+	} else if status == "ARCHIVED" {
+		news.IsLive = 0
 	}
 
 	err = n.newsRepo.Update(ctx, id, &newsRequest)
