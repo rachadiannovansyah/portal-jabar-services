@@ -235,7 +235,6 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, *data.Image))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, data.IsLive == 1))
-			//fmt.Println(b.String())
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
@@ -338,7 +337,6 @@ func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.Logo.String))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
-			// fmt.Println(b.String())
 
 			// Set up the request object.
 			req := esapi.IndexRequest{
@@ -365,8 +363,6 @@ func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
 					log.Printf("Error parsing the response body: %s", err)
 				} else {
 					// Print the response status and indexed document version.
-					// fmt.Println(b.String())
-
 					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
 				}
 			}
@@ -390,7 +386,7 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 
 	// 1. Get cluster info
 	res, err := es.Info()
-	// fmt.Println("THIS IS RES", res, err)
+
 	if err != nil {
 		logrus.Fatalf("Error getting response: %s", err)
 	}
