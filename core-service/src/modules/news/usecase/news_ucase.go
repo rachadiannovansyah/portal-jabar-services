@@ -460,7 +460,6 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
 		return
 	}
-
 	// FIXME: make a function to prepare data for search index
 	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
 		ID:        int(dt.ID),
@@ -535,9 +534,12 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 
 	newsRequest.IsLive = 0
 	if status == "PUBLISHED" {
+		// publishing news will set is_live to 1
+		news.IsLive = 1
 		newsRequest.Slug = helpers.MakeSlug(newsRequest.Title, newsRequest.ID)
 		helpers.SetPropLiveNews(&newsRequest)
 	} else if status == "ARCHIVED" {
+		// archived news will set is_live to 0
 		news.IsLive = 0
 	}
 
