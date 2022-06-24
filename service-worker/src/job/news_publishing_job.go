@@ -18,7 +18,10 @@ func NewsPublishingJob(conn *utils.Conn, cfg *config.Config) {
 
 	// Get news ids from news will be archived
 	var newsIDs []string
-	query := `SELECT id FROM news WHERE status='PUBLISHED' AND is_live=0 AND start_date <= NOW()`
+	query := `SELECT id FROM news
+		WHERE status='PUBLISHED' 
+		AND is_live=0 
+		AND start_date <= NOW()`
 	rows, err := conn.Mysql.Query(query)
 	if err != nil {
 		logrus.Error(err)
@@ -34,7 +37,7 @@ func NewsPublishingJob(conn *utils.Conn, cfg *config.Config) {
 		newsIDs = append(newsIDs, id)
 	}
 
-	// Archive news
+	// Publishing news
 	updateQuery := fmt.Sprintf(`UPDATE news SET is_live=1, published_at = now() WHERE id IN (%s)`, strings.Join(newsIDs, ","))
 	res, err := conn.Mysql.Exec(updateQuery)
 	if err != nil {
