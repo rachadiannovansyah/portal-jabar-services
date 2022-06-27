@@ -37,7 +37,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 		"categories": c.Request().URL.Query()["cat[]"],
 		"highlight":  c.QueryParam("highlight"),
 		"type":       c.QueryParam("type"),
-		"tags":       c.QueryParam("tags"),
+		"tag":        c.QueryParam("tag"),
 		"status":     c.QueryParam("status"),
 		"exclude":    c.QueryParam("exclude"),
 	}
