@@ -19,6 +19,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.12.0
 	github.com/jinzhu/copier v0.3.2
+	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
