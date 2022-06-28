@@ -47,7 +47,7 @@ func filterNewsQuery(params *domain.Request) string {
 	}
 
 	if v, ok := params.Filters["tag"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.id IN (SELECT data_id FROM data_tags WHERE tag_name = '%s')`, query, v)
+		query = fmt.Sprintf(`%s AND n.id IN (SELECT data_id FROM data_tags WHERE type = 'news' AND tag_name = '%s')`, query, v)
 	}
 
 	if v, ok := params.Filters["category"]; ok && v != "" {
