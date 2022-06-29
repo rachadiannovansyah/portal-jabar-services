@@ -41,3 +41,26 @@ jobs:
         context: ./core-service
         push: true
         tags: ${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.RELEASE_TAG }}
+    
+    # GitOps
+    - name: GitOps ArgoCD Setup
+      run: |
+        echo "${{ secrets.GITLAB_ARGOCD_KEY }}" > /tmp/gitlab-deploy-ssh-key
+        chmod 600 /tmp/gitlab-deploy-ssh-key
+        export GIT_SSH_COMMAND="ssh -i /tmp/gitlab-deploy-ssh-key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        git clone ${{ secrets.GITLAB_ARGOCD_REPOSITORY }}
+    - name: GitOps ArgoCD Update Image Tag
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}"' 'jds-terraform-gke/k8s/portal-jabar-app/production/deployment.yaml'
+
+    - name: GitOps ArgoCD Create Branch, Commit, Push
+      run: |
+        export GIT_SSH_COMMAND="ssh -i /tmp/gitlab-deploy-ssh-key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        cd jds-terraform-gke/k8s/portal-jabar-app/production
+        git config user.email "github-action@github.com"
+        git config user.name "Github Action"
+        git checkout -b portal-jabar-release-production
+        git add deployment.yaml
+        git commit -m "Portal Jabar Release to Staging"
+        git push origin portal-jabar-release-production -o merge_request.description="# Overview \n\n - Portal Jabar API release to production \n\n ## Evidence \n\n - title: Portal Jabar API release to production \n - project: Portal Jabar \n - participants:  " -o merge_request.create
