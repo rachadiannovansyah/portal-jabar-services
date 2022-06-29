@@ -452,14 +452,17 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	}
 
 	if dt.Status == "PUBLISHED" {
-		dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
 		helpers.SetPropLiveNews(dt)
-		n.newsRepo.Update(ctx, dt.ID, dt)
 	}
+
+	// set slug for the news
+	dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
+	n.newsRepo.Update(ctx, dt.ID, dt)
 
 	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
 		return
 	}
+
 	// FIXME: make a function to prepare data for search index
 	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
 		ID:        int(dt.ID),
