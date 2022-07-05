@@ -25,34 +25,17 @@ func initNewRelic(cfg *config.Config) *newrelic.Application {
 		newrelic.ConfigAppName(cfg.NewRelic.AppName),
 		newrelic.ConfigFromEnvironment(),
 		newrelic.ConfigAppLogForwardingEnabled(true),
+		newrelic.ConfigAppLogForwardingMaxSamplesStored(500),
 		newrelic.ConfigLicense(cfg.NewRelic.License),
 		newrelic.ConfigDistributedTracerEnabled(cfg.NewRelic.Enabled),
 	)
 
-	// logger := zerolog.New(os.Stdout)
-
-	// txn := app.StartTransaction("My Transaction")
-	// ctx := newrelic.NewContext(context.Background(), txn)
-
-	// nrHook := nrzerolog.NewRelicHook{
-	// 	App:     app,
-	// 	Context: ctx,
-	// }
-
-	// nrLogger := logger.Hook(nrHook)
-
-	// nrLogger.Info().Msg("A Log Message")
-
-	// txn.End()
-
 	logger := zerolog.New(os.Stdout)
-
 	nrHook := nrzerolog.NewRelicHook{
 		App: app,
 	}
 
 	nrLogger := logger.Hook(nrHook)
-
 	nrLogger.Info().Msg("A Log Message")
 
 	if err != nil {
