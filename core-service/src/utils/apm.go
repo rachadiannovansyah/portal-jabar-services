@@ -25,12 +25,15 @@ func initNewRelic(cfg *config.Config) *newrelic.Application {
 		newrelic.ConfigAppName(cfg.NewRelic.AppName),
 		newrelic.ConfigFromEnvironment(),
 		newrelic.ConfigAppLogForwardingEnabled(true),
-		newrelic.ConfigAppLogForwardingMaxSamplesStored(500),
 		newrelic.ConfigLicense(cfg.NewRelic.License),
 		newrelic.ConfigDistributedTracerEnabled(cfg.NewRelic.Enabled),
 	)
 
-	logger := zerolog.New(os.Stdout)
+	// standarization output log as logger
+	logger := zerolog.New(os.Stdout).
+		With().Str("service", "core-service").
+		Logger()
+
 	nrHook := nrzerolog.NewRelicHook{
 		App: app,
 	}
