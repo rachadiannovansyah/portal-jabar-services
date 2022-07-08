@@ -463,19 +463,24 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		return
 	}
 
+	if dt.Status == "REVIEW" {
+		dt.PublishedAt = &time.Time{}
+	}
+
 	// FIXME: make a function to prepare data for search index
 	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
-		ID:        int(dt.ID),
-		Domain:    "news",
-		Title:     dt.Title,
-		Excerpt:   dt.Excerpt,
-		Content:   dt.Content,
-		Slug:      dt.Slug,
-		Category:  dt.Category,
-		Thumbnail: *dt.Image,
-		CreatedAt: dt.CreatedAt,
-		UpdatedAt: dt.UpdatedAt,
-		IsActive:  dt.IsLive == 1,
+		ID:          int(dt.ID),
+		Domain:      "news",
+		Title:       dt.Title,
+		Excerpt:     dt.Excerpt,
+		Content:     dt.Content,
+		Slug:        dt.Slug,
+		Category:    dt.Category,
+		Thumbnail:   *dt.Image,
+		PublishedAt: *dt.PublishedAt,
+		CreatedAt:   dt.CreatedAt,
+		UpdatedAt:   dt.UpdatedAt,
+		IsActive:    dt.IsLive == 1,
 	})
 
 	return
