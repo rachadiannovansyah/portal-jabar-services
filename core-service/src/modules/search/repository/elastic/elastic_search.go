@@ -77,7 +77,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 
 	query := q{
 		"_source": q{
-			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "created_at"},
+			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "published_at", "created_at"},
 		},
 		"sort": []map[string]interface{}{
 			paramsSort,
@@ -234,17 +234,18 @@ func (es *elasticSearchRepository) Store(ctx context.Context, indices string, da
 
 	// prepare the data to be indexed
 	doc := q{
-		"id":         data.ID,
-		"domain":     data.Domain,
-		"title":      data.Title,
-		"excerpt":    data.Excerpt,
-		"content":    content,
-		"slug":       data.Slug,
-		"category":   data.Category,
-		"thumbnail":  data.Thumbnail,
-		"created_at": data.CreatedAt.Format(formatTime),
-		"updated_at": data.UpdatedAt.Format(formatTime),
-		"is_active":  data.IsActive,
+		"id":           data.ID,
+		"domain":       data.Domain,
+		"title":        data.Title,
+		"excerpt":      data.Excerpt,
+		"content":      content,
+		"slug":         data.Slug,
+		"category":     data.Category,
+		"thumbnail":    data.Thumbnail,
+		"published_at": data.PublishedAt.Format(formatTime),
+		"created_at":   data.CreatedAt.Format(formatTime),
+		"updated_at":   data.UpdatedAt.Format(formatTime),
+		"is_active":    data.IsActive,
 	}
 
 	jsonString, err := json.Marshal(doc)
