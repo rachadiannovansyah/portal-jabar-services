@@ -11,3 +11,9 @@ func ParseESDate(strDateTime string) time.Time {
 	tCreatedAt, _ := time.Parse(tLayout, strDateTime)
 	return tCreatedAt
 }
+
+func ParseESPointerDate(strDateTime string) *time.Time {
+	tLayout := "2006-01-02 15:04:05" // timestamp layout
+	tPublishedAt, _ := time.Parse(tLayout, strDateTime)
+	return &tPublishedAt
+}

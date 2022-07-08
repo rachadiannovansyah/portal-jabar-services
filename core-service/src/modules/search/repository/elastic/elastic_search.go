@@ -52,6 +52,9 @@ func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResp
 		mapstructure.Decode(source, &searchData)
 
 		// parsing the date string to time.Time
+		if _, ok := source["published_at"]; ok {
+			searchData.PublishedAt = helpers.ParseESPointerDate(source["published_at"].(string))
+		}
 		searchData.CreatedAt = helpers.ParseESDate(source["created_at"].(string))
 		searchData.Highlight = highlight
 

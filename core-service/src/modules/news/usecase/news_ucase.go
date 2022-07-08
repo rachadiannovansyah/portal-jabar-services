@@ -477,7 +477,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		Slug:        dt.Slug,
 		Category:    dt.Category,
 		Thumbnail:   *dt.Image,
-		PublishedAt: *dt.PublishedAt,
+		PublishedAt: dt.PublishedAt,
 		CreatedAt:   dt.CreatedAt,
 		UpdatedAt:   dt.UpdatedAt,
 		IsActive:    dt.IsLive == 1,

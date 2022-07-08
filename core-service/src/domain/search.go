@@ -7,21 +7,21 @@ import (
 
 // Search ...
 type Search struct {
-	ID          int       `json:"id"`
-	Domain      string    `json:"domain"`
-	Title       string    `json:"title"`
-	Excerpt     string    `json:"excerpt"`
-	Content     string    `json:"content"`
-	Slug        string    `json:"slug"`
-	Category    string    `json:"category"`
-	Thumbnail   string    `json:"thumbnail"`
-	Unit        string    `json:"unit"`
-	Url         string    `json:"url"`
-	Highlight   []string  `json:"highlight"`
-	PublishedAt time.Time `json:"published_at"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	IsActive    bool      `json:"is_active"`
+	ID          int        `json:"id"`
+	Domain      string     `json:"domain"`
+	Title       string     `json:"title"`
+	Excerpt     string     `json:"excerpt"`
+	Content     string     `json:"content"`
+	Slug        string     `json:"slug"`
+	Category    string     `json:"category"`
+	Thumbnail   string     `json:"thumbnail"`
+	Unit        string     `json:"unit"`
+	Url         string     `json:"url"`
+	Highlight   []string   `json:"highlight"`
+	PublishedAt *time.Time `json:"published_at"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	IsActive    bool       `json:"is_active"`
 }
 
 // SearchListResponse ...
@@ -37,7 +37,7 @@ type SearchListResponse struct {
 	Unit        string      `json:"unit"`
 	Url         string      `json:"url"`
 	Highlight   interface{} `json:"highlight"`
-	PublishedAt time.Time   `json:"published_at"`
+	PublishedAt *time.Time  `json:"published_at"`
 	CreatedAt   time.Time   `json:"created_at" mapstructure:"created_at"`
 }
 
