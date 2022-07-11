@@ -505,16 +505,21 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		logrus.Error(err)
 	}
 
+	if news.Status == "REVIEW" {
+		news.PublishedAt = &time.Time{}
+	}
+
 	if esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
-		Domain:    "news",
-		Title:     dt.Title,
-		Excerpt:   dt.Excerpt,
-		Content:   dt.Content,
-		Slug:      dt.Slug,
-		Category:  dt.Category,
-		Thumbnail: *dt.Image,
-		UpdatedAt: time.Now(),
-		IsActive:  news.IsLive == 1,
+		Domain:      "news",
+		Title:       dt.Title,
+		Excerpt:     dt.Excerpt,
+		Content:     dt.Content,
+		Slug:        dt.Slug,
+		Category:    dt.Category,
+		Thumbnail:   *dt.Image,
+		PublishedAt: news.PublishedAt,
+		UpdatedAt:   time.Now(),
+		IsActive:    news.IsLive == 1,
 	}); esErr != nil {
 		logrus.Error(esErr)
 	}
@@ -556,16 +561,19 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		return
 	}
 
+	publishedAt := newsRequest.PublishedAt
+
 	esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
-		Domain:    "news",
-		Title:     news.Title,
-		Excerpt:   news.Excerpt,
-		Content:   news.Content,
-		Slug:      news.Slug,
-		Category:  news.Category,
-		Thumbnail: *news.Image,
-		UpdatedAt: time.Now(),
-		IsActive:  news.IsLive == 1,
+		Domain:      "news",
+		Title:       news.Title,
+		Excerpt:     news.Excerpt,
+		Content:     news.Content,
+		Slug:        news.Slug,
+		Category:    news.Category,
+		Thumbnail:   *news.Image,
+		PublishedAt: publishedAt,
+		UpdatedAt:   time.Now(),
+		IsActive:    news.IsLive == 1,
 	})
 	if esErr != nil {
 		logrus.Error(esErr)

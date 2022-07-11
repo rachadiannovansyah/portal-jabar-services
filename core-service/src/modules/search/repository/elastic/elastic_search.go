@@ -284,7 +284,6 @@ func (es *elasticSearchRepository) Update(ctx context.Context, indices string, i
 	}
 	re := regexp.MustCompile(`\r?\n`)
 	content := strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
-
 	doc := q{
 		"query": q{
 			"bool": q{
@@ -304,17 +303,18 @@ func (es *elasticSearchRepository) Update(ctx context.Context, indices string, i
 		},
 		// update all fields
 		"script": q{
-			"source": "ctx._source.title = params.title; ctx._source.excerpt = params.excerpt; ctx._source.content = params.content; ctx._source.slug = params.slug; ctx._source.category = params.category; ctx._source.thumbnail = params.thumbnail; ctx._source.updated_at = params.updated_at; ctx._source.is_active = params.is_active;",
+			"source": "ctx._source.title = params.title; ctx._source.excerpt = params.excerpt; ctx._source.content = params.content; ctx._source.slug = params.slug; ctx._source.category = params.category; ctx._source.thumbnail = params.thumbnail; ctx._source.published_at = params.published_at; ctx._source.updated_at = params.updated_at; ctx._source.is_active = params.is_active;",
 			"lang":   "painless",
 			"params": q{
-				"title":      data.Title,
-				"excerpt":    data.Excerpt,
-				"content":    content,
-				"slug":       data.Slug,
-				"category":   data.Category,
-				"thumbnail":  data.Thumbnail,
-				"updated_at": data.UpdatedAt.Format("2006-01-02 15:04:05"),
-				"is_active":  data.IsActive,
+				"title":        data.Title,
+				"excerpt":      data.Excerpt,
+				"content":      content,
+				"slug":         data.Slug,
+				"category":     data.Category,
+				"thumbnail":    data.Thumbnail,
+				"published_at": data.PublishedAt.Format("2006-01-02 15:04:05"),
+				"updated_at":   data.UpdatedAt.Format("2006-01-02 15:04:05"),
+				"is_active":    data.IsActive,
 			},
 		},
 	}
