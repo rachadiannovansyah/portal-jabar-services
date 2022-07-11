@@ -31,16 +31,21 @@ func newWorker(ctx context.Context, cfg *config.Config, conn *utils.Conn) *worke
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	// init worker
 	w := newWorker(context.TODO(), config.NewConfig(), utils.NewDBConn(config.NewConfig()))
 	go w.listenForMessages()
 
+	// set job runner
 	c := cron.New()
 	cfg := config.NewConfig()
+
+	// @daily is mean will run jobs every day on midnight (Equivalent to 0 0 * *)
 	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn, cfg) })
 	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn, cfg) })
 
 	fmt.Println("service-worker is running")
 
+	// start the cron job
 	c.Start()
 	runtime.Goexit()
 }
