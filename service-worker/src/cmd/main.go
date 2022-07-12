@@ -11,7 +11,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/job"
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/utils"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 )
 
 type worker struct {
@@ -35,8 +35,11 @@ func main() {
 	w := newWorker(context.TODO(), config.NewConfig(), utils.NewDBConn(config.NewConfig()))
 	go w.listenForMessages()
 
+	// set timezone at GMT+00
+	loc, _ := time.LoadLocation("GMT")
+
 	// set job runner
-	c := cron.New()
+	c := cron.New(cron.WithLocation(loc))
 	cfg := config.NewConfig()
 
 	// @daily is mean will run jobs every day on midnight (Equivalent to 0 0 * *)
