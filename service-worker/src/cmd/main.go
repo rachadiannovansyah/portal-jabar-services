@@ -35,9 +35,8 @@ func main() {
 	w := newWorker(context.TODO(), config.NewConfig(), utils.NewDBConn(config.NewConfig()))
 	go w.listenForMessages()
 
-	// set timezone at GMT+00
-	loc, _ := time.LoadLocation("GMT")
-
+	// adjust tz to runnin cron
+	loc := time.FixedZone("UTC-07:00", -7*60*60)
 	// set job runner
 	c := cron.New(cron.WithLocation(loc))
 	cfg := config.NewConfig()
