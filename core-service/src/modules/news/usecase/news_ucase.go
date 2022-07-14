@@ -561,7 +561,11 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		return
 	}
 
+	// set initial published at to elastic
 	publishedAt := newsRequest.PublishedAt
+	if status != "PUBLISHED" {
+		publishedAt = &time.Time{}
+	}
 
 	esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
 		Domain:      "news",
