@@ -463,7 +463,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		return
 	}
 
-	if dt.Status == "REVIEW" || dt.Status == "DRAFT" {
+	if dt.Status != "PUBLISHED" {
 		dt.PublishedAt = &time.Time{}
 	}
 
