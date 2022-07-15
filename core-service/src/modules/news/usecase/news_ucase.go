@@ -463,7 +463,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		return
 	}
 
-	if dt.Status == "REVIEW" || dt.Status == "DRAFT" {
+	if dt.Status != "PUBLISHED" {
 		dt.PublishedAt = &time.Time{}
 	}
 
@@ -504,8 +504,12 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 	if err = n.storeTags(ctx, id, dt.Tags); err != nil {
 		logrus.Error(err)
 	}
+	err = n.newsRepo.Update(ctx, id, dt)
+	if err != nil {
+		return
+	}
 
-	if news.Status == "REVIEW" {
+	if news.Status != "PUBLISHED" {
 		news.PublishedAt = &time.Time{}
 	}
 
@@ -524,7 +528,7 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		logrus.Error(esErr)
 	}
 
-	return n.newsRepo.Update(ctx, id, dt)
+	return
 }
 
 func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {
