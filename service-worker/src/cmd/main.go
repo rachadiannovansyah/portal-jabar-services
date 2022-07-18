@@ -36,7 +36,7 @@ func main() {
 	go w.listenForMessages()
 
 	// set timezone at local time
-	loc, _ := time.LoadLocation("Asia/Jakarta")
+	loc, _ := time.LoadLocation("GMT")
 
 	// set job runner
 	c := cron.New(cron.WithLocation(loc))
