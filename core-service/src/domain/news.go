@@ -145,6 +145,21 @@ type TabStatusResponse struct {
 	Count  int    `json:"count"`
 }
 
+// NewsAptikaResponse is the response for news api Aptika for existing jabarprov
+type NewsAptikaResponse struct {
+	ID          int64      `json:"id"`
+	Title       string     `json:"Judul_berita"`
+	Excerpt     string     `json:"Lead_berita"`
+	PublishedAt *time.Time `json:"Tanggal"`
+	Content     string     `json:"Isi"`
+	Image       *string    `json:"Gambar"`
+	Category    string     `json:"Kategori"`
+	Area        Area       `json:"Area"`
+	CreatedBy   Author     `json:"Dibuat_oleh"`
+	CreatedAt   time.Time  `json:"Dibuat_pada"`
+	UpdatedAt   time.Time  `json:"Diubah_pada"`
+}
+
 // NewsUsecase represent the news usecases
 type NewsUsecase interface {
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) ([]News, int64, error)
