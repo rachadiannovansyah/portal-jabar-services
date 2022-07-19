@@ -40,7 +40,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 		"tag":        c.QueryParam("tag"),
 		"status":     c.QueryParam("status"),
 		"exclude":    c.QueryParam("exclude"),
-		"isAptika":   c.QueryParam("isAptika"),
+		"is_aptika":  c.QueryParam("is_aptika"),
 	}
 
 	listNews, total, err := h.CUsecase.FetchPublished(ctx, &params)
@@ -50,7 +50,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 	}
 
 	// Set news response for API Aptika
-	isAptika, _ := strconv.ParseBool(params.Filters["isAptika"].(string))
+	isAptika, _ := strconv.ParseBool(params.Filters["is_aptika"].(string))
 	if isAptika {
 		listAptikaNewsRes := []domain.NewsAptikaResponse{}
 		copier.Copy(&listAptikaNewsRes, &listNews)
