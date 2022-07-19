@@ -40,12 +40,24 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 		"tag":        c.QueryParam("tag"),
 		"status":     c.QueryParam("status"),
 		"exclude":    c.QueryParam("exclude"),
+		"isAptika":   c.QueryParam("isAptika"),
 	}
 
 	listNews, total, err := h.CUsecase.FetchPublished(ctx, &params)
 
 	if err != nil {
 		return err
+	}
+
+	// Set news response for API Aptika
+	isAptika, _ := strconv.ParseBool(params.Filters["isAptika"].(string))
+	if isAptika {
+		listAptikaNewsRes := []domain.NewsAptikaResponse{}
+		copier.Copy(&listAptikaNewsRes, &listNews)
+
+		res := helpers.Paginate(c, listAptikaNewsRes, total, params)
+
+		return c.JSON(http.StatusOK, res)
 	}
 
 	// Copy slice to slice
