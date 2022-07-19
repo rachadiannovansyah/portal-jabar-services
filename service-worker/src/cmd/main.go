@@ -35,11 +35,8 @@ func main() {
 	w := newWorker(context.TODO(), config.NewConfig(), utils.NewDBConn(config.NewConfig()))
 	go w.listenForMessages()
 
-	// set timezone at local time
-	loc, _ := time.LoadLocation("GMT")
-
 	// set job runner
-	c := cron.New(cron.WithLocation(loc))
+	c := cron.New(cron.WithLocation(time.FixedZone("GMT", -7*60*60)))
 	cfg := config.NewConfig()
 
 	// @daily is mean will run jobs every day on midnight (Equivalent to 0 0 * *)
