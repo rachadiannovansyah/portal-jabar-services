@@ -23,6 +23,7 @@ type News struct {
 	Highlight   int8       `json:"highlight,omitempty"`
 	Type        string     `json:"type"`
 	Tags        []DataTag  `json:"tags"`
+	Website     *string    `json:"website"`
 	Category    string     `json:"category" validate:"required"`
 	Author      *string    `json:"author" validate:"required"`
 	Reporter    *string    `json:"reporter"`
@@ -154,6 +155,7 @@ type NewsAptikaResponse struct {
 	Content     string     `json:"Isi"`
 	Image       *string    `json:"Gambar"`
 	Category    string     `json:"Kategori"`
+	Website     *string    `json:"Website"`
 	Area        Area       `json:"Area"`
 	CreatedBy   Author     `json:"Dibuat_oleh"`
 	CreatedAt   time.Time  `json:"Dibuat_pada"`
