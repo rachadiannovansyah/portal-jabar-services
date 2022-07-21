@@ -29,6 +29,8 @@ var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.i
 	ON n.created_by = u.id
 	WHERE n.deleted_at is NULL`
 
+var website = "https://jabarprov.go.id"
+
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -82,6 +84,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 		}
 		t.CreatedBy = domain.User{ID: createdByID}
 		t.Area = domain.Area{ID: areaID}
+		t.Website = &website
 
 		result = append(result, t)
 	}
