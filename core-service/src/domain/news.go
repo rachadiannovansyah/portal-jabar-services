@@ -24,6 +24,7 @@ type News struct {
 	Highlight   int8       `json:"highlight,omitempty"`
 	Type        string     `json:"type"`
 	Tags        []DataTag  `json:"tags"`
+	Website     *string    `json:"website"`
 	Category    string     `json:"category" validate:"required"`
 	Author      *string    `json:"author" validate:"required"`
 	Reporter    *string    `json:"reporter"`
@@ -144,6 +145,22 @@ type DetailNewsResponse struct {
 type TabStatusResponse struct {
 	Status string `json:"status"`
 	Count  int    `json:"count"`
+}
+
+// NewsAptikaResponse is the response for news api Aptika for existing jabarprov
+type NewsAptikaResponse struct {
+	ID          int64      `json:"id"`
+	Title       string     `json:"Judul_berita"`
+	Excerpt     string     `json:"Lead_berita"`
+	PublishedAt *time.Time `json:"Tanggal"`
+	Content     string     `json:"Isi"`
+	Image       *string    `json:"Gambar"`
+	Category    string     `json:"Kategori"`
+	Website     *string    `json:"Website"`
+	Area        Area       `json:"Area"`
+	CreatedBy   Author     `json:"Dibuat_oleh"`
+	CreatedAt   time.Time  `json:"Dibuat_pada"`
+	UpdatedAt   time.Time  `json:"Diubah_pada"`
 }
 
 func (i DetailNewsResponse) MarshalBinary() ([]byte, error) {

@@ -35,16 +35,13 @@ func main() {
 	w := newWorker(context.TODO(), config.NewConfig(), utils.NewDBConn(config.NewConfig()))
 	go w.listenForMessages()
 
-	// set timezone at local time
-	loc, _ := time.LoadLocation("GMT")
-
 	// set job runner
-	c := cron.New(cron.WithLocation(loc))
+	c := cron.New()
 	cfg := config.NewConfig()
 
-	// @daily is mean will run jobs every day on midnight (Equivalent to 0 0 * *)
-	c.AddFunc("@daily", func() { job.NewsArchiveJob(w.conn, cfg) })
-	c.AddFunc("@daily", func() { job.NewsPublishingJob(w.conn, cfg) })
+	// @every 2h is mean will run jobs every 2 hours of the day
+	c.AddFunc("@every 2h", func() { job.NewsArchiveJob(w.conn, cfg) })
+	c.AddFunc("@every 2h", func() { job.NewsPublishingJob(w.conn, cfg) })
 
 	fmt.Println("service-worker is running")
 

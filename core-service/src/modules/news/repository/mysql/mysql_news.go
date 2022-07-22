@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -43,6 +44,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 		}
 	}()
 
+	website := config.LoadAppConfig().PortalUrl
 	result = make([]domain.News, 0)
 	for rows.Next() {
 		t := domain.News{}
@@ -82,6 +84,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 		}
 		t.CreatedBy = domain.User{ID: createdByID}
 		t.Area = domain.Area{ID: areaID}
+		t.Website = &website
 
 		result = append(result, t)
 	}

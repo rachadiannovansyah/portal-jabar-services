@@ -136,6 +136,60 @@ func (n *newsUsecase) fillDataTagsDetail(c context.Context, data domain.News) (d
 	return data, nil
 }
 
+// fill data area news
+func (n *newsUsecase) fillDataArea(c context.Context, data []domain.News) ([]domain.News, error) {
+	g, ctx := errgroup.WithContext(c)
+
+	// Get the area's id
+	mapAreas := map[int64]domain.Area{}
+
+	for _, news := range data {
+		mapAreas[news.Area.ID] = domain.Area{}
+	}
+
+	// Using goroutine to fetch the area's detail
+	chanArea := make(chan domain.Area)
+	for areaID := range mapAreas {
+		areaID := areaID
+		g.Go(func() error {
+			res, err := n.areaRepo.GetByID(ctx, areaID)
+			if err != nil {
+				return err
+			}
+			chanArea <- res
+			return nil
+		})
+	}
+
+	go func() {
+		err := g.Wait()
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		close(chanArea)
+	}()
+
+	for area := range chanArea {
+		if area != (domain.Area{}) {
+			mapAreas[area.ID] = area
+		}
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	// merge the area's data
+	for index, item := range data {
+		if a, ok := mapAreas[item.Area.ID]; ok {
+			data[index].Area = a
+		}
+	}
+
+	return data, nil
+}
+
 func (n *newsUsecase) fillUserDetails(c context.Context, data []domain.News) ([]domain.News, error) {
 	g, ctx := errgroup.WithContext(c)
 
@@ -333,6 +387,12 @@ func (n *newsUsecase) get(c context.Context, params *domain.Request) (res []doma
 	}
 
 	res, err = n.fillDataTags(ctx, res)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res, err = n.fillDataArea(ctx, res)
 
 	if err != nil {
 		return nil, 0, err
