@@ -133,10 +133,9 @@ func GetCachedData(c echo.Context) (memcache string) {
 	memcache, _ = cache.Get(key).Result()
 
 	if memcache != "" {
-		fmt.Println("Data using cache")
+		fmt.Println("Cached!")
 		return
 	}
-	fmt.Println("Data not using cache")
 
 	return
 }

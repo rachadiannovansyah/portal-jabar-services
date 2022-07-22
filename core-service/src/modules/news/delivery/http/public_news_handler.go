@@ -18,7 +18,6 @@ import (
 // PublicNewsHandler ...
 type PublicNewsHandler struct {
 	CUsecase domain.NewsUsecase
-	Red      string `json:"red"`
 }
 
 // NewPublicNewsHandler will initialize the /public/news handler
