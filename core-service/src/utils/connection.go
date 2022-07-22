@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
@@ -52,7 +52,7 @@ func initRedisClient(cfg *config.Config) *redis.Client {
 		Addr: fmt.Sprintf("%s:%d", cfg.Redis.Host, cfg.Redis.Port),
 	})
 
-	_, err := rdb.Ping(rdb.Context()).Result()
+	_, err := rdb.Ping().Result()
 	if err != nil {
 		log.Fatal(err)
 	}

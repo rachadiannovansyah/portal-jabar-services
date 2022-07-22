@@ -13,12 +13,14 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211104170603-75263a5e99d2
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.12.0
 	github.com/jinzhu/copier v0.3.2
+	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1

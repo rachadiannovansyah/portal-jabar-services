@@ -1,11 +1,14 @@
 package helpers
 
 import (
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
@@ -118,6 +121,24 @@ func GetAuthenticatedUser(c echo.Context) *domain.JwtCustomClaims {
 	auth := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 	return &auth
+}
+
+// GetCachedRedisData ...
+func GetCachedData(c echo.Context) (memcache string) {
+	cfg := config.NewConfig()
+	cache := utils.NewDBConn(cfg).Redis
+
+	// Get cached data
+	key := c.Param("slug")
+	memcache, _ = cache.Get(key).Result()
+
+	if memcache != "" {
+		fmt.Println("Data using cache")
+		return
+	}
+	fmt.Println("Data not using cache")
+
+	return
 }
 
 // GetUnitInfo ...
