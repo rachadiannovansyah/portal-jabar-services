@@ -17,6 +17,7 @@ func TestFetch(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
+	currentTime := time.Now()
 	mockNews := []domain.News{
 		{
 			ID:        1,
@@ -26,8 +27,8 @@ func TestFetch(t *testing.T) {
 			Views:     10,
 			Shared:    25,
 			Image:     nil,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
+			StartDate: &currentTime,
+			EndDate:   &currentTime,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},
@@ -39,8 +40,8 @@ func TestFetch(t *testing.T) {
 			Views:     15,
 			Shared:    30,
 			Image:     nil,
-			StartDate: time.Now(),
-			EndDate:   time.Now(),
+			StartDate: &currentTime,
+			EndDate:   &currentTime,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},

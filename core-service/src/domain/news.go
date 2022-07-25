@@ -31,8 +31,8 @@ type News struct {
 	Editor      *string    `json:"editor"`
 	Area        Area       `json:"area" validate:"required"`
 	Duration    int8       `json:"duration"`
-	StartDate   time.Time  `json:"start_date"`
-	EndDate     time.Time  `json:"end_date"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
 	IsLive      int8       `json:"is_live"`
 	CreatedBy   User       `json:"created_by"`
 	UpdatedBy   User       `json:"updated_by"`
