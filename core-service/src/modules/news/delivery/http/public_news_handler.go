@@ -89,7 +89,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	// set ttl cache 5 minutes after store in redis
-	ttl := 5 * time.Minute
+	ttl := time.Duration(cfg.Redis.TTL) * time.Second
 	cacheErr := cache.Set(slug, &newsRes, ttl).Err()
 	if cacheErr != nil {
 		return cacheErr
