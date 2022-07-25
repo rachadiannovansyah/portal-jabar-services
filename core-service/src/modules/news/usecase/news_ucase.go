@@ -603,8 +603,8 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 	news.Status = status
 
 	newsRequest := domain.StoreNewsRequest{
-		StartDate: helpers.ConvertTimeToString(news.StartDate.Time),
-		EndDate:   helpers.ConvertTimeToString(news.EndDate.Time),
+		StartDate: helpers.ConvertTimeToString(news.StartDate.UTC()),
+		EndDate:   helpers.ConvertTimeToString(news.EndDate.UTC()),
 		AreaID:    news.Area.ID,
 	}
 	copier.Copy(&newsRequest, &news)

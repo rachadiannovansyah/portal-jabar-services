@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 )
 
@@ -15,8 +16,8 @@ type News struct {
 	Content     string     `json:"content" validate:"required"`
 	Slug        string     `json:"slug"`
 	Image       *string    `json:"image"`
-	Video       NullString `json:"video"`
-	Source      NullString `json:"source"`
+	Video       *string    `json:"video"`
+	Source      *string    `json:"source"`
 	Status      string     `json:"status,omitempty"`
 	Views       int64      `json:"views"`
 	Shared      int64      `json:"shared"`
@@ -30,8 +31,8 @@ type News struct {
 	Editor      *string    `json:"editor"`
 	Area        Area       `json:"area" validate:"required"`
 	Duration    int8       `json:"duration"`
-	StartDate   NullTime   `json:"start_date"`
-	EndDate     NullTime   `json:"end_date"`
+	StartDate   *time.Time `json:"start_date"`
+	EndDate     *time.Time `json:"end_date"`
 	IsLive      int8       `json:"is_live"`
 	CreatedBy   User       `json:"created_by"`
 	UpdatedBy   User       `json:"updated_by"`
@@ -113,32 +114,32 @@ type NewsBanner struct {
 
 // DetailNewsResponse ...
 type DetailNewsResponse struct {
-	ID          int64            `json:"id"`
-	Title       string           `json:"title"`
-	Excerpt     string           `json:"excerpt"`
-	Content     string           `json:"content"`
-	Slug        string           `json:"slug"`
-	Image       *string          `json:"image"`
-	Video       NullString       `json:"video"`
-	Source      NullString       `json:"source"`
-	Status      string           `json:"status"`
-	Views       int64            `json:"views"`
-	Shared      int64            `json:"shared"`
-	Highlight   int8             `json:"highlight,omitempty"`
-	Type        string           `json:"type"`
-	Tags        []DataTag        `json:"tags"`
-	Category    string           `json:"category"`
-	Author      string           `json:"author"`
-	Reporter    string           `json:"reporter"`
-	Editor      string           `json:"editor"`
-	Duration    int8             `json:"duration"`
-	StartDate   NullTime         `json:"start_date"`
-	EndDate     NullTime         `json:"end_date"`
-	Area        AreaListResponse `json:"area"`
-	PublishedAt time.Time        `json:"published_at"`
-	CreatedBy   Author           `json:"created_by"`
-	CreatedAt   time.Time        `json:"created_at"`
-	UpdatedAt   time.Time        `json:"updated_at"`
+	ID          int64             `json:"id"`
+	Title       string            `json:"title"`
+	Excerpt     string            `json:"excerpt"`
+	Content     string            `json:"content"`
+	Slug        string            `json:"slug"`
+	Image       *string           `json:"image"`
+	Video       *string           `json:"video"`
+	Source      *string           `json:"source"`
+	Status      string            `json:"status"`
+	Views       int64             `json:"views"`
+	Shared      int64             `json:"shared"`
+	Highlight   int8              `json:"highlight,omitempty"`
+	Type        string            `json:"type"`
+	Tags        []DataTag         `json:"tags"`
+	Category    string            `json:"category"`
+	Author      string            `json:"author"`
+	Reporter    string            `json:"reporter"`
+	Editor      string            `json:"editor"`
+	Duration    int8              `json:"duration"`
+	StartDate   *time.Time        `json:"start_date"`
+	EndDate     *time.Time        `json:"end_date"`
+	Area        *AreaListResponse `json:"area"`
+	PublishedAt time.Time         `json:"published_at"`
+	CreatedBy   Author            `json:"created_by"`
+	CreatedAt   time.Time         `json:"created_at"`
+	UpdatedAt   time.Time         `json:"updated_at"`
 }
 
 type TabStatusResponse struct {
@@ -160,6 +161,11 @@ type NewsAptikaResponse struct {
 	CreatedBy   Author     `json:"Dibuat_oleh"`
 	CreatedAt   time.Time  `json:"Dibuat_pada"`
 	UpdatedAt   time.Time  `json:"Diubah_pada"`
+}
+
+func (i DetailNewsResponse) MarshalBinary() ([]byte, error) {
+	bytes, err := json.Marshal(i)
+	return bytes, err
 }
 
 // NewsUsecase represent the news usecases
