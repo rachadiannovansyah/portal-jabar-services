@@ -602,6 +602,11 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 
 	news.Status = status
 
+	// check if end_date is null, otherwise set it to default date
+	if news.EndDate == nil {
+		news.EndDate = &time.Time{}
+	}
+
 	newsRequest := domain.StoreNewsRequest{
 		StartDate: helpers.ConvertTimeToString(news.StartDate.UTC()),
 		EndDate:   helpers.ConvertTimeToString(news.EndDate.UTC()),

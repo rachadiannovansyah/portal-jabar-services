@@ -112,8 +112,6 @@ func (m *mysqlAreaRepository) GetByID(ctx context.Context, id int64) (res domain
 
 	if len(list) > 0 {
 		res = list[0]
-	} else {
-		return res, domain.ErrNotFound
 	}
 
 	return
