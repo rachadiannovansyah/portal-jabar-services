@@ -1,1 +1,1 @@
-ALTER TABLE feedback ADD COLUMN sector VARCHAR(100) NULL AFTER suggestions;
+ALTER TABLE feedback ADD COLUMN sector text NULL AFTER suggestions;
