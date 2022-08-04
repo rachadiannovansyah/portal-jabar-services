@@ -23,6 +23,7 @@ func NewFeedbackUsecase(f domain.FeedbackRepository, timeout time.Duration) doma
 func (u *feedbackUsecase) Store(c context.Context, f *domain.Feedback) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
+	f.CreatedAt = time.Now()
 	err = u.feedbackRepo.Store(ctx, f)
 	return
 }

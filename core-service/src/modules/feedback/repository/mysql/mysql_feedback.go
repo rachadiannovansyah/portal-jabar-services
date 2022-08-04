@@ -17,13 +17,13 @@ func NewMysqlFeedbackRepository(Conn *sql.DB) domain.FeedbackRepository {
 }
 
 func (m *mysqlFeedbackRepository) Store(ctx context.Context, f *domain.Feedback) (err error) {
-	query := `INSERT feedback SET rating=? , compliments=? , criticism=?, suggestions=?, sector=?`
+	query := `INSERT feedback SET rating=? , compliments=? , criticism=?, suggestions=?, sector=?, created_at=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, f.Rating, f.Compliments, f.Criticism, f.Suggestions, f.Sector)
+	res, err := stmt.ExecContext(ctx, f.Rating, f.Compliments, f.Criticism, f.Suggestions, f.Sector, f.CreatedAt)
 	if err != nil {
 		return
 	}
