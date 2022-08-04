@@ -14,7 +14,6 @@ type Feedback struct {
 	Suggestions string    `json:"suggestions" validate:"required,max=1500"`
 	Sector      string    `json:"sector" validate:"required,max=1500"`
 	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // FeedbackUsecase is an interface for feedback use cases
