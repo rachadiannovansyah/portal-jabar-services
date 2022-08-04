@@ -12,7 +12,7 @@ type Feedback struct {
 	Compliments string    `json:"compliments" validate:"required,max=1500"`
 	Criticism   string    `json:"criticism" validate:"required,max=1500"`
 	Suggestions string    `json:"suggestions" validate:"required,max=1500"`
-	Sector      string    `json:"sector" validate:"required,max=1500"`
+	Sector      string    `json:"sector" validate:"required,max=1510"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
