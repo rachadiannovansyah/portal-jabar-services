@@ -27,7 +27,6 @@ func TestStore(t *testing.T) {
 		CreatedAt:   time.Now(),
 	}
 
-	// query := "INSERT INTO users \\(id, name, email, phone\\) VALUES \\(\\?, \\?, \\?, \\?\\)"
 	query := "INSERT feedback SET rating=? , compliments=? , criticism=?, suggestions=?, sector=?, created_at=?"
 
 	prep := mock.ExpectPrepare(query)
