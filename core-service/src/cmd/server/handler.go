@@ -63,7 +63,6 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	e.Use(nrecho.Middleware(apm.NewRelic))
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
 	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
-	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
 
 	newAppHandler(e)
 	_areaHttpDelivery.NewAreaHandler(v1, r, u.AreaUcase)
