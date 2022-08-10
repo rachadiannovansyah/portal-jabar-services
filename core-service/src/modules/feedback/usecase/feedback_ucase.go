@@ -25,11 +25,11 @@ func (u *feedbackUsecase) Store(c context.Context, f *domain.Feedback) (err erro
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	// sanitizing the request
-	f.Compliments = sanitize.Alpha(f.Compliments, true)
-	f.Criticism = sanitize.Alpha(f.Criticism, true)
-	f.Suggestions = sanitize.Alpha(f.Suggestions, true)
-	f.Sector = sanitize.Alpha(f.Sector, true)
+	// sanitizing the request from script attack
+	f.Compliments = sanitize.Scripts(f.Compliments)
+	f.Criticism = sanitize.Scripts(f.Criticism)
+	f.Suggestions = sanitize.Scripts(f.Suggestions)
+	f.Sector = sanitize.Scripts(f.Sector)
 	f.CreatedAt = time.Now()
 
 	err = u.feedbackRepo.Store(ctx, f)
