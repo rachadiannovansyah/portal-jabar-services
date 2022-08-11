@@ -15,8 +15,6 @@ import (
 
 	"github.com/newrelic/go-agent/v3/integrations/nrecho-v4"
 
-	sentryecho "github.com/getsentry/sentry-go/echo"
-
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 
 	_areaHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/area/delivery/http"
@@ -58,11 +56,9 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	p := v1.Group("/public")
 
 	r.Use(middL.JWT)
-	e.Use(middL.SENTRY)
 	e.Use(middleware.Logger())
 	e.Use(nrecho.Middleware(apm.NewRelic))
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
-	e.Use(sentryecho.New(sentryecho.Options{Repanic: true}))
 
 	newAppHandler(e)
 	_areaHttpDelivery.NewAreaHandler(v1, r, u.AreaUcase)
