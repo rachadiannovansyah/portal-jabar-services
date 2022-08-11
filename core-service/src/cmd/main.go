@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
-
-	"github.com/getsentry/sentry-go"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
@@ -26,14 +23,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}()
-
-	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              cfg.Sentry.DSN,
-		TracesSampleRate: cfg.Sentry.TracesSampleRate,
-		Environment:      cfg.Sentry.Environment,
-	}); err != nil {
-		fmt.Printf("Sentry initialization failed: %v\n", err)
-	}
 
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
