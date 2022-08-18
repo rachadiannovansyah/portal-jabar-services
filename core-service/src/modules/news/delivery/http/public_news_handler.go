@@ -28,6 +28,7 @@ func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase) {
 	p.GET("/news/banner", handler.FetchNewsBanner)
 	p.GET("/news/headline", handler.FetchNewsHeadline)
 	p.PATCH("/news/:id/share", handler.AddShare)
+	p.PATCH("/news/:id/view", handler.AddView)
 }
 
 // FetchNews will fetch the content based on given params
@@ -157,5 +158,27 @@ func (h *PublicNewsHandler) AddShare(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully add share count",
+	})
+}
+
+// AddView counter to share
+func (h *PublicNewsHandler) AddView(c echo.Context) error {
+	// FIXME: Check and verify the recaptcha response token.
+
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	err = h.CUsecase.AddView(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully add view count",
 	})
 }
