@@ -161,10 +161,8 @@ func (h *PublicNewsHandler) AddShare(c echo.Context) error {
 	})
 }
 
-// AddView counter to share
+// AddView counter view news
 func (h *PublicNewsHandler) AddView(c echo.Context) error {
-	// FIXME: Check and verify the recaptcha response token.
-
 	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
