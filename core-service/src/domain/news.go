@@ -177,6 +177,7 @@ type NewsUsecase interface {
 	GetByID(ctx context.Context, id int64) (News, error)
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
+	AddView(ctx context.Context, id int64) error
 	Store(context.Context, *StoreNewsRequest) error
 	Update(context.Context, int64, *StoreNewsRequest) error
 	UpdateStatus(context.Context, int64, string) error
