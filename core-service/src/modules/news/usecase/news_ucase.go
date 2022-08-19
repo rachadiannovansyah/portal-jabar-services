@@ -498,8 +498,8 @@ func (n *newsUsecase) GetViewsBySlug(c context.Context, slug string) (res domain
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	err = n.newsRepo.AddView(ctx, slug)
 	res, err = n.newsRepo.GetBySlug(ctx, slug)
-	err = n.newsRepo.AddView(ctx, res.ID)
 	if err != nil {
 		logrus.Error(err)
 	}
