@@ -177,7 +177,7 @@ type NewsUsecase interface {
 	GetByID(ctx context.Context, id int64) (News, error)
 	GetBySlug(ctx context.Context, slug string) (News, error)
 	AddShare(ctx context.Context, id int64) error
-	AddView(ctx context.Context, id int64) error
+	GetViewsBySlug(ctx context.Context, slug string) (News, error)
 	Store(context.Context, *StoreNewsRequest) error
 	Update(context.Context, int64, *StoreNewsRequest) error
 	UpdateStatus(context.Context, int64, string) error
@@ -192,7 +192,7 @@ type NewsRepository interface {
 	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
 	GetBySlug(ctx context.Context, slug string) (News, error)
-	AddView(ctx context.Context, id int64) (err error)
+	AddView(ctx context.Context, slug string) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error
 	Update(ctx context.Context, id int64, n *StoreNewsRequest) error

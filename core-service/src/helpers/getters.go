@@ -128,9 +128,11 @@ func GetCachedData(c echo.Context) (memcache string) {
 	cfg := config.NewConfig()
 	cache := utils.NewDBConn(cfg).Redis
 
+	// get url path from context
+	path := c.Request().URL.Path
+
 	// Get cached data
-	key := c.Param("slug")
-	memcache, _ = cache.Get(key).Result()
+	memcache, _ = cache.Get(path).Result()
 
 	if memcache != "" {
 		fmt.Println("Cached!")

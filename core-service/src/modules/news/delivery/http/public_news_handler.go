@@ -25,10 +25,10 @@ func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase) {
 	handler := &PublicNewsHandler{CUsecase: us}
 	p.GET("/news", handler.FetchNews)
 	p.GET("/news/slug/:slug", handler.GetBySlug, middl.CheckCache())
+	p.GET("/news/slug/:slug/view", handler.GetViewsBySlug)
 	p.GET("/news/banner", handler.FetchNewsBanner)
 	p.GET("/news/headline", handler.FetchNewsHeadline)
 	p.PATCH("/news/:id/share", handler.AddShare)
-	p.PATCH("/news/:id/view", handler.AddView)
 }
 
 // FetchNews will fetch the content based on given params
@@ -75,6 +75,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 
 // GetBySlug will get article by given slug
 func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
+	path := c.Request().URL.Path
 	cfg := config.NewConfig()
 	cache := utils.NewDBConn(cfg).Redis
 	slug := c.Param("slug")
@@ -91,7 +92,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 
 	// set ttl cache 5 minutes after store in redis
 	ttl := time.Duration(cfg.Redis.TTL) * time.Second
-	cacheErr := cache.Set(slug, &newsRes, ttl).Err()
+	cacheErr := cache.Set(path, &newsRes, ttl).Err()
 	if cacheErr != nil {
 		return cacheErr
 	}
@@ -161,22 +162,16 @@ func (h *PublicNewsHandler) AddShare(c echo.Context) error {
 	})
 }
 
-// AddView counter view news
-func (h *PublicNewsHandler) AddView(c echo.Context) error {
-	idP, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
-	}
-
-	id := int64(idP)
+// GetViewsBySlug to show counter view news
+func (h *PublicNewsHandler) GetViewsBySlug(c echo.Context) error {
+	slug := c.Param("slug")
 	ctx := c.Request().Context()
-
-	err = h.CUsecase.AddView(ctx, id)
+	res, err := h.CUsecase.GetViewsBySlug(ctx, slug)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "successfully add view count",
+		"views": res.Views,
 	})
 }

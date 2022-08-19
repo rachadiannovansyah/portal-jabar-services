@@ -441,12 +441,6 @@ func (n *newsUsecase) GetBySlug(c context.Context, slug string) (res domain.News
 		return
 	}
 
-	// FIXME: prevent abuse page views counter by using cache (redis)
-	err = n.newsRepo.AddView(ctx, res.ID)
-	if err != nil {
-		logrus.Error(err)
-	}
-
 	return
 }
 
@@ -500,10 +494,17 @@ func (n *newsUsecase) AddShare(c context.Context, id int64) (err error) {
 	return n.newsRepo.AddShare(ctx, id)
 }
 
-func (n *newsUsecase) AddView(c context.Context, id int64) (err error) {
+func (n *newsUsecase) GetViewsBySlug(c context.Context, slug string) (res domain.News, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
-	return n.newsRepo.AddView(ctx, id)
+
+	err = n.newsRepo.AddView(ctx, slug)
+	res, err = n.newsRepo.GetBySlug(ctx, slug)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	return
 }
 
 func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err error) {

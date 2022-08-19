@@ -199,10 +199,10 @@ func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, slug string) (res d
 	return m.findOne(ctx, "slug", slug)
 }
 
-func (m *mysqlNewsRepository) AddView(ctx context.Context, id int64) (err error) {
-	query := `UPDATE news SET views = views + 1 WHERE id = ?`
+func (m *mysqlNewsRepository) AddView(ctx context.Context, slug string) (err error) {
+	query := `UPDATE news SET views = views + 1 WHERE slug = ?`
 
-	_, err = m.Conn.ExecContext(ctx, query, id)
+	_, err = m.Conn.ExecContext(ctx, query, slug)
 
 	return
 }
