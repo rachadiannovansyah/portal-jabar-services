@@ -47,8 +47,13 @@ func GetRequestParams(c echo.Context) domain.Request {
 	offset := (page - 1) * perPage
 
 	sortOrder := c.QueryParam("sort_order")
-	if sortOrder == "" {
+	sortOrderValue := []string{"ASC", "DESC"}
+
+	stringExist, stringIndex := InArray(sortOrder, sortOrderValue)
+	if !stringExist {
 		sortOrder = "DESC"
+	} else {
+		sortOrder = sortOrderValue[stringIndex]
 	}
 
 	params := domain.Request{
