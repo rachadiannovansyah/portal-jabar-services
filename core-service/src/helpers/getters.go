@@ -33,6 +33,7 @@ func GetCurrentURI(c echo.Context) string {
 
 // GetRequestParams ...
 func GetRequestParams(c echo.Context) domain.Request {
+	sortOrder := c.QueryParam("sort_order")
 	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
 
@@ -46,20 +47,22 @@ func GetRequestParams(c echo.Context) domain.Request {
 
 	offset := (page - 1) * perPage
 
-	sortOrder := c.QueryParam("sort_order")
-	if sortOrder == "" {
-		sortOrder = "DESC"
+	sortOrderValues := []string{"ASC", "DESC"}
+	sortOrderExist, sortOrderIndex := InArray(sortOrder, sortOrderValues)
+	sortOrder = "DESC"
+	if sortOrderExist {
+		sortOrder = sortOrderValues[sortOrderIndex]
 	}
 
 	params := domain.Request{
-		Keyword:   c.QueryParam("q"),
+		Keyword:   RegexReplaceString(c, c.QueryParam("q"), ""),
 		Page:      page,
 		PerPage:   perPage,
 		Offset:    offset,
-		SortBy:    c.QueryParam("sort_by"),
+		SortBy:    RegexReplaceString(c, c.QueryParam("sort_by"), ""),
 		SortOrder: sortOrder,
-		StartDate: c.QueryParam("start_date"),
-		EndDate:   c.QueryParam("end_date"),
+		StartDate: RegexReplaceString(c, c.QueryParam("start_date"), ""),
+		EndDate:   RegexReplaceString(c, c.QueryParam("end_date"), ""),
 	}
 
 	return params

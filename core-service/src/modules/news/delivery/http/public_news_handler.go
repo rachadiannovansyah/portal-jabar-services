@@ -37,14 +37,14 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"category":   c.QueryParam("cat"),
 		"categories": c.Request().URL.Query()["cat[]"],
-		"highlight":  c.QueryParam("highlight"),
-		"type":       c.QueryParam("type"),
-		"tag":        c.QueryParam("tag"),
-		"status":     c.QueryParam("status"),
-		"exclude":    c.QueryParam("exclude"),
-		"is_aptika":  c.QueryParam("is_aptika"),
+		"category":   helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+		"highlight":  helpers.RegexReplaceString(c, c.QueryParam("highlight"), ""),
+		"type":       helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
+		"tag":        helpers.RegexReplaceString(c, c.QueryParam("tag"), ""),
+		"status":     helpers.RegexReplaceString(c, c.QueryParam("status"), ""),
+		"exclude":    helpers.RegexReplaceString(c, c.QueryParam("exclude"), ""),
+		"is_aptika":  helpers.RegexReplaceString(c, c.QueryParam("is_aptika"), ""),
 	}
 
 	listNews, total, err := h.CUsecase.FetchPublished(ctx, &params)
