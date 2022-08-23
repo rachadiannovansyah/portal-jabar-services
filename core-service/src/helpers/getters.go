@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
@@ -33,6 +34,11 @@ func GetCurrentURI(c echo.Context) string {
 
 // GetRequestParams ...
 func GetRequestParams(c echo.Context) domain.Request {
+	re := regexp.MustCompile(`[^a-zA-Z0-9]`)
+	keyword := c.QueryParam("q")
+	sortBy := c.QueryParam("sort_by")
+	startDate := c.QueryParam("start_date")
+	endDate := c.QueryParam("end_date")
 	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
 
@@ -57,14 +63,14 @@ func GetRequestParams(c echo.Context) domain.Request {
 	}
 
 	params := domain.Request{
-		Keyword:   c.QueryParam("q"),
+		Keyword:   re.ReplaceAllString(keyword, ""),
 		Page:      page,
 		PerPage:   perPage,
 		Offset:    offset,
-		SortBy:    c.QueryParam("sort_by"),
+		SortBy:    re.ReplaceAllString(sortBy, ""),
 		SortOrder: sortOrder,
-		StartDate: c.QueryParam("start_date"),
-		EndDate:   c.QueryParam("end_date"),
+		StartDate: re.ReplaceAllString(startDate, ""),
+		EndDate:   re.ReplaceAllString(endDate, ""),
 	}
 
 	return params
