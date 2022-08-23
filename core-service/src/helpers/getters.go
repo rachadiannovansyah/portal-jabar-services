@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
@@ -34,11 +33,7 @@ func GetCurrentURI(c echo.Context) string {
 
 // GetRequestParams ...
 func GetRequestParams(c echo.Context) domain.Request {
-	re := regexp.MustCompile(`[^a-zA-Z0-9]`)
-	keyword := c.QueryParam("q")
-	sortBy := c.QueryParam("sort_by")
-	startDate := c.QueryParam("start_date")
-	endDate := c.QueryParam("end_date")
+	sortOrder := c.QueryParam("sort_order")
 	page, _ := strconv.ParseInt(c.QueryParam("page"), 10, 64)
 	perPage, _ := strconv.ParseInt(c.QueryParam("per_page"), 10, 64)
 
@@ -52,25 +47,22 @@ func GetRequestParams(c echo.Context) domain.Request {
 
 	offset := (page - 1) * perPage
 
-	sortOrder := c.QueryParam("sort_order")
-	sortOrderValue := []string{"ASC", "DESC"}
-
-	stringExist, stringIndex := InArray(sortOrder, sortOrderValue)
-	if !stringExist {
-		sortOrder = "DESC"
-	} else {
-		sortOrder = sortOrderValue[stringIndex]
+	sortOrderValues := []string{"ASC", "DESC"}
+	sortOrderExist, sortOrderIndex := InArray(sortOrder, sortOrderValues)
+	sortOrder = "DESC"
+	if sortOrderExist {
+		sortOrder = sortOrderValues[sortOrderIndex]
 	}
 
 	params := domain.Request{
-		Keyword:   re.ReplaceAllString(keyword, ""),
+		Keyword:   RegexReplaceString(c, c.QueryParam("q"), ""),
 		Page:      page,
 		PerPage:   perPage,
 		Offset:    offset,
-		SortBy:    re.ReplaceAllString(sortBy, ""),
+		SortBy:    RegexReplaceString(c, c.QueryParam("sort_by"), ""),
 		SortOrder: sortOrder,
-		StartDate: re.ReplaceAllString(startDate, ""),
-		EndDate:   re.ReplaceAllString(endDate, ""),
+		StartDate: RegexReplaceString(c, c.QueryParam("start_date"), ""),
+		EndDate:   RegexReplaceString(c, c.QueryParam("end_date"), ""),
 	}
 
 	return params
