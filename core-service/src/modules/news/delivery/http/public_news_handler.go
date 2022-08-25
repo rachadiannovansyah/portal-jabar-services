@@ -172,6 +172,7 @@ func (h *PublicNewsHandler) GetViewsBySlug(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"views": res.Views,
+		"views":  res.Views,
+		"shared": res.Shared,
 	})
 }
