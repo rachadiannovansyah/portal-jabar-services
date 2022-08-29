@@ -11,6 +11,7 @@ import (
 	_authUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/auth/usecase"
 	_awardUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/award/usecase"
 	_districtUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/district/usecase"
+	_documentArchiveUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/document-archive/usecase"
 	_eventUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/usecase"
 	_featuredProgramUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/usecase"
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
@@ -27,43 +28,45 @@ import (
 
 // Usecases ...
 type Usecases struct {
-	AreaUcase            domain.AreaUsecase
-	CategoryUcase        domain.CategoryUsecase
-	NewsUcase            domain.NewsUsecase
-	InformationUcase     domain.InformationUsecase
-	UnitUcase            domain.UnitUsecase
-	EventUcase           domain.EventUsecase
-	FeedbackUcase        domain.FeedbackUsecase
-	FeaturedProgramUcase domain.FeaturedProgramUsecase
-	AuthUcase            domain.AuthUsecase
-	SearchUcase          domain.SearchUsecase
-	UserUsecase          domain.UserUsecase
-	MediaUsecase         domain.MediaUsecase
-	TagUsecase           domain.TagUsecase
-	TemplateUsecase      domain.TemplateUsecase
-	RegInvitationUsecase domain.RegistrationInvitationUsecase
-	AwardUsecase         domain.AwardUsecase
-	DistrictUsecase      domain.DistrictUsecase
+	AreaUcase              domain.AreaUsecase
+	CategoryUcase          domain.CategoryUsecase
+	NewsUcase              domain.NewsUsecase
+	InformationUcase       domain.InformationUsecase
+	UnitUcase              domain.UnitUsecase
+	EventUcase             domain.EventUsecase
+	FeedbackUcase          domain.FeedbackUsecase
+	FeaturedProgramUcase   domain.FeaturedProgramUsecase
+	AuthUcase              domain.AuthUsecase
+	SearchUcase            domain.SearchUsecase
+	UserUsecase            domain.UserUsecase
+	MediaUsecase           domain.MediaUsecase
+	TagUsecase             domain.TagUsecase
+	TemplateUsecase        domain.TemplateUsecase
+	RegInvitationUsecase   domain.RegistrationInvitationUsecase
+	AwardUsecase           domain.AwardUsecase
+	DistrictUsecase        domain.DistrictUsecase
+	DocumentArchiveUsecase domain.DocumentArchiveUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
 func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContext time.Duration) *Usecases {
 	return &Usecases{
-		AreaUcase:            _areaUcase.NewAreaUsecase(r.AreaRepo, timeoutContext),
-		NewsUcase:            _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagRepo, r.DataTagsRepo, r.AreaRepo, r.SearchRepo, cfg, timeoutContext),
-		InformationUcase:     _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
-		UnitUcase:            _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
-		EventUcase:           _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.TagRepo, r.DataTagsRepo, r.UserRepo, timeoutContext),
-		FeedbackUcase:        _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
-		FeaturedProgramUcase: _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
-		AuthUcase:            _authUcase.NewAuthUsecase(cfg, r.UserRepo, r.UnitRepo, r.RoleRepo, r.RolePermRepo, timeoutContext),
-		SearchUcase:          _searchUcase.NewSearchUsecase(r.SearchRepo, cfg, timeoutContext),
-		UserUsecase:          _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, r.RegInvitationRepo, timeoutContext),
-		MediaUsecase:         _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
-		TagUsecase:           _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
-		TemplateUsecase:      _templateUcase.NewTemplateUsecase(r.TemplateRepo, r.UserRepo, timeoutContext),
-		RegInvitationUsecase: _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, r.MailRepo, r.TemplateRepo, timeoutContext),
-		AwardUsecase:         _awardUcase.NewAwardUsecase(r.AwardRepo, timeoutContext),
-		DistrictUsecase:      _districtUcase.NewDistrictUsecase(r.DistrictRepo, timeoutContext),
+		AreaUcase:              _areaUcase.NewAreaUsecase(r.AreaRepo, timeoutContext),
+		NewsUcase:              _newsUcase.NewNewsUsecase(r.NewsRepo, r.CategoryRepo, r.UserRepo, r.TagRepo, r.DataTagsRepo, r.AreaRepo, r.SearchRepo, cfg, timeoutContext),
+		InformationUcase:       _informationUcase.NewInformationUsecase(r.InformationRepo, r.CategoryRepo, timeoutContext),
+		UnitUcase:              _unitUcase.NewUnitUsecase(r.UnitRepo, timeoutContext),
+		EventUcase:             _eventUcase.NewEventUsecase(r.EventRepo, r.CategoryRepo, r.TagRepo, r.DataTagsRepo, r.UserRepo, timeoutContext),
+		FeedbackUcase:          _feedbackUcase.NewFeedbackUsecase(r.FeedbackRepo, timeoutContext),
+		FeaturedProgramUcase:   _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
+		AuthUcase:              _authUcase.NewAuthUsecase(cfg, r.UserRepo, r.UnitRepo, r.RoleRepo, r.RolePermRepo, timeoutContext),
+		SearchUcase:            _searchUcase.NewSearchUsecase(r.SearchRepo, cfg, timeoutContext),
+		UserUsecase:            _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, r.RegInvitationRepo, timeoutContext),
+		MediaUsecase:           _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
+		TagUsecase:             _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),
+		TemplateUsecase:        _templateUcase.NewTemplateUsecase(r.TemplateRepo, r.UserRepo, timeoutContext),
+		RegInvitationUsecase:   _regInvitationUcase.NewRegInvitationUsecase(r.RegInvitationRepo, r.UserRepo, r.MailRepo, r.TemplateRepo, timeoutContext),
+		AwardUsecase:           _awardUcase.NewAwardUsecase(r.AwardRepo, timeoutContext),
+		DistrictUsecase:        _districtUcase.NewDistrictUsecase(r.DistrictRepo, timeoutContext),
+		DocumentArchiveUsecase: _documentArchiveUcase.NewDocumentArchiveUsecase(r.DocumentArchiveRepo, r.UserRepo, cfg, timeoutContext),
 	}
 }
