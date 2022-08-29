@@ -3,7 +3,7 @@ CREATE TABLE document_archives (
     title VARCHAR(150) NOT NULL,
     excerpt TEXT NOT NULL,
     description TEXT NOT NULL,
-    source VARCHAR(80) DEFAULT NULL,
+    source VARCHAR(180) DEFAULT NULL,
     mimetype VARCHAR(30) DEFAULT NULL,
     category VARCHAR(50) NOT NULL,
     year_published VARCHAR(30) DEFAULT NULL,
