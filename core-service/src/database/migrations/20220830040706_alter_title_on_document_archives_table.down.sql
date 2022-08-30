@@ -1,0 +1,2 @@
+ALTER TABLE document_archives
+MODIFY COLUMN title VARCHAR(150);
