@@ -22,15 +22,16 @@ type DocumentArchive struct {
 
 // ListDocumentArchive ...
 type ListDocumentArchive struct {
-	ID        int64     `json:"id"`
-	Title     string    `json:"title" validate:"required"`
-	Excerpt   string    `json:"excerpt" validate:"required"`
-	Source    string    `json:"source"`
-	Mimetype  string    `json:"mimetype"`
-	Category  string    `json:"category" validate:"required"`
-	CreatedBy Author    `json:"created_by"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Title       string    `json:"title"`
+	Excerpt     string    `json:"excerpt"`
+	Description string    `json:"description"`
+	Source      string    `json:"source"`
+	Mimetype    string    `json:"mimetype"`
+	Category    string    `json:"category"`
+	CreatedBy   Author    `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // DocumentArchiveUsecase ...
