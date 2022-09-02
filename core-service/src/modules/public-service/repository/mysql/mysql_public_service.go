@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/sirupsen/logrus"
 
@@ -83,7 +84,7 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 }
 
 func (m *mysqlPublicServiceRepository) Store(ctx context.Context, ps *domain.StorePserviceRequest) (err error) {
-	query := `INSERT public_service SET name=?, description=?, url=?, image=?, category=?, is_active=?, created_at=?, updated_at=?`
+	query := `INSERT public_services SET name=?, description=?, unit=?, url=?, image=?, category=?, is_active=?, created_at=?, updated_at=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -92,6 +93,7 @@ func (m *mysqlPublicServiceRepository) Store(ctx context.Context, ps *domain.Sto
 	res, err := stmt.ExecContext(ctx,
 		ps.Name,
 		ps.Description,
+		ps.Unit,
 		ps.Url,
 		ps.Image,
 		ps.Category,
@@ -110,6 +112,34 @@ func (m *mysqlPublicServiceRepository) Store(ctx context.Context, ps *domain.Sto
 	}
 
 	ps.ID = lastID
+
+	return
+}
+
+func (m *mysqlPublicServiceRepository) Delete(ctx context.Context, id int64) (err error) {
+	// binding data from a request
+	query := "DELETE FROM public_services WHERE id = ? "
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	// exec an query
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	// get affected row
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
+		return
+	}
 
 	return
 }
