@@ -73,17 +73,9 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		domain = domainFilter
 	}
 
-	paramsSort := q{"created_at": q{"order": params.SortOrder}}
-	if sortFilter := params.SortBy; len(sortFilter) > 0 {
-		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
-	}
-
 	query := q{
 		"_source": q{
 			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "published_at", "created_at"},
-		},
-		"sort": []map[string]interface{}{
-			paramsSort,
 		},
 		"query": q{
 			"bool": q{
