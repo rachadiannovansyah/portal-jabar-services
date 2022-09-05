@@ -27,6 +27,7 @@ import (
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
+	_publicServiceHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/delivery/http"
 	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
@@ -81,6 +82,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_awardHttpDelivery.NewAwardHandler(v1, u.AwardUsecase)
 	_districtHttpDelivery.NewDistrictHandler(v1, u.DistrictUsecase)
 	_publicDocumentArchiveHttpDelivery.NewPublicDocumentArchiveHandler(p, u.DocumentArchiveUsecase)
+	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, r, u.PublicServiceUsecase)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
