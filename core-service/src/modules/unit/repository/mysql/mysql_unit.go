@@ -19,7 +19,7 @@ func NewMysqlUnitRepository(Conn *sql.DB) domain.UnitRepository {
 	return &mysqlUnitRepository{Conn}
 }
 
-var querySelectUnit = `SELECT id, parent_id, name, description, logo, website, phone, address, chief, 
+var querySelectUnit = `SELECT id, parent_id, name, description, logo, website, ppid, phone, address, chief, 
 	created_at, updated_at FROM units WHERE 1=1`
 
 func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.Unit, err error) {
@@ -46,6 +46,7 @@ func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...i
 			&u.Description,
 			&u.Logo,
 			&u.Website,
+			&u.PPID,
 			&u.Phone,
 			&u.Address,
 			&u.Chief,
