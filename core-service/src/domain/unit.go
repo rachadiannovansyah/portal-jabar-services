@@ -13,6 +13,7 @@ type Unit struct {
 	Description NullString `json:"description"`
 	Logo        NullString `json:"logo"`
 	Website     NullString `json:"website"`
+	PPID        NullString `json:"ppid"`
 	Phone       NullString `json:"phone"`
 	Address     NullString `json:"address"`
 	Chief       NullString `json:"chief"`
@@ -27,6 +28,7 @@ type UnitInfo struct {
 	Chief   NullString `json:"chief"`
 	Address NullString `json:"address"`
 	Website NullString `json:"website"`
+	PPID    NullString `json:"ppid"`
 	Logo    NullString `json:"logo"`
 }
 
