@@ -1,0 +1,2 @@
+ALTER TABLE units
+DROP COLUMN ppid;
