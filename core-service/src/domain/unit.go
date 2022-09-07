@@ -30,6 +30,7 @@ type UnitInfo struct {
 	Website NullString `json:"website"`
 	PPID    NullString `json:"ppid"`
 	Logo    NullString `json:"logo"`
+	Phone   NullString `json:"phone"`
 }
 
 // UnitUsecase represent the unit usecases
