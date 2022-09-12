@@ -154,9 +154,11 @@ type NewsAptikaResponse struct {
 	Excerpt     string     `json:"Lead_berita"`
 	PublishedAt *time.Time `json:"Tanggal"`
 	Content     string     `json:"Isi"`
-	Image       *string    `json:"Gambar"`
 	Category    string     `json:"Kategori"`
 	Website     *string    `json:"Website"`
+	Image       *string    `json:"Gambar"`
+	Source      string     `json:"Sumber_berita"`
+	Author      string     `json:"Author"`
 	Area        Area       `json:"Area"`
 	CreatedBy   Author     `json:"Dibuat_oleh"`
 	CreatedAt   time.Time  `json:"Dibuat_pada"`
