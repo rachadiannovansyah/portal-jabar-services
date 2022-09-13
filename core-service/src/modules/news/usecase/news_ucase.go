@@ -607,24 +607,22 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		return
 	}
 
-	news.Status = status
-
 	// check if end_date is null, otherwise set it to default date
 	if news.EndDate == nil {
 		news.EndDate = &time.Time{}
 	}
 
+	// set status
+	news.Status = status
+	publishedAt := time.Now()
 	newsRequest := domain.StoreNewsRequest{
-		StartDate: helpers.ConvertTimeToString(news.StartDate.UTC()),
-		EndDate:   helpers.ConvertTimeToString(news.EndDate.UTC()),
+		StartDate: helpers.ConvertTimeToString(*news.StartDate),
+		EndDate:   helpers.ConvertTimeToString(*news.EndDate),
 		AreaID:    news.Area.ID,
 	}
 	copier.Copy(&newsRequest, &news)
 
-	newsRequest.IsLive = 0
 	if status == "PUBLISHED" {
-		// publishing news will set is_live to 1
-		news.IsLive = 1
 		newsRequest.Slug = helpers.MakeSlug(newsRequest.Title, newsRequest.ID)
 		helpers.SetPropLiveNews(&newsRequest)
 	} else if status == "ARCHIVED" {
@@ -637,12 +635,6 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		return
 	}
 
-	// set initial published at to elastic
-	publishedAt := newsRequest.PublishedAt
-	if status != "PUBLISHED" {
-		publishedAt = &time.Time{}
-	}
-
 	esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
 		Domain:      "news",
 		Title:       news.Title,
@@ -651,9 +643,9 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		Slug:        news.Slug,
 		Category:    news.Category,
 		Thumbnail:   *news.Image,
-		PublishedAt: publishedAt,
+		PublishedAt: &publishedAt,
 		UpdatedAt:   time.Now(),
-		IsActive:    news.IsLive == 1,
+		IsActive:    newsRequest.IsLive == 1,
 	})
 	if esErr != nil {
 		logrus.Error(esErr)
