@@ -16,7 +16,7 @@ func SetPropLiveNews(newsRequest *domain.StoreNewsRequest) {
 	newsRequest.IsLive = 0
 
 	// if endDate is exceed current time, set it to published at + duration
-	if time.Now().Unix() > endDate.Unix() {
+	if time.Now().Unix() > endDate.Unix() && (endDate != time.Time{}) { // its mean end date is not empty
 		newsRequest.StartDate = ConvertTimeToString(currentTime)
 		newsRequest.EndDate = ConvertTimeToString(currentTime.AddDate(0, 0, int(newsRequest.Duration)))
 		setLiveAndPublish(newsRequest, isLive, currentTime)
