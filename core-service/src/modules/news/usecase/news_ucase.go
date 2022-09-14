@@ -627,7 +627,7 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		helpers.SetPropLiveNews(&newsRequest)
 	} else if status == "ARCHIVED" {
 		// archived news will set is_live to 0
-		news.IsLive = 0
+		newsRequest.IsLive = 0
 	}
 
 	err = n.newsRepo.Update(ctx, id, &newsRequest)
