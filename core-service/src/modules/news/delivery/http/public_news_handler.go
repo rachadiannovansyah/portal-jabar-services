@@ -86,7 +86,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	// set cache from dependency injection redis
-	cacheErr := helpers.SetCache(c, c.Request().URL.Path, &newsRes, 300*time.Second)
+	cacheErr := helpers.SetCache(c.Request().URL.Path, &newsRes, 300*time.Second)
 	if cacheErr != nil {
 		return cacheErr
 	}

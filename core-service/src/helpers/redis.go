@@ -25,7 +25,7 @@ func RedisCache() *redis.Client {
 }
 
 // func to set cache redis
-func SetCache(c echo.Context, key string, value interface{}, ttl time.Duration) error {
+func SetCache(key string, value interface{}, ttl time.Duration) error {
 	// set key value and ttl on redis
 	err := RedisCache().Set(key, value, ttl).Err()
 	if err != nil {
