@@ -73,9 +73,19 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		domain = domainFilter
 	}
 
+	// set default sort by computed each _score documents
+	paramsSort := q{"_score": "desc"}
+	if sortFilter := params.SortBy; len(sortFilter) > 0 {
+		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
+	}
+
 	query := q{
 		"_source": q{
 			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "published_at", "created_at"},
+		},
+		"track_scores": true, // scores will still be computed and tracked
+		"sort": []map[string]interface{}{
+			paramsSort,
 		},
 		"query": q{
 			"bool": q{
