@@ -37,10 +37,10 @@ func CheckPermission(permission string) echo.MiddlewareFunc {
 	}
 }
 
-func CheckCache() echo.MiddlewareFunc {
+func VerifyCache() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			memcached := helpers.GetCachedData(c)
+			memcached := helpers.GetCache(c)
 
 			if memcached != "" {
 				var cacheRes domain.DetailNewsResponse

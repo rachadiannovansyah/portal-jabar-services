@@ -8,11 +8,9 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // PublicNewsHandler ...
@@ -24,7 +22,7 @@ type PublicNewsHandler struct {
 func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase) {
 	handler := &PublicNewsHandler{CUsecase: us}
 	p.GET("/news", handler.FetchNews)
-	p.GET("/news/slug/:slug", handler.GetBySlug, middl.CheckCache())
+	p.GET("/news/slug/:slug", handler.GetBySlug, middl.VerifyCache())
 	p.GET("/news/slug/:slug/view", handler.GetViewsBySlug)
 	p.GET("/news/banner", handler.FetchNewsBanner)
 	p.GET("/news/headline", handler.FetchNewsHeadline)
@@ -75,9 +73,6 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 
 // GetBySlug will get article by given slug
 func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
-	path := c.Request().URL.Path
-	cfg := config.NewConfig()
-	cache := utils.NewDBConn(cfg).Redis
 	slug := c.Param("slug")
 	ctx := c.Request().Context()
 
@@ -90,9 +85,8 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	newsRes := domain.DetailNewsResponse{}
 	copier.Copy(&newsRes, &news)
 
-	// set ttl cache 5 minutes after store in redis
-	ttl := time.Duration(cfg.Redis.TTL) * time.Second
-	cacheErr := cache.Set(path, &newsRes, ttl).Err()
+	// set cache from dependency injection redis
+	cacheErr := helpers.SetCache(c, c.Request().URL.Path, &newsRes, 300*time.Second)
 	if cacheErr != nil {
 		return cacheErr
 	}
