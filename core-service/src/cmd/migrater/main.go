@@ -221,6 +221,11 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			if data.PublishedAt == nil {
+				data.PublishedAt = &time.Time{}
+			}
+
 			content := strings.ReplaceAll(re.ReplaceAllString(body.Text(), " "), `"`, "")
 			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
 			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "news"))
@@ -231,6 +236,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"category" : "%v",`, data.Category))
 			b.WriteString(fmt.Sprintf(`"views" : "%v",`, data.Views))
 			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, data.Shared))
+			b.WriteString(fmt.Sprintf(`"published_at" : "%v",`, data.PublishedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, *data.Image))
@@ -528,7 +534,11 @@ func DoMapping(cfg *config.Config, command string) error {
         },
         "is_active" : {
           "type" : "boolean"
-        }
+        },
+		"published_at" : {
+			"type" : "date",
+			"format" : "yyyy-MM-dd HH:mm:ss"
+		  },
       }
     }
   }
