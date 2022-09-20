@@ -40,16 +40,16 @@ func CheckPermission(permission string) echo.MiddlewareFunc {
 func VerifyCache() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			memcached := helpers.GetCache(c)
+			cached := helpers.GetCache(c)
 
-			if memcached != "" {
-				var cacheRes domain.DetailNewsResponse
-				err := json.Unmarshal([]byte(memcached), &cacheRes)
+			if cached != "" {
+				var cacheRes domain.Cache
+				err := json.Unmarshal([]byte(cached), &cacheRes.Data)
 				if err != nil {
 					fmt.Println(err)
 				}
 
-				return c.JSON(http.StatusOK, &domain.ResultData{Data: &cacheRes})
+				return c.JSON(http.StatusOK, &cacheRes)
 			}
 
 			return next(c)
