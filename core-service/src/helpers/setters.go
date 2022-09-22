@@ -1,8 +1,10 @@
 package helpers
 
 import (
+	"encoding/json"
 	"time"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
 
@@ -26,6 +28,18 @@ func SetPropLiveNews(newsRequest *domain.StoreNewsRequest) {
 	if startDate.Unix() <= time.Now().Unix() {
 		setLiveAndPublish(newsRequest, isLive, currentTime)
 	}
+}
+
+func Cache(key string, data interface{}) (err error) {
+	// set cache from dependency injection redis
+	ttl := time.Duration(config.NewConfig().Redis.TTL) * time.Second
+	value, _ := json.Marshal(data)
+	cacheErr := SetCache(key, value, ttl)
+	if cacheErr != nil {
+		return cacheErr
+	}
+
+	return
 }
 
 func setLiveAndPublish(newsRequest *domain.StoreNewsRequest, args ...interface{}) *domain.StoreNewsRequest {

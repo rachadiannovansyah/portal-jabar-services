@@ -1,6 +1,6 @@
 package domain
 
 // struct for redis
-type ResRedis struct {
+type Cache struct {
 	Data interface{} `json:"data"`
 }

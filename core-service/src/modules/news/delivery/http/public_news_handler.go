@@ -3,7 +3,6 @@ package http
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
@@ -21,11 +20,11 @@ type PublicNewsHandler struct {
 // NewPublicNewsHandler will initialize the /public/news handler
 func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase) {
 	handler := &PublicNewsHandler{CUsecase: us}
-	p.GET("/news", handler.FetchNews)
+	p.GET("/news", handler.FetchNews, middl.VerifyCache())
 	p.GET("/news/slug/:slug", handler.GetBySlug, middl.VerifyCache())
 	p.GET("/news/slug/:slug/view", handler.GetViewsBySlug)
-	p.GET("/news/banner", handler.FetchNewsBanner)
-	p.GET("/news/headline", handler.FetchNewsHeadline)
+	p.GET("/news/banner", handler.FetchNewsBanner, middl.VerifyCache())
+	p.GET("/news/headline", handler.FetchNewsHeadline, middl.VerifyCache())
 	p.PATCH("/news/:id/share", handler.AddShare)
 }
 
@@ -66,6 +65,9 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 	listNewsRes := []domain.NewsListResponse{}
 	copier.Copy(&listNewsRes, &listNews)
 
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.Path, listNewsRes)
+
 	res := helpers.Paginate(c, listNewsRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
@@ -86,10 +88,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	// set cache from dependency injection redis
-	cacheErr := helpers.SetCache(c.Request().URL.Path, &newsRes, 300*time.Second)
-	if cacheErr != nil {
-		return cacheErr
-	}
+	helpers.Cache(c.Request().URL.Path, newsRes)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
 }
@@ -104,6 +103,9 @@ func (h *PublicNewsHandler) FetchNewsBanner(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.Path, listNews)
 
 	res := map[string]interface{}{
 		"data": listNews,
@@ -126,6 +128,9 @@ func (h *PublicNewsHandler) FetchNewsHeadline(c echo.Context) error {
 	// Copy slice to slice
 	headlineNewsRes := []domain.NewsBanner{}
 	copier.Copy(&headlineNewsRes, &headlineNews)
+
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.Path, headlineNewsRes)
 
 	res := map[string]interface{}{
 		"data": headlineNewsRes,
