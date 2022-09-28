@@ -66,7 +66,7 @@ func (h *PublicNewsHandler) FetchNews(c echo.Context) error {
 	copier.Copy(&listNewsRes, &listNews)
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.Path, listNewsRes)
+	helpers.Cache(c.Request().URL.RequestURI(), listNewsRes)
 
 	res := helpers.Paginate(c, listNewsRes, total, params)
 
@@ -88,7 +88,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.Path, newsRes)
+	helpers.Cache(c.Request().URL.RequestURI(), newsRes)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
 }
@@ -105,7 +105,7 @@ func (h *PublicNewsHandler) FetchNewsBanner(c echo.Context) error {
 	}
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.Path, listNews)
+	helpers.Cache(c.Request().URL.RequestURI(), listNews)
 
 	res := map[string]interface{}{
 		"data": listNews,
@@ -130,7 +130,7 @@ func (h *PublicNewsHandler) FetchNewsHeadline(c echo.Context) error {
 	copier.Copy(&headlineNewsRes, &headlineNews)
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.Path, headlineNewsRes)
+	helpers.Cache(c.Request().URL.RequestURI(), headlineNewsRes)
 
 	res := map[string]interface{}{
 		"data": headlineNewsRes,
