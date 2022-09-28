@@ -38,7 +38,7 @@ func SetCache(key string, value interface{}, ttl time.Duration) error {
 // func to get cache redis
 func GetCache(c echo.Context) (memcached string) {
 	// get url path from context
-	path := c.Request().URL.Path
+	path := c.Request().URL.RequestURI()
 
 	// Get cached redis data
 	memcached, _ = RedisCache().Get(path).Result()
