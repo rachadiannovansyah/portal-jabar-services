@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/sirupsen/logrus"
 
@@ -14,12 +15,12 @@ type mysqlPublicServiceRepository struct {
 	Conn *sql.DB
 }
 
-// NewMysqlPublicServiceRepository will create an object that represent the news.Repository interface
+// NewMysqlPublicServiceRepository will create an object that represent the publicService.Repository interface
 func NewMysqlPublicServiceRepository(Conn *sql.DB) domain.PublicServiceRepository {
 	return &mysqlPublicServiceRepository{Conn}
 }
 
-var querySelectPservice = `SELECT id, name, description, unit, url, image, created_at, updated_at FROM public_services WHERE 1=1`
+var querySelect = `SELECT id, name, description, unit, url, images, category, is_active, slug, excerpt, social_media, website, service_type, video, purposes, facilities, info, logo, created_at, updated_at FROM public_services`
 
 func (m *mysqlPublicServiceRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.PublicService, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -37,44 +38,66 @@ func (m *mysqlPublicServiceRepository) fetch(ctx context.Context, query string, 
 
 	result = make([]domain.PublicService, 0)
 	for rows.Next() {
-		u := domain.PublicService{}
+		ps := domain.PublicService{}
 		err = rows.Scan(
-			&u.ID,
-			&u.Name,
-			&u.Description,
-			&u.Unit,
-			&u.Url,
-			&u.Image,
-			&u.CreatedAt,
-			&u.UpdatedAt,
+			&ps.ID,
+			&ps.Name,
+			&ps.Description,
+			&ps.Unit,
+			&ps.Url,
+			&ps.Images,
+			&ps.Category,
+			&ps.IsActive,
+			&ps.Slug,
+			&ps.Excerpt,
+			&ps.SocialMedia,
+			&ps.Website,
+			&ps.ServiceType,
+			&ps.Video,
+			&ps.Purposes,
+			&ps.Facilities,
+			&ps.Info,
+			&ps.Logo,
+			&ps.CreatedAt,
+			&ps.UpdatedAt,
 		)
 
 		if err != nil {
 			logrus.Error(err)
 			return nil, err
 		}
-		result = append(result, u)
+		result = append(result, ps)
 	}
 
 	return result, nil
 }
 
+func (m *mysqlPublicServiceRepository) count(ctx context.Context, query string) (total int64, err error) {
+
+	err = m.Conn.QueryRow(query).Scan(&total)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	return total, nil
+}
+
+func (m *mysqlPublicServiceRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
+
+	if err == sql.ErrNoRows {
+		// there were no rows, but otherwise no error occurred
+		log.Println(err)
+	}
+
+	return lastUpdated, nil
+}
+
 func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.PublicService, err error) {
-	var query string
+	query := querySelect + ` LIMIT 50`
 
-	if params.Keyword != "" {
-		query += ` AND name LIKE '%` + params.Keyword + `%' `
-	}
-
-	if params.SortBy != "" {
-		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
-	} else {
-		query += ` ORDER BY created_at DESC`
-	}
-
-	query = querySelectPservice + query + ` LIMIT ?,? `
-
-	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+	res, err = m.fetch(ctx, query)
 
 	if err != nil {
 		return nil, err
@@ -83,62 +106,34 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 	return
 }
 
-func (m *mysqlPublicServiceRepository) Store(ctx context.Context, ps *domain.StorePserviceRequest) (err error) {
-	query := `INSERT public_services SET name=?, description=?, unit=?, url=?, image=?, category=?, is_active=?, created_at=?, updated_at=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
+func (m *mysqlPublicServiceRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM public_services `)
 
-	res, err := stmt.ExecContext(ctx,
-		ps.Name,
-		ps.Description,
-		ps.Unit,
-		ps.Url,
-		ps.Image,
-		ps.Category,
-		ps.IsActive,
-		ps.CreatedAt,
-		ps.UpdatedAt,
-	)
+	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM public_services LIMIT 1`)
 
 	if err != nil {
-		return
+		return 0, "", err
 	}
-
-	lastID, err := res.LastInsertId()
-	if err != nil {
-		return
-	}
-
-	ps.ID = lastID
 
 	return
 }
 
-func (m *mysqlPublicServiceRepository) Delete(ctx context.Context, id int64) (err error) {
-	// binding data from a request
-	query := "DELETE FROM public_services WHERE id = ? "
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+func (m *mysqlPublicServiceRepository) GetBySlug(ctx context.Context, slug string) (res domain.PublicService, err error) {
+	return m.findOne(ctx, "slug", slug)
+}
+
+func (m *mysqlPublicServiceRepository) findOne(ctx context.Context, key string, value string) (res domain.PublicService, err error) {
+	query := fmt.Sprintf("%s WHERE %s=?", querySelect, key)
+
+	list, err := m.fetch(ctx, query, value)
 	if err != nil {
-		return
+		return domain.PublicService{}, err
 	}
 
-	// exec an query
-	res, err := stmt.ExecContext(ctx, id)
-	if err != nil {
-		return
-	}
-
-	// get affected row
-	rowAffected, err := res.RowsAffected()
-	if err != nil {
-		return
-	}
-
-	if rowAffected != 1 {
-		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
-		return
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
 	}
 
 	return

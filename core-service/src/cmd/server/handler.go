@@ -82,7 +82,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_awardHttpDelivery.NewAwardHandler(v1, u.AwardUsecase)
 	_districtHttpDelivery.NewDistrictHandler(v1, u.DistrictUsecase)
 	_publicDocumentArchiveHttpDelivery.NewPublicDocumentArchiveHandler(p, u.DocumentArchiveUsecase)
-	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, r, u.PublicServiceUsecase)
+	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, p, u.PublicServiceUsecase)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/sirupsen/logrus"
 )
 
 type publicServiceUsecase struct {
@@ -28,47 +27,41 @@ func NewPublicServiceUsecase(ps domain.PublicServiceRepository, u domain.UserRep
 	}
 }
 
-func (p *publicServiceUsecase) Store(c context.Context, ps *domain.StorePserviceRequest) (err error) {
-	ctx, cancel := context.WithTimeout(c, p.contextTimeout)
+func (u *publicServiceUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.PublicService, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	ps.CreatedAt = time.Now()
-	ps.UpdatedAt = time.Now()
+	res, err = u.publicServiceRepo.Fetch(ctx, params)
 
-	if err = p.publicServiceRepo.Store(ctx, ps); err != nil {
-		return
+	if err != nil {
+		return nil, err
 	}
-
-	// FIXME: make a function to prepare data for search index
-	err = p.searchRepo.Store(ctx, p.cfg.ELastic.IndexContent, &domain.Search{
-		ID:          int(ps.ID),
-		Domain:      "public_service",
-		Title:       ps.Name,
-		Content:     ps.Description,
-		Category:    ps.Category,
-		Thumbnail:   ps.Image,
-		PublishedAt: &time.Time{},
-		CreatedAt:   ps.CreatedAt,
-		UpdatedAt:   ps.UpdatedAt,
-		IsActive:    ps.IsActive == 1,
-	})
 
 	return
 }
 
-func (p *publicServiceUsecase) Delete(c context.Context, id int64) (err error) {
-	ctx, cancel := context.WithTimeout(c, p.contextTimeout)
+func (u *publicServiceUsecase) MetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	// delete public service from main db
-	if err = p.publicServiceRepo.Delete(ctx, id); err != nil {
-		return
+	total, lastUpdated, err = u.publicServiceRepo.MetaFetch(ctx, params)
+
+	if err != nil {
+		return 0, "", err
 	}
 
-	// un-indexing public service on elastic based on id and domain
-	esErr := p.searchRepo.Delete(ctx, p.cfg.ELastic.IndexContent, int(id), "public_service")
+	return
+}
+
+func (n *publicServiceUsecase) GetBySlug(c context.Context, slug string) (res domain.PublicService, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.publicServiceRepo.GetBySlug(ctx, slug)
 	if err != nil {
-		logrus.Error(esErr)
+		return
 	}
 
 	return

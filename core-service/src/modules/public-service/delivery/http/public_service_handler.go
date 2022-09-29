@@ -2,10 +2,9 @@ package http
 
 import (
 	"net/http"
-	"strconv"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
-	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -17,63 +16,65 @@ type PublicServiceHandler struct {
 }
 
 // NewPublicServiceHandler will create a new PublicServiceHandler
-func NewPublicServiceHandler(e *echo.Group, r *echo.Group, ps domain.PublicServiceUsecase) {
+func NewPublicServiceHandler(e *echo.Group, p *echo.Group, ps domain.PublicServiceUsecase) {
 	handler := &PublicServiceHandler{
 		PSUsecase: ps,
 	}
-	r.POST("/public-service", handler.Store)
-	r.DELETE("/public-service/:id", handler.Delete)
+	p.GET("/public-service", handler.Fetch)
+	p.GET("/public-service/slug/:slug", handler.GetBySlug)
 }
 
-func isRequestValid(f *domain.StorePserviceRequest) (bool, error) {
-	validate := validator.New()
-	err := validate.Struct(f)
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
+// Fetch will fetch the public-service
+func (h *PublicServiceHandler) Fetch(c echo.Context) error {
 
-// Store will store the public-service by given request body
-func (h *PublicServiceHandler) Store(c echo.Context) (err error) {
-	// binding a request body to domain.StorePserviceRequest struct
-	ps := new(domain.StorePserviceRequest)
-	if err = c.Bind(ps); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
-	}
-
-	// check an requests is valid or not
-	var ok bool
-	if ok, err = isRequestValid(ps); !ok {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	// store public-service
 	ctx := c.Request().Context()
-	err = h.PSUsecase.Store(ctx, ps)
+	params := helpers.GetRequestParams(c)
+
+	publicServiceList, err := h.PSUsecase.Fetch(ctx, &params)
+
+	// Copy slice to slice
+	listPSRes := []domain.ListPublicServiceResponse{}
+	copier.Copy(&listPSRes, &publicServiceList)
+
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, ps)
-}
+	total, lastUpdated, err := h.PSUsecase.MetaFetch(ctx, &params)
 
-// Delete will drop the public-service data by given id
-func (h *PublicServiceHandler) Delete(c echo.Context) (err error) {
-	reqID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+		return err
 	}
 
-	// set request
-	id := int64(reqID)
+	// handled if no rows in result then res will provide empty arr
+	if total == 0 {
+		data := domain.ResultsData{
+			Data: []string{},
+		}
+
+		return c.JSON(http.StatusOK, data)
+	}
+
+	data := domain.ResultsData{
+		Data: listPSRes,
+		Meta: &domain.CustomMetaData{
+			TotalCount:  total,
+			LastUpdated: lastUpdated,
+		},
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+// GetBySlug will get public service by given slug
+func (h *PublicServiceHandler) GetBySlug(c echo.Context) error {
+	slug := c.Param("slug")
 	ctx := c.Request().Context()
 
-	// destroy public-service data by given id
-	err = h.PSUsecase.Delete(ctx, id)
+	news, err := h.PSUsecase.GetBySlug(ctx, slug)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &news})
 }

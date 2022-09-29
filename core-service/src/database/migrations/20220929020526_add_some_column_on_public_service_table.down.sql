@@ -2,7 +2,7 @@ ALTER TABLE public_services
 DROP excerpt,
 DROP slug,
 DROP service_type,
-DROP websites,
+DROP website,
 DROP social_media,
 DROP video,
 DROP purposes,
