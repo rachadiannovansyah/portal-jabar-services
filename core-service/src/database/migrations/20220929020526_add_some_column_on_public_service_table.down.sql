@@ -1,12 +1,12 @@
 ALTER TABLE public_services
-DROP COLUMN excerpt,
-DROP COLUMN slug,
-DROP COLUMN service_type,
-DROP COLUMN websites,
-DROP COLUMN social_media,
-DROP COLUMN video,
-DROP COLUMN purposes,
-DROP COLUMN facilities,
-DROP COLUMN info;
+DROP excerpt,
+DROP slug,
+DROP service_type,
+DROP websites,
+DROP social_media,
+DROP video,
+DROP purposes,
+DROP facilities,
+DROP info;
 ALTER TABLE public_services CHANGE images image varchar(100) DEFAULT NULL;
 DROP INDEX idx_name ON public_services;
