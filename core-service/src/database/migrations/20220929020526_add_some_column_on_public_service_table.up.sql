@@ -7,7 +7,8 @@ ADD social_media json NULL AFTER websites,
 ADD video varchar(100) NULL AFTER social_media,
 ADD purposes json NULL AFTER video,
 ADD facilities json NULL after purposes,
-ADD info json NULL after facilities;
+ADD info json NULL after facilities,
+ADD logo varchar(150) NULL AFTER info;
 
 CREATE INDEX idx_slug ON public_services (slug);
 CREATE INDEX idx_name ON public_services (name);
