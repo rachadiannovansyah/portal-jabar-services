@@ -95,9 +95,9 @@ func (m *mysqlPublicServiceRepository) getLastUpdated(ctx context.Context, query
 }
 
 func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.PublicService, err error) {
-	query := querySelect + ` LIMIT 50`
+	query := querySelect + ` LIMIT ?,? `
 
-	res, err = m.fetch(ctx, query)
+	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
 
 	if err != nil {
 		return nil, err
