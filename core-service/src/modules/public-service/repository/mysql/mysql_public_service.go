@@ -109,7 +109,7 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 func (m *mysqlPublicServiceRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM public_services `)
 
-	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM public_services LIMIT 1`)
+	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM public_services ORDER BY updated_at DESC LIMIT 1`)
 
 	if err != nil {
 		return 0, "", err
