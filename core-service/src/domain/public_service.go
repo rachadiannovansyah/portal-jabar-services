@@ -7,16 +7,34 @@ import (
 
 // PublicService ...
 type PublicService struct {
-	ID          int64      `json:"id"`
-	Name        string     `json:"name"`
-	Description NullString `json:"description"`
-	Unit        NullString `json:"unit"`
-	Url         NullString `json:"url"`
-	Image       NullString `json:"image"`
-	Category    NullString `json:"category"`
-	IsActive    NullString `json:"is_active"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          int64            `json:"id"`
+	Name        string           `json:"name"`
+	Description NullString       `json:"description"`
+	Excerpt     NullString       `json:"excerpt"`
+	Unit        NullString       `json:"unit"`
+	Url         NullString       `json:"url"`
+	Category    NullString       `json:"category"`
+	IsActive    NullString       `json:"is_active"`
+	Slug        NullString       `json:"slug"`
+	ServiceType NullString       `json:"service_type"`
+	Video       NullString       `json:"video"`
+	Logo        NullString       `json:"logo"`
+	Website     NullString       `json:"website"`
+	SocialMedia SocialMedia      `json:"social_media"`
+	Images      JSONStringSlices `json:"images"`
+	Purposes    JSONStringSlices `json:"purposes"`
+	Facilities  JSONStringSlices `json:"facilities"`
+	Info        JSONStringSlices `json:"info"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
+}
+
+type ListPublicServiceResponse struct {
+	ID      int64      `json:"id"`
+	Name    string     `json:"name"`
+	Logo    NullString `json:"logo"`
+	Excerpt NullString `json:"excerpt"`
+	Slug    NullString `json:"slug"`
 }
 
 type StorePserviceRequest struct {
@@ -34,13 +52,14 @@ type StorePserviceRequest struct {
 
 // PublicServiceUsecase ...
 type PublicServiceUsecase interface {
-	Store(ctx context.Context, ps *StorePserviceRequest) (err error)
-	Delete(ctx context.Context, id int64) error
+	Fetch(ctx context.Context, params *Request) ([]PublicService, error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
+	GetBySlug(ctx context.Context, slug string) (PublicService, error)
 }
 
 // PublicServiceRepository ...
 type PublicServiceRepository interface {
-	Fetch(ctx context.Context, params *Request) ([]PublicService, error)
-	Store(ctx context.Context, params *StorePserviceRequest) error
-	Delete(ctx context.Context, id int64) error
+	Fetch(ctx context.Context, params *Request) (ps []PublicService, err error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
+	GetBySlug(ctx context.Context, slug string) (PublicService, error)
 }
