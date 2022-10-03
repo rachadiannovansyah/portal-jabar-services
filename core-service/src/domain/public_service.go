@@ -24,9 +24,15 @@ type PublicService struct {
 	Images      JSONStringSlices `json:"images"`
 	Purposes    JSONStringSlices `json:"purposes"`
 	Facilities  JSONStringSlices `json:"facilities"`
-	Info        JSONStringSlices `json:"info"`
+	Info        PosterInfo       `json:"info"`
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
+}
+
+// PosterInfo ...
+type PosterInfo struct {
+	Requirements JSONStringSlices `json:"requirements"`
+	Posters      JSONStringSlices `json:"posters"`
 }
 
 type ListPublicServiceResponse struct {
