@@ -99,7 +99,6 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 	query := querySelect + queryFilter + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
-
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +123,7 @@ func (m *mysqlPublicServiceRepository) GetBySlug(ctx context.Context, slug strin
 }
 
 func (m *mysqlPublicServiceRepository) findOne(ctx context.Context, key string, value string) (res domain.PublicService, err error) {
-	query := fmt.Sprintf("%s WHERE %s=?", querySelect, key)
+	query := fmt.Sprintf("%s AND %s=?", querySelect, key)
 
 	list, err := m.fetch(ctx, query, value)
 	if err != nil {
