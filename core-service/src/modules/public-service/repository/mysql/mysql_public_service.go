@@ -20,7 +20,7 @@ func NewMysqlPublicServiceRepository(Conn *sql.DB) domain.PublicServiceRepositor
 	return &mysqlPublicServiceRepository{Conn}
 }
 
-var querySelect = `SELECT id, name, description, unit, url, images, category, is_active, slug, excerpt, social_media, website, service_type, video, purposes, facilities, info, logo, created_at, updated_at FROM public_services`
+var querySelect = `SELECT id, name, description, unit, url, images, category, is_active, slug, excerpt, social_media, website, service_type, video, purposes, facilities, info, logo, created_at, updated_at FROM public_services WHERE 1=1`
 
 func (m *mysqlPublicServiceRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.PublicService, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -95,10 +95,10 @@ func (m *mysqlPublicServiceRepository) getLastUpdated(ctx context.Context, query
 }
 
 func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.PublicService, err error) {
-	query := querySelect + ` LIMIT ?,? `
+	queryFilter := filterPublicServiceQuery(params)
+	query := querySelect + queryFilter + ` LIMIT ?,? `
 
 	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
-
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (m *mysqlPublicServiceRepository) GetBySlug(ctx context.Context, slug strin
 }
 
 func (m *mysqlPublicServiceRepository) findOne(ctx context.Context, key string, value string) (res domain.PublicService, err error) {
-	query := fmt.Sprintf("%s WHERE %s=?", querySelect, key)
+	query := fmt.Sprintf("%s AND %s=?", querySelect, key)
 
 	list, err := m.fetch(ctx, query, value)
 	if err != nil {
