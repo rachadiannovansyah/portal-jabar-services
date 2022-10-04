@@ -20,3 +20,8 @@ func (s *JSONStringSlices) Scan(value interface{}) error {
 func (s *SocialMedia) Scan(value interface{}) error {
 	return unmarshalJSON(value.([]byte), s)
 }
+
+// Scan implements the PosterInfo Scanner interface.
+func (s *PosterInfo) Scan(value interface{}) error {
+	return unmarshalJSON(value.([]byte), s)
+}
