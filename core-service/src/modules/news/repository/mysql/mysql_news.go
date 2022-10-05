@@ -216,11 +216,10 @@ func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error
 }
 
 func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
-	query := querySelectNews + ` AND id IN (
-		SELECT MAX(id) FROM news WHERE highlight = ? and is_live=1 GROUP BY category 
+	query := querySelectNews + ` AND views IN (
+		SELECT MIN(views) FROM news WHERE is_live=1 GROUP BY category 
 	)`
-
-	res, err = m.fetch(ctx, query, 1)
+	res, err = m.fetch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -230,12 +229,12 @@ func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain
 
 func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []domain.News, err error) {
 	query := querySelectNews + ` AND id IN (
-		SELECT MAX(id) FROM news WHERE id NOT IN (
-			SELECT id from news  WHERE id IN (
-				SELECT MAX(id) FROM news WHERE highlight = 1 and is_live=1
+		SELECT MAX(id) FROM news WHERE id IN (
+			SELECT id from news WHERE views IN (
+				SELECT MIN(views) FROM news WHERE is_live=1
 				GROUP BY category 
 			)
-		) AND highlight = 1 and is_live=1 GROUP BY category
+		) AND is_live=1 GROUP BY category
 	)`
 
 	res, err = m.fetch(ctx, query)

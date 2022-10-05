@@ -4,6 +4,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/labstack/echo/v4"
@@ -136,5 +137,18 @@ func GetRoleInfo(r domain.Role) domain.RoleInfo {
 	return domain.RoleInfo{
 		ID:   r.ID,
 		Name: r.Name,
+	}
+}
+
+type RangeLastWeek struct {
+	DayOfLastWeek string
+	Today         string
+}
+
+func GetRangeLastWeek() RangeLastWeek {
+	format := "2006-01-02 15:04:05"
+	return RangeLastWeek{
+		Today:         time.Now().Format(format),
+		DayOfLastWeek: time.Now().AddDate(0, 0, -7).Format(format),
 	}
 }
