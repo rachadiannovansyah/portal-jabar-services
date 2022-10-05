@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/jinzhu/copier"
@@ -80,5 +81,16 @@ func (h *PublicServiceHandler) GetBySlug(c echo.Context) error {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &news})
+	// get struct response
+	detailRes := domain.DetailPublicServiceResponse{}
+
+	// get arr of facilites then unmarshall it
+	facilities := make([]domain.Facility, len(news.Facilities))
+	json.Unmarshal([]byte(news.Facilities), &facilities)
+
+	// Copy slice to slice
+	copier.Copy(&detailRes, &news)
+	detailRes.Facilities = facilities
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }
