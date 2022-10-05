@@ -31,6 +31,7 @@ func (h *PublicServiceHandler) Fetch(c echo.Context) error {
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
 		"service_type": c.QueryParam("type"),
+		"category":     c.QueryParam("cat"),
 	}
 
 	publicServiceList, err := h.PSUsecase.Fetch(ctx, &params)

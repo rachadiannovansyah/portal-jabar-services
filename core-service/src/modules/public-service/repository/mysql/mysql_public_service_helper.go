@@ -20,5 +20,9 @@ func filterPublicServiceQuery(params *domain.Request) string {
 		queryFilter = fmt.Sprintf(`%s AND service_type = "%s"`, queryFilter, v)
 	}
 
+	if v, ok := params.Filters["category"]; ok && v != "" {
+		queryFilter = fmt.Sprintf(`%s AND category = "%s"`, queryFilter, v)
+	}
+
 	return queryFilter
 }
