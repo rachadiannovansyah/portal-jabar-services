@@ -9,6 +9,7 @@ import (
 type PublicService struct {
 	ID          int64            `json:"id"`
 	Name        string           `json:"name"`
+	Facilities  string           `json:"facilities"`
 	Description NullString       `json:"description"`
 	Excerpt     NullString       `json:"excerpt"`
 	Unit        NullString       `json:"unit"`
@@ -23,10 +24,14 @@ type PublicService struct {
 	SocialMedia SocialMedia      `json:"social_media"`
 	Images      JSONStringSlices `json:"images"`
 	Purposes    JSONStringSlices `json:"purposes"`
-	Facilities  JSONStringSlices `json:"facilities"`
 	Info        PosterInfo       `json:"info"`
 	CreatedAt   time.Time        `json:"created_at"`
 	UpdatedAt   time.Time        `json:"updated_at"`
+}
+
+type Facility struct {
+	Image       string `json:"image"`
+	Description string `json:"description"`
 }
 
 // PosterInfo ...
@@ -41,6 +46,30 @@ type ListPublicServiceResponse struct {
 	Logo    NullString `json:"logo"`
 	Excerpt NullString `json:"excerpt"`
 	Slug    NullString `json:"slug"`
+}
+
+// PublicService ...
+type DetailPublicServiceResponse struct {
+	ID          int64            `json:"id"`
+	Name        string           `json:"name"`
+	Description NullString       `json:"description"`
+	Excerpt     NullString       `json:"excerpt"`
+	Unit        NullString       `json:"unit"`
+	Url         NullString       `json:"url"`
+	Category    NullString       `json:"category"`
+	IsActive    NullString       `json:"is_active"`
+	Slug        NullString       `json:"slug"`
+	ServiceType NullString       `json:"service_type"`
+	Video       NullString       `json:"video"`
+	Logo        NullString       `json:"logo"`
+	Website     NullString       `json:"website"`
+	SocialMedia SocialMedia      `json:"social_media"`
+	Images      JSONStringSlices `json:"images"`
+	Purposes    JSONStringSlices `json:"purposes"`
+	Facilities  []Facility       `json:"facilities"`
+	Info        PosterInfo       `json:"info"`
+	CreatedAt   time.Time        `json:"created_at"`
+	UpdatedAt   time.Time        `json:"updated_at"`
 }
 
 type StorePserviceRequest struct {
