@@ -256,7 +256,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// Using goroutine to fetch the user's detail
 	chanNews := make(chan []domain.News)
 	for category := range mapCategories {
-		params := domain.Request{PerPage: 4}
+		params := domain.Request{PerPage: 4, SortBy: "n.views", SortOrder: "ASC"}
 		params.Filters = map[string]interface{}{
 			"highlight":  "0",
 			"is_live":    "1",

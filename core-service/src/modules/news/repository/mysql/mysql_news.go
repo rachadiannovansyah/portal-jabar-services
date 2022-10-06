@@ -217,7 +217,7 @@ func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error
 
 func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
 	query := querySelectNews + ` AND views IN (
-		SELECT MIN(views) FROM news WHERE is_live=1 GROUP BY category 
+		SELECT MAX(views) FROM news WHERE is_live=1 GROUP BY category 
 	)`
 	res, err = m.fetch(ctx, query)
 	if err != nil {
@@ -229,13 +229,13 @@ func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain
 
 func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []domain.News, err error) {
 	query := querySelectNews + ` AND id IN (
-		SELECT MAX(id) FROM news WHERE id IN (
-			SELECT id from news WHERE views IN (
-				SELECT MIN(views) FROM news WHERE is_live=1
+		SELECT MAX(id) FROM news WHERE id NOT IN (
+			SELECT id from news  WHERE id IN (
+				SELECT MAX(id) FROM news WHERE is_live=1
 				GROUP BY category 
 			)
 		) AND is_live=1 GROUP BY category
-	)`
+	)` // fix me: highlight temporary deleted
 
 	res, err = m.fetch(ctx, query)
 	if err != nil {
