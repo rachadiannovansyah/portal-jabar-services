@@ -193,7 +193,7 @@ type NewsRepository interface {
 	FetchNewsBanner(ctx context.Context) (news []News, err error)
 	FetchNewsHeadline(ctx context.Context) (news []News, err error)
 	GetByID(ctx context.Context, id int64) (News, error)
-	GetBySlug(ctx context.Context, slug string) (News, error)
+	GetBySlug(ctx context.Context, slug string, is_live int) (News, error)
 	AddView(ctx context.Context, slug string) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
 	Store(ctx context.Context, n *StoreNewsRequest) error

@@ -196,8 +196,21 @@ func (m *mysqlNewsRepository) GetByID(ctx context.Context, id int64) (res domain
 	return m.findOne(ctx, "id", fmt.Sprintf("%v", id))
 }
 
-func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, slug string) (res domain.News, err error) {
-	return m.findOne(ctx, "slug", slug)
+func (m *mysqlNewsRepository) GetBySlug(ctx context.Context, slug string, is_live int) (res domain.News, err error) {
+	query := fmt.Sprintf("%s AND slug=? AND is_live=?", querySelectNews)
+
+	list, err := m.fetch(ctx, query, slug, is_live)
+	if err != nil {
+		return domain.News{}, err
+	}
+
+	if len(list) > 0 {
+		res = list[0]
+	} else {
+		return res, domain.ErrNotFound
+	}
+
+	return
 }
 
 func (m *mysqlNewsRepository) AddView(ctx context.Context, slug string) (err error) {

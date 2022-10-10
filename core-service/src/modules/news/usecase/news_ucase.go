@@ -304,7 +304,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 
 func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {
 	if key == "slug" {
-		res, err = n.newsRepo.GetBySlug(ctx, value.(string))
+		res, err = n.newsRepo.GetBySlug(ctx, value.(string), 1) // 1 is live
 	} else {
 		res, err = n.newsRepo.GetByID(ctx, value.(int64))
 	}
@@ -499,7 +499,7 @@ func (n *newsUsecase) GetViewsBySlug(c context.Context, slug string) (res domain
 	defer cancel()
 
 	err = n.newsRepo.AddView(ctx, slug)
-	res, err = n.newsRepo.GetBySlug(ctx, slug)
+	res, err = n.newsRepo.GetBySlug(ctx, slug, 1) // 1 is live
 	if err != nil {
 		logrus.Error(err)
 	}
