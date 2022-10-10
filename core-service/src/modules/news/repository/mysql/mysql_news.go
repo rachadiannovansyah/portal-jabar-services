@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -216,10 +217,11 @@ func (m *mysqlNewsRepository) AddShare(ctx context.Context, id int64) (err error
 }
 
 func (m *mysqlNewsRepository) FetchNewsBanner(ctx context.Context) (res []domain.News, err error) {
-	query := querySelectNews + ` AND views IN (
+	query := querySelectNews + ` AND (published_at >= ? AND published_at <= ?) AND views IN (
 		SELECT MAX(views) FROM news WHERE is_live=1 GROUP BY category 
 	)`
-	res, err = m.fetch(ctx, query)
+	date := helpers.GetRangeLastWeek()
+	res, err = m.fetch(ctx, query, date.DayOfLastWeek, date.Today)
 	if err != nil {
 		return nil, err
 	}
