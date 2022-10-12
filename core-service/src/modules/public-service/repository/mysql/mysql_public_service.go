@@ -107,7 +107,7 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 }
 
 func (m *mysqlPublicServiceRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
-	query := ` SELECT COUNT(1) FROM public_services WHERE category=? ` // default list public service using filter by category
+	query := ` SELECT COUNT(1) FROM public_services WHERE category = ? ` // default list public service using filter by category
 	total, _ = m.count(ctx, query, params.Filters["category"])
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM public_services ORDER BY updated_at DESC LIMIT 1`)
 
