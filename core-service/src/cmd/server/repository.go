@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -24,6 +25,7 @@ import (
 	_templateRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
 	_userRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/repository/mysql"
+	_externalVisitorRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/repository/external"
 )
 
 // Repository ...
@@ -49,10 +51,11 @@ type Repository struct {
 	DistrictRepo        domain.DistrictRepository
 	DocumentArchiveRepo domain.DocumentArchiveRepository
 	PublicServiceRepo   domain.PublicServiceRepository
+	ExternalVisitorRepo domain.ExternalVisitorRepository
 }
 
 // NewRepository will create an object that represent all repos interface
-func NewRepository(conn *utils.Conn) *Repository {
+func NewRepository(conn *utils.Conn, cfg *config.Config) *Repository {
 	return &Repository{
 		CategoryRepo:        _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
 		NewsRepo:            _newsRepo.NewMysqlNewsRepository(conn.Mysql),
@@ -74,5 +77,6 @@ func NewRepository(conn *utils.Conn) *Repository {
 		DistrictRepo:        _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
 		DocumentArchiveRepo: _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
 		PublicServiceRepo:   _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
+		ExternalVisitorRepo: _externalVisitorRepo.NewExternalVisitorRepository(cfg),
 	}
 }

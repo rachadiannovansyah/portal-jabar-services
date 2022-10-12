@@ -25,6 +25,7 @@ import (
 	_templateUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
 	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
+	_visitorUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/usecase"
 )
 
 // Usecases ...
@@ -48,6 +49,7 @@ type Usecases struct {
 	DistrictUsecase        domain.DistrictUsecase
 	DocumentArchiveUsecase domain.DocumentArchiveUsecase
 	PublicServiceUsecase   domain.PublicServiceUsecase
+	VisitorUsecase         domain.VisitorUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -71,5 +73,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		DistrictUsecase:        _districtUcase.NewDistrictUsecase(r.DistrictRepo, timeoutContext),
 		DocumentArchiveUsecase: _documentArchiveUcase.NewDocumentArchiveUsecase(r.DocumentArchiveRepo, r.UserRepo, cfg, timeoutContext),
 		PublicServiceUsecase:   _publicServiceUcase.NewPublicServiceUsecase(r.PublicServiceRepo, r.UserRepo, r.SearchRepo, cfg, timeoutContext),
+		VisitorUsecase:         _visitorUcase.NewVisitorUsecase(r.ExternalVisitorRepo, conn, timeoutContext),
 	}
 }

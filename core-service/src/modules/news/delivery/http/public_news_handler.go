@@ -95,7 +95,6 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 
 // FetchNews will fetch the content based on given params
 func (h *PublicNewsHandler) FetchNewsBanner(c echo.Context) error {
-
 	ctx := c.Request().Context()
 
 	listNews, err := h.CUsecase.FetchNewsBanner(ctx)
