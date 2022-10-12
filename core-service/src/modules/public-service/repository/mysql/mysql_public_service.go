@@ -72,9 +72,9 @@ func (m *mysqlPublicServiceRepository) fetch(ctx context.Context, query string, 
 	return result, nil
 }
 
-func (m *mysqlPublicServiceRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlPublicServiceRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 
-	err = m.Conn.QueryRow(query).Scan(&total)
+	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -107,8 +107,8 @@ func (m *mysqlPublicServiceRepository) Fetch(ctx context.Context, params *domain
 }
 
 func (m *mysqlPublicServiceRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM public_services `)
-
+	query := ` SELECT COUNT(1) FROM public_services WHERE category=? ` // default list public service using filter by category
+	total, _ = m.count(ctx, query, params.Filters["category"])
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM public_services ORDER BY updated_at DESC LIMIT 1`)
 
 	if err != nil {
