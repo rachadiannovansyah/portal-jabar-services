@@ -30,10 +30,15 @@ func SetPropLiveNews(newsRequest *domain.StoreNewsRequest) {
 	}
 }
 
-func Cache(key string, data interface{}) (err error) {
+func Cache(key string, data interface{}, meta interface{}) (err error) {
+	cacheData := domain.Cache{
+		Data: data,
+		Meta: meta,
+	}
+
 	// set cache from dependency injection redis
 	ttl := time.Duration(config.NewConfig().Redis.TTL) * time.Second
-	value, _ := json.Marshal(data)
+	value, _ := json.Marshal(cacheData)
 	cacheErr := SetCache(key, value, ttl)
 	if cacheErr != nil {
 		return cacheErr
