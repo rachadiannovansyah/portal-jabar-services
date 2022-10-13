@@ -296,6 +296,7 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// merge the user's data
 	for index, item := range data {
 		if a, ok := mapCategories[item.Category]; ok {
+			a = a[:len(a)-1] // remove last index
 			data[index].RelatedNews = a
 		}
 	}
