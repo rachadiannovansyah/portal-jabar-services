@@ -20,6 +20,7 @@ import (
 	_rolePermRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role-permission/repository/mysql"
 	_roleRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role/repository/mysql"
 	_searchRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/repository/elastic"
+	_servicePublicRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/repository/mysql"
 	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
 	_templateRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
@@ -28,51 +29,55 @@ import (
 
 // Repository ...
 type Repository struct {
-	CategoryRepo        domain.CategoryRepository
-	NewsRepo            domain.NewsRepository
-	InformationRepo     domain.InformationRepository
-	UnitRepo            domain.UnitRepository
-	AreaRepo            domain.AreaRepository
-	EventRepo           domain.EventRepository
-	FeedbackRepo        domain.FeedbackRepository
-	FeaturedProgramRepo domain.FeaturedProgramRepository
-	UserRepo            domain.UserRepository
-	DataTagsRepo        domain.DataTagRepository
-	TagRepo             domain.TagRepository
-	SearchRepo          domain.SearchRepository
-	RoleRepo            domain.RoleRepository
-	RolePermRepo        domain.RolePermissionRepository
-	TemplateRepo        domain.TemplateRepository
-	RegInvitationRepo   domain.RegistrationInvitationRepository
-	MailRepo            domain.MailRepository
-	AwardRepo           domain.AwardRepository
-	DistrictRepo        domain.DistrictRepository
-	DocumentArchiveRepo domain.DocumentArchiveRepository
-	PublicServiceRepo   domain.PublicServiceRepository
+	CategoryRepo           domain.CategoryRepository
+	NewsRepo               domain.NewsRepository
+	InformationRepo        domain.InformationRepository
+	UnitRepo               domain.UnitRepository
+	AreaRepo               domain.AreaRepository
+	EventRepo              domain.EventRepository
+	FeedbackRepo           domain.FeedbackRepository
+	FeaturedProgramRepo    domain.FeaturedProgramRepository
+	UserRepo               domain.UserRepository
+	DataTagsRepo           domain.DataTagRepository
+	TagRepo                domain.TagRepository
+	SearchRepo             domain.SearchRepository
+	ServicePublicRepo      domain.ServicePublicRepository
+	GeneralInformationRepo domain.GeneralInformationRepository
+	RoleRepo               domain.RoleRepository
+	RolePermRepo           domain.RolePermissionRepository
+	TemplateRepo           domain.TemplateRepository
+	RegInvitationRepo      domain.RegistrationInvitationRepository
+	MailRepo               domain.MailRepository
+	AwardRepo              domain.AwardRepository
+	DistrictRepo           domain.DistrictRepository
+	DocumentArchiveRepo    domain.DocumentArchiveRepository
+	PublicServiceRepo      domain.PublicServiceRepository
 }
 
 // NewRepository will create an object that represent all repos interface
 func NewRepository(conn *utils.Conn) *Repository {
 	return &Repository{
-		CategoryRepo:        _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
-		NewsRepo:            _newsRepo.NewMysqlNewsRepository(conn.Mysql),
-		InformationRepo:     _informationRepo.NewMysqlInformationRepository(conn.Mysql),
-		UnitRepo:            _unitRepo.NewMysqlUnitRepository(conn.Mysql),
-		AreaRepo:            _areaRepo.NewMysqlAreaRepository(conn.Mysql),
-		EventRepo:           _eventRepo.NewMysqlEventRepository(conn.Mysql),
-		FeedbackRepo:        _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
-		FeaturedProgramRepo: _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
-		UserRepo:            _userRepo.NewMysqlUserRepository(conn.Mysql),
-		DataTagsRepo:        _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
-		TagRepo:             _tagRepo.NewMysqlTagRepository(conn.Mysql),
-		SearchRepo:          _searchRepo.NewElasticSearchRepository(conn.Elastic),
-		RoleRepo:            _roleRepo.NewMysqlRoleRepository(conn.Mysql),
-		RolePermRepo:        _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
-		TemplateRepo:        _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
-		RegInvitationRepo:   _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
-		AwardRepo:           _awardRepo.NewMysqlAwardRepository(conn.Mysql),
-		DistrictRepo:        _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
-		DocumentArchiveRepo: _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
-		PublicServiceRepo:   _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
+		CategoryRepo:           _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
+		NewsRepo:               _newsRepo.NewMysqlNewsRepository(conn.Mysql),
+		InformationRepo:        _informationRepo.NewMysqlInformationRepository(conn.Mysql),
+		UnitRepo:               _unitRepo.NewMysqlUnitRepository(conn.Mysql),
+		AreaRepo:               _areaRepo.NewMysqlAreaRepository(conn.Mysql),
+		EventRepo:              _eventRepo.NewMysqlEventRepository(conn.Mysql),
+		FeedbackRepo:           _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
+		FeaturedProgramRepo:    _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
+		UserRepo:               _userRepo.NewMysqlUserRepository(conn.Mysql),
+		DataTagsRepo:           _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
+		TagRepo:                _tagRepo.NewMysqlTagRepository(conn.Mysql),
+		SearchRepo:             _searchRepo.NewElasticSearchRepository(conn.Elastic),
+		ServicePublicRepo:      _servicePublicRepo.NewMysqlServicePublicRepository(conn.Mysql),
+		GeneralInformationRepo: _servicePublicRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
+		RoleRepo:               _roleRepo.NewMysqlRoleRepository(conn.Mysql),
+		RolePermRepo:           _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
+		TemplateRepo:           _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
+		RegInvitationRepo:      _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
+		AwardRepo:              _awardRepo.NewMysqlAwardRepository(conn.Mysql),
+		DistrictRepo:           _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
+		DocumentArchiveRepo:    _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
+		PublicServiceRepo:      _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
 	}
 }

@@ -21,6 +21,7 @@ import (
 	_publicServiceUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/usecase"
 	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
+	_servicePublicUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/usecase"
 	_tagUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/usecase"
 	_templateUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
@@ -39,6 +40,7 @@ type Usecases struct {
 	FeaturedProgramUcase   domain.FeaturedProgramUsecase
 	AuthUcase              domain.AuthUsecase
 	SearchUcase            domain.SearchUsecase
+	ServicePublicUcase     domain.ServicePublicUsecase
 	UserUsecase            domain.UserUsecase
 	MediaUsecase           domain.MediaUsecase
 	TagUsecase             domain.TagUsecase
@@ -62,6 +64,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		FeaturedProgramUcase:   _featuredProgramUcase.NewFeaturedProgramUsecase(r.FeaturedProgramRepo, timeoutContext),
 		AuthUcase:              _authUcase.NewAuthUsecase(cfg, r.UserRepo, r.UnitRepo, r.RoleRepo, r.RolePermRepo, timeoutContext),
 		SearchUcase:            _searchUcase.NewSearchUsecase(r.SearchRepo, cfg, timeoutContext),
+		ServicePublicUcase:     _servicePublicUcase.NewServicePublicUsecase(r.ServicePublicRepo, r.GeneralInformationRepo, r.UserRepo, r.SearchRepo, cfg, timeoutContext),
 		UserUsecase:            _userUcase.NewUserUsecase(r.UserRepo, r.UnitRepo, r.RoleRepo, r.TemplateRepo, r.RegInvitationRepo, timeoutContext),
 		MediaUsecase:           _mediaUcase.NewMediaUsecase(cfg, conn, timeoutContext),
 		TagUsecase:             _tagUcase.NewTagUsecase(r.TagRepo, timeoutContext),

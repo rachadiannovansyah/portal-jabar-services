@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"math"
 	"net/http"
 	"strconv"
@@ -151,4 +152,8 @@ func GetRangeLastWeek() RangeLastWeek {
 		Today:         time.Now().Format(format),
 		DayOfLastWeek: time.Now().AddDate(0, 0, -7).Format(format),
 	}
+}
+
+func GetObjectFromString(str string, obj interface{}) error {
+	return json.Unmarshal([]byte(str), &obj)
 }

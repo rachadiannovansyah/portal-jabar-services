@@ -30,6 +30,7 @@ import (
 	_publicServiceHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/delivery/http"
 	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
+	_servicePublicHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/delivery/http"
 	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
 	_templateHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
@@ -74,6 +75,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
 	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase)
+	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, u.ServicePublicUcase)
 	_userHttpDelivery.NewUserHandler(v1, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(v1, r, u.MediaUsecase)
 	_tagHttpDelivery.NewTagHandler(v1, r, u.TagUsecase)
