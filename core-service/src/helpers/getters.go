@@ -156,6 +156,12 @@ func GetRangeLastWeek() RangeLastWeek {
 	}
 }
 
+// GetObjectFromString ...
+func GetObjectFromString(str string, obj interface{}) error {
+	return json.Unmarshal([]byte(str), &obj)
+}
+
+// GetStringFromObject ...
 func GetStringFromObject(obj interface{}) string {
 	data, _ := json.Marshal(obj)
 	return string(data)

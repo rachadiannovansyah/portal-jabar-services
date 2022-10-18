@@ -9,7 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type mysqlPublicServiceRepository struct {
@@ -135,73 +134,6 @@ func (m *mysqlPublicServiceRepository) findOne(ctx context.Context, key string, 
 		res = list[0]
 	} else {
 		return res, domain.ErrNotFound
-	}
-
-	return
-}
-
-func (m *mysqlPublicServiceRepository) StoreGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService) (id int64, err error) {
-	query := `INSERT general_informations SET name=?, description=?, slug=?, category=?, 
-	address=?, unit=?, phone=?, logo=?, operational_hours=?, media=?, social_media=?, type=?`
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx,
-		ps.GeneralInformation.Name,
-		ps.GeneralInformation.Description,
-		ps.GeneralInformation.Slug,
-		ps.GeneralInformation.Category,
-		ps.GeneralInformation.Address,
-		ps.GeneralInformation.Unit,
-		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
-		ps.GeneralInformation.Logo,
-		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
-		helpers.GetStringFromObject(ps.GeneralInformation.Media),
-		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
-		ps.GeneralInformation.Type,
-	)
-	if err != nil {
-		return
-	}
-	id, err = res.LastInsertId()
-	if err != nil {
-		return
-	}
-	return
-}
-
-func (m *mysqlPublicServiceRepository) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
-	tx, err := m.Conn.BeginTx(ctx, nil)
-	id, err := m.StoreGeneralInformation(ctx, tx, ps)
-
-	query := `INSERT service_public SET general_information_id=?, purpose=?, facility=?, requirement=?, 
-		tos=?, info_graphic=?, faq=?`
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx,
-		id,
-		helpers.GetStringFromObject(ps.Purpose),
-		helpers.GetStringFromObject(ps.Facility),
-		helpers.GetStringFromObject(ps.Requirement),
-		helpers.GetStringFromObject(ps.Tos),
-		helpers.GetStringFromObject(ps.Infographic),
-		helpers.GetStringFromObject(ps.Faq),
-	)
-	if err != nil {
-		return
-	}
-	_, err = res.LastInsertId()
-	if err != nil {
-		return
-	}
-
-	if err = tx.Commit(); err != nil {
-		return
 	}
 
 	return

@@ -14,6 +14,7 @@ require (
 	github.com/forPelevin/gomoji v1.1.5
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0

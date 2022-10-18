@@ -6,8 +6,6 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
-	"github.com/mitchellh/mapstructure"
-	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -25,7 +23,6 @@ func NewPublicServiceHandler(e *echo.Group, p *echo.Group, ps domain.PublicServi
 	}
 	p.GET("/public-service", handler.Fetch)
 	p.GET("/public-service/slug/:slug", handler.GetBySlug)
-	p.POST("/public-service", handler.Store)
 }
 
 // Fetch will fetch the public-service
@@ -96,41 +93,4 @@ func (h *PublicServiceHandler) GetBySlug(c echo.Context) error {
 	detailRes.Facilities = facilities
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
-}
-
-func isRequestValid(ps *domain.StorePublicService) (bool, error) {
-	validate := validator.New()
-	err := validate.Struct(ps)
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func (h *PublicServiceHandler) Store(c echo.Context) (err error) {
-	ps := new(domain.StorePublicService)
-	if err = c.Bind(ps); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
-	}
-
-	var ok bool
-	if ok, err = isRequestValid(ps); !ok {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-
-	// FIXME: authenticated variables must be global variables to be accessible everywhere
-	auth := domain.JwtCustomClaims{}
-	mapstructure.Decode(c.Get("auth:user"), &auth)
-
-	ctx := c.Request().Context()
-	err = h.PSUsecase.Store(ctx, *ps)
-	if err != nil {
-		return err
-	}
-
-	result := map[string]interface{}{
-		"message": "CREATED",
-	}
-
-	return c.JSON(http.StatusCreated, result)
 }

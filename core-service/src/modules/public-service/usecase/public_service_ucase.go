@@ -66,9 +66,3 @@ func (n *publicServiceUsecase) GetBySlug(c context.Context, slug string) (res do
 
 	return
 }
-
-func (n *publicServiceUsecase) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
-	err = n.publicServiceRepo.Store(ctx, ps)
-
-	return
-}
