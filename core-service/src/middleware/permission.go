@@ -44,7 +44,8 @@ func VerifyCache() echo.MiddlewareFunc {
 
 			if cached != "" {
 				var cacheRes domain.Cache
-				err := json.Unmarshal([]byte(cached), &cacheRes.Data)
+
+				err := json.Unmarshal([]byte(cached), &cacheRes)
 				if err != nil {
 					fmt.Println(err)
 				}

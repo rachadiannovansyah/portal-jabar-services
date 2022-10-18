@@ -9,6 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type mysqlServicePublicRepository struct {
@@ -20,11 +21,11 @@ func NewMysqlServicePublicRepository(Conn *sql.DB) domain.ServicePublicRepositor
 	return &mysqlServicePublicRepository{Conn}
 }
 
-var querySelectJoin = `SELECT s.id, s.purpose, s.facility, s.requirement, s.procedures, s.info_graphic, s.faq, s.created_at, s.updated_at,
+var querySelectJoin = `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
 g.ID, g.name, g.Description, g.slug, g.category, g.address, g.unit, g.phone, g.logo, g.operational_hours, g.media, g.social_media, g.type
 FROM service_public s
 LEFT JOIN general_informations g
-ON s.general_informations_id = g.id
+ON s.general_information_id = g.id
 WHERE 1=1`
 
 func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.ServicePublic, err error) {
@@ -49,7 +50,7 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 			&ps.Purpose,
 			&ps.Facility,
 			&ps.Requirement,
-			&ps.Procedure,
+			&ps.ToS,
 			&ps.InfoGraphic,
 			&ps.FAQ,
 			&ps.CreatedAt,
@@ -143,5 +144,72 @@ func (m *mysqlServicePublicRepository) findOne(ctx context.Context, value string
 		return res, domain.ErrNotFound
 	}
 
+	return
+}
+
+func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
+	tx, err := m.Conn.BeginTx(ctx, nil)
+	id, err := m.StoreGeneralInformation(ctx, tx, ps)
+
+	query := `INSERT service_public SET general_information_id=?, purpose=?, facility=?, requirement=?, 
+		tos=?, info_graphic=?, faq=?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		id,
+		helpers.GetStringFromObject(ps.Purpose),
+		helpers.GetStringFromObject(ps.Facility),
+		helpers.GetStringFromObject(ps.Requirement),
+		helpers.GetStringFromObject(ps.Tos),
+		helpers.GetStringFromObject(ps.Infographic),
+		helpers.GetStringFromObject(ps.Faq),
+	)
+	if err != nil {
+		return
+	}
+	_, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService) (id int64, err error) {
+	query := `INSERT general_informations SET name=?, description=?, slug=?, category=?, 
+	address=?, unit=?, phone=?, logo=?, operational_hours=?, media=?, social_media=?, type=?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		ps.GeneralInformation.Name,
+		ps.GeneralInformation.Description,
+		ps.GeneralInformation.Slug,
+		ps.GeneralInformation.Category,
+		ps.GeneralInformation.Address,
+		ps.GeneralInformation.Unit,
+		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
+		ps.GeneralInformation.Logo,
+		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
+		helpers.GetStringFromObject(ps.GeneralInformation.Media),
+		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
+		ps.GeneralInformation.Type,
+	)
+	if err != nil {
+		return
+	}
+	id, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
 	return
 }

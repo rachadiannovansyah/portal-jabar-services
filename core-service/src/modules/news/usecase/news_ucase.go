@@ -258,9 +258,10 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	for category := range mapCategories {
 		params := domain.Request{PerPage: 4, SortBy: "n.views", SortOrder: "ASC"}
 		params.Filters = map[string]interface{}{
-			"highlight":  "0",
-			"is_live":    "1",
-			"categories": []string{category},
+			"highlight":                "0",
+			"is_live":                  "1",
+			"categories":               []string{category},
+			"is_published_last_weekly": "1",
 		}
 		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
@@ -295,11 +296,20 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// merge the user's data
 	for index, item := range data {
 		if a, ok := mapCategories[item.Category]; ok {
-			data[index].RelatedNews = a
+			data[index].RelatedNews = sliceLastIndexArray(a)
 		}
 	}
 
 	return data, nil
+}
+
+func sliceLastIndexArray(a []domain.NewsBanner) []domain.NewsBanner {
+	if len(a) > 0 {
+		a = a[:len(a)-1]
+		return a
+	}
+
+	return a
 }
 
 func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {

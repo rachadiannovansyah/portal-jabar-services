@@ -13,9 +13,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// ResponseError represent the reseponse error struct
+// ResponseError represent the response error struct
 type ResponseError struct {
 	Message string `json:"message"`
+}
+
+// RangeLastWeek represent today and the day last of last week
+type RangeLastWeek struct {
+	DayOfLastWeek string
+	Today         string
 }
 
 // GetCurrentURI ...
@@ -141,11 +147,7 @@ func GetRoleInfo(r domain.Role) domain.RoleInfo {
 	}
 }
 
-type RangeLastWeek struct {
-	DayOfLastWeek string
-	Today         string
-}
-
+// GetRangeLastWeek for get date within a week range ...
 func GetRangeLastWeek() RangeLastWeek {
 	format := "2006-01-02 15:04:05"
 	return RangeLastWeek{
@@ -154,6 +156,13 @@ func GetRangeLastWeek() RangeLastWeek {
 	}
 }
 
+// GetObjectFromString ...
 func GetObjectFromString(str string, obj interface{}) error {
 	return json.Unmarshal([]byte(str), &obj)
+}
+
+// GetStringFromObject ...
+func GetStringFromObject(obj interface{}) string {
+	data, _ := json.Marshal(obj)
+	return string(data)
 }

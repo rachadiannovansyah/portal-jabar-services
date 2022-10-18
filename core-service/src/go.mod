@@ -14,6 +14,7 @@ require (
 	github.com/forPelevin/gomoji v1.1.5
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
@@ -21,11 +22,10 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.12.0
 	github.com/jinzhu/copier v0.3.2
-	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
-	github.com/mrz1836/go-sanitize v1.1.5 // indirect
+	github.com/mrz1836/go-sanitize v1.1.5
 	github.com/newrelic/go-agent v3.17.0+incompatible
 	github.com/newrelic/go-agent/v3 v3.17.0
 	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v0.0.0-20220629221035-d71efc478bd2

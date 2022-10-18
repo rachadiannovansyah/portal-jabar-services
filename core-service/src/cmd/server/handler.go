@@ -35,6 +35,7 @@ import (
 	_templateHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
 	_userHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/delivery/http"
+	_visitorHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/delivery/http"
 )
 
 func newAppHandler(e *echo.Echo) {
@@ -75,7 +76,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
 	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase)
-	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, u.ServicePublicUcase)
+	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, r, u.ServicePublicUcase)
 	_userHttpDelivery.NewUserHandler(v1, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(v1, r, u.MediaUsecase)
 	_tagHttpDelivery.NewTagHandler(v1, r, u.TagUsecase)
@@ -85,6 +86,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_districtHttpDelivery.NewDistrictHandler(v1, u.DistrictUsecase)
 	_publicDocumentArchiveHttpDelivery.NewPublicDocumentArchiveHandler(p, u.DocumentArchiveUsecase)
 	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, p, u.PublicServiceUsecase)
+	_visitorHttpDelivery.NewCounterVisitorHandler(p, u.VisitorUsecase)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

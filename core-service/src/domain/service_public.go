@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type ServicePublic struct {
 	Purpose            NullString         `json:"purpose"`
 	Facility           NullString         `json:"facility"`
 	Requirement        NullString         `json:"requirement"`
-	Procedure          NullString         `json:"procedure"`
+	ToS                NullString         `json:"tos"`
 	InfoGraphic        NullString         `json:"info_graphic"`
 	FAQ                NullString         `json:"faq"`
 	CreatedAt          time.Time          `json:"created_at"`
@@ -32,7 +33,7 @@ type DetailServicePublicResponse struct {
 	Purpose            Purpose               `json:"purpose"`
 	Facility           FacilityService       `json:"facility"`
 	Requirement        Requirement           `json:"requirement"`
-	Procedure          Procedure             `json:"procedure"`
+	ToS                TermsOfService        `json:"tos"`
 	InfoGraphic        InfoGraphic           `json:"info_graphic"`
 	FAQ                FAQ                   `json:"faq"`
 	CreatedAt          time.Time             `json:"created_at"`
@@ -61,8 +62,8 @@ type Media struct {
 }
 
 type Purpose struct {
-	Title string  `json:"title"`
-	Items []Items `json:"items"`
+	Title string   `json:"title"`
+	Items []string `json:"items"`
 }
 
 type FacilityService struct {
@@ -75,7 +76,7 @@ type Requirement struct {
 	Items []Items `json:"items"`
 }
 
-type Procedure struct {
+type TermsOfService struct {
 	Title string  `json:"title"`
 	Items []Items `json:"items"`
 }
@@ -98,14 +99,78 @@ type QuestionAnswer struct {
 	Answer   string `json:"answer"`
 }
 
+type StorePublicService struct {
+	GeneralInformation struct {
+		Name             string   `json:"name" validate:"required"`
+		Description      string   `json:"description" validate:"required"`
+		Slug             string   `json:"slug" validate:"required"`
+		Category         string   `json:"category" validate:"required"`
+		Address          string   `json:"address" validate:"required"`
+		Unit             string   `json:"unit" validate:"required"`
+		Phone            []string `json:"phone" validate:"required,min=1"`
+		Logo             string   `json:"logo" validate:"required"`
+		OperationalHours []string `json:"operational_hours" validate:"required,min=1"`
+		Media            struct {
+			Video  string   `json:"video" validate:"required"`
+			Images []string `json:"images" validate:"required,min=1"`
+		} `json:"media" validate:"required"`
+		SocialMedia struct {
+			Facebook  string `json:"facebook" validate:"omitempty,url"`
+			Instagram string `json:"instagram" validate:"omitempty,url"`
+			Twitter   string `json:"twitter" validate:"omitempty,url"`
+			Tiktok    string `json:"tiktok" validate:"omitempty,url"`
+			Youtube   string `json:"youtube" validate:"omitempty,url"`
+		} `json:"social_media" validate:"required"`
+		Type string `json:"type" validate:"required"`
+	} `json:"general_information"`
+	Purpose struct {
+		Title string   `json:"title" validate:"required"`
+		Items []string `json:"items" validate:"required,min=1"`
+	} `json:"purpose" validate:"required"`
+	Facility struct {
+		Title string `json:"title" validate:"required"`
+		Items []struct {
+			Link        string `json:"link" validate:"required,url"`
+			Description string `json:"description" validate:"required"`
+		} `json:"items" validate:"required,min=1"`
+	} `json:"facility" validate:"required"`
+	Requirement struct {
+		Title string `json:"title" validate:"required"`
+		Items []struct {
+			Link        string `json:"link" validate:"required,url"`
+			Description string `json:"description" validate:"required"`
+		} `json:"items" validate:"required,min=1"`
+	} `json:"requirement" validate:"required"`
+	Tos struct {
+		Title string `json:"title" validate:"required"`
+		Items []struct {
+			Link        string `json:"link" validate:"required,url"`
+			Description string `json:"description" validate:"required"`
+		} `json:"items" validate:"required,min=1"`
+		Image string `json:"image" validate:"required,url"`
+	} `json:"tos" validate:"required"`
+	Infographic struct {
+		Images []string `json:"images" validate:"required,min=1"`
+	} `json:"infographic" validate:"required"`
+	Faq struct {
+		Items []struct {
+			Question string `json:"question"`
+			Answer   string `json:"answer"`
+		} `json:"items" validate:"required,min=1"`
+	} `json:"faq" validate:"required"`
+}
+
 type ServicePublicUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]ServicePublic, error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
+	Store(context.Context, StorePublicService) error
 }
 
 type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
+	Store(context.Context, StorePublicService) (err error)
+	StoreGeneralInformation(context.Context, *sql.Tx, StorePublicService) (id int64, err error)
 }

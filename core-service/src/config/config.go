@@ -21,6 +21,7 @@ type Config struct {
 	Redis    RedisConfig
 	NewRelic newrelic.Config
 	Mail     MailConfig
+	External ExternalConfig
 }
 
 // NewConfig creates a new Config struct
@@ -44,5 +45,6 @@ func NewConfig() *Config {
 		Redis:    LoadRedisConfig(),
 		NewRelic: LoadNewRelicConfig(),
 		Mail:     LoadMailConfig(),
+		External: LoadExternalConfig(),
 	}
 }

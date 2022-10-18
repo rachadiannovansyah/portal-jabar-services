@@ -111,16 +111,17 @@ func (m *mysqlNewsRepository) findOne(ctx context.Context, key string, value str
 }
 
 func (m *mysqlNewsRepository) TabStatus(ctx context.Context, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+	binds := make([]interface{}, 0)
 	// todo : make count query dynamic based on params
 	query := fmt.Sprintf(`
 		SELECT n.status, count(n.status)
 		FROM news n
 		LEFT JOIN users u ON n.created_by = u.id
 		WHERE n.deleted_at IS NULL %s GROUP BY n.status`,
-		filterNewsQuery(params),
+		filterNewsQuery(params, &binds),
 	)
 
-	res, err = m.fetchTabs(ctx, query)
+	res, err = m.fetchTabs(ctx, query, binds...)
 
 	if err != nil {
 		return []domain.TabStatusResponse{}, err
@@ -161,9 +162,8 @@ func (m *mysqlNewsRepository) fetchTabs(ctx context.Context, query string, args 
 	return result, nil
 }
 
-func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total int64, err error) {
-
-	err = m.Conn.QueryRow(query).Scan(&total)
+func (m *mysqlNewsRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -173,7 +173,8 @@ func (m *mysqlNewsRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.News, total int64, err error) {
-	query := filterNewsQuery(params)
+	binds := make([]interface{}, 0)
+	query := filterNewsQuery(params, &binds)
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
@@ -181,9 +182,12 @@ func (m *mysqlNewsRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY n.created_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.created_by = u.id WHERE n.deleted_at is NULL `+query)
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM news n LEFT JOIN users u ON n.created_by = u.id WHERE n.deleted_at is NULL `+query, binds...)
 	query = queryJoinNews + query + ` LIMIT ?,? `
-	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+
+	binds = append(binds, params.Offset, params.PerPage)
+
+	res, err = m.fetch(ctx, query, binds...)
 
 	if err != nil {
 		return nil, 0, err

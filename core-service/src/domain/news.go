@@ -109,7 +109,7 @@ type NewsBanner struct {
 	CreatedBy   Author       `json:"created_by,omitempty"`
 	CreatedAt   time.Time    `json:"created_at"`
 	PublishedAt *time.Time   `json:"published_at"`
-	RelatedNews []NewsBanner `json:"related_news,omitempty"`
+	RelatedNews []NewsBanner `json:"related_news"`
 }
 
 // DetailNewsResponse ...

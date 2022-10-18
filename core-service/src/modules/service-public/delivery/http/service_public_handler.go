@@ -3,8 +3,10 @@ package http
 import (
 	"net/http"
 
+	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -16,12 +18,13 @@ type ServicePublicHandler struct {
 }
 
 // NewServicePublicHandler will create a new ServicePublicHandler
-func NewServicePublicHandler(e *echo.Group, p *echo.Group, sp domain.ServicePublicUsecase) {
+func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase) {
 	handler := &ServicePublicHandler{
 		SPUsecase: sp,
 	}
 	p.GET("/service-public", handler.Fetch)
 	p.GET("/service-public/slug/:slug", handler.GetBySlug)
+	r.POST("/service-public", handler.Store)
 }
 
 // Fetch will fetch the service-public
@@ -31,7 +34,6 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 	params := helpers.GetRequestParams(c)
 
 	res, err := h.SPUsecase.Fetch(ctx, &params)
-
 	if err != nil {
 		return err
 	}
@@ -51,9 +53,13 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		return c.JSON(http.StatusOK, data)
 	}
 
-	// get struct response
 	listServicePublic := []domain.ListServicePublicResponse{}
-	copier.Copy(&listServicePublic, &res)
+	for _, row := range res {
+		// get struct response
+		tmp := domain.ListServicePublicResponse{}
+		copier.Copy(&tmp, &row.GeneralInformation)
+		listServicePublic = append(listServicePublic, tmp)
+	}
 
 	data := domain.ResultsData{
 		Data: listServicePublic,
@@ -98,7 +104,7 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 	helpers.GetObjectFromString(res.Purpose.String, &detailRes.Purpose)
 	helpers.GetObjectFromString(res.Facility.String, &detailRes.Facility)
 	helpers.GetObjectFromString(res.Requirement.String, &detailRes.Requirement)
-	helpers.GetObjectFromString(res.Procedure.String, &detailRes.Procedure)
+	helpers.GetObjectFromString(res.ToS.String, &detailRes.ToS)
 	helpers.GetObjectFromString(res.InfoGraphic.String, &detailRes.InfoGraphic)
 	helpers.GetObjectFromString(res.FAQ.String, &detailRes.FAQ)
 	helpers.GetObjectFromString(res.GeneralInformation.Phone, &detailRes.GeneralInformation.Phone)
@@ -107,4 +113,41 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 	helpers.GetObjectFromString(res.GeneralInformation.SocialMedia, &detailRes.GeneralInformation.SocialMedia)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
+}
+
+func (h *ServicePublicHandler) Store(c echo.Context) (err error) {
+	ps := new(domain.StorePublicService)
+	if err = c.Bind(ps); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(ps); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	// FIXME: authenticated variables must be global variables to be accessible everywhere
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	ctx := c.Request().Context()
+	err = h.SPUsecase.Store(ctx, *ps)
+	if err != nil {
+		return err
+	}
+
+	result := map[string]interface{}{
+		"message": "CREATED",
+	}
+
+	return c.JSON(http.StatusCreated, result)
+}
+
+func isRequestValid(ps *domain.StorePublicService) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(ps)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

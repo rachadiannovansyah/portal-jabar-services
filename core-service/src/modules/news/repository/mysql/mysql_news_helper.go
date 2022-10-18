@@ -11,7 +11,7 @@ import (
  * this block of code is used to generate the query for the news
  * need to be refactored later to be more generic and reduce the code complexity (go generic tech debt)
  */
-func filterNewsQuery(params *domain.Request) string {
+func filterNewsQuery(params *domain.Request, binds *[]interface{}) string {
 	var query string
 
 	if params.Keyword != "" {
@@ -62,6 +62,12 @@ func filterNewsQuery(params *domain.Request) string {
 
 	if params.StartDate != "" && params.EndDate != "" {
 		query += ` AND DATE(n.updated_at) BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+	}
+
+	if v, ok := params.Filters["is_published_last_weekly"]; ok && v != "" {
+		date := helpers.GetRangeLastWeek()
+		*binds = append(*binds, date.DayOfLastWeek, date.Today)
+		query = fmt.Sprintf(`%s AND (n.published_at >= ? AND n.published_at <= ?)`, query)
 	}
 
 	return query

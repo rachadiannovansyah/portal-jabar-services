@@ -27,7 +27,7 @@ func main() {
 	timeoutContext := time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second
 
 	// init repo category repo
-	mysqlRepos := server.NewRepository(conn)
+	mysqlRepos := server.NewRepository(conn, cfg)
 	usecases := server.NewUcase(cfg, conn, mysqlRepos, timeoutContext)
 	server.NewHandler(cfg, apm, usecases)
 }
