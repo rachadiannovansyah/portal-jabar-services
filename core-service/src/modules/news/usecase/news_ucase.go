@@ -296,12 +296,20 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// merge the user's data
 	for index, item := range data {
 		if a, ok := mapCategories[item.Category]; ok {
-			a = a[:len(a)-1] // remove last index
-			data[index].RelatedNews = a
+			data[index].RelatedNews = sliceLastIndexArray(a)
 		}
 	}
 
 	return data, nil
+}
+
+func sliceLastIndexArray(a []domain.NewsBanner) []domain.NewsBanner {
+	if len(a) > 0 {
+		a = a[:len(a)-1]
+		return a
+	}
+
+	return a
 }
 
 func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {
