@@ -41,19 +41,34 @@ type DetailServicePublicResponse struct {
 }
 
 type GeneralInformationRes struct {
-	ID               int64       `json:"id"`
-	Name             string      `json:"name"`
-	Description      string      `json:"description"`
-	Slug             string      `json:"slug"`
-	Category         string      `json:"category"`
-	Address          string      `json:"address"`
-	Unit             string      `json:"unit"`
-	Logo             string      `json:"logo"`
-	Type             string      `json:"type"`
-	Phone            []string    `json:"phone"`
-	OperationalHours []string    `json:"operational_hours"`
-	Media            Media       `json:"media"`
-	SocialMedia      SocialMedia `json:"social_media"`
+	ID               int64              `json:"id"`
+	Name             string             `json:"name"`
+	Alias            string             `json:"alias"`
+	Description      string             `json:"description"`
+	Slug             string             `json:"slug"`
+	Category         string             `json:"category"`
+	Addresses        []string           `json:"addresses"`
+	Unit             string             `json:"unit"`
+	Logo             string             `json:"logo"`
+	Type             string             `json:"type"`
+	Phone            []string           `json:"phone"`
+	Email            string             `json:"email"`
+	Link             Link               `json:"link"`
+	OperationalHours []OperationalHours `json:"operational_hours"`
+	Media            Media              `json:"media"`
+	SocialMedia      SocialMedia        `json:"social_media"`
+}
+
+type OperationalHours struct {
+	Start string `json:"start"`
+	End   string `json:"end"`
+}
+
+type Link struct {
+	Website    string `json:"website"`
+	GooglePlay string `json:"google_play"`
+	GoogleForm string `json:"google_form"`
+	AppStore   string `json:"app_store"`
 }
 
 type Media struct {
@@ -102,15 +117,19 @@ type QuestionAnswer struct {
 type StorePublicService struct {
 	GeneralInformation struct {
 		Name             string   `json:"name" validate:"required"`
+		Alias            string   `json:"alias" validate:"required"`
 		Description      string   `json:"description" validate:"required"`
-		Slug             string   `json:"slug" validate:"required"`
 		Category         string   `json:"category" validate:"required"`
-		Address          string   `json:"address" validate:"required"`
+		Addresses        []string `json:"addresses" validate:"required"`
 		Unit             string   `json:"unit" validate:"required"`
 		Phone            []string `json:"phone" validate:"required,min=1"`
+		Email            string   `json:"email" validate:"omitempty,url"`
 		Logo             string   `json:"logo" validate:"required"`
-		OperationalHours []string `json:"operational_hours" validate:"required,min=1"`
-		Media            struct {
+		OperationalHours []struct {
+			Start string `json:"start" validate:"required,ISO8601date"`
+			End   string `json:"end" validate:"required,ISO8601date"`
+		} `json:"operational_hours" validate:"required,min=1"`
+		Media struct {
 			Video  string   `json:"video" validate:"required"`
 			Images []string `json:"images" validate:"required,min=1"`
 		} `json:"media" validate:"required"`
@@ -121,6 +140,12 @@ type StorePublicService struct {
 			Tiktok    string `json:"tiktok" validate:"omitempty,url"`
 			Youtube   string `json:"youtube" validate:"omitempty,url"`
 		} `json:"social_media" validate:"required"`
+		Link struct {
+			Website     string `json:"website" validate:"omitempty,url"`
+			Google_play string `json:"google_play" validate:"omitempty,url"`
+			Google_form string `json:"google_form" validate:"omitempty,url"`
+			App_store   string `json:"app_store" validate:"omitempty,url"`
+		} `json:"link" validate:"required"`
 		Type string `json:"type" validate:"required"`
 	} `json:"general_information"`
 	Purpose struct {
@@ -173,4 +198,5 @@ type ServicePublicRepository interface {
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService) (err error)
 	StoreGeneralInformation(context.Context, *sql.Tx, StorePublicService) (id int64, err error)
+	UpdateSlugGeneralInformation(context.Context, *sql.Tx, StorePublicService, int64) (err error)
 }

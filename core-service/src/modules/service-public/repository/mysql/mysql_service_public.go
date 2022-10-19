@@ -22,7 +22,7 @@ func NewMysqlServicePublicRepository(Conn *sql.DB) domain.ServicePublicRepositor
 }
 
 var querySelectJoin = `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
-g.ID, g.name, g.Description, g.slug, g.category, g.address, g.unit, g.phone, g.logo, g.operational_hours, g.media, g.social_media, g.type
+g.ID, g.name, g.alias, g.Description, g.slug, g.category, g.addresses, g.unit, g.phone, g.email, g.logo, g.operational_hours, g.link, g.media, g.social_media, g.type
 FROM service_public s
 LEFT JOIN general_informations g
 ON s.general_information_id = g.id
@@ -57,14 +57,17 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 			&ps.UpdatedAt,
 			&ps.GeneralInformation.ID,
 			&ps.GeneralInformation.Name,
+			&ps.GeneralInformation.Alias,
 			&ps.GeneralInformation.Description,
 			&ps.GeneralInformation.Slug,
 			&ps.GeneralInformation.Category,
-			&ps.GeneralInformation.Address,
+			&ps.GeneralInformation.Addresses,
 			&ps.GeneralInformation.Unit,
 			&ps.GeneralInformation.Phone,
+			&ps.GeneralInformation.Email,
 			&ps.GeneralInformation.Logo,
 			&ps.GeneralInformation.OperationalHours,
+			&ps.GeneralInformation.Link,
 			&ps.GeneralInformation.Media,
 			&ps.GeneralInformation.SocialMedia,
 			&ps.GeneralInformation.Type,
@@ -197,9 +200,9 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 	return
 }
 
-func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService) (id int64, err error) {
-	query := `INSERT general_informations SET name=?, description=?, slug=?, category=?, 
-	address=?, unit=?, phone=?, logo=?, operational_hours=?, media=?, social_media=?, type=?`
+func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService) (ID int64, err error) {
+	query := `INSERT general_informations SET name=?, alias=?, email=?, description=?, category=?, 
+	addresses=?, unit=?, phone=?, logo=?, operational_hours=?, link=?, media=?, social_media=?, type=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -207,14 +210,16 @@ func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Conte
 
 	res, err := stmt.ExecContext(ctx,
 		ps.GeneralInformation.Name,
+		ps.GeneralInformation.Alias,
+		ps.GeneralInformation.Email,
 		ps.GeneralInformation.Description,
-		ps.GeneralInformation.Slug,
 		ps.GeneralInformation.Category,
-		ps.GeneralInformation.Address,
+		helpers.GetStringFromObject(ps.GeneralInformation.Addresses),
 		ps.GeneralInformation.Unit,
 		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
 		ps.GeneralInformation.Logo,
 		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
+		helpers.GetStringFromObject(ps.GeneralInformation.Link),
 		helpers.GetStringFromObject(ps.GeneralInformation.Media),
 		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
 		ps.GeneralInformation.Type,
@@ -222,7 +227,25 @@ func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Conte
 	if err != nil {
 		return
 	}
-	id, err = res.LastInsertId()
+	ID, err = res.LastInsertId()
+	err = m.UpdateSlugGeneralInformation(ctx, tx, ps, ID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (m *mysqlServicePublicRepository) UpdateSlugGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService, ID int64) (err error) {
+	query := `UPDATE general_informations SET slug=? WHERE id=?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	slug := helpers.MakeSlug(ps.GeneralInformation.Name, ID)
+
+	_, err = stmt.ExecContext(ctx, slug, ID)
+
 	if err != nil {
 		return
 	}

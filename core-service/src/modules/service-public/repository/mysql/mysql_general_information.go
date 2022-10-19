@@ -19,7 +19,7 @@ func NewMysqlGeneralInformationRepository(Conn *sql.DB) domain.GeneralInformatio
 	return &mysqlGeneralInformationRepository{Conn}
 }
 
-var querySelectGenInfo = `SELECT id, name, description, slug, category, address, unit, phone, logo, operational_hours, media, social_media, type FROM general_informations WHERE 1=1`
+var querySelectGenInfo = `SELECT id, name, description, slug, category, addresses, unit, phone, logo, operational_hours, media, social_media, type FROM general_informations WHERE 1=1`
 
 func (m *mysqlGeneralInformationRepository) fetchGenInfo(ctx context.Context, query string, args ...interface{}) (result []domain.GeneralInformation, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -44,7 +44,7 @@ func (m *mysqlGeneralInformationRepository) fetchGenInfo(ctx context.Context, qu
 			&genInfo.Description,
 			&genInfo.Slug,
 			&genInfo.Category,
-			&genInfo.Address,
+			&genInfo.Addresses,
 			&genInfo.Unit,
 			&genInfo.Phone,
 			&genInfo.Logo,
