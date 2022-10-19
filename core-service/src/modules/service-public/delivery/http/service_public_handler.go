@@ -32,6 +32,10 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
+		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+	}
 
 	res, err := h.SPUsecase.Fetch(ctx, &params)
 	if err != nil {

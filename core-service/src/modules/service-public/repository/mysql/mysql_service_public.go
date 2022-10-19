@@ -81,9 +81,9 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 	return result, nil
 }
 
-func (m *mysqlServicePublicRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlServicePublicRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 
-	err = m.Conn.QueryRow(query).Scan(&total)
+	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -104,9 +104,14 @@ func (m *mysqlServicePublicRepository) getLastUpdated(ctx context.Context, query
 }
 
 func (m *mysqlServicePublicRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.ServicePublic, err error) {
-	query := querySelectJoin + ` LIMIT ?,? `
+	// add binding optional params to mitigate sql injection
+	binds := make([]interface{}, 0)
+	queryFilter := filterServicePublicQuery(params, &binds)
 
-	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+	query := querySelectJoin + queryFilter + ` LIMIT ?,? `
+	binds = append(binds, params.Offset, params.PerPage)
+
+	res, err = m.fetch(ctx, query, binds...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +120,10 @@ func (m *mysqlServicePublicRepository) Fetch(ctx context.Context, params *domain
 }
 
 func (m *mysqlServicePublicRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM service_public `)
+	binds := make([]interface{}, 0)
+	queryFilter := filterServicePublicQuery(params, &binds)
+
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM service_public s LEFT JOIN general_informations g ON s.general_information_id = g.id WHERE 1=1 `+queryFilter, binds...)
 
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM service_public ORDER BY updated_at DESC LIMIT 1`)
 
@@ -149,7 +157,14 @@ func (m *mysqlServicePublicRepository) findOne(ctx context.Context, value string
 
 func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
 	tx, err := m.Conn.BeginTx(ctx, nil)
+	if err != nil {
+		return
+	}
+
 	id, err := m.StoreGeneralInformation(ctx, tx, ps)
+	if err != nil {
+		return
+	}
 
 	query := `INSERT service_public SET general_information_id=?, purpose=?, facility=?, requirement=?, 
 		tos=?, info_graphic=?, faq=?`
