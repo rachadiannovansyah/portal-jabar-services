@@ -27,7 +27,8 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"domain": c.Request().URL.Query()["domain[]"],
+		"domain":    c.Request().URL.Query()["domain[]"],
+		"fuzziness": c.QueryParam("fuzziness"),
 	}
 
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
