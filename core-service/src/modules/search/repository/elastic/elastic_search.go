@@ -79,6 +79,12 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
 	}
 
+	// set default fuzziness to "AUTO"
+	fuzziness := "AUTO"
+	if params.Filters["fuzziness"] != "" {
+		fuzziness = "0"
+	}
+
 	query := q{
 		"_source": q{
 			"includes": []string{"id", "domain", "title", "excerpt", "slug", "category", "thumbnail", "content", "unit", "url", "published_at", "created_at"},
@@ -99,7 +105,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 						"multi_match": q{
 							"query":     params.Keyword,
 							"fields":    []string{"title", "content"},
-							"fuzziness": "AUTO",
+							"fuzziness": fuzziness,
 						},
 					},
 				},
