@@ -14,6 +14,7 @@ import (
 	_eventRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/repository/mysql"
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
+	_generalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/general-information/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_publicServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
@@ -73,7 +74,7 @@ func NewRepository(conn *utils.Conn, cfg *config.Config) *Repository {
 		TagRepo:                _tagRepo.NewMysqlTagRepository(conn.Mysql),
 		SearchRepo:             _searchRepo.NewElasticSearchRepository(conn.Elastic),
 		ServicePublicRepo:      _servicePublicRepo.NewMysqlServicePublicRepository(conn.Mysql),
-		GeneralInformationRepo: _servicePublicRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
+		GeneralInformationRepo: _generalInformationRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
 		RoleRepo:               _roleRepo.NewMysqlRoleRepository(conn.Mysql),
 		RolePermRepo:           _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
 		TemplateRepo:           _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),

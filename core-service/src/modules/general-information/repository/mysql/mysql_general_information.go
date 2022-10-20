@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type mysqlGeneralInformationRepository struct {
@@ -78,5 +79,61 @@ func (m *mysqlGeneralInformationRepository) GetByID(ctx context.Context, id int6
 		return res, domain.ErrNotFound
 	}
 
+	return
+}
+
+func (m *mysqlGeneralInformationRepository) Store(ctx context.Context, ps domain.StorePublicService) (ID int64, err error) {
+	query := `INSERT general_informations SET name=?, alias=?, email=?, description=?, category=?, 
+	addresses=?, unit=?, phone=?, logo=?, operational_hours=?, link=?, media=?, social_media=?, type=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		ps.GeneralInformation.Name,
+		ps.GeneralInformation.Alias,
+		ps.GeneralInformation.Email,
+		ps.GeneralInformation.Description,
+		ps.GeneralInformation.Category,
+		helpers.GetStringFromObject(ps.GeneralInformation.Addresses),
+		ps.GeneralInformation.Unit,
+		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
+		ps.GeneralInformation.Logo,
+		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
+		helpers.GetStringFromObject(ps.GeneralInformation.Link),
+		helpers.GetStringFromObject(ps.GeneralInformation.Media),
+		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
+		ps.GeneralInformation.Type,
+	)
+	if err != nil {
+		return
+	}
+	ID, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	err = m.UpdateSlug(ctx, ps, ID)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (m *mysqlGeneralInformationRepository) UpdateSlug(ctx context.Context, ps domain.StorePublicService, ID int64) (err error) {
+	query := `UPDATE general_informations SET slug=? WHERE id=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	slug := helpers.MakeSlug(ps.GeneralInformation.Name, ID)
+
+	_, err = stmt.ExecContext(ctx, slug, ID)
+
+	if err != nil {
+		return
+	}
 	return
 }
