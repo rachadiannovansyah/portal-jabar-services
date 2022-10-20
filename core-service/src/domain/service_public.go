@@ -33,8 +33,8 @@ type DetailServicePublicResponse struct {
 	Purpose            Purpose               `json:"purpose"`
 	Facility           FacilityService       `json:"facility"`
 	Requirement        Requirement           `json:"requirement"`
-	ToS                TermsOfService        `json:"tos"`
-	InfoGraphic        InfoGraphic           `json:"info_graphic"`
+	ToS                TermsOfService        `json:"terms_of_service"`
+	InfoGraphic        InfoGraphic           `json:"infographic"`
 	FAQ                FAQ                   `json:"faq"`
 	CreatedAt          time.Time             `json:"created_at"`
 	UpdatedAt          time.Time             `json:"updated_at"`
