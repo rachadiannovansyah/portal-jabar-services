@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"database/sql"
 	"time"
 )
 
@@ -116,6 +115,7 @@ type QuestionAnswer struct {
 
 type StorePublicService struct {
 	GeneralInformation struct {
+		ID               int64    `json:"id"`
 		Name             string   `json:"name" validate:"required"`
 		Alias            string   `json:"alias" validate:"required"`
 		Description      string   `json:"description" validate:"required"`
@@ -185,18 +185,16 @@ type StorePublicService struct {
 	} `json:"faq" validate:"required"`
 }
 
-type ServicePublicUsecase interface {
-	Fetch(ctx context.Context, params *Request) ([]ServicePublic, error)
-	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
-	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
-	Store(context.Context, StorePublicService) error
-}
-
 type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService) (err error)
-	StoreGeneralInformation(context.Context, *sql.Tx, StorePublicService) (id int64, err error)
-	UpdateSlugGeneralInformation(context.Context, *sql.Tx, StorePublicService, int64) (err error)
+}
+
+type ServicePublicUsecase interface {
+	Fetch(ctx context.Context, params *Request) ([]ServicePublic, error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
+	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
+	Store(context.Context, StorePublicService) error
 }

@@ -164,11 +164,6 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 		return
 	}
 
-	id, err := m.StoreGeneralInformation(ctx, tx, ps)
-	if err != nil {
-		return
-	}
-
 	query := `INSERT service_public SET general_information_id=?, purpose=?, facility=?, requirement=?, 
 		tos=?, info_graphic=?, faq=?`
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -177,7 +172,7 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 	}
 
 	res, err := stmt.ExecContext(ctx,
-		id,
+		ps.GeneralInformation.ID,
 		helpers.GetStringFromObject(ps.Purpose),
 		helpers.GetStringFromObject(ps.Facility),
 		helpers.GetStringFromObject(ps.Requirement),
@@ -197,57 +192,5 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 		return
 	}
 
-	return
-}
-
-func (m *mysqlServicePublicRepository) StoreGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService) (ID int64, err error) {
-	query := `INSERT general_informations SET name=?, alias=?, email=?, description=?, category=?, 
-	addresses=?, unit=?, phone=?, logo=?, operational_hours=?, link=?, media=?, social_media=?, type=?`
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	res, err := stmt.ExecContext(ctx,
-		ps.GeneralInformation.Name,
-		ps.GeneralInformation.Alias,
-		ps.GeneralInformation.Email,
-		ps.GeneralInformation.Description,
-		ps.GeneralInformation.Category,
-		helpers.GetStringFromObject(ps.GeneralInformation.Addresses),
-		ps.GeneralInformation.Unit,
-		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
-		ps.GeneralInformation.Logo,
-		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
-		helpers.GetStringFromObject(ps.GeneralInformation.Link),
-		helpers.GetStringFromObject(ps.GeneralInformation.Media),
-		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
-		ps.GeneralInformation.Type,
-	)
-	if err != nil {
-		return
-	}
-	ID, err = res.LastInsertId()
-	err = m.UpdateSlugGeneralInformation(ctx, tx, ps, ID)
-	if err != nil {
-		return
-	}
-	return
-}
-
-func (m *mysqlServicePublicRepository) UpdateSlugGeneralInformation(ctx context.Context, tx *sql.Tx, ps domain.StorePublicService, ID int64) (err error) {
-	query := `UPDATE general_informations SET slug=? WHERE id=?`
-	stmt, err := tx.PrepareContext(ctx, query)
-	if err != nil {
-		return
-	}
-
-	slug := helpers.MakeSlug(ps.GeneralInformation.Name, ID)
-
-	_, err = stmt.ExecContext(ctx, slug, ID)
-
-	if err != nil {
-		return
-	}
 	return
 }

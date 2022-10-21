@@ -23,6 +23,8 @@ type GeneralInformation struct {
 
 type GeneralInformationRepository interface {
 	GetByID(ctx context.Context, id int64) (GeneralInformation, error)
+	Store(context.Context, StorePublicService) (id int64, err error)
+	UpdateSlug(context.Context, StorePublicService, int64) (err error)
 }
 
 type GeneralInformationUsecase interface {
