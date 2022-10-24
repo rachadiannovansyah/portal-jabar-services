@@ -90,7 +90,7 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 	// get struct response
 	detailRes := domain.DetailServicePublicResponse{
 		ID: res.ID,
-		GeneralInformation: domain.GeneralInformationRes{
+		GeneralInformation: domain.DetailGeneralInformation{
 			ID:          res.GeneralInformation.ID,
 			Name:        res.GeneralInformation.Name,
 			Alias:       res.GeneralInformation.Alias,
