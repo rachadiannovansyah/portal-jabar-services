@@ -27,19 +27,19 @@ type ListServicePublicResponse struct {
 }
 
 type DetailServicePublicResponse struct {
-	ID                 int64                 `json:"id"`
-	GeneralInformation GeneralInformationRes `json:"general_information"`
-	Purpose            Purpose               `json:"purpose"`
-	Facility           FacilityService       `json:"facility"`
-	Requirement        Requirement           `json:"requirement"`
-	ToS                TermsOfService        `json:"terms_of_service"`
-	InfoGraphic        InfoGraphic           `json:"infographic"`
-	FAQ                FAQ                   `json:"faq"`
-	CreatedAt          time.Time             `json:"created_at"`
-	UpdatedAt          time.Time             `json:"updated_at"`
+	ID                 int64                    `json:"id"`
+	GeneralInformation DetailGeneralInformation `json:"general_information"`
+	Purpose            Purpose                  `json:"purpose"`
+	Facility           FacilityService          `json:"facility"`
+	Requirement        Requirement              `json:"requirement"`
+	ToS                TermsOfService           `json:"terms_of_service"`
+	InfoGraphic        InfoGraphic              `json:"infographic"`
+	FAQ                FAQ                      `json:"faq"`
+	CreatedAt          time.Time                `json:"created_at"`
+	UpdatedAt          time.Time                `json:"updated_at"`
 }
 
-type GeneralInformationRes struct {
+type DetailGeneralInformation struct {
 	ID               int64              `json:"id"`
 	Name             string             `json:"name"`
 	Alias            string             `json:"alias"`
@@ -81,8 +81,13 @@ type Purpose struct {
 }
 
 type FacilityService struct {
-	Title string  `json:"title"`
-	Items []Items `json:"items"`
+	Title string          `json:"title"`
+	Items []ItemsFacility `json:"items"`
+}
+
+type ItemsFacility struct {
+	Title string `json:"title"`
+	Image string `json:"image"`
 }
 
 type Requirement struct {
@@ -93,6 +98,7 @@ type Requirement struct {
 type TermsOfService struct {
 	Title string  `json:"title"`
 	Items []Items `json:"items"`
+	Image string  `json:"image"`
 }
 
 type Items struct {
@@ -155,8 +161,8 @@ type StorePublicService struct {
 	Facility struct {
 		Title string `json:"title" validate:"required"`
 		Items []struct {
-			Link        string `json:"link" validate:"required,url"`
-			Description string `json:"description" validate:"required"`
+			Image string `json:"image" validate:"required"`
+			Title string `json:"title" validate:"required"`
 		} `json:"items" validate:"required,min=1"`
 	} `json:"facility" validate:"required"`
 	Requirement struct {
