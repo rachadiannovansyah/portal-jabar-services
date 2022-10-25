@@ -66,8 +66,8 @@ func GetRequestParams(c echo.Context) domain.Request {
 		Offset:    offset,
 		SortBy:    RegexReplaceString(c, c.QueryParam("sort_by"), ""),
 		SortOrder: sortOrder,
-		StartDate: RegexReplaceString(c, c.QueryParam("start_date"), ""),
-		EndDate:   RegexReplaceString(c, c.QueryParam("end_date"), ""),
+		StartDate: c.QueryParam("start_date"),
+		EndDate:   c.QueryParam("end_date"),
 	}
 
 	return params
@@ -165,4 +165,18 @@ func GetObjectFromString(str string, obj interface{}) error {
 func GetStringFromObject(obj interface{}) string {
 	data, _ := json.Marshal(obj)
 	return string(data)
+}
+
+func GetInBind(binds *[]interface{}, arr []string) string {
+	bind := "("
+	for i, str := range arr {
+		*binds = append(*binds, str)
+		bind += "?"
+		if i < len(arr)-1 {
+			bind += ","
+		}
+	}
+	bind += ")"
+
+	return bind
 }
