@@ -15,53 +15,64 @@ func filterNewsQuery(params *domain.Request, binds *[]interface{}) string {
 	var query string
 
 	if params.Keyword != "" {
-		query += ` AND n.title LIKE '%` + params.Keyword + `%' `
+		*binds = append(*binds, `%`+params.Keyword+`%`)
+		query = fmt.Sprintf(`%s AND n.title LIKE ?`, query)
 	}
 
 	if v, ok := params.Filters["created_by"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.created_by = '%v'`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.created_by = ?`, query)
 	}
 
 	if v, ok := params.Filters["unit_id"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND u.unit_id = '%v'`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND u.unit_id = ?`, query)
 	}
 
 	if v, ok := params.Filters["highlight"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.highlight = '%s'`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.highlight = ?`, query)
 	}
 
 	if v, ok := params.Filters["type"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.type = "%s"`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.type = ?`, query)
 	}
 
 	if v, ok := params.Filters["is_live"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.is_live = "%s"`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.is_live = ?`, query)
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.status = "%s"`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.status = ?`, query)
 	}
 
 	if v, ok := params.Filters["exclude"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.id <> "%s"`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.id <> ?`, query)
 	}
 
 	if v, ok := params.Filters["tag"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.id IN (SELECT data_id FROM data_tags WHERE type = 'news' AND tag_name = '%s')`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.id IN (SELECT data_id FROM data_tags WHERE type = 'news' AND tag_name = ?)`, query)
 	}
 
 	if v, ok := params.Filters["category"]; ok && v != "" {
-		query = fmt.Sprintf(`%s AND n.category = '%s'`, query, v)
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND n.category = ?`, query)
 	} else if v, ok := params.Filters["categories"]; ok && v != "" {
 		categories := params.Filters["categories"].([]string)
-
 		if len(categories) > 0 {
-			query = fmt.Sprintf(`%s AND n.category IN ('%s')`, query, helpers.ConverSliceToString(categories, "','"))
+			inBind := helpers.GetInBind(binds, categories)
+			query = fmt.Sprintf(`%s AND n.category IN %s`, query, inBind)
 		}
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND DATE(n.updated_at) BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+		*binds = append(*binds, params.StartDate, params.EndDate)
+		query = fmt.Sprintf(`%s AND (DATE(n.updated_at) BETWEEN ? AND ?)`, query)
 	}
 
 	if v, ok := params.Filters["is_published_last_weekly"]; ok && v != "" {
