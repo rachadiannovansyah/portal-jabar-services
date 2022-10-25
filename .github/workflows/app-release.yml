@@ -52,7 +52,7 @@ jobs:
     - name: GitOps ArgoCD Update Image Tag
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}"' 'jds-terraform-gke/k8s/portal-jabar-app/production/deployment.yaml'
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}"' 'core-service/jds-terraform-gke/k8s/portal-jabar-app/production/deployment.yaml'
 
     - name: GitOps ArgoCD Create Branch, Commit, Push
       run: |
