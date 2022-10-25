@@ -76,13 +76,13 @@ type Media struct {
 }
 
 type Purpose struct {
-	Title string   `json:"title"`
-	Items []string `json:"items"`
+	Title string   `json:"title,omitempty"`
+	Items []string `json:"items,omitempty"`
 }
 
 type FacilityService struct {
-	Title string          `json:"title"`
-	Items []ItemsFacility `json:"items"`
+	Title string          `json:"title,omitempty"`
+	Items []ItemsFacility `json:"items,omitempty"`
 }
 
 type ItemsFacility struct {
@@ -91,14 +91,14 @@ type ItemsFacility struct {
 }
 
 type Requirement struct {
-	Title string  `json:"title"`
-	Items []Items `json:"items"`
+	Title string  `json:"title,omitempty"`
+	Items []Items `json:"items,omitempty"`
 }
 
 type TermsOfService struct {
-	Title string  `json:"title"`
-	Items []Items `json:"items"`
-	Image string  `json:"image"`
+	Title string  `json:"title,omitempty"`
+	Items []Items `json:"items,omitempty"`
+	Image string  `json:"image,omitempty"`
 }
 
 type Items struct {
@@ -107,11 +107,11 @@ type Items struct {
 }
 
 type InfoGraphic struct {
-	Images []string `json:"images"`
+	Images []string `json:"images,omitempty"`
 }
 
 type FAQ struct {
-	Items []QuestionAnswer `json:"items"`
+	Items []QuestionAnswer `json:"items,omitempty"`
 }
 
 type QuestionAnswer struct {
@@ -155,39 +155,39 @@ type StorePublicService struct {
 		Type string `json:"type" validate:"required"`
 	} `json:"general_information"`
 	Purpose struct {
-		Title string   `json:"title" validate:"required"`
-		Items []string `json:"items" validate:"required,min=1"`
+		Title string   `json:"title"`
+		Items []string `json:"items"`
 	} `json:"purpose" validate:"required"`
 	Facility struct {
-		Title string `json:"title" validate:"required"`
+		Title string `json:"title"`
 		Items []struct {
 			Image string `json:"image" validate:"required"`
 			Title string `json:"title" validate:"required"`
-		} `json:"items" validate:"required,min=1"`
+		} `json:"items"`
 	} `json:"facility" validate:"required"`
 	Requirement struct {
-		Title string `json:"title" validate:"required"`
+		Title string `json:"title"`
 		Items []struct {
 			Link        string `json:"link" validate:"required,url"`
 			Description string `json:"description" validate:"required"`
-		} `json:"items" validate:"required,min=1"`
+		} `json:"items"`
 	} `json:"requirement" validate:"required"`
 	Tos struct {
-		Title string `json:"title" validate:"required"`
+		Title string `json:"title"`
 		Items []struct {
 			Link        string `json:"link" validate:"required,url"`
 			Description string `json:"description" validate:"required"`
-		} `json:"items" validate:"required,min=1"`
-		Image string `json:"image" validate:"required,url"`
+		} `json:"items"`
+		Image string `json:"image" validate:"omitempty,url"`
 	} `json:"tos" validate:"required"`
 	Infographic struct {
-		Images []string `json:"images" validate:"required,min=1"`
-	} `json:"infographic" validate:"required"`
+		Images []string `json:"images" validate:"omitempty,min=1"`
+	} `json:"infographic"`
 	Faq struct {
 		Items []struct {
 			Question string `json:"question"`
 			Answer   string `json:"answer"`
-		} `json:"items" validate:"required,min=1"`
+		} `json:"items"`
 	} `json:"faq" validate:"required"`
 }
 
