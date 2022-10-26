@@ -84,10 +84,10 @@ func (m *mysqlTagRepository) FetchTag(ctx context.Context, params *domain.Reques
 	return
 }
 
-func (m *mysqlTagRepository) StoreTag(ctx context.Context, t *domain.Tag) (err error) {
+func (m *mysqlTagRepository) StoreTag(ctx context.Context, t *domain.Tag, tx *sql.Tx) (err error) {
 	query := `REPLACE into tags (name) VALUES (?) `
 
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

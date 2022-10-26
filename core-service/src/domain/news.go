@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"time"
 )
@@ -196,8 +197,9 @@ type NewsRepository interface {
 	GetBySlug(ctx context.Context, slug string, is_live int) (News, error)
 	AddView(ctx context.Context, slug string) (err error)
 	AddShare(ctx context.Context, id int64) (err error)
-	Store(ctx context.Context, n *StoreNewsRequest) error
-	Update(ctx context.Context, id int64, n *StoreNewsRequest) error
+	Store(ctx context.Context, n *StoreNewsRequest, tx *sql.Tx) error
+	Update(ctx context.Context, id int64, n *StoreNewsRequest, tx *sql.Tx) error
 	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
 	Delete(ctx context.Context, id int64) error
+	GetTx(ctx context.Context) (*sql.Tx, error)
 }

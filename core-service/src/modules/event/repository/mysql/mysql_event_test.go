@@ -112,6 +112,7 @@ func TestStore(t *testing.T) {
 	// query := "INSERT INTO users \\(id, name, email, phone\\) VALUES \\(\\?, \\?, \\?, \\?\\)"
 	query := "INSERT events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , created_by=?"
 
+	mock.ExpectBegin()
 	prep := mock.ExpectPrepare(query)
 	prep.ExpectExec().WithArgs(body.Title,
 		body.Type,
@@ -124,6 +125,8 @@ func TestStore(t *testing.T) {
 		body.CreatedBy.ID.String()).WillReturnResult(sqlmock.NewResult(0, 1))
 
 	e := mysqlRepo.NewMysqlEventRepository(db)
-	err = e.Store(context.TODO(), &body)
+	ctx := context.TODO()
+	tx, err := e.GetTx(ctx)
+	err = e.Store(ctx, &body, tx)
 	assert.NotNil(t, err)
 }

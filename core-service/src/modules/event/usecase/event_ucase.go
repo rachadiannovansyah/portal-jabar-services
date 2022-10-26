@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -135,7 +136,7 @@ func (u *eventUcase) fillDetailDataTags(c context.Context, data domain.Event) (d
 }
 
 // Private function to store tags
-func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string) (err error) {
+func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string, tx *sql.Tx) (err error) {
 	for _, tagName := range tags {
 		// 20 is max length of tags name
 		tagName = helpers.Substr(tagName, 20)
@@ -147,9 +148,9 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 		// check tags already exists
 		var checkTag domain.Tag
 		checkTag, _ = u.tagsRepo.GetTagByName(ctx, tagName)
-
+		tag.ID = checkTag.ID
 		if checkTag.Name == "" {
-			err = u.tagsRepo.StoreTag(ctx, tag)
+			err = u.tagsRepo.StoreTag(ctx, tag, tx)
 			if err != nil {
 				return
 			}
@@ -161,7 +162,7 @@ func (u *eventUcase) storeTags(ctx context.Context, eventID int64, tags []string
 			TagName: tagName,
 			Type:    domain.ConstEvent,
 		}
-		err = u.dataTagRepo.StoreDataTag(ctx, dataTag)
+		err = u.dataTagRepo.StoreDataTag(ctx, dataTag, tx)
 		if err != nil {
 			return
 		}
@@ -248,14 +249,23 @@ func (u *eventUcase) Store(c context.Context, body *domain.StoreRequestEvent) (e
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	body.CreatedAt = time.Now()
-	body.UpdatedAt = time.Now()
-	err = u.eventRepo.Store(ctx, body)
+	tx, err := u.eventRepo.GetTx(c)
 	if err != nil {
 		return
 	}
 
-	if err = u.storeTags(ctx, body.ID, body.Tags); err != nil {
+	body.CreatedAt = time.Now()
+	body.UpdatedAt = time.Now()
+	err = u.eventRepo.Store(ctx, body, tx)
+	if err != nil {
+		return
+	}
+
+	if err = u.storeTags(ctx, body.ID, body.Tags, tx); err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
 		return
 	}
 
@@ -267,16 +277,25 @@ func (u *eventUcase) Update(c context.Context, id int64, body *domain.StoreReque
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	body.UpdatedAt = time.Now()
-
-	err = u.eventRepo.Update(ctx, id, body)
-
-	err = u.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstEvent)
+	tx, err := u.eventRepo.GetTx(c)
 	if err != nil {
 		return
 	}
 
-	if err = u.storeTags(ctx, id, body.Tags); err != nil {
+	body.UpdatedAt = time.Now()
+
+	err = u.eventRepo.Update(ctx, id, body, tx)
+
+	err = u.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstEvent, tx)
+	if err != nil {
+		return
+	}
+
+	if err = u.storeTags(ctx, id, body.Tags, tx); err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
 		return
 	}
 

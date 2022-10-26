@@ -31,6 +31,14 @@ var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.i
 	ON n.created_by = u.id
 	WHERE n.deleted_at is NULL`
 
+func (m *mysqlNewsRepository) GetTx(ctx context.Context) (tx *sql.Tx, err error) {
+	tx, err = m.Conn.BeginTx(ctx, nil)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -264,10 +272,10 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 	return
 }
 
-func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest) (err error) {
+func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest, tx *sql.Tx) (err error) {
 	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?,
 		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, author=?, reporter=?, editor=?, created_by=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -302,10 +310,10 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 	return
 }
 
-func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest) (err error) {
+func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest, tx *sql.Tx) (err error) {
 	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?, author=?, reporter=?, editor=?,
 		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, is_live=?, published_at=?, updated_by=?, updated_at=? WHERE id=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

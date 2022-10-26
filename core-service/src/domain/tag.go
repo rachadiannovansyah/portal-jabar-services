@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 // Tag struct ..
 type Tag struct {
@@ -15,7 +18,7 @@ type TagUsecase interface {
 
 // TagRepository interface ..
 type TagRepository interface {
-	StoreTag(ctx context.Context, t *Tag) error
+	StoreTag(ctx context.Context, t *Tag, tx *sql.Tx) error
 	FetchTag(ctx context.Context, param *Request) ([]Tag, int64, error)
 	GetTagByName(ctx context.Context, name string) (Tag, error)
 }

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jinzhu/copier"
@@ -345,7 +346,7 @@ func (n *newsUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims)
 	return n.newsRepo.TabStatus(ctx, filterByRoleAcces(au, &domain.Request{}))
 }
 
-func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string) (err error) {
+func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string, tx *sql.Tx) (err error) {
 
 	for _, tagName := range tags {
 		// 20 is max length of tags name
@@ -358,9 +359,9 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 		// check tags already exists
 		var checkTag domain.Tag
 		checkTag, _ = n.tagRepo.GetTagByName(ctx, tagName)
-
+		tag.ID = checkTag.ID
 		if checkTag.Name == "" {
-			err = n.tagRepo.StoreTag(ctx, tag)
+			err = n.tagRepo.StoreTag(ctx, tag, tx)
 			if err != nil {
 				return
 			}
@@ -372,7 +373,7 @@ func (n *newsUsecase) storeTags(ctx context.Context, newsId int64, tags []string
 			TagName: tagName,
 			Type:    domain.ConstNews,
 		}
-		err = n.dataTagRepo.StoreDataTag(ctx, dataTag)
+		err = n.dataTagRepo.StoreDataTag(ctx, dataTag, tx)
 
 		if err != nil {
 			return
@@ -521,10 +522,15 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	tx, err := n.newsRepo.GetTx(c)
+	if err != nil {
+		return
+	}
+
 	dt.CreatedAt = time.Now()
 	dt.UpdatedAt = time.Now()
 
-	if err = n.newsRepo.Store(ctx, dt); err != nil {
+	if err = n.newsRepo.Store(ctx, dt, tx); err != nil {
 		return
 	}
 
@@ -534,9 +540,9 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 
 	// set slug for the news
 	dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
-	n.newsRepo.Update(ctx, dt.ID, dt)
+	n.newsRepo.Update(ctx, dt.ID, dt, tx)
 
-	if err = n.storeTags(ctx, dt.ID, dt.Tags); err != nil {
+	if err = n.storeTags(ctx, dt.ID, dt.Tags, tx); err != nil {
 		return
 	}
 
@@ -544,8 +550,12 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		dt.PublishedAt = &time.Time{}
 	}
 
+	if err = tx.Commit(); err != nil {
+		return
+	}
+
 	// FIXME: make a function to prepare data for search index
-	err = n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
+	if esErr := n.searchRepo.Store(ctx, n.cfg.ELastic.IndexContent, &domain.Search{
 		ID:          int(dt.ID),
 		Domain:      "news",
 		Title:       dt.Title,
@@ -558,7 +568,9 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 		CreatedAt:   dt.CreatedAt,
 		UpdatedAt:   dt.UpdatedAt,
 		IsActive:    dt.IsLive == 1,
-	})
+	}); esErr != nil {
+		logrus.Error(esErr)
+	}
 
 	return
 }
@@ -567,6 +579,11 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	tx, err := n.newsRepo.GetTx(c)
+	if err != nil {
+		return
+	}
+
 	news, err := n.newsRepo.GetByID(ctx, id)
 	if err != nil {
 		return
@@ -574,20 +591,24 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 
 	dt.Slug = news.Slug
 
-	if err := n.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstNews); err != nil {
+	if err := n.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstNews, tx); err != nil {
 		logrus.Error(err)
 	}
 
-	if err = n.storeTags(ctx, id, dt.Tags); err != nil {
+	if err = n.storeTags(ctx, id, dt.Tags, tx); err != nil {
 		logrus.Error(err)
 	}
-	err = n.newsRepo.Update(ctx, id, dt)
+	err = n.newsRepo.Update(ctx, id, dt, tx)
 	if err != nil {
 		return
 	}
 
 	if news.Status != "PUBLISHED" {
 		news.PublishedAt = &time.Time{}
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
 	}
 
 	if esErr := n.searchRepo.Update(ctx, n.cfg.ELastic.IndexContent, int(id), &domain.Search{
@@ -611,6 +632,11 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
+
+	tx, err := n.newsRepo.GetTx(c)
+	if err != nil {
+		return
+	}
 
 	news, err := n.newsRepo.GetByID(ctx, id)
 	if err != nil {
@@ -640,8 +666,12 @@ func (n *newsUsecase) UpdateStatus(c context.Context, id int64, status string) (
 		newsRequest.IsLive = 0
 	}
 
-	err = n.newsRepo.Update(ctx, id, &newsRequest)
+	err = n.newsRepo.Update(ctx, id, &newsRequest, tx)
 	if err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
 		return
 	}
 
@@ -673,7 +703,7 @@ func (u *newsUsecase) Delete(c context.Context, id int64) (err error) {
 	}
 
 	esErr := u.searchRepo.Delete(ctx, u.cfg.ELastic.IndexContent, int(id), "news")
-	if err != nil {
+	if esErr != nil {
 		logrus.Error(esErr)
 	}
 

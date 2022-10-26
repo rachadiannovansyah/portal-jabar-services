@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 // DataTag ..
 type DataTag struct {
@@ -14,6 +17,6 @@ type DataTag struct {
 // DataTagRepository ..
 type DataTagRepository interface {
 	FetchDataTags(ctx context.Context, id int64, domain string) ([]DataTag, error)
-	StoreDataTag(ctx context.Context, dt *DataTag) error
-	DeleteDataTag(ctx context.Context, id int64, domain string) error
+	StoreDataTag(ctx context.Context, dt *DataTag, tx *sql.Tx) error
+	DeleteDataTag(ctx context.Context, id int64, domain string, tx *sql.Tx) error
 }

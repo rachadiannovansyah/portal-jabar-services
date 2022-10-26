@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -101,9 +102,10 @@ type EventRepository interface {
 	Fetch(ctx context.Context, params *Request) (new []Event, total int64, err error)
 	GetByID(ctx context.Context, id int64) (Event, error)
 	GetByTitle(ctx context.Context, title string) (Event, error)
-	Store(ctx context.Context, body *StoreRequestEvent) error
-	Update(ctx context.Context, id int64, body *StoreRequestEvent) error
+	Store(ctx context.Context, body *StoreRequestEvent, tx *sql.Tx) error
+	Update(ctx context.Context, id int64, body *StoreRequestEvent, tx *sql.Tx) error
 	Delete(ctx context.Context, id int64) error
 	ListCalendar(ctx context.Context, params *Request) ([]Event, error)
 	AgendaPortal(ctx context.Context, params *Request) (new []Event, total int64, err error)
+	GetTx(ctx context.Context) (*sql.Tx, error)
 }

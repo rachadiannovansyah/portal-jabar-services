@@ -28,6 +28,14 @@ var queryJoinAgenda = `SELECT e.id, e.category, e.title, e.priority, e.type, e.s
 	ON e.created_by = u.id
 	WHERE e.deleted_at is null`
 
+func (m *mysqlEventRepository) GetTx(ctx context.Context) (tx *sql.Tx, err error) {
+	tx, err = m.Conn.BeginTx(ctx, nil)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
 	rows, err := r.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -174,9 +182,9 @@ func (r *mysqlEventRepository) GetByTitle(ctx context.Context, title string) (re
 	return
 }
 
-func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequestEvent) (err error) {
+func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequestEvent, tx *sql.Tx) (err error) {
 	query := `INSERT events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , created_by=?`
-	stmt, err := r.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -206,9 +214,9 @@ func (r *mysqlEventRepository) Store(ctx context.Context, m *domain.StoreRequest
 	return
 }
 
-func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.StoreRequestEvent) (err error) {
+func (r *mysqlEventRepository) Update(ctx context.Context, id int64, m *domain.StoreRequestEvent, tx *sql.Tx) (err error) {
 	query := `UPDATE events SET title=? , type=? , url=? , address=? , date=? , start_hour=? , end_hour=? , category=? , updated_at=? WHERE id = ?`
-	stmt, err := r.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

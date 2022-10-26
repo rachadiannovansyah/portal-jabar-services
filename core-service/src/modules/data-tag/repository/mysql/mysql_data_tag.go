@@ -63,10 +63,10 @@ func (m *mysqlDataTagRepository) FetchDataTags(ctx context.Context, id int64, do
 	return
 }
 
-func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.DataTag) (err error) {
+func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.DataTag, tx *sql.Tx) (err error) {
 	query := `INSERT data_tags SET data_id=?, tag_id=?, tag_name=?, type=?`
 
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -85,10 +85,10 @@ func (m *mysqlDataTagRepository) StoreDataTag(ctx context.Context, dt *domain.Da
 	return
 }
 
-func (m *mysqlDataTagRepository) DeleteDataTag(ctx context.Context, id int64, domain string) (err error) {
+func (m *mysqlDataTagRepository) DeleteDataTag(ctx context.Context, id int64, domain string, tx *sql.Tx) (err error) {
 	query := `DELETE FROM data_tags WHERE data_id=? AND type=?`
 
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
