@@ -49,15 +49,6 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		return err
 	}
 
-	// handled if no rows in result then res will provide empty arr
-	if total == 0 {
-		data := domain.ResultsData{
-			Data: []string{},
-		}
-
-		return c.JSON(http.StatusOK, data)
-	}
-
 	listServicePublic := []domain.ListServicePublicResponse{}
 	for _, row := range res {
 		// get struct response
@@ -66,7 +57,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		listServicePublic = append(listServicePublic, tmp)
 	}
 
-	data := domain.ResultsData{
+	data := domain.ServicePublicResult{
 		Data: listServicePublic,
 		Meta: &domain.CustomMetaData{
 			TotalCount:  total,

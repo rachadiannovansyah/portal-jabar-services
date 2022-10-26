@@ -192,6 +192,12 @@ type StorePublicService struct {
 	} `json:"faq" validate:"required"`
 }
 
+// ServicePublicResult ...
+type ServicePublicResult struct {
+	Data interface{} `json:"data"`
+	Meta interface{} `json:"meta"`
+}
+
 type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
