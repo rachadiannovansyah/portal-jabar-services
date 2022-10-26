@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -195,7 +196,7 @@ type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
-	Store(context.Context, StorePublicService) (err error)
+	Store(context.Context, StorePublicService, *sql.Tx) (err error)
 }
 
 type ServicePublicUsecase interface {

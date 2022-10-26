@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 type GeneralInformation struct {
 	ID               int64  `json:"id"`
@@ -23,8 +26,9 @@ type GeneralInformation struct {
 
 type GeneralInformationRepository interface {
 	GetByID(ctx context.Context, id int64) (GeneralInformation, error)
-	Store(context.Context, StorePublicService) (id int64, err error)
-	UpdateSlug(context.Context, StorePublicService, int64) (err error)
+	Store(context.Context, StorePublicService, *sql.Tx) (id int64, err error)
+	UpdateSlug(context.Context, StorePublicService, int64, *sql.Tx) (err error)
+	GetTx(context.Context) (*sql.Tx, error)
 }
 
 type GeneralInformationUsecase interface {

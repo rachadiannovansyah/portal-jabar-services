@@ -158,12 +158,7 @@ func (m *mysqlServicePublicRepository) findOne(ctx context.Context, value string
 	return
 }
 
-func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
-	tx, err := m.Conn.BeginTx(ctx, nil)
-	if err != nil {
-		return
-	}
-
+func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.StorePublicService, tx *sql.Tx) (err error) {
 	query := `INSERT service_public SET general_information_id=?, purpose=?, facility=?, requirement=?, 
 		tos=?, info_graphic=?, faq=?`
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -171,7 +166,7 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx,
+	_, err = stmt.ExecContext(ctx,
 		ps.GeneralInformation.ID,
 		helpers.GetStringFromObject(ps.Purpose),
 		helpers.GetStringFromObject(ps.Facility),
@@ -180,15 +175,8 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 		helpers.GetStringFromObject(ps.Infographic),
 		helpers.GetStringFromObject(ps.Faq),
 	)
-	if err != nil {
-		return
-	}
-	_, err = res.LastInsertId()
-	if err != nil {
-		return
-	}
 
-	if err = tx.Commit(); err != nil {
+	if err != nil {
 		return
 	}
 

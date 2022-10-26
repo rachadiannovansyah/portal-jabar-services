@@ -22,6 +22,14 @@ func NewMysqlGeneralInformationRepository(Conn *sql.DB) domain.GeneralInformatio
 
 var querySelectGenInfo = `SELECT id, name, description, slug, category, addresses, unit, phone, logo, operational_hours, media, social_media, type FROM general_informations WHERE 1=1`
 
+func (m *mysqlGeneralInformationRepository) GetTx(ctx context.Context) (tx *sql.Tx, err error) {
+	tx, err = m.Conn.BeginTx(ctx, nil)
+	if err != nil {
+		return
+	}
+	return
+}
+
 func (m *mysqlGeneralInformationRepository) fetchGenInfo(ctx context.Context, query string, args ...interface{}) (result []domain.GeneralInformation, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -82,10 +90,10 @@ func (m *mysqlGeneralInformationRepository) GetByID(ctx context.Context, id int6
 	return
 }
 
-func (m *mysqlGeneralInformationRepository) Store(ctx context.Context, ps domain.StorePublicService) (ID int64, err error) {
+func (m *mysqlGeneralInformationRepository) Store(ctx context.Context, ps domain.StorePublicService, tx *sql.Tx) (ID int64, err error) {
 	query := `INSERT general_informations SET name=?, alias=?, email=?, description=?, category=?, 
 	addresses=?, unit=?, phone=?, logo=?, operational_hours=?, link=?, media=?, social_media=?, type=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -114,16 +122,16 @@ func (m *mysqlGeneralInformationRepository) Store(ctx context.Context, ps domain
 		return
 	}
 
-	err = m.UpdateSlug(ctx, ps, ID)
+	err = m.UpdateSlug(ctx, ps, ID, tx)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (m *mysqlGeneralInformationRepository) UpdateSlug(ctx context.Context, ps domain.StorePublicService, ID int64) (err error) {
+func (m *mysqlGeneralInformationRepository) UpdateSlug(ctx context.Context, ps domain.StorePublicService, ID int64, tx *sql.Tx) (err error) {
 	query := `UPDATE general_informations SET slug=? WHERE id=?`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

@@ -136,8 +136,13 @@ func (n *servicePublicUsecase) GetBySlug(c context.Context, slug string) (res do
 }
 
 func (n *servicePublicUsecase) Store(ctx context.Context, ps domain.StorePublicService) (err error) {
+	tx, err := n.generalInformationRepo.GetTx(ctx)
+	if err != nil {
+		return
+	}
+
 	// store gen info first
-	genInfoID, err := n.generalInformationRepo.Store(ctx, ps)
+	genInfoID, err := n.generalInformationRepo.Store(ctx, ps, tx)
 	if err != nil {
 		return
 	}
@@ -146,7 +151,15 @@ func (n *servicePublicUsecase) Store(ctx context.Context, ps domain.StorePublicS
 	ps.GeneralInformation.ID = genInfoID
 
 	// store it on service public
-	err = n.servicePublicRepo.Store(ctx, ps)
+	err = n.servicePublicRepo.Store(ctx, ps, tx)
+
+	if err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
 
 	return
 }
