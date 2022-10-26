@@ -57,7 +57,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		listServicePublic = append(listServicePublic, tmp)
 	}
 
-	data := domain.ServicePublicResult{
+	data := domain.ResultsData{
 		Data: listServicePublic,
 		Meta: &domain.CustomMetaData{
 			TotalCount:  total,
