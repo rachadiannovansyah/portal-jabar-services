@@ -43,19 +43,10 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		return err
 	}
 
-	total, lastUpdated, err := h.SPUsecase.MetaFetch(ctx, &params)
+	total, lastUpdated, staticCount, err := h.SPUsecase.MetaFetch(ctx, &params)
 
 	if err != nil {
 		return err
-	}
-
-	// handled if no rows in result then res will provide empty arr
-	if total == 0 {
-		data := domain.ResultsData{
-			Data: []string{},
-		}
-
-		return c.JSON(http.StatusOK, data)
 	}
 
 	listServicePublic := []domain.ListServicePublicResponse{}
@@ -71,6 +62,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		Meta: &domain.CustomMetaData{
 			TotalCount:  total,
 			LastUpdated: lastUpdated,
+			StaticCount: staticCount,
 		},
 	}
 

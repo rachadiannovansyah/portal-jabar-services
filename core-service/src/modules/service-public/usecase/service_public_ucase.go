@@ -105,15 +105,15 @@ func (u *servicePublicUsecase) fillGeneralInformation(c context.Context, data []
 	return data, nil
 }
 
-func (u *servicePublicUsecase) MetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+func (u *servicePublicUsecase) MetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, staticCount int64, err error) {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	total, lastUpdated, err = u.servicePublicRepo.MetaFetch(ctx, params)
+	total, lastUpdated, staticCount, err = u.servicePublicRepo.MetaFetch(ctx, params)
 
 	if err != nil {
-		return 0, "", err
+		return 0, "", 0, err
 	}
 
 	return
