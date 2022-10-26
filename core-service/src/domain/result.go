@@ -28,8 +28,9 @@ type MetaData struct {
 
 // CustomMetaData ..
 type CustomMetaData struct {
-	TotalCount  int64  `json:"total_count"`
+	TotalCount  int64  `json:"total_count"` // for dynamic count (this count affected by filters)
 	LastUpdated string `json:"last_updated"`
+	StaticCount int64  `json:"static_count,omitempty"` // for static count only
 }
 
 type MetaAggregations struct {

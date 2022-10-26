@@ -43,7 +43,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		return err
 	}
 
-	total, lastUpdated, err := h.SPUsecase.MetaFetch(ctx, &params)
+	total, lastUpdated, staticCount, err := h.SPUsecase.MetaFetch(ctx, &params)
 
 	if err != nil {
 		return err
@@ -71,6 +71,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 		Meta: &domain.CustomMetaData{
 			TotalCount:  total,
 			LastUpdated: lastUpdated,
+			StaticCount: staticCount,
 		},
 	}
 

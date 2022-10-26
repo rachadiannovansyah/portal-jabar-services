@@ -194,14 +194,14 @@ type StorePublicService struct {
 
 type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
-	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService, *sql.Tx) (err error)
 }
 
 type ServicePublicUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]ServicePublic, error)
-	MetaFetch(ctx context.Context, params *Request) (int64, string, error)
+	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService) error
 }

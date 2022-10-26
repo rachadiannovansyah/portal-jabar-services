@@ -122,7 +122,7 @@ func (m *mysqlServicePublicRepository) Fetch(ctx context.Context, params *domain
 	return
 }
 
-func (m *mysqlServicePublicRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, err error) {
+func (m *mysqlServicePublicRepository) MetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, staticCount int64, err error) {
 	binds := make([]interface{}, 0)
 	queryFilter := filterServicePublicQuery(params, &binds)
 
@@ -130,8 +130,10 @@ func (m *mysqlServicePublicRepository) MetaFetch(ctx context.Context, params *do
 
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM service_public ORDER BY updated_at DESC LIMIT 1`)
 
+	staticCount, _ = m.count(ctx, ` SELECT COUNT(1) FROM service_public s LEFT JOIN general_informations g ON s.general_information_id = g.id WHERE 1=1 AND g.category = ?`, params.Filters["category"].(string))
+
 	if err != nil {
-		return 0, "", err
+		return 0, "", 0, err
 	}
 
 	return
