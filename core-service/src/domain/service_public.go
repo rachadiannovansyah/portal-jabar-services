@@ -133,8 +133,8 @@ type StorePublicService struct {
 		Email            string   `json:"email" validate:"omitempty,url"`
 		Logo             string   `json:"logo" validate:"required"`
 		OperationalHours []struct {
-			Start string `json:"start" validate:"required,ISO8601date"`
-			End   string `json:"end" validate:"required,ISO8601date"`
+			Start string `json:"start" validate:"required"`
+			End   string `json:"end" validate:"required"`
 		} `json:"operational_hours" validate:"required,min=1"`
 		Media struct {
 			Video  string   `json:"video" validate:"required"`
