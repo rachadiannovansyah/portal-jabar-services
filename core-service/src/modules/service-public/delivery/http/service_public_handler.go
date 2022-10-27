@@ -11,17 +11,20 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // ServicePublicHandler ...
 type ServicePublicHandler struct {
 	SPUsecase domain.ServicePublicUsecase
+	apm       *utils.Apm
 }
 
 // NewServicePublicHandler will create a new ServicePublicHandler
-func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase) {
+func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase, apm *utils.Apm) {
 	handler := &ServicePublicHandler{
 		SPUsecase: sp,
+		apm:       apm,
 	}
 	p.GET("/service-public", handler.Fetch)
 	p.GET("/service-public/slug/:slug", handler.GetBySlug)
@@ -30,8 +33,8 @@ func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp dom
 
 // Fetch will fetch the service-public
 func (h *ServicePublicHandler) Fetch(c echo.Context) error {
+	ctx, txn := helpers.GetCtxNewRelic(h.apm.NewRelic, c.Request().RequestURI)
 
-	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
 		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
@@ -39,6 +42,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 	}
 
 	res, err := h.SPUsecase.Fetch(ctx, &params)
+	txn.End()
 	if err != nil {
 		return err
 	}
