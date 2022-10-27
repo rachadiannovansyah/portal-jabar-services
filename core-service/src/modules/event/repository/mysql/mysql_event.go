@@ -82,8 +82,8 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 	return result, nil
 }
 
-func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query string) (result []domain.Event, err error) {
-	rows, err := r.Conn.QueryContext(ctx, query)
+func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query string, args ...interface{}) (result []domain.Event, err error) {
+	rows, err := r.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
@@ -116,9 +116,9 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 	return result, nil
 }
 
-func (r *mysqlEventRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (r *mysqlEventRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 
-	err = r.Conn.QueryRow(query).Scan(&total)
+	err = r.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -266,14 +266,17 @@ func (r *mysqlEventRepository) Delete(ctx context.Context, id int64) (err error)
 }
 
 func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
+	binds := make([]interface{}, 0)
 	var query string
 
 	if params.Keyword != "" {
-		query += ` AND title LIKE '%` + params.Keyword + `%' `
+		binds = append(binds, "%"+params.Keyword+"%")
+		query += ` AND title LIKE ? `
 	}
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query += ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+		binds = append(binds, params.StartDate, params.EndDate)
+		query += ` AND (DATE(date) BETWEEN ? AND ?) `
 	}
 
 	if params.SortBy != "" {
@@ -282,11 +285,11 @@ func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.
 		query += ` ORDER BY date, start_hour, priority DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events WHERE deleted_at is NULL `+query, binds...)
 
 	query = querySelectAgenda + query + ` LIMIT ?,? `
-
-	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
+	binds = append(binds, params.Offset, params.PerPage)
+	res, err = r.fetchQuery(ctx, query, binds...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -295,15 +298,17 @@ func (r *mysqlEventRepository) AgendaPortal(ctx context.Context, params *domain.
 }
 
 func (r *mysqlEventRepository) ListCalendar(ctx context.Context, params *domain.Request) (res []domain.Event, err error) {
+	binds := make([]interface{}, 0)
 	query := `SELECT id, title, date FROM events WHERE deleted_at is NULL`
 
 	if params.StartDate != "" && params.EndDate != "" {
-		query = query + ` AND date BETWEEN '` + params.StartDate + `' AND '` + params.EndDate + `'`
+		binds = append(binds, params.StartDate, params.EndDate)
+		query = query + ` AND (DATE(date) BETWEEN ? AND ?) `
 	}
 
 	query = query + ` ORDER BY date DESC `
 
-	res, err = r.fetchQueryCalendar(ctx, query)
+	res, err = r.fetchQueryCalendar(ctx, query, binds...)
 
 	return
 }
