@@ -2,12 +2,9 @@ package utils
 
 import (
 	"log"
-	"os"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog"
 	"github.com/newrelic/go-agent/v3/newrelic"
-	"github.com/rs/zerolog"
 )
 
 type Apm struct {
@@ -23,23 +20,9 @@ func NewApm(cfg *config.Config) *Apm {
 func initNewRelic(cfg *config.Config) *newrelic.Application {
 	app, err := newrelic.NewApplication(
 		newrelic.ConfigAppName(cfg.NewRelic.AppName),
-		newrelic.ConfigFromEnvironment(),
-		newrelic.ConfigAppLogForwardingEnabled(true),
 		newrelic.ConfigLicense(cfg.NewRelic.License),
-		newrelic.ConfigDistributedTracerEnabled(cfg.NewRelic.Enabled),
+		newrelic.ConfigAppLogForwardingEnabled(true),
 	)
-
-	// standarization output log as logger
-	logger := zerolog.New(os.Stdout).
-		With().Str("service", "core-service").
-		Logger()
-
-	nrHook := nrzerolog.NewRelicHook{
-		App: app,
-	}
-
-	nrLogger := logger.Hook(nrHook)
-	nrLogger.Info().Msg("A Log Message")
 
 	if err != nil {
 		log.Fatal(err)

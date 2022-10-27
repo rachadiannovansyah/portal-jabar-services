@@ -24,14 +24,14 @@ require (
 	github.com/jinzhu/copier v0.3.2
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/mrz1836/go-sanitize v1.1.5
 	github.com/newrelic/go-agent v3.17.0+incompatible
-	github.com/newrelic/go-agent/v3 v3.17.0
-	github.com/newrelic/go-agent/v3/integrations/logcontext-v2/nrzerolog v0.0.0-20220629221035-d71efc478bd2
+	github.com/newrelic/go-agent/v3 v3.18.2
 	github.com/newrelic/go-agent/v3/integrations/nrecho-v4 v1.0.2
+	github.com/newrelic/go-agent/v3/integrations/nrmysql v1.2.2
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.27.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/spf13/viper v1.8.1
