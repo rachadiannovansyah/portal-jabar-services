@@ -34,6 +34,12 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 		logrus.Error(err)
 		return nil, err
 	}
+	defer func() {
+		errRow := rows.Close()
+		if errRow != nil {
+			logrus.Error(errRow)
+		}
+	}()
 
 	result = make([]domain.ServicePublic, 0)
 	for rows.Next() {
