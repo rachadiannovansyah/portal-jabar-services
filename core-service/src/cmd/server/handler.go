@@ -76,7 +76,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
 	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase)
-	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, r, u.ServicePublicUcase)
+	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, r, u.ServicePublicUcase, apm)
 	_userHttpDelivery.NewUserHandler(v1, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(v1, r, u.MediaUsecase)
 	_tagHttpDelivery.NewTagHandler(v1, r, u.TagUsecase)

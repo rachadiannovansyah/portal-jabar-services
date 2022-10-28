@@ -34,7 +34,6 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 		logrus.Error(err)
 		return nil, err
 	}
-
 	defer func() {
 		errRow := rows.Close()
 		if errRow != nil {

@@ -10,17 +10,20 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // ServicePublicHandler ...
 type ServicePublicHandler struct {
 	SPUsecase domain.ServicePublicUsecase
+	apm       *utils.Apm
 }
 
 // NewServicePublicHandler will create a new ServicePublicHandler
-func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase) {
+func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase, apm *utils.Apm) {
 	handler := &ServicePublicHandler{
 		SPUsecase: sp,
+		apm:       apm,
 	}
 	p.GET("/service-public", handler.Fetch)
 	p.GET("/service-public/slug/:slug", handler.GetBySlug)
@@ -29,8 +32,8 @@ func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp dom
 
 // Fetch will fetch the service-public
 func (h *ServicePublicHandler) Fetch(c echo.Context) error {
+	ctx, txn := helpers.GetCtxNewRelic(h.apm.NewRelic, c.Request().RequestURI)
 
-	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
 		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
@@ -38,6 +41,7 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 	}
 
 	res, err := h.SPUsecase.Fetch(ctx, &params)
+	txn.End()
 	if err != nil {
 		return err
 	}
@@ -70,10 +74,11 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 
 // GetBySlug will get service public by given slug
 func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
+	ctx, txn := helpers.GetCtxNewRelic(h.apm.NewRelic, c.Request().RequestURI)
 	slug := c.Param("slug")
-	ctx := c.Request().Context()
 
 	res, err := h.SPUsecase.GetBySlug(ctx, slug)
+	txn.End()
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
@@ -115,6 +120,7 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 }
 
 func (h *ServicePublicHandler) Store(c echo.Context) (err error) {
+	ctx, txn := helpers.GetCtxNewRelic(h.apm.NewRelic, c.Request().RequestURI)
 	ps := new(domain.StorePublicService)
 	if err = c.Bind(ps); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
@@ -129,8 +135,8 @@ func (h *ServicePublicHandler) Store(c echo.Context) (err error) {
 	auth := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 
-	ctx := c.Request().Context()
 	err = h.SPUsecase.Store(ctx, *ps)
+	txn.End()
 	if err != nil {
 		return err
 	}

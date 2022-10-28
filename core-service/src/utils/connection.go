@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/go-redis/redis"
+	_ "github.com/newrelic/go-agent/v3/integrations/nrmysql"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
@@ -32,7 +33,7 @@ func NewDBConn(cfg *config.Config) *Conn {
 
 // InitDB a new connection to the database
 func initMysql(cfg *config.Config) *sql.DB {
-	db, err := sql.Open("mysql", cfg.DB.DSN)
+	db, err := sql.Open("nrmysql", cfg.DB.DSN)
 
 	if err != nil {
 		log.Fatal(err)
