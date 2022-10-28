@@ -202,4 +202,5 @@ type NewsRepository interface {
 	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
 	Delete(ctx context.Context, id int64) error
 	GetTx(ctx context.Context) (*sql.Tx, error)
+	FetchNewsByCategories(ctx context.Context) ([]News, error)
 }

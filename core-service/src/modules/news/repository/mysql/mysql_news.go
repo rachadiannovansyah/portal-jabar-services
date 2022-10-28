@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 )
 
 type mysqlNewsRepository struct {
@@ -379,6 +381,94 @@ func (m *mysqlNewsRepository) Delete(ctx context.Context, id int64) (err error) 
 		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
 		return
 	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) FetchNewsByCategories(ctx context.Context) (news []domain.News, err error) {
+	g, _ := errgroup.WithContext(ctx)
+
+	query := "SELECT category FROM news GROUP BY category"
+	rows, err := m.Conn.QueryContext(ctx, query)
+	if err != nil {
+		logrus.Error(err)
+		return
+	}
+
+	chanNew := make(chan domain.News)
+	for rows.Next() {
+		category := string("")
+		if err = rows.Scan(&category); err != nil {
+			logrus.Error(err)
+			return
+		}
+
+		g.Go(func() (err error) {
+			res, _ := m.getNewsByCategory(ctx, category)
+			if !reflect.ValueOf(res).IsZero() {
+				chanNew <- res
+			}
+			return
+		})
+	}
+
+	go func() {
+		if err := g.Wait(); err != nil {
+			logrus.Error(err)
+		}
+		close(chanNew)
+	}()
+
+	news = make([]domain.News, 0)
+	for new := range chanNew {
+		news = append(news, new)
+	}
+
+	return
+}
+
+func (m *mysqlNewsRepository) getNewsByCategory(ctx context.Context, category string) (t domain.News, err error) {
+	date := helpers.GetRangeLastWeek()
+	binds := []interface{}{date.DayOfLastWeek, date.Today, 1, category}
+
+	query := querySelectNews + ` AND (published_at >= ? AND published_at <= ?) AND is_live = ? AND category = ? ORDER BY views DESC LIMIT 1`
+
+	createdByID := uuid.UUID{}
+	areaID := int64(0)
+
+	err = m.Conn.QueryRowContext(ctx, query, binds...).Scan(
+		&t.ID,
+		&t.Category,
+		&t.Title,
+		&t.Excerpt,
+		&t.Content,
+		&t.Image,
+		&t.Video,
+		&t.Slug,
+		&t.Author,
+		&t.Reporter,
+		&t.Editor,
+		&areaID,
+		&t.Type,
+		&t.Views,
+		&t.Shared,
+		&t.Source,
+		&t.Duration,
+		&t.StartDate,
+		&t.EndDate,
+		&t.Status,
+		&t.IsLive,
+		&t.PublishedAt,
+		&createdByID,
+		&t.CreatedAt,
+		&t.UpdatedAt,
+	)
+	if err != nil {
+		return
+	}
+
+	t.CreatedBy = domain.User{ID: createdByID}
+	t.Area = domain.Area{ID: areaID}
 
 	return
 }

@@ -461,7 +461,7 @@ func (n *newsUsecase) FetchNewsBanner(c context.Context) (res []domain.NewsBanne
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	news, err = n.newsRepo.FetchNewsBanner(ctx)
+	news, err = n.newsRepo.FetchNewsByCategories(ctx)
 	if err != nil {
 		return nil, err
 	}
