@@ -128,7 +128,8 @@ func (r *mysqlEventRepository) count(ctx context.Context, query string, args ...
 }
 
 func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Event, total int64, err error) {
-	query := filterEventQuery(params)
+	binds := make([]interface{}, 0)
+	query := filterEventQuery(params, &binds)
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
@@ -137,11 +138,12 @@ func (r *mysqlEventRepository) Fetch(ctx context.Context, params *domain.Request
 	}
 
 	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM events e LEFT JOIN users u ON e.created_by = u.id 
-			WHERE e.deleted_at is NULL `+query)
+			WHERE e.deleted_at is NULL `+query, binds...)
 
 	query = queryJoinAgenda + query + ` LIMIT ?,? `
 
-	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
+	binds = append(binds, params.Offset, params.PerPage)
+	res, err = r.fetchQuery(ctx, query, binds...)
 	if err != nil {
 		return nil, 0, err
 	}
