@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"mime/multipart"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 )
@@ -39,10 +40,10 @@ func (u *mediaUsecase) newMediaResponse(fileName string, fileDownloadUri string,
 	}
 }
 
-func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf bytes.Buffer) (res *domain.MediaResponse, err error) {
+func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf bytes.Buffer, domain string) (res *domain.MediaResponse, err error) {
 	fileName := strings.Replace(fmt.Sprintf("%d-%s", time.Now().Unix(), file.Filename), " ", "-", -1) // fixme
 	fileSize := file.Size
-	filePath := u.config.AWS.Env + "/media/img/" + fileName
+	filePath := u.config.AWS.Env + "/media/img/" + domain + fileName
 	fileDownloadUri := u.config.AWS.Cloudfront + "/" + filePath
 
 	_, err = s3.New(u.conn.AWS).PutObject(&s3.PutObjectInput{
