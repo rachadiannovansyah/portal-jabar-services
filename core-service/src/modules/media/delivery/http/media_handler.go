@@ -33,7 +33,7 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 		"events",
 		"public-service",
 		"units",
-		"featured_program",
+		"featured-program",
 		"informations",
 	}
 	domainExists, domainIndex := helpers.InArray(domain, domainBucketName)
