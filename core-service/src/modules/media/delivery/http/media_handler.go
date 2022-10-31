@@ -2,11 +2,13 @@ package http
 
 import (
 	"bytes"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
+
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 // MediaHandler ...
@@ -24,6 +26,22 @@ func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 
 // Store will store the feedback by given request body
 func (h *MediaHandler) Store(c echo.Context) (err error) {
+	// validate for certain allowed bucket name of domain
+	domain := c.QueryParam("domain")
+	domainBucketName := []string{
+		"news",
+		"events",
+		"public-service",
+		"units",
+		"featured-program",
+		"informations",
+	}
+	domainExists, domainIndex := helpers.InArray(domain, domainBucketName)
+	domain = ""
+	if domainExists {
+		domain = domainBucketName[domainIndex] + "/"
+	}
+
 	// Source
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -42,7 +60,7 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
-	res, err := h.MUsecase.Store(ctx, file, buf)
+	res, err := h.MUsecase.Store(ctx, file, buf, domain)
 
 	if err != nil {
 		logrus.Fatal(err)

@@ -14,5 +14,5 @@ type MediaResponse struct {
 
 // MediaUsecase is an interface for media use cases
 type MediaUsecase interface {
-	Store(context.Context, *multipart.FileHeader, bytes.Buffer) (*MediaResponse, error)
+	Store(context.Context, *multipart.FileHeader, bytes.Buffer, string) (*MediaResponse, error)
 }
