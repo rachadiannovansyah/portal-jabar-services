@@ -53,8 +53,9 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 
 	e := echo.New()
 	e.HTTPErrorHandler = ErrorHandler
-	middL := middl.InitMiddleware(cfg)
+	middL := middl.InitMiddleware(cfg, apm.NewRelic)
 
+	e.Use(middL.NewRelic)
 	v1 := e.Group("/v1")
 	r := v1.Group("")
 	p := v1.Group("/public")
