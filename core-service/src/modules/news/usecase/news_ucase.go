@@ -250,24 +250,21 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 	// Get the category
 	mapCategories := map[string][]domain.NewsBanner{}
 
-	for _, news := range data {
-		mapCategories[news.Category] = []domain.NewsBanner{}
-	}
-
 	// Using goroutine to fetch the user's detail
 	chanNews := make(chan []domain.News)
-	for category := range mapCategories {
+	for _, news := range data {
+		mapCategories[news.Category] = []domain.NewsBanner{}
 		params := domain.Request{PerPage: 4, SortBy: "n.views", SortOrder: "ASC"}
 		params.Filters = map[string]interface{}{
 			"highlight":                "0",
 			"is_live":                  "1",
-			"categories":               []string{category},
+			"category":                 news.Category,
 			"is_published_last_weekly": "1",
+			"exclude":                  news.ID,
 		}
 		g.Go(func() (err error) {
 			res, _, err := n.newsRepo.Fetch(ctx, &params)
 			res, _ = n.fillUserDetails(ctx, res)
-
 			chanNews <- res
 			return
 		})
@@ -290,27 +287,14 @@ func (n *newsUsecase) fillRelatedNews(c context.Context, data []domain.NewsBanne
 		copier.Copy(&relatedNewsBanner, &relatedNews)
 		mapCategories[relatedNews[0].Category] = relatedNewsBanner
 	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
 	// merge the user's data
 	for index, item := range data {
 		if a, ok := mapCategories[item.Category]; ok {
-			data[index].RelatedNews = sliceLastIndexArray(a)
+			data[index].RelatedNews = a
 		}
 	}
 
 	return data, nil
-}
-
-func sliceLastIndexArray(a []domain.NewsBanner) []domain.NewsBanner {
-	if len(a) > 0 {
-		a = a[:len(a)-1]
-		return a
-	}
-
-	return a
 }
 
 func (n *newsUsecase) getDetail(ctx context.Context, key string, value interface{}) (res domain.News, err error) {

@@ -130,7 +130,7 @@ type StorePublicService struct {
 		Addresses        []string `json:"addresses"`
 		Unit             string   `json:"unit" validate:"required"`
 		Phone            []string `json:"phone"`
-		Email            string   `json:"email" validate:"omitempty,url"`
+		Email            string   `json:"email"`
 		Logo             string   `json:"logo"`
 		OperationalHours []struct {
 			Start string `json:"start"`
