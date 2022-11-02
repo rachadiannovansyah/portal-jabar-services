@@ -42,12 +42,9 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
 	r.GET("/news/:id", handler.GetByID, middl.CheckPermission(permManageNews))
 	r.PUT("/news/:id", handler.Update, middl.CheckPermission(permManageNews))
 	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
-	r.PATCH("/news/:id/status", handler.UpdateStatus) // TO DO permission update status has multiple values
+	r.PATCH("/news/:id/status", handler.UpdateStatus)
 	r.GET("/news/tabs", handler.TabStatus)
-	e.GET("/news/slug/:slug", handler.GetBySlug)       // to be removed after frontend is ready
-	e.GET("/news/banner", handler.FetchNewsBanner)     // to be removed after frontend is ready
-	e.GET("/news/headline", handler.FetchNewsHeadline) // to be removed after frontend is ready
-	e.PATCH("/news/:id/share", handler.AddShare)       // to be removed after frontend is ready
+	e.PATCH("/news/:id/share", handler.AddShare)
 }
 
 // FetchNews will fetch the content based on given params
@@ -80,46 +77,6 @@ func (h *NewsHandler) FetchNews(c echo.Context) error {
 	copier.Copy(&listNewsRes, &listNews)
 
 	res := helpers.Paginate(c, listNewsRes, total, params)
-
-	return c.JSON(http.StatusOK, res)
-}
-
-// FetchNews will fetch the content based on given params
-func (h *NewsHandler) FetchNewsBanner(c echo.Context) error {
-
-	ctx := c.Request().Context()
-
-	listNews, err := h.CUsecase.FetchNewsBanner(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	res := map[string]interface{}{
-		"data": listNews,
-	}
-
-	return c.JSON(http.StatusOK, res)
-}
-
-// FetchNewsHeadline ...
-func (h *NewsHandler) FetchNewsHeadline(c echo.Context) error {
-
-	ctx := c.Request().Context()
-
-	headlineNews, err := h.CUsecase.FetchNewsHeadline(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	// Copy slice to slice
-	headlineNewsRes := []domain.NewsBanner{}
-	copier.Copy(&headlineNewsRes, &headlineNews)
-
-	res := map[string]interface{}{
-		"data": headlineNewsRes,
-	}
 
 	return c.JSON(http.StatusOK, res)
 }
@@ -162,23 +119,6 @@ func (h *NewsHandler) TabStatus(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
-}
-
-// GetBySlug will get article by given slug
-func (h *NewsHandler) GetBySlug(c echo.Context) error {
-	slug := c.Param("slug")
-	ctx := c.Request().Context()
-
-	news, err := h.CUsecase.GetBySlug(ctx, slug)
-	if err != nil {
-		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
-	}
-
-	// Copy slice to slice
-	newsRes := domain.DetailNewsResponse{}
-	copier.Copy(&newsRes, &news)
-
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
 }
 
 // AddShare counter to share
