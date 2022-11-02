@@ -9,7 +9,6 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/spf13/viper"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -55,13 +54,13 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
 	e.HTTPErrorHandler = ErrorHandler
 	middL := middl.InitMiddleware(cfg, apm.NewRelic)
 
-	e.Use(middL.NewRelic)
 	v1 := e.Group("/v1")
 	r := v1.Group("")
 	p := v1.Group("/public")
 
 	r.Use(middL.JWT)
 	e.Use(middleware.Logger())
+	e.Use(middL.NewRelic)
 	e.Use(nrecho.Middleware(apm.NewRelic))
 	e.Use(middleware.CORSWithConfig(cfg.Cors))
 
@@ -98,7 +97,7 @@ func ErrorHandler(err error, c echo.Context) {
 	if !ok {
 		report = echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
-	sentry.CaptureException(err)
+
 	c.Logger().Error(report)
 	c.JSON(report.Code, report)
 }
