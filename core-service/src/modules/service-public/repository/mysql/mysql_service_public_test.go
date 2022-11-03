@@ -161,7 +161,7 @@ func TestFetch(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "slug", "name", "logo", "description"}).
 		AddRow(mockSpublic[0].ID, mockSpublic[0].Slug, mockSpublic[0].Name, mockSpublic[0].Logo, mockSpublic[0].Description)
 
-	query := `SELECT id, general_information_id, purpose, facility, requirements, tos, infographic, faq, updated_at, created_at FROM service_public WHERE general_information_id = $1`
+	query := `SELECT id, slug, name, logo FROM service_public`
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	sp := mysqlRepo.NewMysqlServicePublicRepository(db)
 
