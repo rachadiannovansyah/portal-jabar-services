@@ -88,7 +88,7 @@ func (h *PublicNewsHandler) GetBySlug(c echo.Context) error {
 	copier.Copy(&newsRes, &news)
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.RequestURI(), newsRes, nil)
+	helpers.Cache(c.Request().URL.RequestURI(), &newsRes, nil)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &newsRes})
 }

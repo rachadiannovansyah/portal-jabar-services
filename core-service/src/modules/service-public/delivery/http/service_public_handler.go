@@ -119,7 +119,7 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 	helpers.GetObjectFromString(res.GeneralInformation.SocialMedia, &detailRes.GeneralInformation.SocialMedia)
 
 	// set cache from dependency injection redis
-	helpers.Cache(c.Request().URL.RequestURI(), detailRes, nil)
+	helpers.Cache(c.Request().URL.RequestURI(), &detailRes, nil)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }
