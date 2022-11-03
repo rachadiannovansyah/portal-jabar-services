@@ -10,6 +10,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -25,8 +26,8 @@ func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp dom
 		SPUsecase: sp,
 		apm:       apm,
 	}
-	p.GET("/service-public", handler.Fetch)
-	p.GET("/service-public/slug/:slug", handler.GetBySlug)
+	p.GET("/service-public", handler.Fetch, middleware.VerifyCache())
+	p.GET("/service-public/slug/:slug", handler.GetBySlug, middleware.VerifyCache())
 	r.POST("/service-public", handler.Store)
 }
 
@@ -67,6 +68,9 @@ func (h *ServicePublicHandler) Fetch(c echo.Context) error {
 			StaticCount: staticCount,
 		},
 	}
+
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.RequestURI(), data.Data, data.Meta)
 
 	return c.JSON(http.StatusOK, data)
 }
@@ -113,6 +117,9 @@ func (h *ServicePublicHandler) GetBySlug(c echo.Context) error {
 	helpers.GetObjectFromString(res.GeneralInformation.OperationalHours, &detailRes.GeneralInformation.OperationalHours)
 	helpers.GetObjectFromString(res.GeneralInformation.Media, &detailRes.GeneralInformation.Media)
 	helpers.GetObjectFromString(res.GeneralInformation.SocialMedia, &detailRes.GeneralInformation.SocialMedia)
+
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.RequestURI(), detailRes, nil)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }
