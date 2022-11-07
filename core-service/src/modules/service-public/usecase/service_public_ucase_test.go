@@ -7,7 +7,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain/mocks"
+	mocks "github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain/mocks/repositories"
 	"github.com/stretchr/testify/assert"
 )
 
