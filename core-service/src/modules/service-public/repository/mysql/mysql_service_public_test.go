@@ -2,168 +2,110 @@ package mysql_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
-	"time"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	mysqlRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/repository/mysql"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	spRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/repository/mysql"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 func TestFetch(t *testing.T) {
+	// create sql mock db
 	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf(`an error ‘%s’ was not expected when opening a stub  
+        database connection`, err)
+	}
+	defer db.Close()
+
+	// create mock data from struct
+	mockGenInfoStruct := domain.DetailGeneralInformation{}
+	err = faker.FakeData(&mockGenInfoStruct)
+	if err != nil {
+		t.Fatalf(`an error ‘%s’ was not expected when faking general informations struct`, err)
 	}
 
-	currentTime := time.Now()
-	mockGenInfo := domain.DetailGeneralInformation{
-		ID:          50,
-		Name:        "UPTD Laboratorium Kesehatan Provinsi Jawa Barat",
-		Alias:       "LABKESDA JABAR",
-		Description: "Laboratorium Kesehatan provinsi Jawa Barat memberikan pelayanan pemeriksaan kesehatan dan juga pemeriksaan lingkungan, diantaranya Imunoserologi, Mikrobiologi, Patologi Klinik, dan Kesehatan Lingkungan. Informasi lebih lengkap seputar Layanan Labkesda Jabar, silakan kunjungi tautan berikut: https://www.labkesprovjabar.id/tentang-labkes/",
-		Slug:        "uptd-laboratorium-kesehatan-provinsi-jawa-barat-50",
-		Category:    "kesehatan",
-		Addresses: []string{
-			"Jl. Sederhana No. 3—5 Pasteur, Kecamatan Sukajadi, Kota Bandung, Jawa Barat, 40161",
-			"Jl. Sederhana No. 3—5 Pasteur, Kecamatan Sukajadi, Kota Bandung, Jawa Barat, 40161",
-		},
-		Unit: "Dinas Kesehatan",
-		Logo: "https://dvgddkosknh6r.cloudfront.net/staging/media/img/public-service/1667377353-download-(3).png",
-		Type: "offline",
-		Phone: []string{
-			"(022) 2033918",
-		},
-		Email: "",
-		Link: domain.Link{
-			Website:    "http://labkesprovjabar.id/",
-			GooglePlay: "",
-			GoogleForm: "",
-			AppStore:   "",
-		},
-		OperationalHours: []domain.OperationalHours{
-			{
-				Start: "07:30",
-				End:   "16:00",
-			},
-			{
-				Start: "07:30",
-				End:   "16:00",
-			},
-		},
-		Media: domain.Media{
-			Video: "https://www.youtube.com/watch?v=Ud1v8kqBhlw&ab_channel=LABKESJABAR",
-			Images: []string{
-				"https://dvgddkosknh6r.cloudfront.net/staging/media/img/public-service/1667377353-download-(3).png",
-			},
-		},
-		SocialMedia: domain.SocialMedia{
-			Facebook: domain.NullString{
-				String: "https://www.facebook.com/profile.php?id=100064779049587",
-				Valid:  true,
-			},
-			Instagram: domain.NullString{
-				String: "https://www.instagram.com/labkes.jabar_/",
-				Valid:  true,
-			},
-			Twitter: domain.NullString{
-				String: "https://www.instagram.com/labkes.jabar_/",
-				Valid:  true,
-			},
-			Tiktok: domain.NullString{
-				String: "https://www.tiktok.com/@labkesprovjabar",
-				Valid:  true,
-			},
-			Youtube: domain.NullString{
-				String: "https://www.youtube.com/channel/UCbKAMocZ1JRg4krr-MQvLrQ",
-				Valid:  true,
-			},
-		},
+	mockDetailSpublicStruct := []domain.DetailServicePublicResponse{}
+	err = faker.FakeData(&mockDetailSpublicStruct)
+	if err != nil {
+		t.Fatalf(`an error ‘%s’ was not expected when faking detail service public struct`, err)
 	}
 
-	mockDetailSpublic := []domain.DetailServicePublicResponse{
-		{
-			ID:                 1,
-			GeneralInformation: mockGenInfo,
-			Purpose: domain.Purpose{
-				Title: "Gass",
-				Items: []string{
-					"Gas",
-				},
-			},
-			Facility: domain.FacilityService{
-				Title: "Gass",
-				Items: []domain.ItemsFacility{
-					{
-						Title: "Gas",
-						Image: "http://localhost:8080/images/1.png",
-					},
-					{
-						Title: "Gas",
-						Image: "http://localhost:8080/images/1.png",
-					},
-				},
-			},
-			Requirement: domain.Requirement{
-				Title: "Gass",
-				Items: []domain.Items{
-					{
-						Description: "Gas",
-						Image:       "http://localhost:8080/images/1.png",
-					},
-				},
-			},
-			ToS: domain.TermsOfService{
-				Title: "Gass",
-				Items: []domain.Items{
-					{
-						Description: "Gas",
-						Image:       "http://localhost:8080/images/1.png",
-					},
-					{
-						Description: "Gas",
-						Image:       "http://localhost:8080/images/1.png",
-					},
-				},
-				Image: "dummy",
-			},
-			InfoGraphic: domain.InfoGraphic{
-				Images: []string{
-					"dummy",
-				},
-			},
-			FAQ: domain.FAQ{
-				Items: []domain.QuestionAnswer{
-					{
-						Question: "Gass",
-						Answer:   "Gas",
-					},
-				},
-			},
-			UpdatedAt: currentTime,
-			CreatedAt: currentTime,
-		},
-	}
-	fmt.Println(mockDetailSpublic)
+	mockSpublicStruct := []domain.ListServicePublicResponse{}
+	err = faker.FakeData(&mockSpublicStruct)
 
-	mockSpublic := []domain.ListServicePublicResponse{
-		{
-			ID:          1,
-			Slug:        "uptd-laboratorium-kesehatan-provinsi-jawa-barat-50",
-			Name:        "UPTD Laboratorium Kesehatan Provinsi Jawa Barat",
-			Logo:        "https://dvgddkosknh6r.cloudfront.net/staging/media/img/public-service/1667377353-download-(3).png",
-			Description: "UPTD Laboratorium Kesehatan Provinsi Jawa Barat",
-		},
+	if err != nil {
+		t.Fatalf(`an error ‘%s’ was not expected when list service publiv struct`, err)
 	}
 
-	rows := sqlmock.NewRows([]string{"id", "slug", "name", "logo", "description"}).
-		AddRow(mockSpublic[0].ID, mockSpublic[0].Slug, mockSpublic[0].Name, mockSpublic[0].Logo, mockSpublic[0].Description)
+	// create rows to be created from a sql driver.Value slice
+	rows := sqlmock.NewRows([]string{
+		"id",
+		"purpose",
+		"facility",
+		"requirement",
+		"tos",
+		"info_graphic",
+		"faq",
+		"created_at",
+		"updated_at",
+		"general_information_id",
+		"general_information_name",
+		"general_information_alias",
+		"general_information_description",
+		"general_information_slug",
+		"general_information_category",
+		"general_information_addresses",
+		"general_information_unit",
+		"general_information_phone",
+		"general_information_email",
+		"general_information_logo",
+		"general_information_operational_hours",
+		"general_information_link",
+		"general_information_media",
+		"general_information_social_media",
+		"general_information_type",
+	}).
+		AddRow(
+			mockDetailSpublicStruct[0].ID,
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].Purpose),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].Facility),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].Requirement),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].ToS),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].InfoGraphic),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].FAQ),
+			mockDetailSpublicStruct[0].CreatedAt,
+			mockDetailSpublicStruct[0].UpdatedAt,
+			mockDetailSpublicStruct[0].GeneralInformation.ID,
+			mockDetailSpublicStruct[0].GeneralInformation.Name,
+			mockDetailSpublicStruct[0].GeneralInformation.Alias,
+			mockDetailSpublicStruct[0].GeneralInformation.Description,
+			mockDetailSpublicStruct[0].GeneralInformation.Slug,
+			mockDetailSpublicStruct[0].GeneralInformation.Category,
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.Addresses),
+			mockDetailSpublicStruct[0].GeneralInformation.Unit,
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.Phone),
+			mockDetailSpublicStruct[0].GeneralInformation.Email,
+			mockDetailSpublicStruct[0].GeneralInformation.Logo,
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.OperationalHours),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.Link),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.Media),
+			helpers.GetStringFromObject(mockDetailSpublicStruct[0].GeneralInformation.SocialMedia),
+			mockDetailSpublicStruct[0].GeneralInformation.Type,
+		)
 
-	query := `SELECT id, slug, name, logo FROM service_public`
+	query := `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
+	g.ID, g.name, g.alias, g.Description, g.slug, g.category, g.addresses, g.unit, g.phone, g.email, g.logo, g.operational_hours, g.link, g.media, g.social_media, g.type
+	FROM service_public s
+	LEFT JOIN general_informations g
+	ON s.general_information_id = g.id
+	WHERE 1=1`
+
 	mock.ExpectQuery(query).WillReturnRows(rows)
-	sp := mysqlRepo.NewMysqlServicePublicRepository(db)
+	sp := spRepo.NewMysqlServicePublicRepository(db)
 
 	params := &domain.Request{
 		Keyword:   "",
@@ -172,8 +114,9 @@ func TestFetch(t *testing.T) {
 		SortBy:    "",
 		SortOrder: "",
 	}
-
 	list, err := sp.Fetch(context.TODO(), params)
+
+	// make an assertions using testify
 	assert.NoError(t, err)
-	assert.Len(t, list, 1)
+	assert.NotNil(t, list)
 }
