@@ -101,3 +101,9 @@ func (n *servicePublicUsecase) Store(ctx context.Context, ps domain.StorePublicS
 
 	return
 }
+
+func (n *servicePublicUsecase) Delete(ctx context.Context, ID int64) (err error) {
+	err = n.servicePublicRepo.Delete(ctx, ID)
+
+	return
+}

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
@@ -29,6 +30,7 @@ func NewServicePublicHandler(e *echo.Group, p *echo.Group, r *echo.Group, sp dom
 	p.GET("/service-public", handler.Fetch, middleware.VerifyCache())
 	p.GET("/service-public/slug/:slug", handler.GetBySlug, middleware.VerifyCache())
 	r.POST("/service-public", handler.Store)
+	r.DELETE("/service-public/:id", handler.Delete)
 }
 
 // Fetch will fetch the service-public
@@ -150,6 +152,27 @@ func (h *ServicePublicHandler) Store(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusCreated, result)
+}
+
+func (h *ServicePublicHandler) Delete(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	ID := int64(idP)
+
+	err = h.SPUsecase.Delete(ctx, ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	result := map[string]interface{}{
+		"message": "DELETED",
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
 
 func isRequestValid(ps *domain.StorePublicService) (bool, error) {

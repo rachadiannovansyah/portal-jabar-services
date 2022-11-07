@@ -183,3 +183,29 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 
 	return
 }
+
+func (m *mysqlServicePublicRepository) Delete(ctx context.Context, ID int64) (err error) {
+	query := `DELETE sp, g FROM service_public sp LEFT JOIN general_informations g ON sp.general_information_id = g.id WHERE sp.id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, ID)
+
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected == 0 {
+		err = domain.ErrNotFound
+		return
+	}
+
+	return
+}

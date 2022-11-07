@@ -197,6 +197,7 @@ type ServicePublicRepository interface {
 	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService, *sql.Tx) (err error)
+	Delete(context.Context, int64) (err error)
 }
 
 type ServicePublicUsecase interface {
@@ -204,4 +205,5 @@ type ServicePublicUsecase interface {
 	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService) error
+	Delete(context.Context, int64) error
 }
