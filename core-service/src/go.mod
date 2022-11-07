@@ -13,6 +13,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211104170603-75263a5e99d2
 	github.com/forPelevin/gomoji v1.1.5
 	github.com/getsentry/sentry-go v0.11.0
+	github.com/go-faker/faker/v4 v4.0.0-beta.3 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/go-redis/redis v6.15.9+incompatible
@@ -22,6 +23,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.12.0
 	github.com/jinzhu/copier v0.3.2
+	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.5.0
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
