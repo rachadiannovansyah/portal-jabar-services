@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -24,7 +25,7 @@ func NewMysqlServicePublicRepository(Conn *sql.DB) domain.ServicePublicRepositor
 var querySelectJoin = `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
 g.ID, g.name, g.alias, g.Description, g.slug, g.category, g.addresses, g.unit, g.phone, g.email, g.logo, g.operational_hours, g.link, g.media, g.social_media, g.type
 FROM service_public s
-LEFT JOIN general_informations g
+JOIN general_informations g
 ON s.general_information_id = g.id
 WHERE 1=1`
 
@@ -179,6 +180,90 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) Delete(ctx context.Context, ID int64) (err error) {
+	query := `DELETE sp, g FROM service_public sp JOIN general_informations g ON sp.general_information_id = g.id WHERE sp.id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, ID)
+
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected == 0 {
+		err = domain.ErrNotFound
+		return
+	}
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) Update(ctx context.Context, ps domain.UpdatePublicService, ID int64, tx *sql.Tx) (err error) {
+	query := `UPDATE service_public SET purpose=?, facility=?, requirement=?, 
+		tos=?, info_graphic=?, faq=?, updated_at=? WHERE id = ?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		helpers.GetStringFromObject(ps.Purpose),
+		helpers.GetStringFromObject(ps.Facility),
+		helpers.GetStringFromObject(ps.Requirement),
+		helpers.GetStringFromObject(ps.Tos),
+		helpers.GetStringFromObject(ps.Infographic),
+		helpers.GetStringFromObject(ps.Faq),
+		time.Now(),
+		ID,
+	)
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) GetByID(ctx context.Context, ID int64) (ps domain.ServicePublic, err error) {
+	query := querySelectJoin + " AND g.id = ? LIMIT 1"
+	err = m.Conn.QueryRowContext(ctx, query, ID).Scan(
+		&ps.ID,
+		&ps.Purpose,
+		&ps.Facility,
+		&ps.Requirement,
+		&ps.ToS,
+		&ps.InfoGraphic,
+		&ps.FAQ,
+		&ps.CreatedAt,
+		&ps.UpdatedAt,
+		&ps.GeneralInformation.ID,
+		&ps.GeneralInformation.Name,
+		&ps.GeneralInformation.Alias,
+		&ps.GeneralInformation.Description,
+		&ps.GeneralInformation.Slug,
+		&ps.GeneralInformation.Category,
+		&ps.GeneralInformation.Addresses,
+		&ps.GeneralInformation.Unit,
+		&ps.GeneralInformation.Phone,
+		&ps.GeneralInformation.Email,
+		&ps.GeneralInformation.Logo,
+		&ps.GeneralInformation.OperationalHours,
+		&ps.GeneralInformation.Link,
+		&ps.GeneralInformation.Media,
+		&ps.GeneralInformation.SocialMedia,
+		&ps.GeneralInformation.Type,
+	)
+	if err != nil {
+		err = domain.ErrNotFound
 	}
 
 	return

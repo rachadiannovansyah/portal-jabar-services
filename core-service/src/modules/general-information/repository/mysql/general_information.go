@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -143,5 +144,36 @@ func (m *mysqlGeneralInformationRepository) UpdateSlug(ctx context.Context, ps d
 	if err != nil {
 		return
 	}
+	return
+}
+
+func (m *mysqlGeneralInformationRepository) Update(ctx context.Context, ps domain.UpdatePublicService, ID int64, tx *sql.Tx) (err error) {
+	query := `UPDATE general_informations SET name=?, slug=?, alias=?, email=?, description=?, category=?, 
+	addresses=?, unit=?, phone=?, logo=?, operational_hours=?, link=?, media=?, social_media=?, type=?, updated_at=? WHERE id = ?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		ps.GeneralInformation.Name,
+		ps.GeneralInformation.Slug,
+		ps.GeneralInformation.Alias,
+		ps.GeneralInformation.Email,
+		ps.GeneralInformation.Description,
+		ps.GeneralInformation.Category,
+		helpers.GetStringFromObject(ps.GeneralInformation.Addresses),
+		ps.GeneralInformation.Unit,
+		helpers.GetStringFromObject(ps.GeneralInformation.Phone),
+		ps.GeneralInformation.Logo,
+		helpers.GetStringFromObject(ps.GeneralInformation.OperationalHours),
+		helpers.GetStringFromObject(ps.GeneralInformation.Link),
+		helpers.GetStringFromObject(ps.GeneralInformation.Media),
+		helpers.GetStringFromObject(ps.GeneralInformation.SocialMedia),
+		ps.GeneralInformation.Type,
+		time.Now(),
+		ID,
+	)
+
 	return
 }

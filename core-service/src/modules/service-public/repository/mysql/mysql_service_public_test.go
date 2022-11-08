@@ -100,7 +100,7 @@ func TestFetch(t *testing.T) {
 	query := `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
 	g.ID, g.name, g.alias, g.Description, g.slug, g.category, g.addresses, g.unit, g.phone, g.email, g.logo, g.operational_hours, g.link, g.media, g.social_media, g.type
 	FROM service_public s
-	LEFT JOIN general_informations g
+	JOIN general_informations g
 	ON s.general_information_id = g.id
 	WHERE 1=1`
 
