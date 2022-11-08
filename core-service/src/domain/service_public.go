@@ -192,12 +192,87 @@ type StorePublicService struct {
 	} `json:"faq"`
 }
 
+type UpdatePublicService struct {
+	GeneralInformation struct {
+		ID               int64    `json:"id"`
+		Name             string   `json:"name" validate:"required"`
+		Slug             string   `json:"slug"`
+		Alias            string   `json:"alias" validate:"required"`
+		Description      string   `json:"description"`
+		Category         string   `json:"category" validate:"required"`
+		Addresses        []string `json:"addresses"`
+		Unit             string   `json:"unit" validate:"required"`
+		Phone            []string `json:"phone"`
+		Email            string   `json:"email"`
+		Logo             string   `json:"logo"`
+		OperationalHours []struct {
+			Start string `json:"start"`
+			End   string `json:"end"`
+		} `json:"operational_hours"`
+		Media struct {
+			Video  string   `json:"video"`
+			Images []string `json:"images"`
+		} `json:"media"`
+		SocialMedia struct {
+			Facebook  string `json:"facebook" validate:"omitempty,url"`
+			Instagram string `json:"instagram" validate:"omitempty,url"`
+			Twitter   string `json:"twitter" validate:"omitempty,url"`
+			Tiktok    string `json:"tiktok" validate:"omitempty,url"`
+			Youtube   string `json:"youtube" validate:"omitempty,url"`
+		} `json:"social_media"`
+		Link struct {
+			Website     string `json:"website" validate:"omitempty,url"`
+			Google_play string `json:"google_play" validate:"omitempty,url"`
+			Google_form string `json:"google_form" validate:"omitempty,url"`
+			App_store   string `json:"app_store" validate:"omitempty,url"`
+		} `json:"link"`
+		Type string `json:"type"`
+	} `json:"general_information"`
+	Purpose struct {
+		Title string   `json:"title"`
+		Items []string `json:"items"`
+	} `json:"purpose"`
+	Facility struct {
+		Title string `json:"title"`
+		Items []struct {
+			Image string `json:"image"`
+			Title string `json:"title"`
+		} `json:"items"`
+	} `json:"facility"`
+	Requirement struct {
+		Title string `json:"title"`
+		Items []struct {
+			Link        string `json:"link" validate:"omitemty,url"`
+			Description string `json:"description"`
+		} `json:"items"`
+	} `json:"requirement"`
+	Tos struct {
+		Title string `json:"title"`
+		Items []struct {
+			Link        string `json:"link" validate:"omitemty,url"`
+			Description string `json:"description"`
+		} `json:"items"`
+		Image string `json:"image" validate:"omitempty,url"`
+	} `json:"tos"`
+	Infographic struct {
+		Images []string `json:"images" validate:"omitempty,min=1"`
+	} `json:"infographic"`
+	Faq struct {
+		Items []struct {
+			Question string `json:"question"`
+			Answer   string `json:"answer"`
+		} `json:"items"`
+	} `json:"faq"`
+}
+
 type ServicePublicRepository interface {
 	Fetch(ctx context.Context, params *Request) (sp []ServicePublic, err error)
 	MetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService, *sql.Tx) (err error)
 	Delete(context.Context, int64) (err error)
+	GetByID(ctx context.Context, ID int64) (ServicePublic, error)
+	Update(context.Context, UpdatePublicService, int64, *sql.Tx) (err error)
 }
 
 type ServicePublicUsecase interface {
@@ -206,4 +281,5 @@ type ServicePublicUsecase interface {
 	GetBySlug(ctx context.Context, slug string) (ServicePublic, error)
 	Store(context.Context, StorePublicService) error
 	Delete(context.Context, int64) error
+	Update(context.Context, UpdatePublicService, int64) error
 }

@@ -28,6 +28,7 @@ type GeneralInformationRepository interface {
 	GetByID(ctx context.Context, id int64) (GeneralInformation, error)
 	Store(context.Context, StorePublicService, *sql.Tx) (id int64, err error)
 	UpdateSlug(context.Context, StorePublicService, int64, *sql.Tx) (err error)
+	Update(context.Context, UpdatePublicService, int64, *sql.Tx) (err error)
 	GetTx(context.Context) (*sql.Tx, error)
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type servicePublicUsecase struct {
@@ -104,6 +105,35 @@ func (n *servicePublicUsecase) Store(ctx context.Context, ps domain.StorePublicS
 
 func (n *servicePublicUsecase) Delete(ctx context.Context, ID int64) (err error) {
 	err = n.servicePublicRepo.Delete(ctx, ID)
+
+	return
+}
+
+func (n *servicePublicUsecase) Update(ctx context.Context, UPs domain.UpdatePublicService, ID int64) (err error) {
+	tx, err := n.generalInformationRepo.GetTx(ctx)
+	if err != nil {
+		return
+	}
+
+	ps, err := n.servicePublicRepo.GetByID(ctx, ID)
+	if err != nil {
+		return
+	}
+
+	slug := helpers.MakeSlug(UPs.GeneralInformation.Name, ps.GeneralInformation.ID)
+	UPs.GeneralInformation.Slug = slug
+
+	if err = n.generalInformationRepo.Update(ctx, UPs, ID, tx); err != nil {
+		return
+	}
+
+	if err = n.servicePublicRepo.Update(ctx, UPs, ps.ID, tx); err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
 
 	return
 }
