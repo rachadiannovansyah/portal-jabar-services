@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -205,6 +206,64 @@ func (m *mysqlServicePublicRepository) Delete(ctx context.Context, ID int64) (er
 	if rowAffected == 0 {
 		err = domain.ErrNotFound
 		return
+	}
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) Update(ctx context.Context, ps domain.UpdatePublicService, ID int64, tx *sql.Tx) (err error) {
+	query := `UPDATE service_public SET purpose=?, facility=?, requirement=?, 
+		tos=?, info_graphic=?, faq=?, updated_at=? WHERE id = ?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		helpers.GetStringFromObject(ps.Purpose),
+		helpers.GetStringFromObject(ps.Facility),
+		helpers.GetStringFromObject(ps.Requirement),
+		helpers.GetStringFromObject(ps.Tos),
+		helpers.GetStringFromObject(ps.Infographic),
+		helpers.GetStringFromObject(ps.Faq),
+		time.Now(),
+		ID,
+	)
+
+	return
+}
+
+func (m *mysqlServicePublicRepository) GetByID(ctx context.Context, ID int64) (ps domain.ServicePublic, err error) {
+	query := querySelectJoin + " AND s.id = ? LIMIT 1"
+	err = m.Conn.QueryRowContext(ctx, query, ID).Scan(
+		&ps.ID,
+		&ps.Purpose,
+		&ps.Facility,
+		&ps.Requirement,
+		&ps.ToS,
+		&ps.InfoGraphic,
+		&ps.FAQ,
+		&ps.CreatedAt,
+		&ps.UpdatedAt,
+		&ps.GeneralInformation.ID,
+		&ps.GeneralInformation.Name,
+		&ps.GeneralInformation.Alias,
+		&ps.GeneralInformation.Description,
+		&ps.GeneralInformation.Slug,
+		&ps.GeneralInformation.Category,
+		&ps.GeneralInformation.Addresses,
+		&ps.GeneralInformation.Unit,
+		&ps.GeneralInformation.Phone,
+		&ps.GeneralInformation.Email,
+		&ps.GeneralInformation.Logo,
+		&ps.GeneralInformation.OperationalHours,
+		&ps.GeneralInformation.Link,
+		&ps.GeneralInformation.Media,
+		&ps.GeneralInformation.SocialMedia,
+		&ps.GeneralInformation.Type,
+	)
+	if err != nil {
+		err = domain.ErrNotFound
 	}
 
 	return
