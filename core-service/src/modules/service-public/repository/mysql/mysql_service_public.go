@@ -25,7 +25,7 @@ func NewMysqlServicePublicRepository(Conn *sql.DB) domain.ServicePublicRepositor
 var querySelectJoin = `SELECT s.id, s.purpose, s.facility, s.requirement, s.tos, s.info_graphic, s.faq, s.created_at, s.updated_at,
 g.ID, g.name, g.alias, g.Description, g.slug, g.category, g.addresses, g.unit, g.phone, g.email, g.logo, g.operational_hours, g.link, g.media, g.social_media, g.type
 FROM service_public s
-LEFT JOIN general_informations g
+JOIN general_informations g
 ON s.general_information_id = g.id
 WHERE 1=1`
 
@@ -186,7 +186,7 @@ func (m *mysqlServicePublicRepository) Store(ctx context.Context, ps domain.Stor
 }
 
 func (m *mysqlServicePublicRepository) Delete(ctx context.Context, ID int64) (err error) {
-	query := `DELETE sp, g FROM service_public sp LEFT JOIN general_informations g ON sp.general_information_id = g.id WHERE sp.id = ?`
+	query := `DELETE sp, g FROM service_public sp JOIN general_informations g ON sp.general_information_id = g.id WHERE g.id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -234,7 +234,7 @@ func (m *mysqlServicePublicRepository) Update(ctx context.Context, ps domain.Upd
 }
 
 func (m *mysqlServicePublicRepository) GetByID(ctx context.Context, ID int64) (ps domain.ServicePublic, err error) {
-	query := querySelectJoin + " AND s.id = ? LIMIT 1"
+	query := querySelectJoin + " AND g.id = ? LIMIT 1"
 	err = m.Conn.QueryRowContext(ctx, query, ID).Scan(
 		&ps.ID,
 		&ps.Purpose,

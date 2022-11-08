@@ -123,7 +123,7 @@ func (n *servicePublicUsecase) Update(ctx context.Context, UPs domain.UpdatePubl
 	slug := helpers.MakeSlug(UPs.GeneralInformation.Name, ps.GeneralInformation.ID)
 	UPs.GeneralInformation.Slug = slug
 
-	if err = n.generalInformationRepo.Update(ctx, UPs, ps.GeneralInformation.ID, tx); err != nil {
+	if err = n.generalInformationRepo.Update(ctx, UPs, ID, tx); err != nil {
 		return
 	}
 
