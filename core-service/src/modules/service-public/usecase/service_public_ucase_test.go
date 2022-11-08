@@ -15,7 +15,7 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	spRepoMock := new(mocks.ServicePublicRepository)
+	spRepoMock := mocks.ServicePublicRepository{}
 	var mockStruct domain.ServicePublic
 	err := faker.FakeData(&mockStruct)
 	assert.NoError(t, err)
@@ -24,11 +24,11 @@ func TestFetch(t *testing.T) {
 	mockList = append(mockList, mockStruct)
 
 	cfg := &config.Config{}
-	userRepoMock := &mocks.UserRepository{}
-	genInfoRepoMock := &mocks.GeneralInformationRepository{}
-	searchRepoMock := &mocks.SearchRepository{}
+	userRepoMock := mocks.UserRepository{}
+	genInfoRepoMock := mocks.GeneralInformationRepository{}
+	searchRepoMock := mocks.SearchRepository{}
 	ctxTimeout := time.Second * 60
-	u := ucase.NewServicePublicUsecase(spRepoMock, genInfoRepoMock, userRepoMock, searchRepoMock, cfg, ctxTimeout)
+	u := ucase.NewServicePublicUsecase(&spRepoMock, &genInfoRepoMock, &userRepoMock, &searchRepoMock, cfg, ctxTimeout)
 
 	params := &domain.Request{
 		Keyword:   "",
