@@ -16,6 +16,20 @@ type ServicePublicRepository struct {
 	mock.Mock
 }
 
+// Delete provides a mock function with given fields: _a0, _a1
+func (_m *ServicePublicRepository) Delete(_a0 context.Context, _a1 int64) error {
+	ret := _m.Called(_a0, _a1)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Fetch provides a mock function with given fields: ctx, params
 func (_m *ServicePublicRepository) Fetch(ctx context.Context, params *domain.Request) ([]domain.ServicePublic, error) {
 	ret := _m.Called(ctx, params)
@@ -32,6 +46,27 @@ func (_m *ServicePublicRepository) Fetch(ctx context.Context, params *domain.Req
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, *domain.Request) error); ok {
 		r1 = rf(ctx, params)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetByID provides a mock function with given fields: ctx, ID
+func (_m *ServicePublicRepository) GetByID(ctx context.Context, ID int64) (domain.ServicePublic, error) {
+	ret := _m.Called(ctx, ID)
+
+	var r0 domain.ServicePublic
+	if rf, ok := ret.Get(0).(func(context.Context, int64) domain.ServicePublic); ok {
+		r0 = rf(ctx, ID)
+	} else {
+		r0 = ret.Get(0).(domain.ServicePublic)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, ID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -102,6 +137,20 @@ func (_m *ServicePublicRepository) Store(_a0 context.Context, _a1 domain.StorePu
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, domain.StorePublicService, *sql.Tx) error); ok {
 		r0 = rf(_a0, _a1, _a2)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Update provides a mock function with given fields: _a0, _a1, _a2, _a3
+func (_m *ServicePublicRepository) Update(_a0 context.Context, _a1 domain.UpdatePublicService, _a2 int64, _a3 *sql.Tx) error {
+	ret := _m.Called(_a0, _a1, _a2, _a3)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.UpdatePublicService, int64, *sql.Tx) error); ok {
+		r0 = rf(_a0, _a1, _a2, _a3)
 	} else {
 		r0 = ret.Error(0)
 	}
