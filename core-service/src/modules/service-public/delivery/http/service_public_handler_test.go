@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/alicebob/miniredis"
 	"github.com/go-faker/faker/v4"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	mocksUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain/mocks/usecases"
@@ -15,7 +16,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var redisServer *miniredis.Miniredis
+
+func setup() {
+	redisServer = mockRedis()
+}
+
+func mockRedis() *miniredis.Miniredis {
+	s, err := miniredis.Run()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return s
+}
+
+func teardown() {
+	redisServer.Close()
+}
+
 func TestFetch(t *testing.T) {
+	setup()
 	var mockStruct domain.ServicePublic
 	err := faker.FakeData(&mockStruct)
 	assert.NoError(t, err)
@@ -42,4 +64,5 @@ func TestFetch(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	mockUcase.AssertExpectations(t)
+	teardown()
 }
