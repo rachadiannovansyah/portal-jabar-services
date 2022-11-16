@@ -1,5 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/jabardigitalservice/portal-jabar-services)](https://goreportcard.com/report/github.com/jabardigitalservice/portal-jabar-services)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e1b0eb219c1b35f76491/maintainability)](https://codeclimate.com/github/jabardigitalservice/portal-jabar-services/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e1b0eb219c1b35f76491/test_coverage)](https://codeclimate.com/github/jabardigitalservice/portal-jabar-services/test_coverage)
 <br>
 ![ci workflow](https://github.com/jabardigitalservice/portal-jabar-services/actions/workflows/ci.yml/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/jabardigitalservice/portal-jabar-services)](https://github.com/jabardigitalservice/portal-jabar-services/issues)
