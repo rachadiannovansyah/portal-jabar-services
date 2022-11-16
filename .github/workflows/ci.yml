@@ -22,11 +22,4 @@ jobs:
 
     - name: Test
       working-directory: ./core-service/src
-      run: go test -v ./... -coverprofile coverage.out
-
-    - name: Set Up Codeclimate and Send Report Codeclimate
-      uses: paambaati/codeclimate-action@v2.7.5
-      env:
-        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORT_ID }}
-      with:
-        coverageLocations: ./core-service/src/coverage.out
+      run: go test -v ./...
