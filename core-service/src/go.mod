@@ -4,6 +4,9 @@ go 1.16
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
+	github.com/alicebob/miniredis v2.5.0+incompatible
+	github.com/alicebob/miniredis/v2 v2.23.1
 	github.com/aws/aws-sdk-go v1.15.11
 	github.com/containerd/containerd v1.5.5 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -11,6 +14,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/elastic/go-elasticsearch v0.0.0
 	github.com/elastic/go-elasticsearch/v8 v8.0.0-20211104170603-75263a5e99d2
+	github.com/elliotchance/redismock v1.5.3
 	github.com/forPelevin/gomoji v1.1.5
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-faker/faker/v4 v4.0.0-beta.3 // indirect
@@ -38,6 +42,7 @@ require (
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
+	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64 // indirect
 	golang.org/x/crypto v0.0.0-20211215165025-cf75a172585e
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.0
