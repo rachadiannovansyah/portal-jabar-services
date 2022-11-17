@@ -7,4 +7,5 @@ _*
 engine
 bin/
 .idea/
-coverage.out
+*.out
+*.html
