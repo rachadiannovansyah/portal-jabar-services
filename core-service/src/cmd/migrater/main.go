@@ -21,9 +21,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	_fProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
-	_pServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
+	_pServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/repository/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -407,7 +408,7 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 		}
 	}()
 
-	_pServiceRepo := _pServiceRepo.NewMysqlPublicServiceRepository(dbConn.Mysql)
+	_pServiceRepo := _pServiceRepo.NewMysqlServicePublicRepository(dbConn.Mysql)
 	publicService, err := _pServiceRepo.Fetch(context.TODO(), &domain.Request{PerPage: 100, Filters: map[string]interface{}{
 		"categories": []string{},
 	}})
@@ -420,7 +421,7 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 	for i, data := range publicService {
 		wg.Add(1)
 
-		go func(i int, data domain.PublicService) {
+		go func(i int, data domain.ServicePublic) {
 			defer wg.Done()
 
 			// Build the request body.
@@ -430,26 +431,34 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 			layout := "2006-01-02 15:04:05"
 
 			var excerpt string
-			description := data.Description.String
+			description := data.GeneralInformation.Description
 			forExcerptLength := 160
 			if len(description) > forExcerptLength {
 				excerpt = description[:forExcerptLength]
 			}
 
+			re := regexp.MustCompile(`\r?\n`)
+			excerpt = strings.ReplaceAll(re.ReplaceAllString(excerpt, " "), `"`, "")
+			description = strings.ReplaceAll(re.ReplaceAllString(description, " "), `"`, "")
+
+			link := domain.Link{}
+			helpers.GetObjectFromString(data.GeneralInformation.Link, &link)
+
 			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
 			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "public_service"))
-			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Name))
+			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.GeneralInformation.Name))
 			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, excerpt))
 			b.WriteString(fmt.Sprintf(`"content" : "%v",`, description))
-			b.WriteString(fmt.Sprintf(`"unit" : "%v",`, data.Unit.String))
-			b.WriteString(fmt.Sprintf(`"url" : "%v",`, data.Url.String))
-			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, ""))
-			b.WriteString(fmt.Sprintf(`"category" : "%v",`, ""))
-			b.WriteString(fmt.Sprintf(`"views" : "%v",`, ""))
-			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"unit" : "%v",`, data.GeneralInformation.Unit))
+			b.WriteString(fmt.Sprintf(`"url" : "%v",`, link.Website))
+			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, data.GeneralInformation.Slug))
+			b.WriteString(fmt.Sprintf(`"category" : "%v",`, data.GeneralInformation.Category))
+			b.WriteString(fmt.Sprintf(`"views" : "%v",`, 0))
+			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, 0))
 			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
-			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"published_at" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.GeneralInformation.Logo))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
 
 			// Set up the request object.
