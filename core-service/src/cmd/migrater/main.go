@@ -24,6 +24,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	_fProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_popularServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
 	_pServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/repository/mysql"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/pkg/errors"
@@ -64,6 +65,8 @@ func run() error {
 		err = DoSyncElasticFeaturedProgram(cfg, os.Args[2])
 	case "es:pssync":
 		err = DoSyncElasticPublicService(cfg, os.Args[2])
+	case "es:popsync":
+		err = DoSyncElasticPopularService(cfg, os.Args[2])
 	case "es:truncate":
 		err = DoTruncate(cfg, os.Args[2])
 	default:
@@ -459,6 +462,122 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
 			b.WriteString(fmt.Sprintf(`"published_at" : "%v",`, ""))
 			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, data.GeneralInformation.Logo))
+			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
+
+			// Set up the request object.
+			req := esapi.IndexRequest{
+				Index:      cfg.ELastic.IndexContent,
+				DocumentID: uuid.New().String(),
+				Body:       strings.NewReader(b.String()),
+				Refresh:    "true",
+			}
+
+			// Perform the request with the client.
+			res, err := req.Do(context.Background(), es)
+			if err != nil {
+				log.Fatalf("Error getting response: %s", err)
+			}
+			defer res.Body.Close()
+
+			if res.IsError() {
+				log.Println(res)
+				log.Printf("[%s] Error indexing document ID=%d", res.Status(), data.ID)
+			} else {
+				// Deserialize the response into a map.
+				var r map[string]interface{}
+				if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+					log.Printf("Error parsing the response body: %s", err)
+				} else {
+					// Print the response status and indexed document version.
+					log.Printf("[%s] %s; version=%d", res.Status(), r["result"], int(r["_version"].(float64)))
+				}
+			}
+		}(i, data)
+	}
+	wg.Wait()
+
+	return nil
+}
+
+func DoSyncElasticPopularService(cfg *config.Config, command string) error {
+	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
+	if err != nil {
+		logrus.Error(err)
+		return err
+	}
+
+	var (
+		wg sync.WaitGroup
+	)
+
+	// 1. Get cluster info
+	res, err := es.Info()
+
+	if err != nil {
+		logrus.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	dbConn := utils.NewDBConn(cfg)
+
+	defer func() {
+		err := dbConn.Mysql.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	_popularServiceRepo := _popularServiceRepo.NewMysqlPublicServiceRepository(dbConn.Mysql)
+	popularService, err := _popularServiceRepo.Fetch(context.TODO(), &domain.Request{PerPage: 100, Filters: map[string]interface{}{
+		"categories": []string{},
+	}})
+
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	// 3. Index documents concurrently
+	for i, data := range popularService {
+		wg.Add(1)
+
+		go func(i int, data domain.PublicService) {
+			defer wg.Done()
+
+			// Build the request body.
+			var b strings.Builder
+
+			//format time
+			layout := "2006-01-02 15:04:05"
+
+			var excerpt string
+			description := data.Description.String
+			forExcerptLength := 160
+			if len(description) > forExcerptLength {
+				excerpt = description[:forExcerptLength]
+			}
+
+			re := regexp.MustCompile(`\r?\n`)
+			excerpt = strings.ReplaceAll(re.ReplaceAllString(excerpt, " "), `"`, "")
+			description = strings.ReplaceAll(re.ReplaceAllString(description, " "), `"`, "")
+
+			link := domain.Link{}
+			helpers.GetObjectFromString(data.Url.String, &link)
+
+			b.WriteString(fmt.Sprintf(`{"id" : %v,`, data.ID))
+			b.WriteString(fmt.Sprintf(`"domain" : "%v",`, "popular_service"))
+			b.WriteString(fmt.Sprintf(`"title" : "%v",`, data.Name))
+			b.WriteString(fmt.Sprintf(`"excerpt" : "%v",`, excerpt))
+			b.WriteString(fmt.Sprintf(`"content" : "%v",`, description))
+			b.WriteString(fmt.Sprintf(`"unit" : "%v",`, data.Unit.String))
+			b.WriteString(fmt.Sprintf(`"url" : "%v",`, data.Url.String))
+			b.WriteString(fmt.Sprintf(`"slug" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"category" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"views" : "%v",`, 0))
+			b.WriteString(fmt.Sprintf(`"shared" : "%v",`, 0))
+			b.WriteString(fmt.Sprintf(`"created_at" : "%s",`, data.CreatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"updated_at" : "%s",`, data.UpdatedAt.Format(layout)))
+			b.WriteString(fmt.Sprintf(`"published_at" : "%v",`, ""))
+			b.WriteString(fmt.Sprintf(`"thumbnail" : "%v",`, ""))
 			b.WriteString(fmt.Sprintf(`"is_active" : %v}`, true))
 
 			// Set up the request object.
