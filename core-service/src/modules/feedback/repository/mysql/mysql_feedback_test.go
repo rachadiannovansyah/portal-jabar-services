@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	mysqlRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
 	"github.com/stretchr/testify/assert"
@@ -17,15 +18,8 @@ func TestStoreSuccess(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	body := domain.Feedback{
-		// payload here
-		Rating:      5,
-		Compliments: "compliments of ..",
-		Criticism:   "criticism of ..",
-		Suggestions: "suggestions of ..",
-		Sector:      "sector",
-		CreatedAt:   time.Now(),
-	}
+	body := domain.Feedback{}
+	_ = faker.FakeData(&body)
 
 	query := "INSERT feedback SET rating=? , compliments=? , criticism=?, suggestions=?, sector=?, created_at=?"
 
@@ -61,7 +55,7 @@ func TestStoreFailed(t *testing.T) {
 		body.Criticism,
 		body.Suggestions,
 		body.Sector,
-		body.CreatedAt).WillReturnResult(sqlmock.NewResult(1, 1))
+		body.CreatedAt).WillReturnResult(sqlmock.NewErrorResult(err))
 
 	e := mysqlRepo.NewMysqlFeedbackRepository(db)
 	err = e.Store(context.TODO(), &body)
