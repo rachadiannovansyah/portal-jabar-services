@@ -15,7 +15,7 @@ import (
 )
 
 type servicePublicUsecaseTestSuite struct {
-	spRepoMock           mocks.ServicePublicRepository
+	servicePublicRepo    mocks.ServicePublicRepository
 	userRepoMock         mocks.UserRepository
 	genInfoRepoMock      mocks.GeneralInformationRepository
 	searchRepoMock       mocks.SearchRepository
@@ -33,7 +33,7 @@ func testSuite() *servicePublicUsecaseTestSuite {
 	ctxTimeout := time.Second * 60
 
 	return &servicePublicUsecaseTestSuite{
-		spRepoMock:           spRepoMock,
+		servicePublicRepo:    spRepoMock,
 		userRepoMock:         userRepoMock,
 		genInfoRepoMock:      genInfoRepoMock,
 		searchRepoMock:       searchRepoMock,
@@ -43,17 +43,18 @@ func testSuite() *servicePublicUsecaseTestSuite {
 	}
 }
 
-func TestFetch(t *testing.T) {
-	suite := testSuite()
+var suite *servicePublicUsecaseTestSuite
+var err error
+var mockStruct domain.ServicePublic
+var usecase domain.ServicePublicUsecase
+var params *domain.Request
 
-	var mockStruct domain.ServicePublic
-	err := faker.FakeData(&mockStruct)
-	assert.NoError(t, err)
-	mockList := make([]domain.ServicePublic, 0)
-	mockList = append(mockList, mockStruct)
-	u := ucase.NewServicePublicUsecase(&suite.spRepoMock, &suite.genInfoRepoMock, &suite.userRepoMock, &suite.searchRepoMock, suite.cfg, suite.ctxTimeout)
-
-	params := &domain.Request{
+func TestMain(m *testing.M) {
+	// prepare test
+	suite = testSuite()
+	err = faker.FakeData(&mockStruct)
+	usecase = ucase.NewServicePublicUsecase(&suite.servicePublicRepo, &suite.genInfoRepoMock, &suite.userRepoMock, &suite.searchRepoMock, suite.cfg, suite.ctxTimeout)
+	params = &domain.Request{
 		Keyword:   "",
 		PerPage:   10,
 		Offset:    0,
@@ -61,84 +62,108 @@ func TestFetch(t *testing.T) {
 		SortOrder: "",
 	}
 
-	t.Run("success", func(t *testing.T) {
-		suite.spRepoMock.On("Fetch", mock.Anything, mock.Anything).Return(mockList, nil).Once()
-		list, err := u.Fetch(context.TODO(), params)
+	// execute test
+	m.Run()
+}
 
+func TestFetch(t *testing.T) {
+	mockList := make([]domain.ServicePublic, 0)
+	mockList = append(mockList, mockStruct)
+
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		suite.servicePublicRepo.On("Fetch", mock.Anything, mock.Anything).Return(mockList, nil).Once()
+		list, err := usecase.Fetch(context.TODO(), params)
+
+		// assertions
 		assert.NoError(t, err)
 		assert.Len(t, list, len(mockList))
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "Fetch", mock.Anything, mock.Anything)
+		assert.Equal(t, mockList, list)
+		suite.servicePublicRepo.AssertExpectations(t)
+		suite.servicePublicRepo.AssertCalled(t, "Fetch", mock.Anything, mock.Anything)
 	})
 
 	t.Run("error-occurred", func(t *testing.T) {
-		suite.spRepoMock.On("Fetch", mock.Anything, mock.Anything).Return(nil, domain.ErrInternalServerError).Once()
+		// mock expectation being called
+		suite.servicePublicRepo.On("Fetch", mock.Anything, mock.Anything).Return(nil, domain.ErrInternalServerError).Once()
+		list, err := usecase.Fetch(context.TODO(), params)
 
-		list, err := u.Fetch(context.TODO(), params)
-
+		// assertions
 		assert.Error(t, err)
 		assert.Len(t, list, 0)
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "Fetch", mock.Anything, mock.Anything)
+	})
+}
+
+func TestMetaFetch(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		suite.servicePublicRepo.On("MetaFetch", mock.Anything, mock.Anything).Return(int64(1), "2022-11-15", int64(2), nil).Once()
+		total, lastUpdate, staticCount, err := usecase.MetaFetch(context.TODO(), params)
+		assert.NoError(t, err)
+		assert.Equal(t, int64(1), total)
+		assert.Equal(t, "2022-11-15", lastUpdate)
+		assert.Equal(t, int64(2), staticCount)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		suite.servicePublicRepo.On("MetaFetch", mock.Anything, mock.Anything).Return(int64(0), "", int64(0), domain.ErrInternalServerError).Once()
+		total, lastUpdate, staticCount, err := usecase.MetaFetch(context.TODO(), params)
+		assert.Error(t, err)
+		assert.Equal(t, int64(0), total)
+		assert.Equal(t, "", lastUpdate)
+		assert.Equal(t, int64(0), staticCount)
 	})
 }
 
 func TestGetBySlug(t *testing.T) {
-	suite := testSuite()
-
-	var mockStruct domain.ServicePublic
-	err := faker.FakeData(&mockStruct)
-	assert.NoError(t, err)
-	u := ucase.NewServicePublicUsecase(&suite.spRepoMock, &suite.genInfoRepoMock, &suite.userRepoMock, &suite.searchRepoMock, suite.cfg, suite.ctxTimeout)
-
 	t.Run("success", func(t *testing.T) {
-		suite.spRepoMock.On("GetBySlug", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct, nil).Once()
-		a, err := u.GetBySlug(context.TODO(), mockStruct.GeneralInformation.Slug)
+		// mock expectation being called
+		suite.servicePublicRepo.On("GetBySlug", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct, nil).Once()
+		obj, err := usecase.GetBySlug(context.TODO(), mockStruct.GeneralInformation.Slug)
 
+		// assertions
 		assert.NoError(t, err)
-		assert.NotNil(t, a)
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "GetBySlug", mock.Anything, mock.AnythingOfType("string"))
+		assert.NotNil(t, obj)
+		assert.Equal(t, mockStruct, obj)
+		suite.servicePublicRepo.AssertExpectations(t)
+		suite.servicePublicRepo.AssertCalled(t, "GetBySlug", mock.Anything, mock.AnythingOfType("string"))
 	})
 
 	t.Run("error-occurred", func(t *testing.T) {
-		suite.spRepoMock.On("GetBySlug", mock.Anything, mock.AnythingOfType("string")).Return(domain.ServicePublic{}, domain.ErrInternalServerError).Once()
-		a, err := u.GetBySlug(context.TODO(), mockStruct.GeneralInformation.Slug)
+		// mock expectation being called
+		suite.servicePublicRepo.On("GetBySlug", mock.Anything, mock.AnythingOfType("string")).Return(domain.ServicePublic{}, domain.ErrInternalServerError).Once()
+		obj, err := usecase.GetBySlug(context.TODO(), mockStruct.GeneralInformation.Slug)
 
+		// assertions
 		assert.Error(t, err)
-		assert.Equal(t, domain.ServicePublic{}, a)
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "GetBySlug", mock.Anything, mock.AnythingOfType("string"))
+		assert.Equal(t, domain.ServicePublic{}, obj)
+		suite.servicePublicRepo.AssertExpectations(t)
+		suite.servicePublicRepo.AssertCalled(t, "GetBySlug", mock.Anything, mock.AnythingOfType("string"))
 	})
 }
 
 func TestDelete(t *testing.T) {
-	suite := testSuite()
-
-	var mockStruct domain.ServicePublic
-	err := faker.FakeData(&mockStruct)
-	assert.NoError(t, err)
-	u := ucase.NewServicePublicUsecase(&suite.spRepoMock, &suite.genInfoRepoMock, &suite.userRepoMock, &suite.searchRepoMock, suite.cfg, suite.ctxTimeout)
-
 	t.Run("success", func(t *testing.T) {
-		suite.spRepoMock.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockStruct, nil)
-		suite.spRepoMock.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(nil).Once()
-		err := u.Delete(context.TODO(), mockStruct.GeneralInformation.ID)
+		// mock expectation being called
+		suite.servicePublicRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockStruct, nil)
+		suite.servicePublicRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(nil).Once()
+		err := usecase.Delete(context.TODO(), mockStruct.GeneralInformation.ID)
 
+		// assertions
 		assert.NoError(t, err)
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "GetByID", mock.Anything, mock.AnythingOfType("int64"))
-		suite.spRepoMock.AssertCalled(t, "Delete", mock.Anything, mock.AnythingOfType("int64"))
+		suite.servicePublicRepo.AssertExpectations(t)
+		suite.servicePublicRepo.AssertCalled(t, "GetByID", mock.Anything, mock.AnythingOfType("int64"))
+		suite.servicePublicRepo.AssertCalled(t, "Delete", mock.Anything, mock.AnythingOfType("int64"))
 	})
 
 	t.Run("error-occurred", func(t *testing.T) {
-		suite.spRepoMock.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(nil, domain.ErrInternalServerError)
-		suite.spRepoMock.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(domain.ErrInternalServerError).Once()
-		err := u.Delete(context.TODO(), mockStruct.GeneralInformation.ID)
+		// mock expectation being called
+		suite.servicePublicRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(nil, domain.ErrInternalServerError)
+		suite.servicePublicRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(domain.ErrInternalServerError).Once()
+		err := usecase.Delete(context.TODO(), mockStruct.GeneralInformation.ID)
 
+		// assertions
 		assert.Error(t, err)
-		suite.spRepoMock.AssertExpectations(t)
-		suite.spRepoMock.AssertCalled(t, "Delete", mock.Anything, mock.AnythingOfType("int64"))
-		suite.spRepoMock.AssertCalled(t, "Delete", mock.Anything, mock.AnythingOfType("int64"))
 	})
 }

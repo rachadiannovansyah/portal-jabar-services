@@ -67,10 +67,6 @@ func (n *servicePublicUsecase) GetBySlug(c context.Context, slug string) (res do
 		return
 	}
 
-	if err != nil {
-		return
-	}
-
 	return
 }
 
