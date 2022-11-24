@@ -25,26 +25,46 @@ func testSuite() *feedbackUsecaseTestSuite {
 	}
 }
 
+var err error
+var mockReqBody domain.Feedback
+
+func TestMain(m *testing.M) {
+	// prepare test
+	err = faker.FakeData(&mockReqBody)
+
+	// exec test
+	m.Run()
+}
+
 func TestStore(t *testing.T) {
 	suite := testSuite()
-
-	var mockReqBody domain.Feedback
-	err := faker.FakeData(&mockReqBody)
-	assert.NoError(t, err)
-
 	u := ucase.NewFeedbackUsecase(&suite.feedbackRepoMock, suite.contextTimeout)
 
 	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
 		suite.feedbackRepoMock.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-
 		err := u.Store(context.TODO(), &mockReqBody)
+
+		// assertions
 		assert.NoError(t, err)
+		assert.Equal(t, mockReqBody, domain.Feedback{
+			ID:          mockReqBody.ID,
+			Rating:      mockReqBody.Rating,
+			Compliments: mockReqBody.Compliments,
+			Criticism:   mockReqBody.Criticism,
+			Suggestions: mockReqBody.Suggestions,
+			Sector:      mockReqBody.Sector,
+			CreatedAt:   mockReqBody.CreatedAt,
+		}, "expected result.")
 	})
 
 	t.Run("failure", func(t *testing.T) {
+		// mock expectation being called
 		suite.feedbackRepoMock.On("Store", mock.Anything, mock.Anything).Return(domain.ErrInternalServerError).Once()
-
 		err := u.Store(context.TODO(), &mockReqBody)
+
+		// assertions
+		assert.Error(t, err)
 		assert.NotNil(t, err)
 	})
 }
