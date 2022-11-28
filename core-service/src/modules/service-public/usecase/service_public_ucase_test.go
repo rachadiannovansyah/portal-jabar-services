@@ -12,6 +12,7 @@ import (
 	ucase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/usecase"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
 type servicePublicUsecaseTestSuite struct {
@@ -162,6 +163,81 @@ func TestDelete(t *testing.T) {
 		suite.servicePublicRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(nil, domain.ErrInternalServerError)
 		suite.servicePublicRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(domain.ErrInternalServerError).Once()
 		err := usecase.Delete(context.TODO(), mockStruct.GeneralInformation.ID)
+
+		// assertions
+		assert.Error(t, err)
+	})
+}
+
+func TestStore(t *testing.T) {
+	var mockStorePublicService domain.StorePublicService
+	err = faker.FakeData(&mockStorePublicService)
+	db, sqlMock, _ := sqlmock.New()
+	sqlMock.ExpectBegin()
+	sqlMock.ExpectCommit()
+	txMock, _ := db.Begin()
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		suite.genInfoRepoMock.On("GetTx", mock.Anything).Return(txMock, nil).Once()
+		suite.genInfoRepoMock.On("Store", mock.Anything, mock.Anything, txMock).Return(mockStruct.GeneralInformation.ID, nil).Once()
+		suite.servicePublicRepo.On("Store", mock.Anything, mock.Anything, txMock).Return(nil).Once()
+
+		err := usecase.Store(context.TODO(), mockStorePublicService)
+
+		// assertions
+		assert.NoError(t, err)
+		suite.servicePublicRepo.AssertExpectations(t)
+		suite.genInfoRepoMock.AssertExpectations(t)
+		suite.genInfoRepoMock.AssertCalled(t, "GetTx", mock.Anything)
+		suite.genInfoRepoMock.AssertCalled(t, "Store", mock.Anything, mock.Anything, mock.Anything)
+		suite.servicePublicRepo.AssertCalled(t, "Store", mock.Anything, mock.Anything, mock.Anything)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		suite.genInfoRepoMock.On("GetTx", mock.Anything).Return(nil, domain.ErrInternalServerError).Once()
+		suite.genInfoRepoMock.On("Store", mock.Anything, mock.Anything, txMock).Return(nil, domain.ErrInternalServerError).Once()
+		suite.servicePublicRepo.On("Store", mock.Anything, mock.Anything, txMock).Return(domain.ErrInternalServerError).Once()
+
+		err := usecase.Store(context.TODO(), mockStorePublicService)
+
+		// assertions
+		assert.Error(t, err)
+	})
+}
+
+func TestUpdate(t *testing.T) {
+	var mockUpdatePublicService domain.UpdatePublicService
+	err = faker.FakeData(&mockUpdatePublicService)
+	db, sqlMock, _ := sqlmock.New()
+	sqlMock.ExpectBegin()
+	sqlMock.ExpectCommit()
+	txMock, _ := db.Begin()
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		suite.genInfoRepoMock.On("GetTx", mock.Anything).Return(txMock, nil)
+		suite.servicePublicRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(mockStruct, nil)
+		suite.genInfoRepoMock.On("Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), txMock).Return(nil)
+		suite.servicePublicRepo.On("Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), txMock).Return(nil)
+
+		err := usecase.Update(context.TODO(), mockUpdatePublicService, mockStruct.ID)
+
+		// assertions
+		assert.NoError(t, err)
+		suite.genInfoRepoMock.AssertCalled(t, "GetTx", mock.Anything)
+		suite.servicePublicRepo.AssertCalled(t, "GetByID", mock.Anything, mock.AnythingOfType("int64"))
+		suite.genInfoRepoMock.AssertCalled(t, "Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), mock.Anything)
+		suite.servicePublicRepo.AssertCalled(t, "Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), mock.Anything)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		suite.genInfoRepoMock.On("GetTx", mock.Anything).Return(nil, domain.ErrInternalServerError)
+		suite.servicePublicRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(nil, domain.ErrInternalServerError)
+		suite.genInfoRepoMock.On("Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), txMock).Return(domain.ErrInternalServerError)
+		suite.servicePublicRepo.On("Update", mock.Anything, mock.Anything, mock.AnythingOfType("int64"), txMock).Return(domain.ErrInternalServerError)
+
+		err := usecase.Update(context.TODO(), mockUpdatePublicService, mockStruct.ID)
 
 		// assertions
 		assert.Error(t, err)
