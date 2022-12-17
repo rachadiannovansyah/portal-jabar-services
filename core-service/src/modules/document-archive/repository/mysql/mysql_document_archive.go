@@ -32,13 +32,6 @@ func (r *mysqlDocumentArchiveRepository) fetchQuery(ctx context.Context, query s
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.DocumentArchive, 0)
 	for rows.Next() {
 		docArc := domain.DocumentArchive{}

@@ -23,13 +23,6 @@ func (m *mysqlMailTemplateRepository) fetchQuery(ctx context.Context, query stri
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Template, 0)
 	for rows.Next() {
 		mail := domain.Template{}

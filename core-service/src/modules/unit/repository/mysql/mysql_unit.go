@@ -29,13 +29,6 @@ func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...i
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Unit, 0)
 	for rows.Next() {
 		u := domain.Unit{}

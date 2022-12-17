@@ -29,13 +29,6 @@ func (m *mysqlDistrictRepository) fetch(ctx context.Context, query string, args 
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.District, 0)
 	for rows.Next() {
 		u := domain.District{}

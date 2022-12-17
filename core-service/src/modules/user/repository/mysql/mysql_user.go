@@ -163,13 +163,6 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	roleID := int8(0)
 	result = make([]domain.User, 0)
 	for rows.Next() {

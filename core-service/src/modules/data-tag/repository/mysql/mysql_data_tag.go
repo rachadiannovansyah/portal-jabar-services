@@ -24,13 +24,6 @@ func (m *mysqlDataTagRepository) fetch(ctx context.Context, query string, args .
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	res = make([]domain.DataTag, 0)
 	for rows.Next() {
 		t := domain.DataTag{}

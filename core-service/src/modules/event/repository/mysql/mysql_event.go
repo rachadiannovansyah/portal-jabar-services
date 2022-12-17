@@ -43,13 +43,6 @@ func (r *mysqlEventRepository) fetchQuery(ctx context.Context, query string, arg
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Event, 0)
 	for rows.Next() {
 		event := domain.Event{}
@@ -88,13 +81,6 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 		logrus.Error(err)
 		return nil, err
 	}
-
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
 
 	result = make([]domain.Event, 0)
 	for rows.Next() {

@@ -29,13 +29,6 @@ func (m *mysqlPublicServiceRepository) fetch(ctx context.Context, query string, 
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.PublicService, 0)
 	for rows.Next() {
 		ps := domain.PublicService{}

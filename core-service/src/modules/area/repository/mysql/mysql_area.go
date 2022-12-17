@@ -27,13 +27,6 @@ func (m *mysqlAreaRepository) fetch(ctx context.Context, query string, args ...i
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Area, 0)
 	for rows.Next() {
 		a := domain.Area{}

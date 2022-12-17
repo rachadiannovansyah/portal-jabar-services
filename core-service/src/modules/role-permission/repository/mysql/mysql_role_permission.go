@@ -35,13 +35,6 @@ func (m *mysqlRolePermissionRepository) GetPermissionsByRoleID(ctx context.Conte
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]string, 0)
 	for rows.Next() {
 		var permissionName string

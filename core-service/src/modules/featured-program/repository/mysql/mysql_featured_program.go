@@ -48,13 +48,6 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.FeaturedProgram, 0)
 	for rows.Next() {
 		fp := domain.FeaturedProgram{}

@@ -29,13 +29,6 @@ func (m *mysqlAwardRepository) fetch(ctx context.Context, query string, args ...
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Award, 0)
 	for rows.Next() {
 		u := domain.Award{}
@@ -139,13 +132,6 @@ func (m *mysqlAwardRepository) fetchCategories(ctx context.Context, query string
 		logrus.Error(err)
 		return nil, err
 	}
-
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
 
 	result := make([]domain.AwardCategoryAggregation, 0)
 	for rows.Next() {

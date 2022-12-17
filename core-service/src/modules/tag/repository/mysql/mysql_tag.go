@@ -27,13 +27,6 @@ func (m *mysqlTagRepository) fetch(ctx context.Context, query string, args ...in
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	result = make([]domain.Tag, 0)
 	for rows.Next() {
 		t := domain.Tag{}

@@ -48,13 +48,6 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 		return nil, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	website := config.LoadAppConfig().PortalUrl
 	result = make([]domain.News, 0)
 	for rows.Next() {
@@ -146,13 +139,6 @@ func (m *mysqlNewsRepository) fetchTabs(ctx context.Context, query string, args 
 		logrus.Error(err)
 		return nil, err
 	}
-
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
 
 	result = make([]domain.TabStatusResponse, 0)
 	for rows.Next() {

@@ -30,13 +30,6 @@ func (m *mysqlRegInvitationRepository) findOne(ctx context.Context,
 		return result, err
 	}
 
-	defer func() {
-		errRow := rows.Close()
-		if errRow != nil {
-			logrus.Error(errRow)
-		}
-	}()
-
 	if rows.Next() {
 		err = rows.Scan(
 			&result.ID,
