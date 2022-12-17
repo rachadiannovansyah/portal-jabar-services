@@ -41,9 +41,9 @@ func initMysql(cfg *config.Config) *sql.DB {
 	// Maximum Open Connections
 	db.SetMaxOpenConns(cfg.DB.MaxOpenConns)
 	// Idle Connection Timeout
-	db.SetConnMaxIdleTime(1 * time.Second)
+	db.SetConnMaxIdleTime(time.Duration(cfg.DB.ConnMaxIdleTime) * time.Second)
 	// Connection Lifetime
-	db.SetConnMaxLifetime(30 * time.Second)
+	db.SetConnMaxLifetime(time.Duration(cfg.DB.ConnMaxLifetime) * time.Second)
 
 	if err != nil {
 		log.Fatal(err)
