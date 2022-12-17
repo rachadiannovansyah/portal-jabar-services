@@ -1,5 +1,5 @@
 # Builder
-FROM registry.digitalservice.id/proxyjds/library/golang:1.16.2-alpine3.11 as builder
+FROM registry.digitalservice.id/proxyjds/library/golang:1.16-alpine3.11 as builder
 
 RUN apk update && apk upgrade && \
     apk --update add git make
