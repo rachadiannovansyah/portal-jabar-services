@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/viper"
 )
@@ -11,8 +12,8 @@ type DBConfig struct {
 	DSN             string
 	MaxIdleConns    int
 	MaxOpenConns    int
-	ConnMaxIdleTime int
-	ConnMaxLifetime int
+	ConnMaxIdleTime time.Duration
+	ConnMaxLifetime time.Duration
 }
 
 // LoadDBConfig loads DB configuration from file.
@@ -27,7 +28,7 @@ func LoadDBConfig() DBConfig {
 		),
 		MaxIdleConns:    viper.GetInt("DB_MAX_IDLE_CONNS"),
 		MaxOpenConns:    viper.GetInt("DB_MAX_OPEN_CONNS"),
-		ConnMaxIdleTime: viper.GetInt("DB_CONN_MAX_IDLE_TIME"),
-		ConnMaxLifetime: viper.GetInt("DB_CONN_MAX_LIFETIME"),
+		ConnMaxIdleTime: time.Duration(viper.GetInt("DB_CONN_MAX_IDLE_TIME")) * time.Second,
+		ConnMaxLifetime: time.Duration(viper.GetInt("DB_CONN_MAX_LIFETIME")) * time.Second,
 	}
 }

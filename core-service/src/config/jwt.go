@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 // JWTConfig represents JWT configuration.
@@ -18,7 +19,7 @@ func LoadJWTConfig() JWTConfig {
 	return JWTConfig{
 		AccessSecret:  viper.GetString("JWT_ACCESS_SECRET"),
 		RefreshSecret: viper.GetString("JWT_REFRESH_SECRET"),
-		TTL:           viper.GetDuration("JWT_TTL"),
-		RefreshTTL:    viper.GetDuration("JWT_REFRESH_TTL"),
+		TTL:           time.Duration(viper.GetInt("JWT_TTL")) * time.Minute,
+		RefreshTTL:    time.Duration(viper.GetInt("JWT_REFRESH_TTL")) * time.Minute,
 	}
 }
