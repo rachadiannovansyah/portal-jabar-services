@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -41,9 +40,9 @@ func initMysql(cfg *config.Config) *sql.DB {
 	// Maximum Open Connections
 	db.SetMaxOpenConns(cfg.DB.MaxOpenConns)
 	// Idle Connection Timeout
-	db.SetConnMaxIdleTime(time.Duration(cfg.DB.ConnMaxIdleTime) * time.Second)
+	db.SetConnMaxIdleTime(cfg.DB.ConnMaxIdleTime)
 	// Connection Lifetime
-	db.SetConnMaxLifetime(time.Duration(cfg.DB.ConnMaxLifetime) * time.Second)
+	db.SetConnMaxLifetime(cfg.DB.ConnMaxLifetime)
 
 	if err != nil {
 		log.Fatal(err)

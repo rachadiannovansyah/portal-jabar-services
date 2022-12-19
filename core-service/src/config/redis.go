@@ -1,17 +1,21 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"time"
+
+	"github.com/spf13/viper"
+)
 
 type RedisConfig struct {
 	Host string
 	Port int
-	TTL  int
+	TTL  time.Duration
 }
 
 func LoadRedisConfig() RedisConfig {
 	return RedisConfig{
 		Host: viper.GetString("REDIS_HOST"),
 		Port: viper.GetInt("REDIS_PORT"),
-		TTL:  viper.GetInt("REDIS_TTL"),
+		TTL:  viper.GetDuration("REDIS_TTL") * time.Second,
 	}
 }
