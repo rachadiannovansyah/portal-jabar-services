@@ -44,8 +44,7 @@ func newLoginResponse(token, refreshToken string, exp int64) domain.LoginRespons
 }
 
 func (n *authUsecase) createAccessToken(user *domain.User, permissions []string) (accessToken string, exp int64, err error) {
-	exp = time.Now().Add(time.Second * n.config.JWT.TTL).Unix()
-
+	exp = time.Now().Add(n.config.JWT.TTL).Unix()
 	claims := &domain.JwtCustomClaims{
 		ID:          user.ID,
 		Email:       user.Email,
@@ -53,7 +52,7 @@ func (n *authUsecase) createAccessToken(user *domain.User, permissions []string)
 		Role:        user.Role,
 		Permissions: permissions,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
+			ExpiresAt: time.Now().Add(n.config.JWT.RefreshTTL).Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -67,7 +66,7 @@ func (n *authUsecase) createRefreshToken(user *domain.User) (t string, err error
 		ID:    user.ID,
 		Email: user.Email,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Second * n.config.JWT.RefreshTTL).Unix(),
+			ExpiresAt: time.Now().Add(n.config.JWT.RefreshTTL).Unix(),
 		},
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)

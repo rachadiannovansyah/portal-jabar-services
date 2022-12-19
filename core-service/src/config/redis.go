@@ -16,6 +16,6 @@ func LoadRedisConfig() RedisConfig {
 	return RedisConfig{
 		Host: viper.GetString("REDIS_HOST"),
 		Port: viper.GetInt("REDIS_PORT"),
-		TTL:  time.Duration(viper.GetInt("REDIS_TTL")) * time.Minute,
+		TTL:  viper.GetDuration("REDIS_TTL") * time.Second,
 	}
 }

@@ -37,7 +37,7 @@ func Cache(key string, data interface{}, meta interface{}) (err error) {
 	}
 
 	// set cache from dependency injection redis
-	ttl := time.Duration(config.NewConfig().Redis.TTL) * time.Second
+	ttl := config.NewConfig().Redis.TTL
 	value, _ := json.Marshal(cacheData)
 	cacheErr := SetCache(key, value, ttl)
 	if cacheErr != nil {

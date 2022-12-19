@@ -22,6 +22,6 @@ func LoadAppConfig() AppConfig {
 		Version:        viper.GetString("APP_VERSION"),
 		CmsUrl:         viper.GetString("PORTAL_JABAR_CMS_URL"),
 		PortalUrl:      viper.GetString("PORTAL_JABAR_LANDING_PAGE_URL"),
-		ContextTimeout: time.Duration(viper.GetInt("APP_TIMEOUT")) * time.Second,
+		ContextTimeout: viper.GetDuration("APP_TIMEOUT") * time.Second,
 	}
 }

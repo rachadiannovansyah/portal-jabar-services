@@ -19,7 +19,7 @@ func LoadJWTConfig() JWTConfig {
 	return JWTConfig{
 		AccessSecret:  viper.GetString("JWT_ACCESS_SECRET"),
 		RefreshSecret: viper.GetString("JWT_REFRESH_SECRET"),
-		TTL:           time.Duration(viper.GetInt("JWT_TTL")) * time.Minute,
-		RefreshTTL:    time.Duration(viper.GetInt("JWT_REFRESH_TTL")) * time.Minute,
+		TTL:           viper.GetDuration("JWT_TTL") * time.Second,
+		RefreshTTL:    viper.GetDuration("JWT_REFRESH_TTL") * time.Second,
 	}
 }

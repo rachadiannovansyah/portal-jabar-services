@@ -28,7 +28,7 @@ func LoadDBConfig() DBConfig {
 		),
 		MaxIdleConns:    viper.GetInt("DB_MAX_IDLE_CONNS"),
 		MaxOpenConns:    viper.GetInt("DB_MAX_OPEN_CONNS"),
-		ConnMaxIdleTime: time.Duration(viper.GetInt("DB_CONN_MAX_IDLE_TIME")) * time.Second,
-		ConnMaxLifetime: time.Duration(viper.GetInt("DB_CONN_MAX_LIFETIME")) * time.Second,
+		ConnMaxIdleTime: viper.GetDuration("DB_CONN_MAX_IDLE_TIME") * time.Second,
+		ConnMaxLifetime: viper.GetDuration("DB_CONN_MAX_LIFETIME") * time.Second,
 	}
 }
