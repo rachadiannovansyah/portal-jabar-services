@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/spf13/viper"
@@ -48,18 +49,18 @@ func newAppHandler(e *echo.Echo) {
 }
 
 // NewHandler will create a new handler for the given usecase
-func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases) {
+func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger helpers.Logger) {
 
 	e := echo.New()
 	e.HTTPErrorHandler = ErrorHandler
-	middL := middl.InitMiddleware(cfg, apm.NewRelic)
+	middL := middl.InitMiddleware(cfg, apm.NewRelic, logger)
 
 	v1 := e.Group("/v1")
 	r := v1.Group("")
 	p := v1.Group("/public")
 
 	r.Use(middL.JWT)
-	e.Use(middleware.Logger())
+	e.Use(middL.Logging)
 	e.Use(middL.NewRelic)
 	e.Use(nrecho.Middleware(apm.NewRelic))
 	e.Use(middleware.CORSWithConfig(cfg.Cors))

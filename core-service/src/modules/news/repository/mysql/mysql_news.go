@@ -16,12 +16,16 @@ import (
 )
 
 type mysqlNewsRepository struct {
-	Conn *sql.DB
+	Conn   *sql.DB
+	Logger *helpers.Logger
 }
 
 // NewMysqlNewsRepository will create an object that represent the news.Repository interface
-func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
-	return &mysqlNewsRepository{Conn}
+func NewMysqlNewsRepository(Conn *sql.DB, Logger *helpers.Logger) domain.NewsRepository {
+	return &mysqlNewsRepository{
+		Conn,
+		Logger,
+	}
 }
 
 var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author, reporter, editor, area_id, type, 
@@ -44,7 +48,10 @@ func (m *mysqlNewsRepository) GetTx(ctx context.Context) (tx *sql.Tx, err error)
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
-		logrus.Error(err)
+		m.Logger.Error(logrus.Fields(logrus.Fields{
+			"timestamps": time.Now().Format("2006-01-02 15:04:05"),
+			"method":     "fetch",
+		}), err.Error())
 		return nil, err
 	}
 
@@ -92,6 +99,11 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 
 		result = append(result, t)
 	}
+
+	m.Logger.Info(logrus.Fields(logrus.Fields{
+		"timestamps": time.Now().Format("2006-01-02 15:04:05"),
+		"method":     "fetch",
+	}), "success")
 
 	return result, nil
 }

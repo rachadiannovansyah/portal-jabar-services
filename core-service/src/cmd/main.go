@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -22,8 +23,9 @@ func main() {
 		}
 	}()
 
+	logger := helpers.InitLogger()
 	// init repo category repo
-	mysqlRepos := server.NewRepository(conn, cfg)
+	mysqlRepos := server.NewRepository(conn, cfg, logger)
 	usecases := server.NewUcase(cfg, conn, mysqlRepos, cfg.App.ContextTimeout)
-	server.NewHandler(cfg, apm, usecases)
+	server.NewHandler(cfg, apm, usecases, *logger)
 }
