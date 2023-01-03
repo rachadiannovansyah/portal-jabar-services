@@ -11,17 +11,18 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 )
 
 type mysqlNewsRepository struct {
 	Conn   *sql.DB
-	Logger *helpers.Logger
+	Logger *utils.Logrus
 }
 
 // NewMysqlNewsRepository will create an object that represent the news.Repository interface
-func NewMysqlNewsRepository(Conn *sql.DB, Logger *helpers.Logger) domain.NewsRepository {
+func NewMysqlNewsRepository(Conn *sql.DB, Logger *utils.Logrus) domain.NewsRepository {
 	return &mysqlNewsRepository{
 		Conn,
 		Logger,
