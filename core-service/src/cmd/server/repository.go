@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -60,10 +59,10 @@ type Repository struct {
 }
 
 // NewRepository will create an object that represent all repos interface
-func NewRepository(conn *utils.Conn, cfg *config.Config, logger *helpers.Logger) *Repository {
+func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *Repository {
 	return &Repository{
 		CategoryRepo:           _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
-		NewsRepo:               _newsRepo.NewMysqlNewsRepository(conn.Mysql, logger),
+		NewsRepo:               _newsRepo.NewMysqlNewsRepository(conn.Mysql, logrus),
 		InformationRepo:        _informationRepo.NewMysqlInformationRepository(conn.Mysql),
 		UnitRepo:               _unitRepo.NewMysqlUnitRepository(conn.Mysql),
 		AreaRepo:               _areaRepo.NewMysqlAreaRepository(conn.Mysql),

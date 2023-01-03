@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/spf13/viper"
@@ -49,7 +48,7 @@ func newAppHandler(e *echo.Echo) {
 }
 
 // NewHandler will create a new handler for the given usecase
-func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger helpers.Logger) {
+func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Logrus) {
 
 	e := echo.New()
 	e.HTTPErrorHandler = ErrorHandler
