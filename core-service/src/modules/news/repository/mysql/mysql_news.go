@@ -101,11 +101,6 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 		result = append(result, t)
 	}
 
-	m.Logger.Info(logrus.Fields(logrus.Fields{
-		"timestamps": time.Now().Format("2006-01-02 15:04:05"),
-		"method":     "fetch",
-	}), "success")
-
 	return result, nil
 }
 
