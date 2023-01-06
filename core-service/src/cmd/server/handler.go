@@ -4,6 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	_goLogMiddl "github.com/jabardigitalservice/golog/http/middleware"
+	_goLog "github.com/jabardigitalservice/golog/logger"
+
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	_galleryHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/delivery/http"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
@@ -51,6 +54,10 @@ func newAppHandler(e *echo.Echo) {
 func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Logrus) {
 
 	e := echo.New()
+
+	e.HidePort = true // to do: make this true on production env
+	e.HideBanner = true
+
 	e.HTTPErrorHandler = ErrorHandler
 	middL := middl.InitMiddleware(cfg, apm.NewRelic, logger)
 
@@ -58,8 +65,10 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	r := v1.Group("")
 	p := v1.Group("/public")
 
+	goLog := _goLog.Init() // logging with golog package
+	e.Use(echo.WrapMiddleware(_goLogMiddl.Logger(goLog, &_goLog.LoggerData{})))
+
 	r.Use(middL.JWT)
-	e.Use(middL.Logging)
 	e.Use(middL.NewRelic)
 	e.Use(nrecho.Middleware(apm.NewRelic))
 	e.Use(middleware.CORSWithConfig(cfg.Cors))

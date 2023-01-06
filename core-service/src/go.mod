@@ -26,6 +26,7 @@ require (
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gosimple/slug v1.12.0
+	github.com/jabardigitalservice/golog v0.0.2
 	github.com/jinzhu/copier v0.3.2
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/labstack/echo/v4 v4.5.0
@@ -38,7 +39,7 @@ require (
 	github.com/newrelic/go-agent/v3/integrations/nrecho-v4 v1.0.2
 	github.com/newrelic/go-agent/v3/integrations/nrmysql v1.2.2
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.0
 	github.com/smartystreets/assertions v1.1.1 // indirect
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
