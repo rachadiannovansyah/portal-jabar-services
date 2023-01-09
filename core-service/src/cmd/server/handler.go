@@ -55,8 +55,9 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 
 	e := echo.New()
 
-	e.HidePort = true // to do: make this true on production env
-	e.HideBanner = true
+	isProd := config.LoadAppConfig().Env == "production"
+	e.HidePort = isProd
+	e.HideBanner = isProd
 
 	e.HTTPErrorHandler = ErrorHandler
 	middL := middl.InitMiddleware(cfg, apm.NewRelic, logger)
@@ -66,7 +67,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	p := v1.Group("/public")
 
 	goLog := _goLog.Init() // logging with golog package
-	e.Use(echo.WrapMiddleware(_goLogMiddl.Logger(goLog, &_goLog.LoggerData{})))
+	e.Use(echo.WrapMiddleware(_goLogMiddl.Logger(goLog, &_goLog.LoggerData{}, false)))
 
 	r.Use(middL.JWT)
 	e.Use(middL.NewRelic)
