@@ -55,7 +55,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 
 	e := echo.New()
 
-	isProd := config.LoadAppConfig().Env == "production"
+	isProd := cfg.App.Env == "production"
 	e.HidePort = isProd
 	e.HideBanner = isProd
 
