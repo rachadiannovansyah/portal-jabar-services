@@ -52,12 +52,12 @@ jobs:
     - name: GitOps ArgoCD Update Image Tag
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.RELEASE_TAG }}"' 'core-service/jds-terraform-gke/k8s/portal-jabar-app/production/deployment.yaml'
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.RELEASE_TAG }}"' 'core-service/jds-terraform-gke/k8s/portal-jabar-app/production-jcloud/deployment.yaml'
 
     - name: GitOps ArgoCD Create Branch, Commit, Push
       run: |
         export GIT_SSH_COMMAND="ssh -i /tmp/gitlab-deploy-ssh-key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-        cd jds-terraform-gke/k8s/portal-jabar-app/production
+        cd jds-terraform-gke/k8s/portal-jabar-app/production-jcloud
         git config user.email "github-action@github.com"
         git config user.name "Github Action"
         git checkout -b portal-jabar-release-production
