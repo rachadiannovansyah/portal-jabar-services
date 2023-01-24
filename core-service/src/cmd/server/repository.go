@@ -17,6 +17,7 @@ import (
 	_generalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/general-information/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
+	_popUpBannerRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/repository/mysql"
 	_publicServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
 	_regInvitationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/repository/mysql"
 	_rolePermRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role-permission/repository/mysql"
@@ -56,6 +57,7 @@ type Repository struct {
 	DocumentArchiveRepo    domain.DocumentArchiveRepository
 	PublicServiceRepo      domain.PublicServiceRepository
 	ExternalVisitorRepo    domain.ExternalVisitorRepository
+	PopUpBannerRepo        domain.PopUpBannerRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -84,5 +86,6 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		DocumentArchiveRepo:    _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
 		PublicServiceRepo:      _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
 		ExternalVisitorRepo:    _externalVisitorRepo.NewExternalVisitorRepository(cfg),
+		PopUpBannerRepo:        _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
 	}
 }
