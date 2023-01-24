@@ -44,10 +44,12 @@ func (h *PopUpBannerHandler) Fetch(c echo.Context) error {
 	for _, row := range data {
 		// attach object response
 		resp := domain.ListPopUpBannerResponse{
-			ID:     row.ID,
-			Title:  row.Title,
-			Link:   row.Link,
-			Status: row.Status,
+			ID:        row.ID,
+			Title:     row.Title,
+			Link:      row.Link,
+			Status:    row.Status,
+			Duration:  row.Duration,
+			StartDate: row.StartDate,
 		}
 
 		// un-marshalling object's string
