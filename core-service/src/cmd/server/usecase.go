@@ -18,6 +18,7 @@ import (
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
+	_popUpBannerUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/usecase"
 	_publicServiceUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/usecase"
 	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
@@ -52,6 +53,7 @@ type Usecases struct {
 	DocumentArchiveUsecase domain.DocumentArchiveUsecase
 	PublicServiceUsecase   domain.PublicServiceUsecase
 	VisitorUsecase         domain.VisitorUsecase
+	PopUpBannerUsecase     domain.PopUpBannerUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -77,5 +79,6 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		DocumentArchiveUsecase: _documentArchiveUcase.NewDocumentArchiveUsecase(r.DocumentArchiveRepo, r.UserRepo, cfg, timeoutContext),
 		PublicServiceUsecase:   _publicServiceUcase.NewPublicServiceUsecase(r.PublicServiceRepo, r.UserRepo, r.SearchRepo, cfg, timeoutContext),
 		VisitorUsecase:         _visitorUcase.NewVisitorUsecase(r.ExternalVisitorRepo, conn, timeoutContext),
+		PopUpBannerUsecase:     _popUpBannerUcase.NewPopUpBannerUsecase(r.PopUpBannerRepo, cfg, timeoutContext),
 	}
 }
