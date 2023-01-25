@@ -34,3 +34,15 @@ func (u *popUpBannerUsecase) Fetch(c context.Context, auth *domain.JwtCustomClai
 
 	return
 }
+
+func (u *popUpBannerUsecase) GetByID(c context.Context, id int64) (res domain.PopUpBanner, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.popUpBannerRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	return
+}
