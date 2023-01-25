@@ -14,12 +14,12 @@ func filterPopUpBannerQuery(params *domain.Request, binds *[]interface{}) string
 
 	if params.Keyword != "" {
 		*binds = append(*binds, `%`+params.Keyword+`%`)
-		queryFilter = fmt.Sprintf(`%s AND g.name LIKE ?`, queryFilter)
+		queryFilter = fmt.Sprintf(`%s AND title LIKE ?`, queryFilter)
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
 		*binds = append(*binds, v)
-		queryFilter = fmt.Sprintf(`%s AND g.status = ?`, queryFilter)
+		queryFilter = fmt.Sprintf(`%s AND status = ?`, queryFilter)
 	}
 
 	return queryFilter
