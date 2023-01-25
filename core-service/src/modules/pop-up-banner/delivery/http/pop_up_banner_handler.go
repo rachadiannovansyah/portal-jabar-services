@@ -31,6 +31,10 @@ func (h *PopUpBannerHandler) Fetch(c echo.Context) error {
 	// define requirements of request
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"status": c.QueryParam("status"),
+	}
+
 	auth := helpers.GetAuthenticatedUser(c)
 
 	// usecase needed
