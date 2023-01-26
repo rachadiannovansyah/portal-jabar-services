@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 
@@ -24,6 +25,7 @@ func NewPopUpBannerHandler(r *echo.Group, ucase domain.PopUpBannerUsecase, apm *
 	}
 
 	r.GET("/pop-up-banners", handler.Fetch)
+	r.GET("/pop-up-banners/:id", handler.GetByID)
 }
 
 // Fetch will fetch the service-public
@@ -66,4 +68,36 @@ func (h *PopUpBannerHandler) Fetch(c echo.Context) error {
 	res := helpers.Paginate(c, listPopUpResponse, total, params)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// GetByID will get pop up banner by given id
+func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	data, err := h.PUsecase.GetByID(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// re-presenting responses
+	res := domain.DetailPopUpBannerResponse{
+		ID:          data.ID,
+		Title:       data.Title,
+		ButtonLabel: data.ButtonLabel,
+		Link:        data.Link,
+		Status:      data.Status,
+		Duration:    data.Duration,
+		StartDate:   data.StartDate,
+		UpdateAt:    data.UpdatedAt,
+	}
+
+	helpers.GetObjectFromString(data.Image.String, &res.Image)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &res})
 }

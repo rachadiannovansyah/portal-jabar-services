@@ -44,6 +44,27 @@ func (_m *PopUpBannerRepository) Fetch(ctx context.Context, params *domain.Reque
 	return r0, r1, r2
 }
 
+// GetByID provides a mock function with given fields: ctx, id
+func (_m *PopUpBannerRepository) GetByID(ctx context.Context, id int64) (domain.PopUpBanner, error) {
+	ret := _m.Called(ctx, id)
+
+	var r0 domain.PopUpBanner
+	if rf, ok := ret.Get(0).(func(context.Context, int64) domain.PopUpBanner); ok {
+		r0 = rf(ctx, id)
+	} else {
+		r0 = ret.Get(0).(domain.PopUpBanner)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+		r1 = rf(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 type mockConstructorTestingTNewPopUpBannerRepository interface {
 	mock.TestingT
 	Cleanup(func())

@@ -87,3 +87,27 @@ func TestFetch(t *testing.T) {
 		assert.Len(t, list, int(total))
 	})
 }
+
+func TestGetByID(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("GetByID", mock.Anything, mock.Anything).Return(mockStruct, nil).Once()
+		obj, err := usecase.GetByID(context.TODO(), int64(mockStruct.ID))
+
+		// assertions
+		assert.Equal(t, mockStruct, obj)
+		assert.NoError(t, err)
+
+		ts.popUpBannerRepo.AssertExpectations(t)
+		ts.popUpBannerRepo.AssertCalled(t, "GetByID", mock.Anything, mock.AnythingOfType("int64"))
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("GetByID", mock.Anything, mock.AnythingOfType("int64")).Return(domain.PopUpBanner{}, domain.ErrInternalServerError).Once()
+		_, err := usecase.GetByID(context.TODO(), mockStruct.ID)
+
+		// assertions
+		assert.Error(t, err)
+	})
+}

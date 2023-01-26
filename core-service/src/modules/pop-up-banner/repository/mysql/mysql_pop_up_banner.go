@@ -19,7 +19,7 @@ func NewMysqlPopUpBannerRepository(Conn *sql.DB) domain.PopUpBannerRepository {
 	return &mysqlPopUpBannerRepository{Conn}
 }
 
-var querySelectJoin = `SELECT id, title, button_label, image, link, status, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
+var querySelect = `SELECT id, title, button_label, image, link, status, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
 
 func (m *mysqlPopUpBannerRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.PopUpBanner, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -76,13 +76,36 @@ func (m *mysqlPopUpBannerRepository) Fetch(ctx context.Context, params *domain.R
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM pop_up_banners WHERE 1=1 `+queryFilter, binds...)
 
 	// appending final query
-	query := querySelectJoin + queryFilter + ` LIMIT ?,? `
+	query := querySelect + queryFilter + ` LIMIT ?,? `
 	binds = append(binds, params.Offset, params.PerPage)
 
 	// exec query and params binding
 	res, err = m.fetch(ctx, query, binds...)
 	if err != nil {
 		return nil, 0, err
+	}
+
+	return
+}
+
+func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res domain.PopUpBanner, err error) {
+	query := querySelect + " AND id = ? LIMIT 1"
+	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
+		&res.ID,
+		&res.Title,
+		&res.ButtonLabel,
+		&res.Image,
+		&res.Link,
+		&res.Status,
+		&res.Duration,
+		&res.StartDate,
+		&res.EndDate,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
 	}
 
 	return
