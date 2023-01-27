@@ -45,3 +45,7 @@ type AggDomain struct {
 	Announcement  int64 `json:"announcement"`
 	About         int64 `json:"about"`
 }
+
+type MessageResponse struct {
+	Message string `json:"message"`
+}

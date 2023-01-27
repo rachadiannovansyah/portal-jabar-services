@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -26,6 +28,7 @@ func NewPopUpBannerHandler(r *echo.Group, ucase domain.PopUpBannerUsecase, apm *
 
 	r.GET("/pop-up-banners", handler.Fetch)
 	r.GET("/pop-up-banners/:id", handler.GetByID)
+	r.POST("/pop-up-banners", handler.Store)
 }
 
 // Fetch will fetch the service-public
@@ -100,4 +103,41 @@ func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(data.Image.String, &res.Image)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &res})
+}
+
+// Store will store the pop up banner by given request body
+func (h *PopUpBannerHandler) Store(c echo.Context) (err error) {
+	req := new(domain.StorePopUpBannerRequest)
+	if err = c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(req); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	ctx := c.Request().Context()
+	err = h.PUsecase.Store(ctx, &auth, *req)
+	if err != nil {
+		return err
+	}
+
+	res := domain.MessageResponse{
+		Message: "successfully stored.",
+	}
+
+	return c.JSON(http.StatusCreated, res)
+}
+
+func isRequestValid(ps interface{}) (bool, error) {
+	validate := validator.New()
+	err := validate.Struct(ps)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

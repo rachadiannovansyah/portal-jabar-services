@@ -65,6 +65,20 @@ func (_m *PopUpBannerRepository) GetByID(ctx context.Context, id int64) (domain.
 	return r0, r1
 }
 
+// Store provides a mock function with given fields: ctx, body
+func (_m *PopUpBannerRepository) Store(ctx context.Context, body domain.StorePopUpBannerRequest) error {
+	ret := _m.Called(ctx, body)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.StorePopUpBannerRequest) error); ok {
+		r0 = rf(ctx, body)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewPopUpBannerRepository interface {
 	mock.TestingT
 	Cleanup(func())

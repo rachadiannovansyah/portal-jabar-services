@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type mysqlPopUpBannerRepository struct {
@@ -107,6 +108,37 @@ func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res
 	if err != nil {
 		err = domain.ErrNotFound
 	}
+
+	return
+}
+
+func (m *mysqlPopUpBannerRepository) Store(ctx context.Context, body domain.StorePopUpBannerRequest) (err error) {
+	query := `INSERT pop_up_banners SET title=?, button_label=?, link=?, image=?, duration=?,
+		start_date=?, end_date=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx,
+		body.Title,
+		body.CustomButton.Label,
+		body.CustomButton.Link,
+		helpers.GetStringFromObject(body.Image),
+		body.Scheduler.Duration,
+		body.Scheduler.StartDate,
+		helpers.ConvertStringToTime(body.Scheduler.StartDate).AddDate(0, 0, int(body.Scheduler.Duration)),
+	)
+	if err != nil {
+		return
+	}
+
+	lastID, err := res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	body.ID = lastID
 
 	return
 }

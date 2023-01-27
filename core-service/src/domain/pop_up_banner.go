@@ -46,12 +46,32 @@ type ImageBanner struct {
 	Mobile  string `json:"mobile,omitempty"`
 }
 
+type StorePopUpBannerRequest struct {
+	ID           int64                `json:"id"`
+	Title        string               `json:"title" validate:"required,max=255"`
+	CustomButton CustomButtonlabel    `json:"custom_button,omitempty"`
+	Scheduler    SchedulerPopUpBanner `json:"scheduler,omitempty"`
+	Image        ImageBanner          `json:"image" validate:"required"`
+}
+
+type CustomButtonlabel struct {
+	Label string `json:"label"`
+	Link  string `json:"link"`
+}
+
+type SchedulerPopUpBanner struct {
+	Duration  int64   `json:"duration"`
+	StartDate *string `json:"start_date"`
+}
+
 type PopUpBannerUsecase interface {
 	Fetch(ctx context.Context, auth *JwtCustomClaims, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
+	Store(ctx context.Context, auth *JwtCustomClaims, body StorePopUpBannerRequest) (err error)
 }
 
 type PopUpBannerRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
+	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
 }
