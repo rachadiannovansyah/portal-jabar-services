@@ -111,3 +111,29 @@ func TestGetByID(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestStore(t *testing.T) {
+	var mockRequest domain.StorePopUpBannerRequest
+	err = faker.FakeData(&mockRequest)
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
+
+		err := usecase.Store(context.TODO(), &mockJwtStruct, mockRequest)
+
+		// assertions
+		assert.NoError(t, err)
+		ts.popUpBannerRepo.AssertExpectations(t)
+		ts.popUpBannerRepo.AssertCalled(t, "Store", mock.Anything, mock.Anything, mock.Anything)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Store", mock.Anything, mock.Anything).Return(domain.ErrInternalServerError).Once()
+
+		err := usecase.Store(context.TODO(), &mockJwtStruct, mockRequest)
+
+		// assertions
+		assert.Error(t, err)
+	})
+}
