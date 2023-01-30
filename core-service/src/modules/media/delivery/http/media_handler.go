@@ -22,6 +22,7 @@ func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 		MUsecase: mu,
 	}
 	r.POST("/media/upload", handler.Store)
+	r.DELETE("/media/delete", handler.Delete)
 }
 
 // Store will store the feedback by given request body
@@ -35,6 +36,8 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 		"units",
 		"featured-program",
 		"informations",
+		"pop-up-banners",
+		"infographic-banners",
 	}
 	domainExists, domainIndex := helpers.InArray(domain, domainBucketName)
 	domain = ""
@@ -64,6 +67,26 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 
 	if err != nil {
 		logrus.Fatal(err)
+	}
+
+	return c.JSON(http.StatusCreated, res)
+}
+
+// Delete will delete the object S3 based on key name
+func (h *MediaHandler) Delete(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	reqBody := new(domain.DeleteMediaRequest)
+	if err = c.Bind(&reqBody); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	err = h.MUsecase.Delete(ctx, reqBody)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	res := domain.MessageResponse{
+		Message: "succesfully deleted file from s3 bucket.",
 	}
 
 	return c.JSON(http.StatusCreated, res)

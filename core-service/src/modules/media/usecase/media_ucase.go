@@ -59,3 +59,18 @@ func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf 
 
 	return u.newMediaResponse(fileName, fileDownloadUri, fileSize), err
 }
+
+func (u *mediaUsecase) Delete(c context.Context, body *domain.DeleteMediaRequest) (err error) {
+	filePath := u.config.AWS.Env + "/media/img/" + body.Domain + body.Key
+
+	_, err = s3.New(u.conn.AWS).DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(u.config.AWS.Bucket),
+		Key:    aws.String(filePath),
+	})
+
+	if err != nil {
+		return
+	}
+
+	return
+}
