@@ -86,7 +86,7 @@ func (h *MediaHandler) Delete(c echo.Context) (err error) {
 	}
 
 	res := domain.MessageResponse{
-		Message: "succesfully deleted file from s3 bucket.",
+		Message: "succesfully deleted file from cloud storage.",
 	}
 
 	return c.JSON(http.StatusCreated, res)
