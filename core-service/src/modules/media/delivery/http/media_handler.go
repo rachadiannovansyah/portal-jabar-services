@@ -89,5 +89,5 @@ func (h *MediaHandler) Delete(c echo.Context) (err error) {
 		Message: "succesfully deleted file from cloud storage.",
 	}
 
-	return c.JSON(http.StatusCreated, res)
+	return c.JSON(http.StatusOK, res)
 }
