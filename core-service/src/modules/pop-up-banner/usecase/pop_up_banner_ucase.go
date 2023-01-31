@@ -68,3 +68,11 @@ func (u *popUpBannerUsecase) Delete(c context.Context, id int64) (err error) {
 
 	return
 }
+
+func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, status string) (err error) {
+	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, status); err != nil {
+		return
+	}
+
+	return
+}

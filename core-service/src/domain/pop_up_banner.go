@@ -54,6 +54,10 @@ type StorePopUpBannerRequest struct {
 	Image        ImageBanner          `json:"image" validate:"required"`
 }
 
+type UpdateStatusPopUpBannerRequest struct {
+	Status string `json:"status" validate:"required,eq=ACTIVE|eq=NON-ACTIVE"`
+}
+
 type CustomButtonlabel struct {
 	Label string `json:"label"`
 	Link  string `json:"link"`
@@ -69,6 +73,7 @@ type PopUpBannerUsecase interface {
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
 	Store(ctx context.Context, auth *JwtCustomClaims, body StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
+	UpdateStatus(ctx context.Context, id int64, status string) (err error)
 }
 
 type PopUpBannerRepository interface {
@@ -76,4 +81,5 @@ type PopUpBannerRepository interface {
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
 	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
+	UpdateStatus(ctx context.Context, id int64, status string) (err error)
 }

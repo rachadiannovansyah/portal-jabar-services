@@ -30,6 +30,7 @@ func NewPopUpBannerHandler(r *echo.Group, ucase domain.PopUpBannerUsecase, apm *
 	r.GET("/pop-up-banners/:id", handler.GetByID)
 	r.POST("/pop-up-banners", handler.Store)
 	r.DELETE("/pop-up-banners/:id", handler.Delete)
+	r.PATCH("/pop-up-banners/:id/status", handler.UpdateStatus)
 }
 
 // Fetch will fetch the service-public
@@ -150,6 +151,33 @@ func (h *PopUpBannerHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// UpdateStatus will update the pop-up-banners status by given request body
+func (h *PopUpBannerHandler) UpdateStatus(c echo.Context) (err error) {
+	body := new(domain.UpdateStatusPopUpBannerRequest)
+	if err = c.Bind(body); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	if err = validator.New().Struct(body); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	ctx := c.Request().Context()
+	err = h.PUsecase.UpdateStatus(ctx, int64(reqID), body.Status)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully update status",
+	})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {

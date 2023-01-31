@@ -167,3 +167,18 @@ func (m *mysqlPopUpBannerRepository) Delete(ctx context.Context, id int64) (err 
 
 	return
 }
+
+func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
+	query := `UPDATE pop_up_banners SET status = ? WHERE id = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		status,
+		id,
+	)
+
+	return
+}
