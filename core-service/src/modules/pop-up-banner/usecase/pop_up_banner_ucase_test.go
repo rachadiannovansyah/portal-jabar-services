@@ -159,3 +159,30 @@ func TestDelete(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestUpdateStatus(t *testing.T) {
+	var mockUpdateStruct domain.UpdateStatusPopUpBannerRequest
+	err = faker.FakeData(&mockUpdateStruct)
+
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(nil).Once()
+
+		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, mockUpdateStruct.Status)
+
+		// assertions
+		assert.NoError(t, err)
+		ts.popUpBannerRepo.AssertCalled(t, "UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything)
+	})
+
+	t.Run("errror-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(domain.ErrInternalServerError).Once()
+
+		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, "UN-ACTIVE")
+
+		// assertions
+		assert.Error(t, err)
+	})
+
+}
