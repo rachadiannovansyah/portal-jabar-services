@@ -29,6 +29,7 @@ func NewPopUpBannerHandler(r *echo.Group, ucase domain.PopUpBannerUsecase, apm *
 	r.GET("/pop-up-banners", handler.Fetch)
 	r.GET("/pop-up-banners/:id", handler.GetByID)
 	r.POST("/pop-up-banners", handler.Store)
+	r.DELETE("/pop-up-banners/:id", handler.Delete)
 }
 
 // Fetch will fetch the service-public
@@ -131,6 +132,24 @@ func (h *PopUpBannerHandler) Store(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusCreated, res)
+}
+
+// Delete will delete the pop-up-banner by given id
+func (h *PopUpBannerHandler) Delete(c echo.Context) (err error) {
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.PUsecase.Delete(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 func isRequestValid(ps interface{}) (bool, error) {

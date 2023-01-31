@@ -137,3 +137,25 @@ func TestStore(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestDelete(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(nil).Once()
+		err := usecase.Delete(context.TODO(), mockStruct.ID)
+
+		// assertions
+		assert.NoError(t, err)
+		ts.popUpBannerRepo.AssertExpectations(t)
+		ts.popUpBannerRepo.AssertCalled(t, "Delete", mock.Anything, mock.AnythingOfType("int64"))
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(domain.ErrInternalServerError).Once()
+		err := usecase.Delete(context.TODO(), mockStruct.ID)
+
+		// assertions
+		assert.Error(t, err)
+	})
+}

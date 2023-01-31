@@ -142,3 +142,28 @@ func (m *mysqlPopUpBannerRepository) Store(ctx context.Context, body domain.Stor
 
 	return
 }
+
+func (m *mysqlPopUpBannerRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "DELETE FROM pop_up_banners WHERE id = ?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		err = fmt.Errorf("Weird Behavior. Total Affected: %d", rowAffected)
+		return
+	}
+
+	return
+}
