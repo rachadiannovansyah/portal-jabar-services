@@ -68,10 +68,12 @@ type PopUpBannerUsecase interface {
 	Fetch(ctx context.Context, auth *JwtCustomClaims, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
 	Store(ctx context.Context, auth *JwtCustomClaims, body StorePopUpBannerRequest) (err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
 
 type PopUpBannerRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
 	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
+	Delete(ctx context.Context, id int64) (err error)
 }

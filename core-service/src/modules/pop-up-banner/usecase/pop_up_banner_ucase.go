@@ -57,3 +57,14 @@ func (u *popUpBannerUsecase) Store(c context.Context, au *domain.JwtCustomClaims
 
 	return
 }
+
+func (u *popUpBannerUsecase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	if err = u.popUpBannerRepo.Delete(ctx, id); err != nil {
+		return
+	}
+
+	return
+}
