@@ -184,5 +184,30 @@ func TestUpdateStatus(t *testing.T) {
 		// assertions
 		assert.Error(t, err)
 	})
+}
 
+func TestUpdate(t *testing.T) {
+	var mockUpdateStruct domain.StorePopUpBannerRequest
+	err = faker.FakeData(&mockUpdateStruct)
+
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Update", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(nil).Once()
+
+		err := usecase.Update(context.TODO(), &mockJwtStruct, mockStruct.ID, &mockUpdateStruct)
+
+		// assertions
+		assert.NoError(t, err)
+		ts.popUpBannerRepo.AssertCalled(t, "Update", mock.Anything, mock.AnythingOfType("int64"), mock.Anything)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("Update", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(domain.ErrNotFound).Once()
+
+		err := usecase.Update(context.TODO(), &mockJwtStruct, mockStruct.ID+1, &mockUpdateStruct)
+
+		// assertions
+		assert.Error(t, err)
+	})
 }
