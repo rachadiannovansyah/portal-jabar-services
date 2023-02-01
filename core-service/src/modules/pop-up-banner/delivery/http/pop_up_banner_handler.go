@@ -31,6 +31,7 @@ func NewPopUpBannerHandler(r *echo.Group, ucase domain.PopUpBannerUsecase, apm *
 	r.POST("/pop-up-banners", handler.Store)
 	r.DELETE("/pop-up-banners/:id", handler.Delete)
 	r.PATCH("/pop-up-banners/:id/status", handler.UpdateStatus)
+	r.PUT("/pop-up-banners/:id", handler.Update)
 }
 
 // Fetch will fetch the service-public
@@ -99,6 +100,7 @@ func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
 		Status:      data.Status,
 		Duration:    data.Duration,
 		StartDate:   data.StartDate,
+		EndDate:     data.EndDate,
 		UpdateAt:    data.UpdatedAt,
 	}
 
@@ -177,6 +179,37 @@ func (h *PopUpBannerHandler) UpdateStatus(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully update status",
+	})
+}
+
+// Update will update the pop-up-banners by given request body
+func (h *PopUpBannerHandler) Update(c echo.Context) (err error) {
+	body := new(domain.StorePopUpBannerRequest)
+	if err = c.Bind(body); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(body); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	au := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &au)
+
+	ctx := c.Request().Context()
+	err = h.PUsecase.Update(ctx, &au, int64(reqID), body)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully updated.",
 	})
 }
 

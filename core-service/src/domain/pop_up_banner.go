@@ -38,6 +38,7 @@ type DetailPopUpBannerResponse struct {
 	Status      string      `json:"status"`
 	Duration    int64       `json:"duration"`
 	StartDate   *time.Time  `json:"start_date"`
+	EndDate     *time.Time  `json:"end_date,omitempty"`
 	UpdateAt    time.Time   `json:"updated_at"`
 }
 
@@ -74,6 +75,7 @@ type PopUpBannerUsecase interface {
 	Store(ctx context.Context, auth *JwtCustomClaims, body StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, status string) (err error)
+	Update(ctx context.Context, auth *JwtCustomClaims, id int64, body *StorePopUpBannerRequest) (err error)
 }
 
 type PopUpBannerRepository interface {
@@ -82,4 +84,5 @@ type PopUpBannerRepository interface {
 	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, status string) (err error)
+	Update(ctx context.Context, id int64, body *StorePopUpBannerRequest) (err error)
 }

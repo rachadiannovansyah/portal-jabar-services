@@ -93,6 +93,20 @@ func (_m *PopUpBannerRepository) Store(ctx context.Context, body domain.StorePop
 	return r0
 }
 
+// Update provides a mock function with given fields: ctx, id, body
+func (_m *PopUpBannerRepository) Update(ctx context.Context, id int64, body *domain.StorePopUpBannerRequest) error {
+	ret := _m.Called(ctx, id, body)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, *domain.StorePopUpBannerRequest) error); ok {
+		r0 = rf(ctx, id, body)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateStatus provides a mock function with given fields: ctx, id, status
 func (_m *PopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string) error {
 	ret := _m.Called(ctx, id, status)
