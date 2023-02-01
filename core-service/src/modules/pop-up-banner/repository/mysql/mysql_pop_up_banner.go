@@ -73,6 +73,12 @@ func (m *mysqlPopUpBannerRepository) Fetch(ctx context.Context, params *domain.R
 	binds := make([]interface{}, 0)
 	queryFilter := filterPopUpBannerQuery(params, &binds)
 
+	if params.SortBy != "" {
+		queryFilter += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+	} else {
+		queryFilter += ` ORDER BY created_at DESC`
+	}
+
 	// get count of data
 	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM pop_up_banners WHERE 1=1 `+queryFilter, binds...)
 
