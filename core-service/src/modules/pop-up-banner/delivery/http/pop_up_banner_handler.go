@@ -100,6 +100,7 @@ func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
 		Status:      data.Status,
 		Duration:    data.Duration,
 		StartDate:   data.StartDate,
+		EndDate:     data.EndDate,
 		UpdateAt:    data.UpdatedAt,
 	}
 

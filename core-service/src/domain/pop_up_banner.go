@@ -38,6 +38,7 @@ type DetailPopUpBannerResponse struct {
 	Status      string      `json:"status"`
 	Duration    int64       `json:"duration"`
 	StartDate   *time.Time  `json:"start_date"`
+	EndDate     *time.Time  `json:"end_date,omitempty"`
 	UpdateAt    time.Time   `json:"updated_at"`
 }
 
