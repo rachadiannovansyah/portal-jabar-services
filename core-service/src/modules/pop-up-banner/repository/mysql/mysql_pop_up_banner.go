@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
@@ -73,7 +74,7 @@ func (m *mysqlPopUpBannerRepository) Fetch(ctx context.Context, params *domain.R
 	binds := make([]interface{}, 0)
 	queryFilter := filterPopUpBannerQuery(params, &binds)
 
-	defaultSort := ` ORDER BY status, created_at DESC`
+	defaultSort := ` ORDER BY status, updated_at DESC`
 	if params.SortBy != "" {
 		defaultSort = ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	}
@@ -175,7 +176,7 @@ func (m *mysqlPopUpBannerRepository) Delete(ctx context.Context, id int64) (err 
 }
 
 func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
-	query := `UPDATE pop_up_banners SET status = ? WHERE id = ?`
+	query := `UPDATE pop_up_banners SET status = ?, updated_at = ? WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -183,6 +184,7 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 
 	_, err = stmt.ExecContext(ctx,
 		status,
+		time.Now(),
 		id,
 	)
 
@@ -191,7 +193,7 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 
 func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body *domain.StorePopUpBannerRequest) (err error) {
 	query := `UPDATE pop_up_banners SET title=?, button_label=?, link=?, image=?, duration=?,
-	start_date=?, end_date=? WHERE id=?`
+	start_date=?, end_date=?, updated_at=? WHERE id=?`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -206,6 +208,7 @@ func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body 
 		body.Scheduler.Duration,
 		body.Scheduler.StartDate,
 		helpers.ConvertStringToTime(body.Scheduler.StartDate).AddDate(0, 0, int(body.Scheduler.Duration)),
+		time.Now(),
 		id,
 	)
 
