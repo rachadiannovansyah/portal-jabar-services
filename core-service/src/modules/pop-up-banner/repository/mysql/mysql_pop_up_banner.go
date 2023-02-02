@@ -119,6 +119,19 @@ func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res
 	return
 }
 
+func (m *mysqlPopUpBannerRepository) CheckStatus(ctx context.Context, status string) (id int64, err error) {
+	query := `SELECT id FROM pop_up_banners WHERE status = ? LIMIT 1`
+	err = m.Conn.QueryRowContext(ctx, query, status).Scan(
+		&id,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
+	}
+
+	return
+}
+
 func (m *mysqlPopUpBannerRepository) Store(ctx context.Context, body domain.StorePopUpBannerRequest) (err error) {
 	query := `INSERT pop_up_banners SET title=?, button_label=?, link=?, image=?, duration=?,
 		start_date=?, end_date=?`
