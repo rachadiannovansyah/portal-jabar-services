@@ -119,10 +119,10 @@ func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res
 	return
 }
 
-func (m *mysqlPopUpBannerRepository) CheckStatus(ctx context.Context, status string) (id int64, isActive bool) {
+func (m *mysqlPopUpBannerRepository) CheckStatus(ctx context.Context, status string) (id int64, err error) {
 	query := `SELECT id FROM pop_up_banners WHERE status = ? LIMIT 1`
 
-	err := m.Conn.QueryRowContext(ctx, query, status).Scan(
+	err = m.Conn.QueryRowContext(ctx, query, status).Scan(
 		&id,
 	)
 
@@ -200,6 +200,20 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 		status,
 		time.Now(),
 		id,
+	)
+
+	return
+}
+
+func (m *mysqlPopUpBannerRepository) DeactiveStatus(ctx context.Context) (err error) {
+	query := `UPDATE pop_up_banners SET status = ?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		"NON-ACTIVE",
 	)
 
 	return

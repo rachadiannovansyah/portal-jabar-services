@@ -84,6 +84,6 @@ type PopUpBannerRepository interface {
 	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, status string) (err error)
+	DeactiveStatus(ctx context.Context) (err error)
 	Update(ctx context.Context, id int64, body *StorePopUpBannerRequest) (err error)
-	CheckStatus(ctx context.Context, status string) (id int64, isActive bool)
 }
