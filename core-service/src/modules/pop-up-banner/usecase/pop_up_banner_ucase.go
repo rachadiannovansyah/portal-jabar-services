@@ -70,20 +70,12 @@ func (u *popUpBannerUsecase) Delete(c context.Context, id int64) (err error) {
 }
 
 func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, status string) (err error) {
-	// add rules only can avail one of is active pop up banner
-	resId, err := n.popUpBannerRepo.CheckStatus(ctx, "ACTIVE")
-	if err != nil {
+	// deactive existing active pop up banner
+	if err = n.popUpBannerRepo.DeactiveStatus(ctx); err != nil {
 		return
 	}
 
-	// if there's one, then disable the existing pop up banner
-	if resId != 0 {
-		err = n.popUpBannerRepo.UpdateStatus(ctx, resId, "NON-ACTIVE")
-		if err != nil {
-			return
-		}
-	}
-
+	// update within selected banner to live publish
 	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, status); err != nil {
 		return
 	}
