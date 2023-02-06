@@ -119,14 +119,15 @@ func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res
 	return
 }
 
-func (m *mysqlPopUpBannerRepository) CheckStatus(ctx context.Context, status string) (id int64, err error) {
+func (m *mysqlPopUpBannerRepository) CheckStatus(ctx context.Context, status string) (id int64, isActive bool) {
 	query := `SELECT id FROM pop_up_banners WHERE status = ? LIMIT 1`
-	err = m.Conn.QueryRowContext(ctx, query, status).Scan(
+
+	err := m.Conn.QueryRowContext(ctx, query, status).Scan(
 		&id,
 	)
 
 	if err != nil {
-		err = domain.ErrNotFound
+		return
 	}
 
 	return
