@@ -166,7 +166,7 @@ func TestUpdateStatus(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		// mock expectation being called
-		ts.popUpBannerRepo.On("CheckStatus", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct.ID, nil).Once()
+		ts.popUpBannerRepo.On("CheckStatus", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct.ID, false).Once()
 		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(nil)
 
 		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, mockUpdateStruct.Status)
@@ -179,13 +179,15 @@ func TestUpdateStatus(t *testing.T) {
 
 	t.Run("error-occurred", func(t *testing.T) {
 		// mock expectation being called
-		ts.popUpBannerRepo.On("CheckStatus", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct.ID+1, domain.ErrNotFound).Once()
+		ts.popUpBannerRepo.On("CheckStatus", mock.Anything, mock.AnythingOfType("string")).Return(mockStruct.ID+1, true)
 		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(domain.ErrNotFound)
 
-		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, "UN-ACTIVE")
+		id, isActive := ts.popUpBannerRepo.CheckStatus(context.TODO(), "ACTIVE")
+		err := usecase.UpdateStatus(context.TODO(), id, "NON-ACTIVE")
 
 		// assertions
-		assert.Error(t, err)
+		assert.Equal(t, isActive, true)
+		assert.NoError(t, err)
 	})
 }
 
