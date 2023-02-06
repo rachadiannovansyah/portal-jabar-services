@@ -42,6 +42,7 @@ func main() {
 	// @every 2h is mean will run jobs every 2 hours of the day
 	c.AddFunc("@every 2h", func() { job.NewsArchiveJob(w.conn, cfg) })
 	c.AddFunc("@every 2h", func() { job.NewsPublishingJob(w.conn, cfg) })
+	c.AddFunc("@daily", func() { job.PopUpBannerDeactivateJob(w.conn, cfg) })
 
 	fmt.Println("service-worker is running")
 
