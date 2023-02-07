@@ -168,24 +168,24 @@ func TestUpdateStatus(t *testing.T) {
 		// mock expectation being called
 		ts.popUpBannerRepo.On("DeactiveStatus", mock.Anything).Return(nil).Once()
 		ts.popUpBannerRepo.On("GetByID", mock.Anything, mock.Anything).Return(mockStruct, nil).Once()
-		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything, mock.AnythingOfType("int64"), mock.AnythingOfType("int64")).Return(nil)
+		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(nil)
 
-		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, mockUpdateStruct.Status)
+		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, &mockUpdateStruct)
 
 		// assertions
 		assert.NoError(t, err)
 		ts.popUpBannerRepo.AssertCalled(t, "DeactiveStatus", mock.Anything)
 		ts.popUpBannerRepo.AssertCalled(t, "GetByID", mock.Anything, mock.Anything)
-		ts.popUpBannerRepo.AssertCalled(t, "UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything, mock.AnythingOfType("int64"), mock.AnythingOfType("int64"))
+		ts.popUpBannerRepo.AssertCalled(t, "UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything)
 	})
 
 	t.Run("error-occurred", func(t *testing.T) {
 		// mock expectation being called
 		ts.popUpBannerRepo.On("DeactiveStatus", mock.Anything).Return(domain.ErrInternalServerError).Once()
 		ts.popUpBannerRepo.On("GetByID", mock.Anything, mock.Anything).Return(mockStruct, domain.ErrNotFound).Once()
-		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything, mock.AnythingOfType("int64"), mock.AnythingOfType("int64")).Return(domain.ErrNotFound)
+		ts.popUpBannerRepo.On("UpdateStatus", mock.Anything, mock.AnythingOfType("int64"), mock.Anything).Return(domain.ErrNotFound)
 
-		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, "NON-ACTIVE")
+		err := usecase.UpdateStatus(context.TODO(), mockStruct.ID, &mockUpdateStruct)
 
 		// assertions
 		assert.Error(t, err)

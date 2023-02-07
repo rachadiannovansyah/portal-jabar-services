@@ -69,7 +69,7 @@ func (u *popUpBannerUsecase) Delete(c context.Context, id int64) (err error) {
 	return
 }
 
-func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, status string) (err error) {
+func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, body *domain.UpdateStatusPopUpBannerRequest) (err error) {
 	// deactive existing active pop up banner
 	if err = n.popUpBannerRepo.DeactiveStatus(ctx); err != nil {
 		return
@@ -81,11 +81,12 @@ func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, status 
 	}
 
 	// update within selected banner to live publish
-	is_live := int64(0)
-	if status == "ACTIVE" {
-		is_live = int64(1)
+	body.Duration = pop.Duration
+	body.IsLive = int64(0)
+	if body.Status == "ACTIVE" {
+		body.IsLive = int64(1)
 	}
-	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, status, is_live, pop.Duration); err != nil {
+	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, body); err != nil {
 		return
 	}
 
