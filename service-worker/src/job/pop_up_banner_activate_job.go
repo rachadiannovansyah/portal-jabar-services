@@ -22,39 +22,42 @@ func PopUpBannerActivateJob(conn *utils.Conn, cfg *config.Config) {
 		LIMIT 1`
 	_ = conn.Mysql.QueryRow(query).Scan(&ID)
 
-	if ID != "" {
-		// deactivate banner
-		deactivateQuery := `UPDATE pop_up_banners 
-		SET status = 'NON-ACTIVE', is_live = 0 
-		WHERE status = 'ACTIVE'`
+	if ID == "" {
+		logrus.Println("PopUpBannerActivateJob: No-one activate pop up banner..")
+		return
+	}
 
-		stmt, err := conn.Mysql.PrepareContext(context.TODO(), deactivateQuery)
-		if err != nil {
-			logrus.Error(err)
-		}
+	// deactivate banner
+	deactivateQuery := `UPDATE pop_up_banners 
+	SET status = 'NON-ACTIVE', is_live = 0 
+	WHERE status = 'ACTIVE'`
 
-		_, err = stmt.ExecContext(context.TODO())
-		if err != nil {
-			logrus.Error(err)
-		}
+	stmt, err := conn.Mysql.PrepareContext(context.TODO(), deactivateQuery)
+	if err != nil {
+		logrus.Error(err)
+	}
 
-		// activate banner
-		activateQuery := `UPDATE pop_up_banners SET is_live=1, status='ACTIVE', updated_at=now() WHERE id=?`
-		stmt, err = conn.Mysql.PrepareContext(context.TODO(), activateQuery)
-		if err != nil {
-			logrus.Error(err)
-		}
+	_, err = stmt.ExecContext(context.TODO())
+	if err != nil {
+		logrus.Error(err)
+	}
 
-		res, err := stmt.ExecContext(context.TODO(), ID)
-		if err != nil {
-			logrus.Error(err)
-		}
+	// activate banner
+	activateQuery := `UPDATE pop_up_banners SET is_live=1, status='ACTIVE', updated_at=now() WHERE id=?`
+	stmt, err = conn.Mysql.PrepareContext(context.TODO(), activateQuery)
+	if err != nil {
+		logrus.Error(err)
+	}
 
-		// rows affected
-		if ra, err := res.RowsAffected(); err != nil {
-			logrus.Error("ErrPopUpBannerActivateJob: ", err)
-		} else {
-			logrus.Println("PopUpBannerActivateJob: Rows affected: ", ra)
-		}
+	res, err := stmt.ExecContext(context.TODO(), ID)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	// rows affected
+	if ra, err := res.RowsAffected(); err != nil {
+		logrus.Error("ErrPopUpBannerActivateJob: ", err)
+	} else {
+		logrus.Println("PopUpBannerActivateJob: Rows affected: ", ra)
 	}
 }
