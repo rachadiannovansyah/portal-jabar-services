@@ -1,5 +1,6 @@
-import mongoose, { Schema } from 'mongoose'
+import { Schema } from 'mongoose'
 import slugify from '../../../pkg/slug'
+import Mongo from '../mongo'
 
 const schema = new Schema(
     {
@@ -38,4 +39,6 @@ schema.pre('save', function (next) {
     next()
 })
 
-export default mongoose.model('pages', schema)
+export default (database: string) => {
+    return Mongo.switch(database).model('pages', schema)
+}
