@@ -189,16 +189,23 @@ func (m *mysqlPopUpBannerRepository) Delete(ctx context.Context, id int64) (err 
 	return
 }
 
-func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string) (err error) {
-	query := `UPDATE pop_up_banners SET status = ?, updated_at = ? WHERE id = ?`
+func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, body *domain.UpdateStatusPopUpBannerRequest) (err error) {
+	query := `UPDATE pop_up_banners 
+		SET status = ?, 
+		is_live = ?,
+		start_date = now(),
+		end_date = ?, 
+		updated_at = now() 
+		WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
 	_, err = stmt.ExecContext(ctx,
-		status,
-		time.Now(),
+		body.Status,
+		body.IsLive,
+		time.Now().AddDate(0, 0, int(body.Duration)),
 		id,
 	)
 
@@ -206,7 +213,7 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 }
 
 func (m *mysqlPopUpBannerRepository) DeactiveStatus(ctx context.Context) (err error) {
-	query := `UPDATE pop_up_banners SET status = ?`
+	query := `UPDATE pop_up_banners SET status = ?, is_live = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -214,6 +221,7 @@ func (m *mysqlPopUpBannerRepository) DeactiveStatus(ctx context.Context) (err er
 
 	_, err = stmt.ExecContext(ctx,
 		"NON-ACTIVE",
+		0,
 	)
 
 	return

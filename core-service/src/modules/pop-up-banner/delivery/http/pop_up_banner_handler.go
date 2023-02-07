@@ -172,7 +172,7 @@ func (h *PopUpBannerHandler) UpdateStatus(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
-	err = h.PUsecase.UpdateStatus(ctx, int64(reqID), body.Status)
+	err = h.PUsecase.UpdateStatus(ctx, int64(reqID), body)
 	if err != nil {
 		return err
 	}
