@@ -121,13 +121,13 @@ func (_m *PopUpBannerRepository) Update(ctx context.Context, id int64, body *dom
 	return r0
 }
 
-// UpdateStatus provides a mock function with given fields: ctx, id, status
-func (_m *PopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string) error {
-	ret := _m.Called(ctx, id, status)
+// UpdateStatus provides a mock function with given fields: ctx, id, status, is_live
+func (_m *PopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string, is_live int64) error {
+	ret := _m.Called(ctx, id, status, is_live)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64, string) error); ok {
-		r0 = rf(ctx, id, status)
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string, int64) error); ok {
+		r0 = rf(ctx, id, status, is_live)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -76,7 +76,11 @@ func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, status 
 	}
 
 	// update within selected banner to live publish
-	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, status); err != nil {
+	is_live := int64(0)
+	if status == "ACTIVE" {
+		is_live = int64(1)
+	}
+	if err = n.popUpBannerRepo.UpdateStatus(ctx, ID, status, is_live); err != nil {
 		return
 	}
 
