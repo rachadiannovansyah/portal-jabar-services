@@ -189,8 +189,14 @@ func (m *mysqlPopUpBannerRepository) Delete(ctx context.Context, id int64) (err 
 	return
 }
 
-func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string, is_live int64) (err error) {
-	query := `UPDATE pop_up_banners SET status = ?, is_live = ?, updated_at = ? WHERE id = ?`
+func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64, status string, is_live int64, duration int64) (err error) {
+	query := `UPDATE pop_up_banners 
+		SET status = ?, 
+		is_live = ?,
+		start_date = now(),
+		end_date = ?, 
+		updated_at = now() 
+		WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -199,7 +205,7 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 	_, err = stmt.ExecContext(ctx,
 		status,
 		is_live,
-		time.Now(),
+		time.Now().AddDate(0, 0, int(duration)),
 		id,
 	)
 
