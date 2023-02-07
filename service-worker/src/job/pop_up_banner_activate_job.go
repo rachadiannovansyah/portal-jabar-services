@@ -17,21 +17,10 @@ func PopUpBannerActivateJob(conn *utils.Conn, cfg *config.Config) {
 	query := `SELECT id FROM pop_up_banners
 		WHERE status='ACTIVE' 
 		AND is_live=0 
-		AND start_date <= NOW()`
-	rows, err := conn.Mysql.Query(query)
-	if err != nil {
-		logrus.Error(err)
-		return
-	}
-	for rows.Next() {
-		var id string
-		err = rows.Scan(&id)
-		if err != nil {
-			logrus.Error(err)
-			return
-		}
-		ID = id
-	}
+		AND start_date <= NOW()
+		ORDER BY updated_at
+		LIMIT 1`
+	_ = conn.Mysql.QueryRow(query).Scan(&ID)
 
 	if ID != "" {
 		// deactivate banner
