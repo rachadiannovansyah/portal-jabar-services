@@ -1,22 +1,25 @@
 import winston from 'winston'
-import page from '../../../../database/mongo/schemas/page'
+import Page from '../../../../database/mongo/schemas/page'
 import { Store } from '../../entity/interface'
 
 class Repository {
-    constructor(private logger: winston.Logger) {}
+    private page
+    constructor(private logger: winston.Logger, database: string) {
+        this.page = Page(database)
+    }
 
     public async store(body: Store) {
-        const pageNew = new page(body)
+        const pageNew = new this.page(body)
 
         return pageNew.save()
     }
 
     public async findByTitle(title: string) {
-        return page.findOne({ title })
+        return this.page.findOne({ title })
     }
 
     public async findBySlug(id: string) {
-        return page.findOne({ slug: id })
+        return this.page.findOne({ slug: id })
     }
 }
 

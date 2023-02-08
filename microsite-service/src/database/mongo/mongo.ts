@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 import winston from 'winston'
 import { Config } from '../../config/config.interface'
 
@@ -7,7 +7,7 @@ class Mongo {
         mongoose.set('strictQuery', false)
         mongoose.set('autoIndex', false)
         return mongoose
-            .connect(`mongodb://${db.host}:${db.port}/${db.database}`, {
+            .connect(`mongodb://${db.host}:${db.port}/${db.name}`, {
                 authSource: db.auth_source,
                 pass: db.password,
                 user: db.username,
@@ -21,10 +21,12 @@ class Mongo {
             })
     }
 
-    public static switch(database: string) {
-        return mongoose.connection.useDb(database, {
-            useCache: true,
-        })
+    public static model(database: string, collection: string, schema: Schema) {
+        return mongoose.connection
+            .useDb(database, {
+                useCache: true,
+            })
+            .model(collection, schema)
     }
 }
 

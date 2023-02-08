@@ -1,5 +1,4 @@
 import { Schema } from 'mongoose'
-import slugify from '../../../pkg/slug'
 import Mongo from '../mongo'
 
 const schema = new Schema(
@@ -7,23 +6,28 @@ const schema = new Schema(
         created_by: {
             type: String,
             required: false,
+            index: true,
         },
-        title: {
+        published_by: {
+            type: String,
+            required: false,
+            index: true,
+        },
+        domain: {
             type: String,
             required: true,
             index: true,
-            unique: true,
         },
-        slug: {
+        organization: {
+            type: String,
+            required: true,
+            index: true,
+        },
+        published_at: Date,
+        status: {
             type: String,
             index: true,
         },
-        blocks: {
-            type: Array,
-            required: true,
-        },
-        time: Number,
-        version: String,
     },
     {
         timestamps: {
@@ -34,11 +38,6 @@ const schema = new Schema(
     }
 )
 
-schema.pre('save', function (next) {
-    this.slug = slugify(this.title)
-    next()
-})
-
 export default (database: string) => {
-    return Mongo.model(database, 'pages', schema)
+    return Mongo.model(database, 'settings', schema)
 }
