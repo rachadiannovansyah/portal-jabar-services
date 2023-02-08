@@ -37,6 +37,10 @@ func NewsPublishingJob(conn *utils.Conn, cfg *config.Config) {
 		newsIDs = append(newsIDs, id)
 	}
 
+	if len(newsIDs) == 0 {
+		return
+	}
+
 	// Publishing news
 	updateQuery := fmt.Sprintf(`UPDATE news SET is_live=1, published_at = now() WHERE id IN (%s)`, strings.Join(newsIDs, ","))
 	res, err := conn.Mysql.Exec(updateQuery)
@@ -95,6 +99,4 @@ func NewsPublishingJob(conn *utils.Conn, cfg *config.Config) {
 	}
 	defer esRes.Body.Close()
 	fmt.Println(esRes.String())
-
-	return
 }

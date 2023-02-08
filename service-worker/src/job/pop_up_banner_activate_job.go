@@ -10,7 +10,7 @@ import (
 
 // PopUpBannerActivateJob ...
 func PopUpBannerActivateJob(conn *utils.Conn, cfg *config.Config) {
-	logrus.Println("PopUpBannerActivateJob is running")
+	logrus.Println("PopUpBannerActivateJob is running...")
 
 	// Get pop_up_banners ids from pop_up_banners will be archived
 	var ID string
@@ -23,7 +23,7 @@ func PopUpBannerActivateJob(conn *utils.Conn, cfg *config.Config) {
 	_ = conn.Mysql.QueryRow(query).Scan(&ID)
 
 	if ID == "" {
-		logrus.Println("PopUpBannerActivateJob: No-one activate pop up banner..")
+		logrus.Println("PopUpBannerActivateJob: No-one activate pop up banner")
 		return
 	}
 

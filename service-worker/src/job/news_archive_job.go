@@ -39,6 +39,10 @@ func NewsArchiveJob(conn *utils.Conn, cfg *config.Config) {
 		newsIDs = append(newsIDs, id)
 	}
 
+	if len(newsIDs) == 0 {
+		return
+	}
+
 	// Archive news
 	updateQuery := fmt.Sprintf(`UPDATE news SET is_live=0, status='ARCHIVED' WHERE id IN (%s)`, strings.Join(newsIDs, ","))
 	res, err := conn.Mysql.Exec(updateQuery)
@@ -46,7 +50,7 @@ func NewsArchiveJob(conn *utils.Conn, cfg *config.Config) {
 		logrus.Error(err)
 	}
 
-	// // rows affected
+	// rows affected
 	if ra, err := res.RowsAffected(); err != nil {
 		logrus.Error("ErrNewsArchiveJob: ", err)
 	} else {
@@ -97,6 +101,4 @@ func NewsArchiveJob(conn *utils.Conn, cfg *config.Config) {
 	}
 	defer esRes.Body.Close()
 	fmt.Println(esRes.String())
-
-	return
 }

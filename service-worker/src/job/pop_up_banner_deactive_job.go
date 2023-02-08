@@ -33,6 +33,6 @@ func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
 	if rowAffected != 0 {
 		logrus.Println("PopUpBannerDeactivateJob: Deactivate banner row affected: ", rowAffected)
 	} else {
-		logrus.Println("PopUpBannerDeactivateJob: No-one active pop up banner")
+		logrus.Println("PopUpBannerDeactivateJob: No-one deactivate pop up banner")
 	}
 }
