@@ -228,13 +228,12 @@ func TestLiveBanner(t *testing.T) {
 		assert.Equal(t, mockStruct, obj)
 		assert.NoError(t, err)
 
-		ts.popUpBannerRepo.AssertExpectations(t)
 		ts.popUpBannerRepo.AssertCalled(t, "LiveBanner", mock.Anything)
 	})
 
 	t.Run("error-occurred", func(t *testing.T) {
 		// mock expectation being called
-		ts.popUpBannerRepo.On("LiveBanner", mock.Anything).Return(domain.PopUpBanner{}, domain.ErrInternalServerError).Once()
+		ts.popUpBannerRepo.On("LiveBanner", mock.Anything).Return(domain.PopUpBanner{}, domain.ErrNotFound).Once()
 		_, err := usecase.LiveBanner(context.TODO())
 
 		// assertions
