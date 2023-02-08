@@ -217,3 +217,26 @@ func TestUpdate(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestLiveBanner(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("LiveBanner", mock.Anything).Return(mockStruct, nil).Once()
+		obj, err := usecase.LiveBanner(context.TODO())
+
+		// assertions
+		assert.Equal(t, mockStruct, obj)
+		assert.NoError(t, err)
+
+		ts.popUpBannerRepo.AssertCalled(t, "LiveBanner", mock.Anything)
+	})
+
+	t.Run("error-occurred", func(t *testing.T) {
+		// mock expectation being called
+		ts.popUpBannerRepo.On("LiveBanner", mock.Anything).Return(domain.PopUpBanner{}, domain.ErrNotFound).Once()
+		_, err := usecase.LiveBanner(context.TODO())
+
+		// assertions
+		assert.Error(t, err)
+	})
+}

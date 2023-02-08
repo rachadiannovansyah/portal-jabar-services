@@ -79,6 +79,7 @@ type PopUpBannerUsecase interface {
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	Update(ctx context.Context, auth *JwtCustomClaims, id int64, body *StorePopUpBannerRequest) (err error)
+	LiveBanner(ctx context.Context) (res PopUpBanner, err error)
 }
 
 type PopUpBannerRepository interface {
@@ -89,4 +90,5 @@ type PopUpBannerRepository interface {
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	DeactiveStatus(ctx context.Context) (err error)
 	Update(ctx context.Context, id int64, body *StorePopUpBannerRequest) (err error)
+	LiveBanner(ctx context.Context) (res PopUpBanner, err error)
 }

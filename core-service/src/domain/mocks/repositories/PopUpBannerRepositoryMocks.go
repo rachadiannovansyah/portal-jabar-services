@@ -93,6 +93,27 @@ func (_m *PopUpBannerRepository) GetByID(ctx context.Context, id int64) (domain.
 	return r0, r1
 }
 
+// LiveBanner provides a mock function with given fields: ctx
+func (_m *PopUpBannerRepository) LiveBanner(ctx context.Context) (domain.PopUpBanner, error) {
+	ret := _m.Called(ctx)
+
+	var r0 domain.PopUpBanner
+	if rf, ok := ret.Get(0).(func(context.Context) domain.PopUpBanner); ok {
+		r0 = rf(ctx)
+	} else {
+		r0 = ret.Get(0).(domain.PopUpBanner)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: ctx, body
 func (_m *PopUpBannerRepository) Store(ctx context.Context, body domain.StorePopUpBannerRequest) error {
 	ret := _m.Called(ctx, body)
