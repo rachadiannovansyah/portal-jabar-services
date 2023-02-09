@@ -57,5 +57,5 @@ const schema = new Schema(
 )
 
 export default (database: string) => {
-    return Mongo.model(database, 'settings', schema)
+    return Mongo.Model(database, 'settings', schema)
 }

@@ -44,5 +44,5 @@ schema.pre('save', function (next) {
 })
 
 export default (database: string) => {
-    return Mongo.model(database, 'pages', schema)
+    return Mongo.Model(database, 'pages', schema)
 }

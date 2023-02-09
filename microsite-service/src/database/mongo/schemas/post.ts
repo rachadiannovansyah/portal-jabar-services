@@ -53,5 +53,5 @@ const schema = new Schema(
 )
 
 export default (database: string) => {
-    return Mongo.model(database, 'posts', schema)
+    return Mongo.Model(database, 'posts', schema)
 }

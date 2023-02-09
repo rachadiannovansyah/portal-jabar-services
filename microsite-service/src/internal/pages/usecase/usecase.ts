@@ -11,8 +11,11 @@ class Usecase {
         private logger: winston.Logger
     ) {}
 
-    public async store(body: Store) {
-        const isExist = await this.repository.findByTitle(body.title)
+    public async Store(body: Store, database: string) {
+        const isExist = await this.repository.FindByTitle(
+            body.title,
+            database
+        )
 
         if (isExist)
             throw new error(
@@ -20,12 +23,12 @@ class Usecase {
                 translate('exists', { attribute: 'title' })
             )
 
-        const result = await this.repository.store(body)
+        const result = await this.repository.Store(body, database)
         return result
     }
 
-    public async show(id: string) {
-        const item = await this.repository.findBySlug(id)
+    public async Show(slug: string, database: string) {
+        const item = await this.repository.FindBySlug(slug, database)
 
         if (!item)
             throw new error(

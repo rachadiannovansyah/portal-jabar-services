@@ -3,7 +3,7 @@ import winston from 'winston'
 import { Config } from '../../config/config.interface'
 
 class Mongo {
-    public static async connect(logger: winston.Logger, { db }: Config) {
+    public static async Connect(logger: winston.Logger, { db }: Config) {
         mongoose.set('strictQuery', false)
         mongoose.set('autoIndex', false)
         return mongoose
@@ -21,7 +21,7 @@ class Mongo {
             })
     }
 
-    public static model(database: string, collection: string, schema: Schema) {
+    public static Model(database: string, collection: string, schema: Schema) {
         return mongoose.connection
             .useDb(database, {
                 useCache: true,

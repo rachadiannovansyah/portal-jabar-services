@@ -3,23 +3,23 @@ import Page from '../../../../database/mongo/schemas/page'
 import { Store } from '../../entity/interface'
 
 class Repository {
-    private page
-    constructor(private logger: winston.Logger, database: string) {
-        this.page = Page(database)
-    }
+    constructor(private logger: winston.Logger) {}
 
-    public async store(body: Store) {
-        const pageNew = new this.page(body)
+    public async Store(body: Store, database: string) {
+        const page = Page(database)
+        const pageNew = new page(body)
 
         return pageNew.save()
     }
 
-    public async findByTitle(title: string) {
-        return this.page.findOne({ title })
+    public async FindByTitle(title: string, database: string) {
+        const page = Page(database)
+        return page.findOne({ title })
     }
 
-    public async findBySlug(id: string) {
-        return this.page.findOne({ slug: id })
+    public async FindBySlug(slug: string, database: string) {
+        const page = Page(database)
+        return page.findOne({ slug })
     }
 }
 

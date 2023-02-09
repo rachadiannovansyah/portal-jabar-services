@@ -7,7 +7,7 @@ import Http from './transport/http/http'
 
 const main = async () => {
     const { logger } = new Logger(config)
-    await Mongo.connect(logger, config)
+    await Mongo.Connect(logger, config)
     const redis = new Redis(config, logger)
     const http = new Http(logger, config)
 
