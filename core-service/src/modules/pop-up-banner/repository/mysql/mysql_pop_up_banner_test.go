@@ -36,6 +36,7 @@ func TestFetch(t *testing.T) {
 		"image",
 		"link",
 		"status",
+		"is_live",
 		"duration",
 		"start_date",
 		"end_date",
@@ -49,6 +50,7 @@ func TestFetch(t *testing.T) {
 			helpers.GetStringFromObject(mockStruct[0].Image),
 			mockStruct[0].Link,
 			mockStruct[0].Status,
+			mockStruct[0].IsLive,
 			mockStruct[0].Duration,
 			mockStruct[0].StartDate,
 			mockStruct[0].EndDate,
@@ -56,7 +58,7 @@ func TestFetch(t *testing.T) {
 			mockStruct[0].UpdatedAt,
 		)
 
-	query := `SELECT id, title, button_label, image, link, status, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
+	query := `SELECT id, title, button_label, image, link, status, is_live, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	pb := pRepo.NewMysqlPopUpBannerRepository(db)
@@ -100,6 +102,7 @@ func TestGetByID(t *testing.T) {
 		"image",
 		"link",
 		"status",
+		"is_live",
 		"duration",
 		"start_date",
 		"end_date",
@@ -113,6 +116,7 @@ func TestGetByID(t *testing.T) {
 			helpers.GetStringFromObject(mockStruct.Image),
 			mockStruct.Link,
 			mockStruct.Status,
+			mockStruct.IsLive,
 			mockStruct.Duration,
 			mockStruct.StartDate,
 			mockStruct.EndDate,
@@ -120,7 +124,7 @@ func TestGetByID(t *testing.T) {
 			mockStruct.UpdatedAt,
 		)
 
-	query := `SELECT id, title, button_label, image, link, status, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
+	query := `SELECT id, title, button_label, image, link, status, is_live, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	pb := pRepo.NewMysqlPopUpBannerRepository(db)
