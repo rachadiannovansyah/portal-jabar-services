@@ -264,6 +264,7 @@ func (m *mysqlPopUpBannerRepository) LiveBanner(ctx context.Context) (res domain
 		&res.Image,
 		&res.Link,
 		&res.Status,
+		&res.IsLive,
 		&res.Duration,
 		&res.StartDate,
 		&res.EndDate,
