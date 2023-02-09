@@ -28,6 +28,7 @@ type ListPopUpBannerResponse struct {
 	Duration  int64       `json:"duration,omitempty"`
 	StartDate *time.Time  `json:"start_date,omitempty"`
 	Status    string      `json:"status"`
+	IsLive    int8        `json:"is_live"`
 }
 
 type DetailPopUpBannerResponse struct {
@@ -37,6 +38,7 @@ type DetailPopUpBannerResponse struct {
 	Image       ImageBanner `json:"image,omitempty"`
 	Link        string      `json:"link"`
 	Status      string      `json:"status"`
+	IsLive      int8        `json:"is_live"`
 	Duration    int64       `json:"duration"`
 	StartDate   *time.Time  `json:"start_date"`
 	EndDate     *time.Time  `json:"end_date,omitempty"`
