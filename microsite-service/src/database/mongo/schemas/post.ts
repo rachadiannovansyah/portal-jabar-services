@@ -1,33 +1,47 @@
 import { Schema } from 'mongoose'
-import slugify from '../../../pkg/slug'
 import Mongo from '../mongo'
 
 const schema = new Schema(
     {
-        created_by: {
+        content: {
             type: String,
-            required: false,
-            index: true,
+            required: true,
         },
+        except: String,
         title: {
             type: String,
             required: true,
             index: true,
             unique: true,
         },
+        author: {
+            type: String,
+            required: true,
+        },
         slug: {
             type: String,
             index: true,
         },
-        sections: {
-            type: Array,
-            required: true,
-        },
-        is_active: {
-            type: Boolean,
+        published_at: Date,
+        views: {
+            type: Number,
+            default: 0,
             index: true,
         },
-        banner: String,
+        shared: {
+            type: Number,
+            index: true,
+            default: 0,
+        },
+        category: {
+            type: String,
+            required: true,
+            index: true,
+        },
+        image: {
+            type: String,
+            required: true,
+        },
     },
     {
         timestamps: {
@@ -38,11 +52,6 @@ const schema = new Schema(
     }
 )
 
-schema.pre('save', function (next) {
-    this.slug = slugify(this.title)
-    next()
-})
-
 export default (database: string) => {
-    return Mongo.model(database, 'pages', schema)
+    return Mongo.model(database, 'posts', schema)
 }

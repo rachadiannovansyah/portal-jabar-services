@@ -28,6 +28,7 @@ type ListPopUpBannerResponse struct {
 	Duration  int64       `json:"duration,omitempty"`
 	StartDate *time.Time  `json:"start_date,omitempty"`
 	Status    string      `json:"status"`
+	IsLive    int8        `json:"is_live"`
 }
 
 type DetailPopUpBannerResponse struct {
@@ -38,6 +39,7 @@ type DetailPopUpBannerResponse struct {
 	ImageMetaData ImageMetaDataBanner `json:"image_metadata,omitempty"`
 	Link          string              `json:"link"`
 	Status        string              `json:"status"`
+  IsLive      int8        `json:"is_live"`
 	Duration      int64               `json:"duration"`
 	StartDate     *time.Time          `json:"start_date"`
 	EndDate       *time.Time          `json:"end_date,omitempty"`
@@ -105,6 +107,7 @@ type PopUpBannerUsecase interface {
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	Update(ctx context.Context, auth *JwtCustomClaims, id int64, body *StorePopUpBannerRequest) (err error)
 	GetMetaDataImage(ctx context.Context, link string) (meta DetailMetaDataImage, err error)
+	LiveBanner(ctx context.Context) (res PopUpBanner, err error)
 }
 
 type PopUpBannerRepository interface {
@@ -115,4 +118,5 @@ type PopUpBannerRepository interface {
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	DeactiveStatus(ctx context.Context) (err error)
 	Update(ctx context.Context, id int64, body *StorePopUpBannerRequest) (err error)
+	LiveBanner(ctx context.Context) (res PopUpBanner, err error)
 }

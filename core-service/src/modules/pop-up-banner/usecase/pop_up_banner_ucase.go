@@ -129,3 +129,15 @@ func (u *popUpBannerUsecase) GetMetaDataImage(ctx context.Context, link string) 
 
 	return meta, err
 }
+
+func (u *popUpBannerUsecase) LiveBanner(c context.Context) (res domain.PopUpBanner, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.popUpBannerRepo.LiveBanner(ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}

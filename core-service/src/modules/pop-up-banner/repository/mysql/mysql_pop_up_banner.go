@@ -21,7 +21,7 @@ func NewMysqlPopUpBannerRepository(Conn *sql.DB) domain.PopUpBannerRepository {
 	return &mysqlPopUpBannerRepository{Conn}
 }
 
-var querySelect = `SELECT id, title, button_label, image, link, status, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
+var querySelect = `SELECT id, title, button_label, image, link, status, is_live, duration, start_date, end_date, created_at, updated_at FROM pop_up_banners WHERE 1=1`
 
 func (m *mysqlPopUpBannerRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.PopUpBanner, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
@@ -40,6 +40,7 @@ func (m *mysqlPopUpBannerRepository) fetch(ctx context.Context, query string, ar
 			&pb.Image,
 			&pb.Link,
 			&pb.Status,
+			&pb.IsLive,
 			&pb.Duration,
 			&pb.StartDate,
 			&pb.EndDate,
@@ -105,6 +106,7 @@ func (m *mysqlPopUpBannerRepository) GetByID(ctx context.Context, id int64) (res
 		&res.Image,
 		&res.Link,
 		&res.Status,
+		&res.IsLive,
 		&res.Duration,
 		&res.StartDate,
 		&res.EndDate,
@@ -249,6 +251,29 @@ func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body 
 		time.Now(),
 		id,
 	)
+
+	return
+}
+
+func (m *mysqlPopUpBannerRepository) LiveBanner(ctx context.Context) (res domain.PopUpBanner, err error) {
+	query := querySelect + " AND status = ? AND is_live = ? LIMIT 1"
+	err = m.Conn.QueryRowContext(ctx, query, "ACTIVE", 1).Scan(
+		&res.ID,
+		&res.Title,
+		&res.ButtonLabel,
+		&res.Image,
+		&res.Link,
+		&res.Status,
+		&res.Duration,
+		&res.StartDate,
+		&res.EndDate,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
+	}
 
 	return
 }

@@ -61,6 +61,7 @@ func (h *PopUpBannerHandler) Fetch(c echo.Context) error {
 			Title:     row.Title,
 			Link:      row.Link,
 			Status:    row.Status,
+			IsLive:    row.IsLive,
 			Duration:  row.Duration,
 			StartDate: row.StartDate,
 		}
@@ -99,6 +100,7 @@ func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
 		ButtonLabel: data.ButtonLabel,
 		Link:        data.Link,
 		Status:      data.Status,
+		IsLive:      data.IsLive,
 		Duration:    data.Duration,
 		StartDate:   data.StartDate,
 		EndDate:     data.EndDate,
