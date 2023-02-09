@@ -8,10 +8,20 @@ const schema = new Schema(
             required: false,
             index: true,
         },
+        name: {
+            type: String,
+            required: true,
+            index: true,
+        },
         published_by: {
             type: String,
             required: false,
             index: true,
+        },
+        favicon: String,
+        colorPallate: {
+            type: String,
+            required: true,
         },
         domain: {
             type: String,
@@ -27,6 +37,14 @@ const schema = new Schema(
         status: {
             type: String,
             index: true,
+        },
+        is_active: {
+            type: Boolean,
+            index: true,
+        },
+        icon: {
+            type: String,
+            required: true,
         },
     },
     {
