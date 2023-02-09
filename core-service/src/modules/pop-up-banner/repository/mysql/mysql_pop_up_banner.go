@@ -250,3 +250,26 @@ func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body 
 
 	return
 }
+
+func (m *mysqlPopUpBannerRepository) LiveBanner(ctx context.Context) (res domain.PopUpBanner, err error) {
+	query := querySelect + " AND status = ? AND is_live = ? LIMIT 1"
+	err = m.Conn.QueryRowContext(ctx, query, "ACTIVE", 1).Scan(
+		&res.ID,
+		&res.Title,
+		&res.ButtonLabel,
+		&res.Image,
+		&res.Link,
+		&res.Status,
+		&res.Duration,
+		&res.StartDate,
+		&res.EndDate,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
+	}
+
+	return
+}

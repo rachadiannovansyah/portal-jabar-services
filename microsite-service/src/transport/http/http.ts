@@ -34,25 +34,25 @@ class Http {
         next: NextFunction
     ) => {
         const resp: Record<string, any> = {}
-        resp.status = error.status || 500
+        resp.code = error.status || 500
         resp.error =
             error.message || statusCode[statusCode.INTERNAL_SERVER_ERROR]
 
         if (error.isObject) resp.error = JSON.parse(resp.error)
 
-        if (resp.status >= statusCode.INTERNAL_SERVER_ERROR) {
+        if (resp.code >= statusCode.INTERNAL_SERVER_ERROR) {
             this.logger.error(resp.error, {
                 env: this.config.app.env,
             })
             resp.error = statusCode[statusCode.INTERNAL_SERVER_ERROR]
         }
 
-        if (resp.status === statusCode.UNPROCESSABLE_ENTITY) {
+        if (resp.code === statusCode.UNPROCESSABLE_ENTITY) {
             resp.errors = resp.error
             delete resp.error
         }
 
-        return res.status(resp.status).json(resp)
+        return res.status(resp.code).json(resp)
     }
 
     private pageHome = () => {

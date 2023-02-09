@@ -1,7 +1,8 @@
 export interface Store {
-    time?: number
-    blocks: any
-    version?: string
+    created_by?: string
+    sections: Object[]
+    is_active?: boolean
     slug: string
     title: string
+    banner: string
 }
