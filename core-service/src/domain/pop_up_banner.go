@@ -39,7 +39,7 @@ type DetailPopUpBannerResponse struct {
 	ImageMetaData ImageMetaDataBanner `json:"image_metadata,omitempty"`
 	Link          string              `json:"link"`
 	Status        string              `json:"status"`
-  IsLive      int8        `json:"is_live"`
+	IsLive        int8                `json:"is_live"`
 	Duration      int64               `json:"duration"`
 	StartDate     *time.Time          `json:"start_date"`
 	EndDate       *time.Time          `json:"end_date,omitempty"`
