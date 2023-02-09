@@ -31,21 +31,46 @@ type ListPopUpBannerResponse struct {
 }
 
 type DetailPopUpBannerResponse struct {
-	ID          int64       `json:"id"`
-	Title       string      `json:"title"`
-	ButtonLabel string      `json:"button_label"`
-	Image       ImageBanner `json:"image,omitempty"`
-	Link        string      `json:"link"`
-	Status      string      `json:"status"`
-	Duration    int64       `json:"duration"`
-	StartDate   *time.Time  `json:"start_date"`
-	EndDate     *time.Time  `json:"end_date,omitempty"`
-	UpdateAt    time.Time   `json:"updated_at"`
+	ID            int64               `json:"id"`
+	Title         string              `json:"title"`
+	ButtonLabel   string              `json:"button_label"`
+	Image         ImageBanner         `json:"image,omitempty"`
+	ImageMetaData ImageMetaDataBanner `json:"image_metadata,omitempty"`
+	Link          string              `json:"link"`
+	Status        string              `json:"status"`
+	Duration      int64               `json:"duration"`
+	StartDate     *time.Time          `json:"start_date"`
+	EndDate       *time.Time          `json:"end_date,omitempty"`
+	UpdateAt      time.Time           `json:"updated_at"`
 }
 
 type ImageBanner struct {
 	Desktop string `json:"desktop,omitempty"`
 	Mobile  string `json:"mobile,omitempty"`
+}
+
+type MetaDetailPopUpBannerResponse struct {
+	ID            int64               `json:"id"`
+	Title         string              `json:"title"`
+	ButtonLabel   string              `json:"button_label"`
+	ImageMetaData ImageMetaDataBanner `json:"image,omitempty"`
+	Link          string              `json:"link"`
+	Status        string              `json:"status"`
+	Duration      int64               `json:"duration"`
+	StartDate     *time.Time          `json:"start_date"`
+	EndDate       *time.Time          `json:"end_date,omitempty"`
+	UpdateAt      time.Time           `json:"updated_at"`
+}
+
+type ImageMetaDataBanner struct {
+	Desktop DetailMetaDataImage `json:"desktop,omitempty"`
+	Mobile  DetailMetaDataImage `json:"mobile,omitempty"`
+}
+
+type DetailMetaDataImage struct {
+	FileName        string `json:"file_name,omitempty"`
+	FileDownloadUri string `json:"file_download_uri,omitempty"`
+	Size            int64  `json:"size"`
 }
 
 type StorePopUpBannerRequest struct {
@@ -79,6 +104,7 @@ type PopUpBannerUsecase interface {
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	Update(ctx context.Context, auth *JwtCustomClaims, id int64, body *StorePopUpBannerRequest) (err error)
+	GetMetaDataImage(ctx context.Context, link string) (meta DetailMetaDataImage, err error)
 }
 
 type PopUpBannerRepository interface {

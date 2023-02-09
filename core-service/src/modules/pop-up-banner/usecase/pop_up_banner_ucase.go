@@ -2,10 +2,14 @@ package usecase
 
 import (
 	"context"
+	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/sirupsen/logrus"
 )
 
 type popUpBannerUsecase struct {
@@ -99,4 +103,29 @@ func (n *popUpBannerUsecase) Update(ctx context.Context, au *domain.JwtCustomCla
 	}
 
 	return
+}
+
+func (u *popUpBannerUsecase) GetMetaDataImage(ctx context.Context, link string) (meta domain.DetailMetaDataImage, err error) {
+	subStringsSlice := strings.Split(link, "/")
+	fileName := subStringsSlice[len(subStringsSlice)-1]
+
+	resp, err := http.Head(link)
+	if err != nil {
+		logrus.Error(err)
+		return domain.DetailMetaDataImage{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logrus.Error(err)
+		return domain.DetailMetaDataImage{}, err
+	}
+
+	size, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
+	fileSize := int64(size)
+
+	meta.FileName = fileName
+	meta.FileDownloadUri = link
+	meta.Size = fileSize
+
+	return meta, err
 }
