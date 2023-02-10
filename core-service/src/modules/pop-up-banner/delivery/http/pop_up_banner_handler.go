@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/mitchellh/mapstructure"
 
@@ -108,7 +109,16 @@ func (h *PopUpBannerHandler) GetByID(c echo.Context) error {
 
 	helpers.GetObjectFromString(data.Image.String, &res.Image)
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &res})
+	metaDesktop, _ := h.PUsecase.GetMetaDataImage(ctx, res.Image.Desktop) // for desktop
+	metaMobile, _ := h.PUsecase.GetMetaDataImage(ctx, res.Image.Mobile)   // for mobile
+
+	res.ImageMetaData.Desktop = metaDesktop
+	res.ImageMetaData.Mobile = metaMobile
+
+	metaRes := domain.MetaDetailPopUpBannerResponse{}
+	copier.Copy(&metaRes, &res)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &metaRes})
 }
 
 // Store will store the pop up banner by given request body
