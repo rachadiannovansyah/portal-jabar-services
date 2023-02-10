@@ -13,7 +13,8 @@ func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
 
 	// deactivate banner
 	deactivateQuery := `UPDATE pop_up_banners 
-	SET status = 'NON-ACTIVE' 
+	SET status = 'NON-ACTIVE',
+	is_live = 0
 	WHERE status = 'ACTIVE'
 	AND end_date < NOW()`
 
