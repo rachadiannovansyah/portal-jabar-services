@@ -19,7 +19,7 @@ const schema = new Schema(
             index: true,
         },
         favicon: String,
-        colorPallate: {
+        color_pallate: {
             type: String,
             required: true,
         },

@@ -4,21 +4,15 @@ import Usecase from '../../usecase/usecase'
 import { Store } from '../../entity/schema'
 import { validateFormRequest } from '../../../../helpers/validate'
 import statusCode from '../../../../pkg/statusCode'
-import { Setting } from '../../../../helpers/setting'
 
 class Handler {
-    constructor(
-        private usecase: Usecase,
-        private logger: winston.Logger,
-        private database: string
-    ) {}
+    constructor(private usecase: Usecase, private logger: winston.Logger) {}
     public Store() {
-        return async (req: any, res: Response, next: NextFunction) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
                 const value = validateFormRequest(Store, req.body)
-                const setting = await Setting(this.database, req.headers.origin)
 
-                await this.usecase.Store(value, setting.id)
+                await this.usecase.Store(value)
                 return res.status(statusCode.OK).json({ message: 'CREATED' })
             } catch (error) {
                 return next(error)
@@ -26,13 +20,9 @@ class Handler {
         }
     }
     public Show() {
-        return async (req: any, res: Response, next: NextFunction) => {
+        return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const setting = await Setting(this.database, req.headers.origin)
-                const result = await this.usecase.Show(
-                    req.params.slug,
-                    setting.id
-                )
+                const result = await this.usecase.Show(req.params.id)
                 return res.json({
                     data: result,
                 })

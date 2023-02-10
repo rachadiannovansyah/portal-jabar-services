@@ -11,21 +11,21 @@ class Usecase {
         private logger: winston.Logger
     ) {}
 
-    public async Store(body: Store, database: string) {
-        const isExist = await this.repository.FindByTitle(body.title, database)
+    public async Store(body: Store) {
+        const isExist = await this.repository.FindByDomain(body.domain)
 
         if (isExist)
             throw new error(
                 statusCode.BAD_REQUEST,
-                translate('exists', { attribute: 'title' })
+                translate('exists', { attribute: 'domain' })
             )
 
-        const result = await this.repository.Store(body, database)
+        const result = await this.repository.Store(body)
         return result
     }
 
-    public async Show(slug: string, database: string) {
-        const item = await this.repository.FindBySlug(slug, database)
+    public async Show(id: string) {
+        const item = await this.repository.FindByID(id)
 
         if (!item)
             throw new error(
