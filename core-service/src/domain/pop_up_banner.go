@@ -99,6 +99,19 @@ type SchedulerPopUpBanner struct {
 	StartDate *string `json:"start_date"`
 }
 
+type LiveBannerResponse struct {
+	ID          int64       `json:"id"`
+	Title       string      `json:"title"`
+	ButtonLabel string      `json:"button_label"`
+	Image       ImageBanner `json:"image,omitempty"`
+	Link        string      `json:"link"`
+	Status      string      `json:"status"`
+	IsLive      int8        `json:"is_live"`
+	Duration    int64       `json:"duration"`
+	StartDate   *time.Time  `json:"start_date"`
+	EndDate     *time.Time  `json:"end_date,omitempty"`
+	UpdateAt    time.Time   `json:"updated_at"`
+}
 type PopUpBannerUsecase interface {
 	Fetch(ctx context.Context, auth *JwtCustomClaims, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)

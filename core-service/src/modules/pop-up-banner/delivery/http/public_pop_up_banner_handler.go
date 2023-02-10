@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -49,5 +50,8 @@ func (h *PublicPopUpBanner) LiveBanner(c echo.Context) error {
 
 	helpers.GetObjectFromString(data.Image.String, &res.Image)
 
-	return c.JSON(http.StatusOK, &domain.ResultData{Data: &res})
+	liveBannerRes := domain.LiveBannerResponse{}
+	copier.Copy(&liveBannerRes, &res)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &liveBannerRes})
 }
