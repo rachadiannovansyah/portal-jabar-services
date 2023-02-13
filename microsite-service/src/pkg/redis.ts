@@ -1,12 +1,12 @@
-import { createClient, RedisClientType } from 'redis'
+import * as redis from 'redis'
 import winston from 'winston'
 import { Config } from '../config/config.interface'
 
 class Redis {
-    private client: RedisClientType
-    constructor({ redis }: Config, logger: winston.Logger) {
-        this.client = createClient({
-            url: `redis://${redis.host}:${redis.port}`,
+    private client: redis.RedisClientType
+    constructor(config: Config, logger: winston.Logger) {
+        this.client = redis.createClient({
+            url: `redis://${config.redis.host}:${config.redis.port}`,
         })
         this.client.connect().then(() => {
             logger.info('redis connected')
