@@ -96,8 +96,10 @@ type CustomButtonlabel struct {
 }
 
 type SchedulerPopUpBanner struct {
-	Duration  int64   `json:"duration"`
-	StartDate *string `json:"start_date"`
+	Duration    int64   `json:"duration"`
+	StartDate   *string `json:"start_date"`
+	IsScheduled int64   `json:"is_scheduled"`
+	Status      string  `json:"status"`
 }
 
 type LiveBannerResponse struct {
@@ -116,7 +118,7 @@ type LiveBannerResponse struct {
 type PopUpBannerUsecase interface {
 	Fetch(ctx context.Context, auth *JwtCustomClaims, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
-	Store(ctx context.Context, auth *JwtCustomClaims, body StorePopUpBannerRequest) (err error)
+	Store(ctx context.Context, auth *JwtCustomClaims, body *StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	Update(ctx context.Context, auth *JwtCustomClaims, id int64, body *StorePopUpBannerRequest) (err error)
@@ -127,7 +129,7 @@ type PopUpBannerUsecase interface {
 type PopUpBannerRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []PopUpBanner, total int64, err error)
 	GetByID(ctx context.Context, id int64) (res PopUpBanner, err error)
-	Store(ctx context.Context, body StorePopUpBannerRequest) (err error)
+	Store(ctx context.Context, body *StorePopUpBannerRequest) (err error)
 	Delete(ctx context.Context, id int64) (err error)
 	UpdateStatus(ctx context.Context, id int64, body *UpdateStatusPopUpBannerRequest) (err error)
 	DeactiveStatus(ctx context.Context) (err error)

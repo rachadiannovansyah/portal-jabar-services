@@ -51,9 +51,15 @@ func (u *popUpBannerUsecase) GetByID(c context.Context, id int64) (res domain.Po
 	return
 }
 
-func (u *popUpBannerUsecase) Store(c context.Context, au *domain.JwtCustomClaims, body domain.StorePopUpBannerRequest) (err error) {
+func (u *popUpBannerUsecase) Store(c context.Context, au *domain.JwtCustomClaims, body *domain.StorePopUpBannerRequest) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
+
+	// set flag if use scheduler
+	body.Scheduler.Status = "NON-ACTIVE"
+	if body.Scheduler.IsScheduled == 1 { // 1 is mean true
+		body.Scheduler.Status = "ACTIVE"
+	}
 
 	if err = u.popUpBannerRepo.Store(ctx, body); err != nil {
 		return
@@ -98,6 +104,12 @@ func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, body *d
 }
 
 func (n *popUpBannerUsecase) Update(ctx context.Context, au *domain.JwtCustomClaims, ID int64, body *domain.StorePopUpBannerRequest) (err error) {
+	// set flag if use scheduler
+	body.Scheduler.Status = "NON-ACTIVE"
+	if body.Scheduler.IsScheduled == 1 { // 1 is mean true
+		body.Scheduler.Status = "ACTIVE"
+	}
+
 	if err = n.popUpBannerRepo.Update(ctx, ID, body); err != nil {
 		return
 	}
