@@ -234,7 +234,7 @@ func (m *mysqlPopUpBannerRepository) DeactiveStatus(ctx context.Context) (err er
 
 func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body *domain.StorePopUpBannerRequest) (err error) {
 	query := `UPDATE pop_up_banners SET title=?, button_label=?, link=?, image=?, duration=?,
-	start_date=?, end_date=?, updated_at=? WHERE id=?`
+	start_date=?, end_date=?, status=?, updated_at=? WHERE id=?`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -249,6 +249,7 @@ func (m *mysqlPopUpBannerRepository) Update(ctx context.Context, id int64, body 
 		body.Scheduler.Duration,
 		body.Scheduler.StartDate,
 		helpers.ConvertStringToTime(body.Scheduler.StartDate).AddDate(0, 0, int(body.Scheduler.Duration)),
+		body.Scheduler.Status,
 		time.Now(),
 		id,
 	)

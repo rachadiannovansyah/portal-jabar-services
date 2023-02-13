@@ -55,6 +55,7 @@ func (u *popUpBannerUsecase) Store(c context.Context, au *domain.JwtCustomClaims
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
+	// set flag if use scheduler
 	body.Scheduler.Status = "NON-ACTIVE"
 	if body.Scheduler.IsScheduled == 1 { // 1 is mean true
 		body.Scheduler.Status = "ACTIVE"
@@ -103,6 +104,12 @@ func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, body *d
 }
 
 func (n *popUpBannerUsecase) Update(ctx context.Context, au *domain.JwtCustomClaims, ID int64, body *domain.StorePopUpBannerRequest) (err error) {
+	// set flag if use scheduler
+	body.Scheduler.Status = "NON-ACTIVE"
+	if body.Scheduler.IsScheduled == 1 { // 1 is mean true
+		body.Scheduler.Status = "ACTIVE"
+	}
+
 	if err = n.popUpBannerRepo.Update(ctx, ID, body); err != nil {
 		return
 	}
