@@ -75,7 +75,7 @@ func (m *mysqlPopUpBannerRepository) Fetch(ctx context.Context, params *domain.R
 	binds := make([]interface{}, 0)
 	queryFilter := filterPopUpBannerQuery(params, &binds)
 
-	defaultSort := ` ORDER BY status, updated_at DESC`
+	defaultSort := ` ORDER BY status, updated_at, is_live DESC`
 	if params.SortBy != "" {
 		defaultSort = ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	}
