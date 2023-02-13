@@ -198,9 +198,9 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 	query := `UPDATE pop_up_banners 
 		SET status = ?, 
 		is_live = ?,
-		start_date = now(),
+		start_date = ?,
 		end_date = ?, 
-		updated_at = now() 
+		updated_at = ? 
 		WHERE id = ?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -210,7 +210,9 @@ func (m *mysqlPopUpBannerRepository) UpdateStatus(ctx context.Context, id int64,
 	_, err = stmt.ExecContext(ctx,
 		body.Status,
 		body.IsLive,
+		time.Now(),
 		time.Now().AddDate(0, 0, int(body.Duration)),
+		time.Now(),
 		id,
 	)
 

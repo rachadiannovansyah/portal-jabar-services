@@ -2,6 +2,7 @@ package job
 
 import (
 	"context"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/service-worker/src/utils"
@@ -13,9 +14,9 @@ func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
 
 	// deactivate banner
 	deactivateQuery := `UPDATE pop_up_banners 
-	SET status = 'NON-ACTIVE',
-	is_live = 0,
-	updated_at = now()
+	SET status = ?,
+	is_live = ?,
+	updated_at = ?
 	WHERE status = 'ACTIVE'
 	AND end_date < NOW()`
 
@@ -24,7 +25,11 @@ func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
 		logrus.Error(err)
 	}
 
-	res, err := stmt.ExecContext(context.TODO())
+	res, err := stmt.ExecContext(context.TODO(),
+		"NON-ACTIVE",
+		0,
+		time.Now(),
+	)
 	if err != nil {
 		logrus.Error(err)
 	}
