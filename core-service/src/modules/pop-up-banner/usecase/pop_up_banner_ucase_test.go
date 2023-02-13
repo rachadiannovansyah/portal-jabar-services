@@ -119,7 +119,7 @@ func TestStore(t *testing.T) {
 		// mock expectation being called
 		ts.popUpBannerRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 
-		err := usecase.Store(context.TODO(), &mockJwtStruct, mockRequest)
+		err := usecase.Store(context.TODO(), &mockJwtStruct, &mockRequest)
 
 		// assertions
 		assert.NoError(t, err)
@@ -131,7 +131,7 @@ func TestStore(t *testing.T) {
 		// mock expectation being called
 		ts.popUpBannerRepo.On("Store", mock.Anything, mock.Anything).Return(domain.ErrInternalServerError).Once()
 
-		err := usecase.Store(context.TODO(), &mockJwtStruct, mockRequest)
+		err := usecase.Store(context.TODO(), &mockJwtStruct, &mockRequest)
 
 		// assertions
 		assert.Error(t, err)

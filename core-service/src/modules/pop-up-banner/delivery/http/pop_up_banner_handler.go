@@ -137,7 +137,7 @@ func (h *PopUpBannerHandler) Store(c echo.Context) (err error) {
 	mapstructure.Decode(c.Get("auth:user"), &auth)
 
 	ctx := c.Request().Context()
-	err = h.PUsecase.Store(ctx, &auth, *req)
+	err = h.PUsecase.Store(ctx, &auth, req)
 	if err != nil {
 		return err
 	}
