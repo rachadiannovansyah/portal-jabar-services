@@ -5,6 +5,6 @@ export interface Store {
     title: string
     icon: string
     logo: string
-    color_pallate: string
+    color_palatte: string
     name: string
 }

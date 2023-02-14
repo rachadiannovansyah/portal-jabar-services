@@ -6,6 +6,6 @@ export const Store = Joi.object({
     favicon: Joi.string().uri().optional(),
     icon: Joi.string().uri().required(),
     logo: Joi.string().uri().optional(),
-    color_pallate: Joi.string().required(),
+    color_palatte: Joi.string().required(),
     name: Joi.string().required(),
 })
