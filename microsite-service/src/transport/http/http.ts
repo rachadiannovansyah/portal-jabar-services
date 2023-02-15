@@ -73,7 +73,7 @@ class Http {
             if (authorization) {
                 const [_, token] = authorization.split('Bearer ')
 
-                jwt.verify(
+                return jwt.verify(
                     token,
                     secretOrPublicKey,
                     options,
