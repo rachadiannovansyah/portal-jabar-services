@@ -18,6 +18,7 @@ func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
 	is_live = ?,
 	updated_at = ?
 	WHERE status = 'ACTIVE'
+	AND duration <> -1
 	AND end_date < NOW()`
 
 	stmt, err := conn.Mysql.PrepareContext(context.TODO(), deactivateQuery)
