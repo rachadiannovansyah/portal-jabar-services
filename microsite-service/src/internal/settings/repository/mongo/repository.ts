@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto'
 import winston from 'winston'
 import { status } from '../../../../database/constant/setting'
 import Setting from '../../../../database/mongo/schemas/setting'
+import { RemoveProcotol } from '../../../../helpers/http'
 import { Store } from '../../entity/interface'
 
 class Repository {
@@ -21,7 +22,7 @@ class Repository {
     }
 
     public async FindByDomain(domain: string) {
-        return this.setting.findOne({ domain })
+        return this.setting.findOne({ domain: RemoveProcotol(domain) })
     }
 
     public async FindByID(id: string) {

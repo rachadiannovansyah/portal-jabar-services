@@ -20,7 +20,7 @@ const schema = new Schema(
             index: true,
         },
         sections: {
-            type: Array,
+            type: Schema.Types.Mixed,
             required: true,
         },
         is_active: {

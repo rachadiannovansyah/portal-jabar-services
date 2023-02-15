@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 import winston from 'winston'
 import { Config } from '../../config/config.interface'
+import Setting from './schemas/setting'
 
 class Mongo {
     public static async Connect(logger: winston.Logger, { db }: Config) {
@@ -27,6 +28,12 @@ class Mongo {
                 useCache: true,
             })
             .model(collection, schema)
+    }
+
+    public static FindByIdSetting(database: string, id: string) {
+        const setting = Setting(database)
+
+        return setting.findById(id)
     }
 }
 

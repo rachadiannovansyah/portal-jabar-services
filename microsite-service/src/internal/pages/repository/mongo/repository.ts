@@ -17,9 +17,9 @@ class Repository {
         return page.findOne({ title })
     }
 
-    public async FindBySlug(slug: string, database: string) {
+    public async FindById(id: string, database: string) {
         const page = Page(database)
-        return page.findOne({ slug })
+        return page.findById(id)
     }
 }
 

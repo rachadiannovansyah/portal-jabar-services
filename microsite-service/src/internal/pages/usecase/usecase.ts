@@ -24,8 +24,8 @@ class Usecase {
         return result
     }
 
-    public async Show(slug: string, database: string) {
-        const item = await this.repository.FindBySlug(slug, database)
+    public async Show(id: string, database: string) {
+        const item = await this.repository.FindById(id, database)
 
         if (!item)
             throw new error(

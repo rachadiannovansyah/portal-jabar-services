@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import { RemoveProcotol } from '../../../helpers/http'
 import Mongo from '../mongo'
 
 const schema = new Schema(
@@ -55,6 +56,11 @@ const schema = new Schema(
         versionKey: false,
     }
 )
+
+schema.pre('save', function (next) {
+    this.domain = RemoveProcotol(this.domain)
+    next()
+})
 
 export default (database: string) => {
     return Mongo.Model(database, 'settings', schema)

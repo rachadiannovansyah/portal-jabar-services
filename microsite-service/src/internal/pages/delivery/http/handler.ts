@@ -16,7 +16,8 @@ class Handler {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
                 const value = validateFormRequest(Store, req.body)
-                const setting = await Setting(this.database, req.headers.origin)
+                const { idSetting } = req.params
+                const setting = await Setting(this.database, idSetting)
 
                 await this.usecase.Store(value, setting.id)
                 return res.status(statusCode.OK).json({ message: 'CREATED' })
@@ -28,11 +29,9 @@ class Handler {
     public Show() {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
-                const setting = await Setting(this.database, req.headers.origin)
-                const result = await this.usecase.Show(
-                    req.params.slug,
-                    setting.id
-                )
+                const { idSetting, idPages } = req.params
+                const setting = await Setting(this.database, idSetting)
+                const result = await this.usecase.Show(idPages, setting.id)
                 return res.json({
                     data: result,
                 })

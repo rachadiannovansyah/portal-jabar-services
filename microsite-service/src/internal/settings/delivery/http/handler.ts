@@ -22,7 +22,7 @@ class Handler {
     public Show() {
         return async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const result = await this.usecase.Show(req.params.id)
+                const result = await this.usecase.Show(req.params.idSetting)
                 return res.json({
                     data: result,
                 })
