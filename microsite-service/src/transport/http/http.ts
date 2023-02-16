@@ -67,37 +67,32 @@ class Http {
         secretOrPublicKey: jwt.Secret,
         options?: jwt.VerifyOptions
     ) => {
-        return (req: any, _: Response, next: NextFunction) => {
+        return (req: any, res: Response, next: NextFunction) => {
             const { authorization } = req.headers
 
-            if (authorization) {
-                const [_, token] = authorization.split('Bearer ')
-
-                return jwt.verify(
-                    token,
-                    secretOrPublicKey,
-                    options,
-                    (err, decoded) => {
-                        if (err) {
-                            return next(
-                                new Error(
-                                    statusCode.UNAUTHORIZED,
-                                    statusCode[statusCode.UNAUTHORIZED]
-                                )
-                            )
-                        }
-                        req['user'] = decoded
-                        return next()
-                    }
+            if (!authorization) {
+                return next(
+                    new Error(
+                        statusCode.UNAUTHORIZED,
+                        statusCode[statusCode.UNAUTHORIZED]
+                    )
                 )
             }
 
-            return next(
-                new Error(
-                    statusCode.UNAUTHORIZED,
-                    statusCode[statusCode.UNAUTHORIZED]
+            const [_, token] = authorization.split('Bearer ')
+
+            try {
+                const decoded = jwt.verify(token, secretOrPublicKey, options)
+                req.user = decoded
+                return next()
+            } catch (error) {
+                return next(
+                    new Error(
+                        statusCode.UNAUTHORIZED,
+                        statusCode[statusCode.UNAUTHORIZED]
+                    )
                 )
-            )
+            }
         }
     }
 

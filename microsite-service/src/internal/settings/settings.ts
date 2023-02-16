@@ -20,8 +20,8 @@ class Settings {
     private loadHttp(usecase: Usecase) {
         const handler = new Handler(usecase, this.logger)
         const verify = this.http.VerifyAuth(this.config.jwt.access_key)
-        this.http.app.post('/v1/settings/', verify, handler.Store())
-        this.http.app.get('/v1/settings/:idSetting', verify, handler.Show())
+        this.http.app.post('/v1/settings/', handler.Store())
+        this.http.app.get('/v1/settings/:idSetting', handler.Show())
     }
 }
 

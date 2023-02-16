@@ -6,7 +6,6 @@ import Setting from './schemas/setting'
 class Mongo {
     public static async Connect(logger: winston.Logger, { db }: Config) {
         mongoose.set('strictQuery', false)
-        mongoose.set('autoIndex', false)
         return mongoose
             .connect(`mongodb://${db.host}:${db.port}/${db.name}`, {
                 authSource: db.auth_source,

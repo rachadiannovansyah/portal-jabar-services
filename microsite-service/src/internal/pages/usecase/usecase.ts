@@ -1,5 +1,5 @@
 import winston from 'winston'
-import { translate } from '../../../helpers/translate'
+import { Translate } from '../../../helpers/translate'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
 import { Store } from '../entity/interface'
@@ -17,7 +17,7 @@ class Usecase {
         if (isExist)
             throw new error(
                 statusCode.BAD_REQUEST,
-                translate('exists', { attribute: 'title' })
+                Translate('exists', { attribute: 'title' })
             )
 
         const result = await this.repository.Store(body, database)
