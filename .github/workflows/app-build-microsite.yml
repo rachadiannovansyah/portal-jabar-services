@@ -1,0 +1,65 @@
+name: Build-push
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - microsite-service/**
+
+defaults:
+  run:
+    working-directory: microsite-service
+
+jobs:
+  deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # Configure Docker with Credentials
+    - name: Configure Docker
+      run: |
+        docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.REGISTRY_USERNAME_MICROSITE }} -p "${{ secrets.REGISTRY_PASSWORD_MICROSITE }}"
+     # Build the Docker image
+    - name: Set version tag
+      id: vars
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        file: microsite-service/docker/Dockerfile
+        context: ./microsite-service
+        push: true
+        tags: ${{ secrets.MICROSITE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}
+
+    # GitOps
+    - name: GitOps ArgoCD Setup
+      run: |
+        echo "${{ secrets.GITLAB_ARGOCD_KEY }}" > /tmp/gitlab-deploy-ssh-key
+        chmod 600 /tmp/gitlab-deploy-ssh-key
+        export GIT_SSH_COMMAND="ssh -i /tmp/gitlab-deploy-ssh-key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        git clone ${{ secrets.GITLAB_ARGOCD_REPOSITORY }}
+    - name: GitOps ArgoCD Update Image Tag Microsite Service Staging
+      uses: mikefarah/yq@master
+      with:
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.MICROSITE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.sha_short }}"' 'microsite-service/jds-terraform-gke/k8s/j-site/development/deployment.yaml'
+
+    - name: GitOps ArgoCD Create Branch, Commit, Push
+      run: |
+        export GIT_SSH_COMMAND="ssh -i /tmp/gitlab-deploy-ssh-key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        cd jds-terraform-gke/k8s/j-site/development
+        git config user.email "github-action@github.com"
+        git config user.name "Github Action"
+        git add deployment.yaml
+        git commit -m "j-site Sync Staging"
+        git push origin master
