@@ -7,6 +7,7 @@ import {
     ValidateObjectId,
 } from '../../../../helpers/validate'
 import statusCode from '../../../../pkg/statusCode'
+import { Paginate } from '../../../../helpers/paginate'
 
 class Handler {
     constructor(private usecase: Usecase, private logger: winston.Logger) {}
@@ -35,6 +36,20 @@ class Handler {
                 const result = await this.usecase.Show(idSetting)
                 return res.json({
                     data: result,
+                })
+            } catch (error) {
+                return next(error)
+            }
+        }
+    }
+    public FindAll() {
+        return async (req: any, res: Response, next: NextFunction) => {
+            try {
+                const paginate = Paginate(req.query)
+                const { data, meta } = await this.usecase.FindAll(paginate)
+                return res.json({
+                    data,
+                    meta,
                 })
             } catch (error) {
                 return next(error)

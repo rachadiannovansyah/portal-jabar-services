@@ -21,6 +21,7 @@ class Settings {
         const handler = new Handler(usecase, this.logger)
         const verify = this.http.VerifyAuth(this.config.jwt.access_key)
         this.http.app.post('/v1/settings/', handler.Store())
+        this.http.app.get('/v1/settings/', handler.FindAll())
         this.http.app.get('/v1/settings/:idSetting', handler.Show())
     }
 }

@@ -1,4 +1,5 @@
 import winston from 'winston'
+import { Meta, PropPaginate } from '../../../helpers/paginate'
 import { Translate } from '../../../helpers/translate'
 import error from '../../../pkg/error'
 import statusCode from '../../../pkg/statusCode'
@@ -34,6 +35,13 @@ class Usecase {
             )
 
         return item
+    }
+
+    public async FindAll(prop: PropPaginate) {
+        const data = await this.repository.FindAll(prop)
+        const count = await this.repository.GetCount()
+
+        return { data, meta: Meta(prop, count) }
     }
 }
 

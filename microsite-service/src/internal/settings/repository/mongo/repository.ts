@@ -1,8 +1,8 @@
-import { randomUUID } from 'crypto'
 import winston from 'winston'
 import { status } from '../../../../database/constant/setting'
 import Setting from '../../../../database/mongo/schemas/setting'
 import { RemoveProcotol } from '../../../../helpers/http'
+import { PropPaginate } from '../../../../helpers/paginate'
 import { Store } from '../../entity/interface'
 
 class Repository {
@@ -27,6 +27,14 @@ class Repository {
 
     public async FindByID(id: string) {
         return this.setting.findById(id)
+    }
+
+    public async FindAll({ limit, offset }: PropPaginate) {
+        return this.setting.find().skip(offset).limit(limit)
+    }
+
+    public async GetCount() {
+        return this.setting.count()
     }
 }
 
