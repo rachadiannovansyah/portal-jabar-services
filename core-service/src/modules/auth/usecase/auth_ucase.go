@@ -58,6 +58,7 @@ func (n *authUsecase) createAccessToken(user *domain.User, permissions []string)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	accessToken, err = token.SignedString([]byte(n.config.JWT.AccessSecret))
 
+	fmt.Println(n.config.JWT.AccessSecret, jwt.SigningMethodHS256, claims) // for de-bugging
 	return
 }
 
