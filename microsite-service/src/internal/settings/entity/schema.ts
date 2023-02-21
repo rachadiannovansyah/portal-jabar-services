@@ -8,4 +8,7 @@ export const Store = Joi.object({
     logo: Joi.string().uri().optional(),
     color_palatte: Joi.string().required(),
     name: Joi.string().required(),
+    navbar: Joi.object().optional(),
+    footer: Joi.object().optional(),
+    social_media: Joi.object().optional(),
 })

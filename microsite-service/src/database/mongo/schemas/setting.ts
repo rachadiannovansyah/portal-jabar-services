@@ -47,6 +47,15 @@ const schema = new Schema(
             type: String,
             required: true,
         },
+        navbar: {
+            type: Object,
+        },
+        footer: {
+            type: Object,
+        },
+        social_media: {
+            type: Object,
+        },
     },
     {
         timestamps: {

@@ -4,7 +4,7 @@ export const Store = Joi.object({
     created_by: Joi.string().default('').forbidden(),
     is_active: Joi.boolean().default(false).forbidden(),
     slug: Joi.string().default('').forbidden(),
-    sections: Joi.any().required(),
+    sections: Joi.object().required(),
     title: Joi.string().required(),
     banner: Joi.string().optional(),
 })
