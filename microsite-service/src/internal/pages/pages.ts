@@ -21,6 +21,7 @@ class Pages {
         const handler = new Handler(usecase, this.logger, this.config.db.name)
         const verify = this.http.VerifyAuth(this.config.jwt.access_key)
         this.http.app.post('/v1/pages/:idSetting', handler.Store())
+        this.http.app.get('/v1/pages/:idSetting', handler.FindAll())
         this.http.app.get('/v1/pages/:idSetting/:idPage', handler.Show())
     }
 }

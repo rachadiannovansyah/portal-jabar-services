@@ -8,6 +8,7 @@ import {
 } from '../../../../helpers/validate'
 import statusCode from '../../../../pkg/statusCode'
 import { Setting } from '../../../../helpers/setting'
+import { Paginate } from '../../../../helpers/paginate'
 
 class Handler {
     constructor(
@@ -49,6 +50,28 @@ class Handler {
                         setting,
                         page: result,
                     },
+                })
+            } catch (error) {
+                return next(error)
+            }
+        }
+    }
+    public FindAll() {
+        return async (req: any, res: Response, next: NextFunction) => {
+            try {
+                const idSetting = ValidateObjectId(
+                    req.params.idSetting,
+                    'idSetting'
+                )
+                const setting = await Setting(this.database, idSetting)
+                const paginate = Paginate(req.query)
+                const { data, meta } = await this.usecase.FindAll(
+                    paginate,
+                    setting.id
+                )
+                return res.json({
+                    data,
+                    meta,
                 })
             } catch (error) {
                 return next(error)

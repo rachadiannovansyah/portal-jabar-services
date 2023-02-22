@@ -19,7 +19,10 @@ const schema = new Schema(
             required: false,
             index: true,
         },
-        favicon: String,
+        favicon: {
+            type: String,
+            default: null,
+        },
         color_palatte: {
             type: String,
             required: true,
@@ -49,12 +52,15 @@ const schema = new Schema(
         },
         navbar: {
             type: Object,
+            default: null,
         },
         footer: {
             type: Object,
+            default: null,
         },
         social_media: {
             type: Object,
+            default: null,
         },
     },
     {

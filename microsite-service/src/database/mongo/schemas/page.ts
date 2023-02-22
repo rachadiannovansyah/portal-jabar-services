@@ -27,7 +27,10 @@ const schema = new Schema(
             type: Boolean,
             index: true,
         },
-        banner: String,
+        banner: {
+            type: String,
+            default: null,
+        },
     },
     {
         timestamps: {
