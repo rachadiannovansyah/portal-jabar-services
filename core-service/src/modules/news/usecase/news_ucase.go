@@ -524,6 +524,7 @@ func (n *newsUsecase) Store(c context.Context, dt *domain.StoreNewsRequest) (err
 
 	// set slug for the news
 	dt.Slug = helpers.MakeSlug(dt.Title, dt.ID)
+	dt.Link = n.cfg.App.Domain + dt.Slug
 	n.newsRepo.Update(ctx, dt.ID, dt, tx)
 
 	if err = n.storeTags(ctx, dt.ID, dt.Tags, tx); err != nil {

@@ -13,6 +13,7 @@ type AppConfig struct {
 	CmsUrl         string
 	PortalUrl      string
 	Env            string
+	Domain         string
 	ContextTimeout time.Duration
 }
 
@@ -24,6 +25,7 @@ func LoadAppConfig() AppConfig {
 		CmsUrl:         viper.GetString("PORTAL_JABAR_CMS_URL"),
 		PortalUrl:      viper.GetString("PORTAL_JABAR_LANDING_PAGE_URL"),
 		Env:            viper.GetString("APP_ENV"),
+		Domain:         viper.GetString("APP_DOMAIN"),
 		ContextTimeout: viper.GetDuration("APP_TIMEOUT") * time.Second,
 	}
 }
