@@ -1,0 +1,3 @@
+ALTER TABLE news
+ADD COLUMN link varchar(200) DEFAULT NULL
+AFTER is_live;

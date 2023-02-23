@@ -30,10 +30,10 @@ func NewMysqlNewsRepository(Conn *sql.DB, Logger *utils.Logrus) domain.NewsRepos
 }
 
 var querySelectNews = `SELECT id, category, title, excerpt, content, image, video, slug, author, reporter, editor, area_id, type, 
-	views, shared, source, duration, start_date, end_date, status, is_live, published_at, created_by, created_at, updated_at FROM news WHERE deleted_at is null`
+	views, shared, source, duration, start_date, end_date, status, is_live, link, published_at, created_by, created_at, updated_at FROM news WHERE deleted_at is null`
 
 var queryJoinNews = `SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author, n.reporter, n.editor, n.area_id, n.type, 
-	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.published_at, n.created_by, n.created_at, n.updated_at FROM news n
+	n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.link, n.published_at, n.created_by, n.created_at, n.updated_at FROM news n
 	LEFT JOIN users u
 	ON n.created_by = u.id
 	WHERE n.deleted_at is NULL`
@@ -84,6 +84,7 @@ func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...i
 			&t.EndDate,
 			&t.Status,
 			&t.IsLive,
+			&t.Link,
 			&t.PublishedAt,
 			&createdByID,
 			&t.CreatedAt,
@@ -452,6 +453,7 @@ func (m *mysqlNewsRepository) getNewsByCategory(ctx context.Context, category st
 		&t.EndDate,
 		&t.Status,
 		&t.IsLive,
+		&t.Link,
 		&t.PublishedAt,
 		&createdByID,
 		&t.CreatedAt,
