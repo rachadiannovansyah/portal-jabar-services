@@ -64,6 +64,7 @@ type StoreNewsRequest struct {
 	Tags        []string   `json:"tags"`
 	AreaID      int64      `json:"area_id"`
 	IsLive      int8       `json:"is_live"`
+	Link        string     `json:"link"`
 	PublishedAt *time.Time `json:"published_at"`
 	CreatedBy   User       `json:"created_by"`
 	UpdatedBy   User       `json:"updated_by"`

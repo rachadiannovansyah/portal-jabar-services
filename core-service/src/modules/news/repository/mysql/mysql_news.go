@@ -271,7 +271,7 @@ func (m *mysqlNewsRepository) FetchNewsHeadline(ctx context.Context) (res []doma
 
 func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequest, tx *sql.Tx) (err error) {
 	query := `INSERT news SET title=?, excerpt=?, content=?, slug=?, image=?, category=?,
-		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, author=?, reporter=?, editor=?, created_by=?`
+		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, author=?, reporter=?, editor=?, created_by=?, link=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -295,6 +295,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 		n.Reporter,
 		n.Editor,
 		n.CreatedBy.ID.String(),
+		n.Link,
 	)
 	if err != nil {
 		return
@@ -309,7 +310,7 @@ func (m *mysqlNewsRepository) Store(ctx context.Context, n *domain.StoreNewsRequ
 
 func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.StoreNewsRequest, tx *sql.Tx) (err error) {
 	query := `UPDATE news SET title=?, excerpt=?, content=?, image=?, category=?, slug=?, author=?, reporter=?, editor=?,
-		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, is_live=?, published_at=?, updated_by=?, updated_at=? WHERE id=?`
+		source=?, status=?, type=?, duration=?, start_date=?, end_date=?, area_id=?, is_live=?, link=?, published_at=?, updated_by=?, updated_at=? WHERE id=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -333,6 +334,7 @@ func (m *mysqlNewsRepository) Update(ctx context.Context, id int64, n *domain.St
 		n.EndDate,
 		n.AreaID,
 		n.IsLive,
+		n.Link,
 		n.PublishedAt,
 		n.CreatedBy.ID,
 		time.Now(),
