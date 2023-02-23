@@ -35,6 +35,7 @@ type News struct {
 	StartDate   *time.Time `json:"start_date"`
 	EndDate     *time.Time `json:"end_date"`
 	IsLive      int8       `json:"is_live"`
+	Link        string     `json:"link"`
 	CreatedBy   User       `json:"created_by"`
 	UpdatedBy   User       `json:"updated_by"`
 	PublishedAt *time.Time `json:"published_at"`
@@ -91,6 +92,7 @@ type NewsListResponse struct {
 	Tags        []DataTag  `json:"tags"`
 	Status      string     `json:"status"`
 	IsLive      int8       `json:"is_live"`
+	Link        string     `json:"link"`
 	CreatedBy   Author     `json:"created_by"`
 	PublishedAt *time.Time `json:"published_at"`
 	CreatedAt   time.Time  `json:"created_at"`
@@ -104,6 +106,7 @@ type NewsBanner struct {
 	Category    string       `json:"category"`
 	Image       *string      `json:"image"`
 	Slug        NullString   `json:"slug"`
+	Link        string       `json:"link"`
 	Author      string       `json:"author"`
 	Reporter    string       `json:"reporter"`
 	Editor      string       `json:"editor"`
