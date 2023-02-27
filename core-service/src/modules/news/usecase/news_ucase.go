@@ -574,7 +574,8 @@ func (n *newsUsecase) Update(c context.Context, id int64, dt *domain.StoreNewsRe
 		return
 	}
 
-	dt.Slug = news.Slug
+	dt.Slug = helpers.MakeSlug(dt.Title, id)
+	dt.Link = n.cfg.App.Domain + dt.Slug
 
 	if err := n.dataTagRepo.DeleteDataTag(ctx, id, domain.ConstNews, tx); err != nil {
 		logrus.Error(err)
