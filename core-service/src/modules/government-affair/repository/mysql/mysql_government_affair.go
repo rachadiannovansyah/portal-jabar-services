@@ -21,14 +21,14 @@ func NewMysqlGovernmentAffairRepository(Conn *sql.DB) domain.GovernmentAffairRep
 
 var querySelect = `SELECT id, main_affair, sub_main_affair FROM government_affairs WHERE 1=1`
 
-func (m *mysqlGovernmentAffairRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.GovernmentAffair, err error) {
+func (m *mysqlGovernmentAffairRepository) fetch(ctx context.Context, query string, args ...interface{}) (results []domain.GovernmentAffair, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
 
-	result = make([]domain.GovernmentAffair, 0)
+	results = make([]domain.GovernmentAffair, 0)
 	for rows.Next() {
 		ga := domain.GovernmentAffair{}
 		err = rows.Scan(
@@ -42,10 +42,10 @@ func (m *mysqlGovernmentAffairRepository) fetch(ctx context.Context, query strin
 			return nil, err
 		}
 
-		result = append(result, ga)
+		results = append(results, ga)
 	}
 
-	return result, nil
+	return results, nil
 }
 
 func (m *mysqlGovernmentAffairRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
