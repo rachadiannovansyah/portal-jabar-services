@@ -27,6 +27,7 @@ import (
 	_eventHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/delivery/http"
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
+	_governmentAffairDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
 	_popUpBannerDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/delivery/http"
@@ -100,6 +101,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_visitorHttpDelivery.NewCounterVisitorHandler(p, u.VisitorUsecase)
 	_popUpBannerDelivery.NewPopUpBannerHandler(r, u.PopUpBannerUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
+	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
