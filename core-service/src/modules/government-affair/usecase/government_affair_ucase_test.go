@@ -38,7 +38,6 @@ var ts *governmentAffairUsecaseTestSuite
 var err error
 var mockStruct domain.GovernmentAffair
 var usecase domain.GovernmentAffairUsecase
-var params *domain.Request
 
 func TestMain(m *testing.M) {
 	// prepare test

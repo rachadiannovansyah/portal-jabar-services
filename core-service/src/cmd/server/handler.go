@@ -35,10 +35,11 @@ import (
 	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_servicePublicHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/delivery/http"
-	_spbeRalsRepository "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/spbe-rals/delivery/http"
+	_spbeRalsDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/spbe-rals/delivery/http"
 	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
 	_templateHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
+	_uptdCabdinDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/uptd-cabdin/delivery/http"
 	_userHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/delivery/http"
 	_visitorHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/delivery/http"
 )
@@ -103,7 +104,8 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_popUpBannerDelivery.NewPopUpBannerHandler(r, u.PopUpBannerUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
-	_spbeRalsRepository.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
+	_spbeRalsDelivery.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
+	_uptdCabdinDelivery.NewUptdCabdinHandler(r, u.UptdCabdinUsecase, apm)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

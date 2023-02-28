@@ -29,6 +29,7 @@ import (
 	_tagRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/repository/mysql"
 	_templateRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/repository/mysql"
 	_unitRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/repository/mysql"
+	_uptdCabdinRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/uptd-cabdin/repository/mysql"
 	_userRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/repository/mysql"
 	_externalVisitorRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/repository/external"
 )
@@ -62,6 +63,7 @@ type Repository struct {
 	PopUpBannerRepo        domain.PopUpBannerRepository
 	GovernmentAffairRepo   domain.GovernmentAffairRepository
 	SpbeRalsRepo           domain.SpbeRalsRepository
+	UptdCabdinRepo         domain.UptdCabdinRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -93,5 +95,6 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		PopUpBannerRepo:        _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
 		GovernmentAffairRepo:   _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
 		SpbeRalsRepo:           _spbeRalsRepo.NewMysqlSpbeRalsRepository(conn.Mysql),
+		UptdCabdinRepo:         _uptdCabdinRepo.NewMysqlUptdCabdinRepository(conn.Mysql),
 	}
 }
