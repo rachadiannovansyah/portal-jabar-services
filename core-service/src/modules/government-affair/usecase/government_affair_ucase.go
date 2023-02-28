@@ -23,13 +23,13 @@ func NewGovernmentAffairUsecase(ga domain.GovernmentAffairRepository, cfg *confi
 	}
 }
 
-func (u *governmentAffairUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.GovernmentAffair, total int64, err error) {
+func (u *governmentAffairUsecase) Fetch(c context.Context) (res []domain.GovernmentAffair, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, total, err = u.governmentAffairRepo.Fetch(ctx, params)
+	res, err = u.governmentAffairRepo.Fetch(ctx)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	return

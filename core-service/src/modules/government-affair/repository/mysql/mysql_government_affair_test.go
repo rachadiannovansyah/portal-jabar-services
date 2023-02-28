@@ -44,15 +44,7 @@ func TestFetch(t *testing.T) {
 	mock.ExpectQuery(query).WillReturnRows(rows)
 	pb := gaRepo.NewMysqlGovernmentAffairRepository(db)
 
-	params := &domain.Request{
-		Keyword:   "",
-		PerPage:   10,
-		Offset:    0,
-		SortBy:    "",
-		SortOrder: "",
-	}
-
-	list, _, err := pb.Fetch(context.TODO(), params)
+	list, err := pb.Fetch(context.TODO())
 
 	// make an assertions using testify
 	assert.NotNil(t, list)
