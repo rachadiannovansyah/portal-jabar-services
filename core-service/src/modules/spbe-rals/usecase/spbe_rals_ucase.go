@@ -23,13 +23,13 @@ func NewSpbeRalsUsecase(srals domain.SpbeRalsRepository, cfg *config.Config, tim
 	}
 }
 
-func (u *spbeRalsUsecase) Fetch(c context.Context, params *domain.Request) (res []domain.SpbeRals, total int64, err error) {
+func (u *spbeRalsUsecase) Fetch(c context.Context) (res []domain.SpbeRals, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	res, total, err = u.spbeRalsRepo.Fetch(ctx, params)
+	res, err = u.spbeRalsRepo.Fetch(ctx)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	return

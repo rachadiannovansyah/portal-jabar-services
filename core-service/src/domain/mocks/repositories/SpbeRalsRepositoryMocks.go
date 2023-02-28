@@ -14,34 +14,27 @@ type SpbeRalsRepository struct {
 	mock.Mock
 }
 
-// Fetch provides a mock function with given fields: ctx, params
-func (_m *SpbeRalsRepository) Fetch(ctx context.Context, params *domain.Request) ([]domain.SpbeRals, int64, error) {
-	ret := _m.Called(ctx, params)
+// Fetch provides a mock function with given fields: ctx
+func (_m *SpbeRalsRepository) Fetch(ctx context.Context) ([]domain.SpbeRals, error) {
+	ret := _m.Called(ctx)
 
 	var r0 []domain.SpbeRals
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Request) []domain.SpbeRals); ok {
-		r0 = rf(ctx, params)
+	if rf, ok := ret.Get(0).(func(context.Context) []domain.SpbeRals); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.SpbeRals)
 		}
 	}
 
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, *domain.Request) int64); ok {
-		r1 = rf(ctx, params)
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
-		r1 = ret.Get(1).(int64)
+		r1 = ret.Error(1)
 	}
 
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, *domain.Request) error); ok {
-		r2 = rf(ctx, params)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0, r1
 }
 
 type mockConstructorTestingTNewSpbeRalsRepository interface {

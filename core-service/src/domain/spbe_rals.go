@@ -10,9 +10,9 @@ type SpbeRals struct {
 }
 
 type SpbeRalsUsecase interface {
-	Fetch(ctx context.Context, params *Request) (res []SpbeRals, total int64, err error)
+	Fetch(ctx context.Context) (res []SpbeRals, err error)
 }
 
 type SpbeRalsRepository interface {
-	Fetch(ctx context.Context, params *Request) (res []SpbeRals, total int64, err error)
+	Fetch(ctx context.Context) (res []SpbeRals, err error)
 }

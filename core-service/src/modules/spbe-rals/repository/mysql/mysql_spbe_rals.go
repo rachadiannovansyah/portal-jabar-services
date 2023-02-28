@@ -60,22 +60,11 @@ func (m *mysqlSpbeRalsRepository) count(ctx context.Context, query string, args 
 	return total, nil
 }
 
-func (m *mysqlSpbeRalsRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.SpbeRals, total int64, err error) {
-	// add binding optional params to mitigate sql injection
-	binds := make([]interface{}, 0)
-	queryFilter := filterSpbeRalsQuery(params, &binds)
-
-	// get count of data
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM spbe_rals WHERE 1=1 `+queryFilter, binds...)
-
-	// appending final query
-	query := querySelect + queryFilter + ` LIMIT ?,? `
-	binds = append(binds, params.Offset, params.PerPage)
-
+func (m *mysqlSpbeRalsRepository) Fetch(ctx context.Context) (res []domain.SpbeRals, err error) {
 	// exec query and params binding
-	res, err = m.fetch(ctx, query, binds...)
+	res, err = m.fetch(ctx, querySelect)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	return

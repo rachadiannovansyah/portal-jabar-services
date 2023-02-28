@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -30,16 +29,12 @@ func NewSpbeRalsHandler(r *echo.Group, ucase domain.SpbeRalsUsecase, apm *utils.
 func (h *SpbeRalsHandler) Fetch(c echo.Context) error {
 	// define requirements of request
 	ctx := c.Request().Context()
-	params := helpers.GetRequestParams(c)
 
 	// usecase needed
-	data, total, err := h.SRalsUcase.Fetch(ctx, &params)
+	data, err := h.SRalsUcase.Fetch(ctx)
 	if err != nil {
 		return err
 	}
 
-	// represent to clients
-	res := helpers.Paginate(c, data, total, params)
-
-	return c.JSON(http.StatusOK, res)
+	return c.JSON(http.StatusOK, data)
 }
