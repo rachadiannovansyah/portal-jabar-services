@@ -35,6 +35,7 @@ import (
 	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_servicePublicHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/delivery/http"
+	_spbeRalsRepository "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/spbe-rals/delivery/http"
 	_tagHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/delivery/http"
 	_templateHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/delivery/http"
 	_unitHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/delivery/http"
@@ -102,6 +103,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_popUpBannerDelivery.NewPopUpBannerHandler(r, u.PopUpBannerUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
+	_spbeRalsRepository.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
