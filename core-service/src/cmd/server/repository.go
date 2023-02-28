@@ -15,6 +15,7 @@ import (
 	_featuredProgramRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/repository/mysql"
 	_feedbackRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/repository/mysql"
 	_generalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/general-information/repository/mysql"
+	_governmentAffairRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_popUpBannerRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/repository/mysql"
@@ -58,6 +59,7 @@ type Repository struct {
 	PublicServiceRepo      domain.PublicServiceRepository
 	ExternalVisitorRepo    domain.ExternalVisitorRepository
 	PopUpBannerRepo        domain.PopUpBannerRepository
+	GovernmentAffairRepo   domain.GovernmentAffairRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -87,5 +89,6 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		PublicServiceRepo:      _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
 		ExternalVisitorRepo:    _externalVisitorRepo.NewExternalVisitorRepository(cfg),
 		PopUpBannerRepo:        _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
+		GovernmentAffairRepo:   _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
 	}
 }
