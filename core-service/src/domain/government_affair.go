@@ -9,9 +9,9 @@ type GovernmentAffair struct {
 }
 
 type GovernmentAffairUsecase interface {
-	Fetch(ctx context.Context, params *Request) (res []GovernmentAffair, total int64, err error)
+	Fetch(ctx context.Context) (res []GovernmentAffair, err error)
 }
 
 type GovernmentAffairRepository interface {
-	Fetch(ctx context.Context, params *Request) (res []GovernmentAffair, total int64, err error)
+	Fetch(ctx context.Context) (res []GovernmentAffair, err error)
 }

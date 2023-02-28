@@ -24,9 +24,11 @@ import (
 	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_servicePublicUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/usecase"
+	_spbeRalsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/spbe-rals/usecase"
 	_tagUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/tag/usecase"
 	_templateUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/template/usecase"
 	_unitUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/unit/usecase"
+	_uptdCabdinUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/uptd-cabdin/usecase"
 	_userUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/user/usecase"
 	_visitorUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/visitor/usecase"
 )
@@ -56,6 +58,8 @@ type Usecases struct {
 	VisitorUsecase          domain.VisitorUsecase
 	PopUpBannerUsecase      domain.PopUpBannerUsecase
 	GovernmentAffairUsecase domain.GovernmentAffairUsecase
+	SpbeRalsUsecase         domain.SpbeRalsUsecase
+	UptdCabdinUsecase       domain.UptdCabdinUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -83,5 +87,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		VisitorUsecase:          _visitorUcase.NewVisitorUsecase(r.ExternalVisitorRepo, conn, timeoutContext),
 		PopUpBannerUsecase:      _popUpBannerUcase.NewPopUpBannerUsecase(r.PopUpBannerRepo, cfg, timeoutContext),
 		GovernmentAffairUsecase: _governmentAffairUcase.NewGovernmentAffairUsecase(r.GovernmentAffairRepo, cfg, timeoutContext),
+		SpbeRalsUsecase:         _spbeRalsUcase.NewSpbeRalsUsecase(r.SpbeRalsRepo, cfg, timeoutContext),
+		UptdCabdinUsecase:       _uptdCabdinUcase.NewUptdCabdinUsecase(r.UptdCabdinRepo, cfg, timeoutContext),
 	}
 }

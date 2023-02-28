@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/sirupsen/logrus"
 
@@ -48,33 +47,11 @@ func (m *mysqlGovernmentAffairRepository) fetch(ctx context.Context, query strin
 	return results, nil
 }
 
-func (m *mysqlGovernmentAffairRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
-
-	err = m.Conn.QueryRow(query, args...).Scan(&total)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	return total, nil
-}
-
-func (m *mysqlGovernmentAffairRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.GovernmentAffair, total int64, err error) {
-	// add binding optional params to mitigate sql injection
-	binds := make([]interface{}, 0)
-	queryFilter := filterGovernmentAffairQuery(params, &binds)
-
-	// get count of data
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM government_affairs WHERE 1=1 `+queryFilter, binds...)
-
-	// appending final query
-	query := querySelect + queryFilter + ` LIMIT ?,? `
-	binds = append(binds, params.Offset, params.PerPage)
-
+func (m *mysqlGovernmentAffairRepository) Fetch(ctx context.Context) (res []domain.GovernmentAffair, err error) {
 	// exec query and params binding
-	res, err = m.fetch(ctx, query, binds...)
+	res, err = m.fetch(ctx, querySelect)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	return

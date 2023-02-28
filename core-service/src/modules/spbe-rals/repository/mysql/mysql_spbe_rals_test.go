@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-faker/faker/v4"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
-	gaRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/repository/mysql"
+	srRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/spbe-rals/repository/mysql"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -21,28 +21,30 @@ func TestFetch(t *testing.T) {
 	defer db.Close()
 
 	// create mock data from struct
-	mockStruct := []domain.GovernmentAffair{}
+	mockStruct := []domain.SpbeRals{}
 	err = faker.FakeData(&mockStruct)
 	if err != nil {
-		t.Fatalf(`an error ‘%s’ was not expected when faking detail service public struct`, err)
+		t.Fatalf(`an error ‘%s’ was not expected when faking detail struct`, err)
 	}
 
 	// create rows to be created from a sql driver.Value slice
 	rows := sqlmock.NewRows([]string{
 		"id",
-		"main_affair",
-		"sub_main_affair",
+		"kode_ral_2",
+		"kode",
+		"item",
 	}).
 		AddRow(
 			mockStruct[0].ID,
-			mockStruct[0].MainAffair,
-			mockStruct[0].SubMainAffair,
+			mockStruct[0].RalCode2,
+			mockStruct[0].Code,
+			mockStruct[0].Item,
 		)
 
-	query := `SELECT id, main_affair, sub_main_affair FROM government_affairs WHERE 1=1`
+	query := `SELECT id, kode_ral_2, kode, item FROM spbe_rals WHERE 1=1`
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
-	pb := gaRepo.NewMysqlGovernmentAffairRepository(db)
+	pb := srRepo.NewMysqlSpbeRalsRepository(db)
 
 	list, err := pb.Fetch(context.TODO())
 
