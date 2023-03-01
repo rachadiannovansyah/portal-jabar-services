@@ -53,6 +53,7 @@ func (n *authUsecase) createAccessToken(user *domain.User, permissions []string)
 		Permissions: permissions,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(n.config.JWT.RefreshTTL).Unix(),
+			IssuedAt:  exp,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
