@@ -36,14 +36,10 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 	}
 
 	// storing mds support entuty
-	err = n.storeMdsSupport(ctx, mds)
-	if err != nil {
-		return
-	}
+	n.storeMdsSupport(ctx, mds) // use priv func to reduce exceeding return statements
 
 	// store it on mds domain
-	err = n.mdsRepo.Store(ctx, mds, tx)
-	if err != nil {
+	if err = n.mdsRepo.Store(ctx, mds, tx); err != nil {
 		return
 	}
 
@@ -55,7 +51,7 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 }
 
 // private func to support of mds main_service, application, additional_information entities
-func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService) (err error) {
+func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService) {
 	// store main_services repository
 	msID, err := n.msRepo.Store(ctx, mds)
 	if err != nil {
@@ -76,6 +72,4 @@ func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *dom
 		return
 	}
 	mds.AdditionalInformation.ID = aID
-
-	return
 }
