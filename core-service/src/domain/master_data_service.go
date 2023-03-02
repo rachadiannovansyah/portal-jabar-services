@@ -3,6 +3,9 @@ package domain
 import (
 	"context"
 	"database/sql"
+	"time"
+
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
 type MasterDataService struct {
@@ -79,6 +82,15 @@ type StoreMasterDataService struct {
 			Link string `json:"link"`
 		} `json:"social_media"`
 	} `json:"additional_information" validate:"required"`
+}
+
+type MasterDataServiceUsecaseArgs struct {
+	MdsRepo        MasterDataServiceRepository
+	MsRepo         MainServiceRepository
+	ApRepo         ApplicationRepository
+	AiRepo         AdditionalInformationRepository
+	Cfg            *config.Config
+	ContextTimeout time.Duration
 }
 
 type MasterDataServiceUsecase interface {
