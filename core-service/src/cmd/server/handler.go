@@ -29,6 +29,7 @@ import (
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_governmentAffairDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
+	_masterDataServiceDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-service/delivery/http"
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
 	_popUpBannerDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/delivery/http"
 	_publicServiceHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/delivery/http"
@@ -106,6 +107,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
 	_spbeRalsDelivery.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
 	_uptdCabdinDelivery.NewUptdCabdinHandler(r, u.UptdCabdinUsecase, apm)
+	_masterDataServiceDelivery.NewMasterDataServiceHandler(r, u.MasterDataServiceUsecase, apm)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }

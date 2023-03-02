@@ -17,6 +17,7 @@ import (
 	_feedbackUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/usecase"
 	_governmentAffairUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/usecase"
 	_informationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/usecase"
+	_masterDataServiceUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-service/usecase"
 	_mediaUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/media/usecase"
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_popUpBannerUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/usecase"
@@ -35,31 +36,32 @@ import (
 
 // Usecases ...
 type Usecases struct {
-	AreaUcase               domain.AreaUsecase
-	CategoryUcase           domain.CategoryUsecase
-	NewsUcase               domain.NewsUsecase
-	InformationUcase        domain.InformationUsecase
-	UnitUcase               domain.UnitUsecase
-	EventUcase              domain.EventUsecase
-	FeedbackUcase           domain.FeedbackUsecase
-	FeaturedProgramUcase    domain.FeaturedProgramUsecase
-	AuthUcase               domain.AuthUsecase
-	SearchUcase             domain.SearchUsecase
-	ServicePublicUcase      domain.ServicePublicUsecase
-	UserUsecase             domain.UserUsecase
-	MediaUsecase            domain.MediaUsecase
-	TagUsecase              domain.TagUsecase
-	TemplateUsecase         domain.TemplateUsecase
-	RegInvitationUsecase    domain.RegistrationInvitationUsecase
-	AwardUsecase            domain.AwardUsecase
-	DistrictUsecase         domain.DistrictUsecase
-	DocumentArchiveUsecase  domain.DocumentArchiveUsecase
-	PublicServiceUsecase    domain.PublicServiceUsecase
-	VisitorUsecase          domain.VisitorUsecase
-	PopUpBannerUsecase      domain.PopUpBannerUsecase
-	GovernmentAffairUsecase domain.GovernmentAffairUsecase
-	SpbeRalsUsecase         domain.SpbeRalsUsecase
-	UptdCabdinUsecase       domain.UptdCabdinUsecase
+	AreaUcase                domain.AreaUsecase
+	CategoryUcase            domain.CategoryUsecase
+	NewsUcase                domain.NewsUsecase
+	InformationUcase         domain.InformationUsecase
+	UnitUcase                domain.UnitUsecase
+	EventUcase               domain.EventUsecase
+	FeedbackUcase            domain.FeedbackUsecase
+	FeaturedProgramUcase     domain.FeaturedProgramUsecase
+	AuthUcase                domain.AuthUsecase
+	SearchUcase              domain.SearchUsecase
+	ServicePublicUcase       domain.ServicePublicUsecase
+	UserUsecase              domain.UserUsecase
+	MediaUsecase             domain.MediaUsecase
+	TagUsecase               domain.TagUsecase
+	TemplateUsecase          domain.TemplateUsecase
+	RegInvitationUsecase     domain.RegistrationInvitationUsecase
+	AwardUsecase             domain.AwardUsecase
+	DistrictUsecase          domain.DistrictUsecase
+	DocumentArchiveUsecase   domain.DocumentArchiveUsecase
+	PublicServiceUsecase     domain.PublicServiceUsecase
+	VisitorUsecase           domain.VisitorUsecase
+	PopUpBannerUsecase       domain.PopUpBannerUsecase
+	GovernmentAffairUsecase  domain.GovernmentAffairUsecase
+	SpbeRalsUsecase          domain.SpbeRalsUsecase
+	UptdCabdinUsecase        domain.UptdCabdinUsecase
+	MasterDataServiceUsecase domain.MasterDataServiceUsecase
 }
 
 // NewUcase will create an object that represent all usecases interface
@@ -89,5 +91,13 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		GovernmentAffairUsecase: _governmentAffairUcase.NewGovernmentAffairUsecase(r.GovernmentAffairRepo, cfg, timeoutContext),
 		SpbeRalsUsecase:         _spbeRalsUcase.NewSpbeRalsUsecase(r.SpbeRalsRepo, cfg, timeoutContext),
 		UptdCabdinUsecase:       _uptdCabdinUcase.NewUptdCabdinUsecase(r.UptdCabdinRepo, cfg, timeoutContext),
+		MasterDataServiceUsecase: _masterDataServiceUcase.NewMasterDataServiceUsecase(domain.MasterDataServiceUsecaseArgs{
+			MdsRepo:        r.MasterDataServiceRepo,
+			MsRepo:         r.MainServiceRepo,
+			ApRepo:         r.ApplicationRepo,
+			AiRepo:         r.AdditionalInfRepo,
+			Cfg:            cfg,
+			ContextTimeout: timeoutContext,
+		}),
 	}
 }

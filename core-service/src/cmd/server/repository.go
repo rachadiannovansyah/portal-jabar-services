@@ -17,6 +17,10 @@ import (
 	_generalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/general-information/repository/mysql"
 	_governmentAffairRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
+	_masterDataServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-service/repository/mysql"
+	_additionalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mds-additional-information/repository/mysql"
+	_applicationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mds-application/repository/mysql"
+	_mainServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mds-main-service/repository/mysql"
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_popUpBannerRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/repository/mysql"
 	_publicServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
@@ -64,6 +68,10 @@ type Repository struct {
 	GovernmentAffairRepo   domain.GovernmentAffairRepository
 	SpbeRalsRepo           domain.SpbeRalsRepository
 	UptdCabdinRepo         domain.UptdCabdinRepository
+	MasterDataServiceRepo  domain.MasterDataServiceRepository
+	MainServiceRepo        domain.MainServiceRepository
+	ApplicationRepo        domain.ApplicationRepository
+	AdditionalInfRepo      domain.AdditionalInformationRepository
 }
 
 // NewRepository will create an object that represent all repos interface
@@ -96,5 +104,9 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		GovernmentAffairRepo:   _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
 		SpbeRalsRepo:           _spbeRalsRepo.NewMysqlSpbeRalsRepository(conn.Mysql),
 		UptdCabdinRepo:         _uptdCabdinRepo.NewMysqlUptdCabdinRepository(conn.Mysql),
+		MasterDataServiceRepo:  _masterDataServiceRepo.NewMysqlMasterDataServiceRepository(conn.Mysql),
+		MainServiceRepo:        _mainServiceRepo.NewMysqlMainServiceRepository(conn.Mysql),
+		ApplicationRepo:        _applicationRepo.NewMysqlApplicationRepository(conn.Mysql),
+		AdditionalInfRepo:      _additionalInformationRepo.NewMysqlAdditionalInformationRepository(conn.Mysql),
 	}
 }
