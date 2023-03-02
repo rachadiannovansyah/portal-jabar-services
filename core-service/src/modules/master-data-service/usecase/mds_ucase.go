@@ -18,14 +18,14 @@ type masterDataServiceUsecase struct {
 }
 
 // NewMasterDataServiceUsecase creates a new master-data-service usecase
-func NewMasterDataServiceUsecase(mds domain.MasterDataServiceRepository, ms domain.MainServiceRepository, ap domain.ApplicationRepository, ai domain.AdditionalInformationRepository, cfg *config.Config, timeout time.Duration) domain.MasterDataServiceUsecase {
+func NewMasterDataServiceUsecase(mdsArgs domain.MasterDataServiceUsecaseArgs) domain.MasterDataServiceUsecase {
 	return &masterDataServiceUsecase{
-		mdsRepo:        mds,
-		msRepo:         ms,
-		apRepo:         ap,
-		aiRepo:         ai,
-		cfg:            cfg,
-		contextTimeout: timeout,
+		mdsRepo:        mdsArgs.MdsRepo,
+		msRepo:         mdsArgs.MsRepo,
+		apRepo:         mdsArgs.ApRepo,
+		aiRepo:         mdsArgs.AiRepo,
+		cfg:            mdsArgs.Cfg,
+		contextTimeout: mdsArgs.ContextTimeout,
 	}
 }
 
@@ -35,6 +35,27 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 		return
 	}
 
+	// storing mds support entuty
+	err = n.storeMdsSupport(ctx, mds)
+	if err != nil {
+		return
+	}
+
+	// store it on mds domain
+	err = n.mdsRepo.Store(ctx, mds, tx)
+	if err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
+
+	return
+}
+
+// private func to support of mds main_service, application, additional_information entities
+func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService) (err error) {
 	// store main_services repository
 	msID, err := n.msRepo.Store(ctx, mds)
 	if err != nil {
@@ -55,16 +76,6 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 		return
 	}
 	mds.AdditionalInformation.ID = aID
-
-	// store it on service public
-	err = n.mdsRepo.Store(ctx, mds, tx)
-	if err != nil {
-		return
-	}
-
-	if err = tx.Commit(); err != nil {
-		return
-	}
 
 	return
 }
