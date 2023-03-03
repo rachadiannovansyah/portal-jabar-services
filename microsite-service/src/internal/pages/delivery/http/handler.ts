@@ -20,12 +20,7 @@ class Handler {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
                 const value = ValidateFormRequest(Store, req.body)
-                const idSetting = ValidateObjectId(
-                    req.params.idSetting,
-                    'idSetting'
-                )
-                const setting = await Setting(this.database, idSetting)
-
+                const setting = req.setting
                 const result = await this.usecase.Store(value, setting.id)
                 return res
                     .status(statusCode.OK)
@@ -38,12 +33,8 @@ class Handler {
     public Show() {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
-                const idSetting = ValidateObjectId(
-                    req.params.idSetting,
-                    'idSetting'
-                )
                 const idPage = ValidateObjectId(req.params.idPage, 'idPage')
-                const setting = await Setting(this.database, idSetting)
+                const setting = req.setting
                 const result = await this.usecase.Show(idPage, setting.id)
                 return res.json({
                     data: {
@@ -59,11 +50,7 @@ class Handler {
     public FindAll() {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
-                const idSetting = ValidateObjectId(
-                    req.params.idSetting,
-                    'idSetting'
-                )
-                const setting = await Setting(this.database, idSetting)
+                const setting = req.setting
                 const paginate = Paginate(req.query)
                 const { data, meta } = await this.usecase.FindAll(
                     paginate,

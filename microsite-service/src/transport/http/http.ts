@@ -63,39 +63,6 @@ class Http {
         })
     }
 
-    public VerifyAuth = (
-        secretOrPublicKey: jwt.Secret,
-        options?: jwt.VerifyOptions
-    ) => {
-        return (req: any, res: Response, next: NextFunction) => {
-            const { authorization } = req.headers
-
-            if (!authorization) {
-                return next(
-                    new Error(
-                        statusCode.UNAUTHORIZED,
-                        statusCode[statusCode.UNAUTHORIZED]
-                    )
-                )
-            }
-
-            const [_, token] = authorization.split('Bearer ')
-
-            try {
-                const decoded = jwt.verify(token, secretOrPublicKey, options)
-                req.user = decoded
-                return next()
-            } catch (error) {
-                return next(
-                    new Error(
-                        statusCode.UNAUTHORIZED,
-                        statusCode[statusCode.UNAUTHORIZED]
-                    )
-                )
-            }
-        }
-    }
-
     public Run(port: number) {
         this.app.use(this.onError)
         this.app.listen(port, () => {
