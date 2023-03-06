@@ -8,6 +8,8 @@ export const VerifyAuth = (
     options?: jwt.VerifyOptions
 ) => {
     return (req: any, res: Response, next: NextFunction) => {
+        console.log(secretOrPublicKey);
+        
         const { authorization } = req.headers
 
         if (!authorization) {
