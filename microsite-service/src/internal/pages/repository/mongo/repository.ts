@@ -23,6 +23,13 @@ class Repository {
         return page.findById(id)
     }
 
+    public async FindBySlug(slug: string, database: string) {
+        const page = Page(database)
+        return page.findOne({
+            slug,
+        })
+    }
+
     public async FindAll({ offset, limit }: PropPaginate, database: string) {
         const page = Page(database)
         return page.find().skip(offset).limit(limit)

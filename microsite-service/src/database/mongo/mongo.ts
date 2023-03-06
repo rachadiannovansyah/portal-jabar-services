@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose'
 import winston from 'winston'
 import { Config } from '../../config/config.interface'
+import { RemoveProcotol } from '../../helpers/http'
 import Setting from './schemas/setting'
 
 class Mongo {
@@ -33,6 +34,14 @@ class Mongo {
         const setting = Setting(database)
 
         return setting.findById(id)
+    }
+
+    public static FindByDomainSetting(database: string, domain: string) {
+        const setting = Setting(database)
+
+        return setting.findOne({
+            domain: RemoveProcotol(domain),
+        })
     }
 }
 

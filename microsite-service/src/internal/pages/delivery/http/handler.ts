@@ -7,15 +7,10 @@ import {
     ValidateObjectId,
 } from '../../../../helpers/validate'
 import statusCode from '../../../../pkg/statusCode'
-import { Setting } from '../../../../helpers/setting'
 import { Paginate } from '../../../../helpers/paginate'
 
 class Handler {
-    constructor(
-        private usecase: Usecase,
-        private logger: winston.Logger,
-        private database: string
-    ) {}
+    constructor(private usecase: Usecase, private logger: winston.Logger) {}
     public Store() {
         return async (req: any, res: Response, next: NextFunction) => {
             try {
@@ -59,6 +54,25 @@ class Handler {
                 return res.json({
                     data,
                     meta,
+                })
+            } catch (error) {
+                return next(error)
+            }
+        }
+    }
+    public FindBySlug() {
+        return async (req: any, res: Response, next: NextFunction) => {
+            try {
+                const setting = req.setting
+                const result = await this.usecase.FindBySlug(
+                    req.params.slug,
+                    setting.id
+                )
+                return res.json({
+                    data: {
+                        setting,
+                        page: result,
+                    },
                 })
             } catch (error) {
                 return next(error)

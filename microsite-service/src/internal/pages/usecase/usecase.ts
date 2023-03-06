@@ -37,6 +37,18 @@ class Usecase {
         return item
     }
 
+    public async FindBySlug(slug: string, database: string) {
+        const item = await this.repository.FindBySlug(slug, database)
+
+        if (!item)
+            throw new error(
+                statusCode.NOT_FOUND,
+                statusCode[statusCode.NOT_FOUND]
+            )
+
+        return item
+    }
+
     public async FindAll(prop: PropPaginate, database: string) {
         const data = await this.repository.FindAll(prop, database)
         const count = await this.repository.GetCount(database)
