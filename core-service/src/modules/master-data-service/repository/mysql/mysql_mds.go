@@ -17,7 +17,7 @@ func NewMysqlMasterDataServiceRepository(Conn *sql.DB) domain.MasterDataServiceR
 }
 
 func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
-	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?`
+	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -27,6 +27,7 @@ func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterD
 		mds.Services.ID,
 		mds.Application.ID,
 		mds.AdditionalInformation.ID,
+		mds.Status,
 	)
 
 	if err != nil {
