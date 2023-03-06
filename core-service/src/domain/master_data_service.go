@@ -82,6 +82,7 @@ type StoreMasterDataService struct {
 			Link string `json:"link"`
 		} `json:"social_media"`
 	} `json:"additional_information" validate:"required"`
+	Status string `json:"status" validate:"required,eq=DRAFT|eq=ARCHIVE"`
 }
 
 type MasterDataServiceUsecaseArgs struct {
