@@ -117,3 +117,28 @@ func (m *mysqlMdsRepository) Fetch(ctx context.Context, params *domain.Request) 
 
 	return
 }
+
+func (m *mysqlMdsRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "DELETE FROM masterdata_services WHERE id = ?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		logrus.Error(err)
+		return
+	}
+
+	return
+}
