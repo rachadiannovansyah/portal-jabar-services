@@ -13,6 +13,7 @@ type masterDataServiceUsecase struct {
 	msRepo         domain.MainServiceRepository
 	apRepo         domain.ApplicationRepository
 	aiRepo         domain.AdditionalInformationRepository
+	userRepo       domain.UserRepository
 	cfg            *config.Config
 	contextTimeout time.Duration
 }
@@ -72,4 +73,17 @@ func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *dom
 		return
 	}
 	mds.AdditionalInformation.ID = aID
+}
+
+func (n *masterDataServiceUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
+	res []domain.MasterDataService, total int64, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, total, err = n.mdsRepo.Fetch(ctx, params)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return
 }

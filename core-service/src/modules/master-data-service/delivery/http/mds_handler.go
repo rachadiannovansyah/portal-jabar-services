@@ -8,6 +8,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -24,6 +25,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 		apm:      apm,
 	}
 	r.POST("/master-data-services", handler.Store)
+	r.GET("/master-data-services", handler.Fetch)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -64,4 +66,36 @@ func isRequestValid(st interface{}) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
+
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+	params := helpers.GetRequestParams(c)
+
+	data, total, err := h.MdsUcase.Fetch(ctx, au, &params)
+	if err != nil {
+		return err
+	}
+
+	// represent response to the client
+	mdsRes := []domain.ListMasterDataResponse{}
+	for _, row := range data {
+		res := domain.ListMasterDataResponse{
+			ID:                row.ID,
+			ServiceName:       row.MainService.ServiceName,
+			OpdName:           row.MainService.OpdName,
+			ServiceUser:       row.MainService.ServiceUser,
+			OperationalStatus: row.MainService.OperationalStatus,
+			UpdatedAt:         row.UpdatedAt,
+			Status:            row.Status,
+		}
+
+		mdsRes = append(mdsRes, res)
+	}
+
+	res := helpers.Paginate(c, mdsRes, total, params)
+
+	return c.JSON(http.StatusOK, res)
 }

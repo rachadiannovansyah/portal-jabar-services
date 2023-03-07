@@ -4,7 +4,7 @@ import "context"
 
 type MainService struct {
 	ID                  int64      `json:"id"`
-	OpdName             int64      `json:"opd_name"`
+	OpdName             string     `json:"opd_name"`
 	GovernmentAffair    string     `json:"government_affair"`
 	SubGovernmentAffair string     `json:"sub_government_affair"`
 	ServiceForm         string     `json:"form"`
