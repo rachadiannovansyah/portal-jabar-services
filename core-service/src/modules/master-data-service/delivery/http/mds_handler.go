@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -26,6 +27,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	}
 	r.POST("/master-data-services", handler.Store)
 	r.GET("/master-data-services", handler.Fetch)
+	r.DELETE("/master-data-services/:id", handler.Delete)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -98,4 +100,22 @@ func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
 	res := helpers.Paginate(c, mdsRes, total, params)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+// Delete will delete the master-data-service by given id
+func (h *MasterDataServiceHandler) Delete(c echo.Context) (err error) {
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(reqID)
+	ctx := c.Request().Context()
+
+	err = h.MdsUcase.Delete(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }

@@ -110,10 +110,12 @@ type MasterDataServiceUsecaseArgs struct {
 type MasterDataServiceUsecase interface {
 	Store(ctx context.Context, au *JwtCustomClaims, body *StoreMasterDataService) (err error)
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataService, total int64, err error)
+	Delete(ctx context.Context, ID int64) (err error)
 }
 
 type MasterDataServiceRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataService, tx *sql.Tx) (err error)
 	GetTx(context.Context) (*sql.Tx, error)
 	Fetch(ctx context.Context, params *Request) (res []MasterDataService, total int64, err error)
+	Delete(ctx context.Context, ID int64) (err error)
 }

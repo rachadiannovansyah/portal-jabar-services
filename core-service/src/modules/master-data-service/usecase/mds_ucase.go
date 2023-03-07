@@ -87,3 +87,14 @@ func (n *masterDataServiceUsecase) Fetch(c context.Context, au *domain.JwtCustom
 
 	return
 }
+
+func (u *masterDataServiceUsecase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	if err = u.mdsRepo.Delete(ctx, id); err != nil {
+		return
+	}
+
+	return
+}
