@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -88,7 +87,7 @@ func (m *mysqlMdsRepository) fetch(ctx context.Context, query string, args ...in
 func (m *mysqlMdsRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
-		fmt.Println(err.Error())
+		logrus.Error(err)
 		return
 	}
 
