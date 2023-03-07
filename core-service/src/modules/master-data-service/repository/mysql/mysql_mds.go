@@ -130,6 +130,12 @@ func (m *mysqlMdsRepository) Delete(ctx context.Context, id int64) (err error) {
 		return
 	}
 
+	m.rowsAffected(res) // for fix code complexity exceed return on one func
+
+	return
+}
+
+func (m *mysqlMdsRepository) rowsAffected(res sql.Result) (err error) {
 	rowAffected, err := res.RowsAffected()
 	if err != nil {
 		return
