@@ -13,6 +13,19 @@ type MasterDataService struct {
 	MainService           MainService           `json:"main_service"`
 	Application           Application           `json:"application"`
 	AdditionalInformation AdditionalInformation `json:"additional_information"`
+	Status                string                `json:"status"`
+	UpdatedAt             time.Time             `json:"updated_at"`
+	CreatedAt             time.Time             `json:"created_at"`
+}
+
+type ListMasterDataResponse struct {
+	ID                int64     `json:"id"`
+	ServiceName       string    `json:"service_name"`
+	OpdName           string    `json:"opd_name"`
+	ServiceUser       string    `json:"service_user"`
+	OperationalStatus string    `json:"operational_status"`
+	UpdatedAt         time.Time `json:"updated_at"`
+	Status            string    `json:"status"`
 }
 
 type StoreMasterDataService struct {
@@ -95,9 +108,11 @@ type MasterDataServiceUsecaseArgs struct {
 
 type MasterDataServiceUsecase interface {
 	Store(ctx context.Context, au *JwtCustomClaims, body *StoreMasterDataService) (err error)
+	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataService, total int64, err error)
 }
 
 type MasterDataServiceRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataService, tx *sql.Tx) (err error)
 	GetTx(context.Context) (*sql.Tx, error)
+	Fetch(ctx context.Context, params *Request) (res []MasterDataService, total int64, err error)
 }
