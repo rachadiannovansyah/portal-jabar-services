@@ -19,13 +19,13 @@ type MasterDataService struct {
 }
 
 type ListMasterDataResponse struct {
-	ID                int64     `json:"id"`
-	ServiceName       string    `json:"service_name"`
-	OpdName           string    `json:"opd_name"`
-	ServiceUser       string    `json:"service_user"`
-	OperationalStatus string    `json:"operational_status"`
-	UpdatedAt         time.Time `json:"updated_at"`
-	Status            string    `json:"status"`
+	ID          int64     `json:"id"`
+	ServiceName string    `json:"service_name"`
+	OpdName     string    `json:"opd_name"`
+	ServiceUser string    `json:"service_user"`
+	Technical   string    `json:"technical"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Status      string    `json:"status"`
 }
 
 type StoreMasterDataService struct {
