@@ -25,6 +25,24 @@ LEFT JOIN units
 ON ms.opd_name = units.id
 WHERE 1=1`
 
+var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service,
+ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.sub_service_type, ms.program_name,
+ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, ms.website, ms.links, ms.terms_and_condition, ms.service_procedures,
+ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, ms.location,
+apl.status, apl.name, apl.features, mds.application,
+aif.id, aif.responsible_name, aif.phone_number, aif.email, aif.social_media,
+mds.status, mds.updated_at, mds.created_at
+FROM masterdata_services mds
+LEFT JOIN main_services ms
+ON mds.main_service = ms.id
+LEFT JOIN units
+ON ms.opd_name = units.id
+LEFT JOIN applications apl
+on mds.application = apl.id
+LEFT JOIN additional_informations aif
+on mds.additional_information = aif.id
+WHERE 1=1`
+
 func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?`
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -144,6 +162,59 @@ func (m *mysqlMdsRepository) rowsAffected(res sql.Result) (err error) {
 	if rowAffected != 1 {
 		logrus.Error(err)
 		return
+	}
+
+	return
+}
+
+func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.MasterDataService, err error) {
+	query := querySelectJoinDetail + " AND mds.id = ? LIMIT 1"
+
+	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
+		&res.ID,
+		&res.MainService.ServiceName,
+		&res.MainService.OpdName,
+		&res.MainService.ServiceUser,
+		&res.MainService.OperationalStatus,
+		&res.UpdatedAt,
+		&res.Status,
+		&res.MainService.ID,
+		&res.MainService.GovernmentAffair,
+		&res.MainService.SubGovernmentAffair,
+		&res.MainService.ServiceForm,
+		&res.MainService.ServiceType,
+		&res.MainService.SubServiceType,
+		&res.MainService.ProgramName,
+		&res.MainService.Description,
+		&res.MainService.SubServiceSpbe,
+		&res.MainService.Technical,
+		&res.MainService.Benefits,
+		&res.MainService.Facilities,
+		&res.MainService.Website,
+		&res.MainService.Links,
+		&res.MainService.TermsAndConditions,
+		&res.MainService.ServiceProcedures,
+		&res.MainService.ServiceFee,
+		&res.MainService.OperationalTimes,
+		&res.MainService.HotlineNumber,
+		&res.MainService.HotlineMail,
+		&res.MainService.Locations,
+		&res.Application.Status,
+		&res.Application.Name,
+		&res.Application.Features,
+		&res.Application.ID,
+		&res.AdditionalInformation.ID,
+		&res.AdditionalInformation.ResponsibleName,
+		&res.AdditionalInformation.PhoneNumber,
+		&res.AdditionalInformation.Email,
+		&res.AdditionalInformation.SocialMedia,
+		&res.Status,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
 	}
 
 	return

@@ -98,3 +98,15 @@ func (u *masterDataServiceUsecase) Delete(c context.Context, id int64) (err erro
 
 	return
 }
+
+func (u *masterDataServiceUsecase) GetByID(c context.Context, id int64) (res domain.MasterDataService, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.mdsRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	return
+}
