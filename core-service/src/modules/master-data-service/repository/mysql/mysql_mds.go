@@ -17,7 +17,7 @@ func NewMysqlMasterDataServiceRepository(Conn *sql.DB) domain.MasterDataServiceR
 	return &mysqlMdsRepository{Conn}
 }
 
-var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service
+var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.technical, mds.updated_at, mds.status, mds.main_service
 FROM masterdata_services mds
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
@@ -68,7 +68,7 @@ func (m *mysqlMdsRepository) fetch(ctx context.Context, query string, args ...in
 			&mds.MainService.ServiceName,
 			&mds.MainService.OpdName,
 			&mds.MainService.ServiceUser,
-			&mds.MainService.OperationalStatus,
+			&mds.MainService.Technical,
 			&mds.UpdatedAt,
 			&mds.Status,
 			&mds.MainService.ID,

@@ -85,13 +85,13 @@ func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
 	mdsRes := []domain.ListMasterDataResponse{}
 	for _, row := range data {
 		res := domain.ListMasterDataResponse{
-			ID:                row.ID,
-			ServiceName:       row.MainService.ServiceName,
-			OpdName:           row.MainService.OpdName,
-			ServiceUser:       row.MainService.ServiceUser,
-			OperationalStatus: row.MainService.OperationalStatus,
-			UpdatedAt:         row.UpdatedAt,
-			Status:            row.Status,
+			ID:          row.ID,
+			ServiceName: row.MainService.ServiceName,
+			OpdName:     row.MainService.OpdName,
+			ServiceUser: row.MainService.ServiceUser,
+			Technical:   row.MainService.Technical,
+			UpdatedAt:   row.UpdatedAt,
+			Status:      row.Status,
 		}
 
 		mdsRes = append(mdsRes, res)
