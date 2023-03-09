@@ -30,6 +30,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	r.GET("/master-data-services", handler.Fetch)
 	r.DELETE("/master-data-services/:id", handler.Delete)
 	r.GET("/master-data-services/:id", handler.GetByID)
+	r.GET("/master-data-services/tabs", handler.TabStatus)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -153,4 +154,15 @@ func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(res.MainService.ServiceProcedures, &detailRes.MainService.ServiceProcedures)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
+}
+
+func (h *MasterDataServiceHandler) TabStatus(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	tabs, err := h.MdsUcase.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }

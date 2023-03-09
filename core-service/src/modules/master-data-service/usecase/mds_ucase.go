@@ -110,3 +110,11 @@ func (u *masterDataServiceUsecase) GetByID(c context.Context, id int64) (res dom
 
 	return
 }
+
+func (n *masterDataServiceUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	res, err = n.mdsRepo.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+	return
+}
