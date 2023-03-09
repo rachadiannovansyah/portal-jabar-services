@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 	"github.com/mitchellh/mapstructure"
 
@@ -28,6 +29,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	r.POST("/master-data-services", handler.Store)
 	r.GET("/master-data-services", handler.Fetch)
 	r.DELETE("/master-data-services/:id", handler.Delete)
+	r.GET("/master-data-services/:id", handler.GetByID)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -118,4 +120,37 @@ func (h *MasterDataServiceHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// GetByID will get master data serviceby given id
+func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	res, err := h.MdsUcase.GetByID(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// represent response to the client
+	detailRes := domain.DetailMasterDataServiceResponse{}
+	copier.Copy(&detailRes, &res)
+
+	// un-marshalling json string to object
+	helpers.GetObjectFromString(res.MainService.Links.String, &detailRes.MainService.Links)
+	helpers.GetObjectFromString(res.MainService.OperationalTimes.String, &detailRes.MainService.OperationalTimes)
+	helpers.GetObjectFromString(res.MainService.Locations.String, &detailRes.MainService.Locations)
+	helpers.GetObjectFromString(res.Application.Features.String, &detailRes.Application.Features)
+	helpers.GetObjectFromString(res.AdditionalInformation.SocialMedia.String, &detailRes.AdditionalInformation.SocialMedia)
+	helpers.GetObjectFromString(res.MainService.Benefits, &detailRes.MainService.Benefits)
+	helpers.GetObjectFromString(res.MainService.Facilities, &detailRes.MainService.Facilities)
+	helpers.GetObjectFromString(res.MainService.TermsAndConditions, &detailRes.MainService.TermsAndConditions)
+	helpers.GetObjectFromString(res.MainService.ServiceProcedures, &detailRes.MainService.ServiceProcedures)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }
