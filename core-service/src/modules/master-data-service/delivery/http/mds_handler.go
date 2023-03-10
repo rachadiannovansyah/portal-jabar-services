@@ -78,6 +78,9 @@ func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"status": c.QueryParam("status"),
+	}
 
 	data, total, err := h.MdsUcase.Fetch(ctx, au, &params)
 	if err != nil {
