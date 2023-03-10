@@ -30,6 +30,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	r.GET("/master-data-services", handler.Fetch)
 	r.DELETE("/master-data-services/:id", handler.Delete)
 	r.GET("/master-data-services/:id", handler.GetByID)
+	r.PUT("/master-data-services/:id", handler.Update)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -153,4 +154,37 @@ func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(res.MainService.ServiceProcedures, &detailRes.MainService.ServiceProcedures)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
+}
+
+func (h *MasterDataServiceHandler) Update(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	ID := int64(reqID)
+	body := new(domain.StoreMasterDataService)
+	if err = c.Bind(body); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(body); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	err = h.MdsUcase.Update(ctx, body, ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	result := map[string]interface{}{
+		"message": "UPDATED",
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
