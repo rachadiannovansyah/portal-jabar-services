@@ -32,4 +32,5 @@ type MainService struct {
 
 type MainServiceRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataService) (ID int64, err error)
+	Update(ctx context.Context, msID int64, body *StoreMasterDataService) (err error)
 }

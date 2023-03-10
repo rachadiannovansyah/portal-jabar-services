@@ -12,4 +12,5 @@ type AdditionalInformation struct {
 
 type AdditionalInformationRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataService) (ID int64, err error)
+	Update(ctx context.Context, aID int64, body *StoreMasterDataService) (err error)
 }

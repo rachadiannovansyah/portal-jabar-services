@@ -11,4 +11,5 @@ type Application struct {
 
 type ApplicationRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataService) (ID int64, err error)
+	Update(ctx context.Context, apID int64, body *StoreMasterDataService) (err error)
 }

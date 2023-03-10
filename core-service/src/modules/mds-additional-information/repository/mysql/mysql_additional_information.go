@@ -42,3 +42,27 @@ func (m *mysqlAdditionalInformationRepository) Store(ctx context.Context, ms *do
 
 	return
 }
+
+func (m *mysqlAdditionalInformationRepository) Update(ctx context.Context, aID int64, ms *domain.StoreMasterDataService) (err error) {
+	query := `
+	UPDATE additional_informations SET responsible_name=?, phone_number=?, email=?, social_media=? WHERE id=?
+	`
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		&ms.AdditionalInformation.ResponsibleName,
+		&ms.AdditionalInformation.PhoneNumber,
+		&ms.AdditionalInformation.Email,
+		helpers.GetStringFromObject(&ms.AdditionalInformation.SocialMedia),
+		aID,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}

@@ -41,3 +41,26 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 
 	return
 }
+
+func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms *domain.StoreMasterDataService) (err error) {
+	query := `
+	UPDATE applications SET name=?, status=?, features=? WHERE id=?
+	`
+
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		&ms.Application.Name,
+		&ms.Application.Status,
+		helpers.GetStringFromObject(&ms.Application.Features),
+		apID,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
