@@ -160,3 +160,11 @@ func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds dom
 		return
 	}
 }
+
+func (n *masterDataServiceUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	res, err = n.mdsRepo.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+	return
+}

@@ -241,3 +241,45 @@ func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMaster
 
 	return
 }
+
+func (m *mysqlMdsRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	query := `
+		SELECT mds.status, count(mds.status)
+		FROM masterdata_services mds
+		WHERE 1=1
+		GROUP BY mds.status
+	`
+
+	res, err = m.fetchTabs(ctx, query)
+
+	if err != nil {
+		return []domain.TabStatusResponse{}, err
+	}
+
+	return
+}
+
+func (m *mysqlMdsRepository) fetchTabs(ctx context.Context, query string, args ...interface{}) (result []domain.TabStatusResponse, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	result = make([]domain.TabStatusResponse, 0)
+	for rows.Next() {
+		t := domain.TabStatusResponse{}
+		err = rows.Scan(
+			&t.Status,
+			&t.Count,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}

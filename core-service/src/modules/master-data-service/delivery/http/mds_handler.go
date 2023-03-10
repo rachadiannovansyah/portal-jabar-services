@@ -31,6 +31,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	r.DELETE("/master-data-services/:id", handler.Delete)
 	r.GET("/master-data-services/:id", handler.GetByID)
 	r.PUT("/master-data-services/:id", handler.Update)
+	r.GET("/master-data-services/tabs", handler.TabStatus)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -78,6 +79,9 @@ func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"status": c.QueryParam("status"),
+	}
 
 	data, total, err := h.MdsUcase.Fetch(ctx, au, &params)
 	if err != nil {
@@ -187,4 +191,15 @@ func (h *MasterDataServiceHandler) Update(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, result)
+}
+
+func (h *MasterDataServiceHandler) TabStatus(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	tabs, err := h.MdsUcase.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }
