@@ -110,3 +110,47 @@ func (u *masterDataServiceUsecase) GetByID(c context.Context, id int64) (res dom
 
 	return
 }
+
+func (n *masterDataServiceUsecase) Update(ctx context.Context, body *domain.StoreMasterDataService, mdsID int64) (err error) {
+	tx, err := n.mdsRepo.GetTx(ctx)
+	if err != nil {
+		return
+	}
+
+	mds, err := n.GetByID(ctx, mdsID)
+	if err != nil {
+		return
+	}
+
+	// update mds support entity
+	n.updateMdsSupport(ctx, mds, body) // use priv func to reduce exceeding return statements
+
+	// updated it on mds domain
+	if err = n.mdsRepo.Update(ctx, body, mdsID, mds.MainService.ID, mds.Application.ID, mds.AdditionalInformation.ID, tx); err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
+
+	return
+}
+
+// private func to support of mds main_service, application, additional_information entities
+func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds domain.MasterDataService, body *domain.StoreMasterDataService) {
+	// update main_services repository
+	if err := n.msRepo.Update(ctx, mds.MainService.ID, body); err != nil {
+		return
+	}
+
+	// update applications repository
+	if err := n.apRepo.Update(ctx, mds.Application.ID, body); err != nil {
+		return
+	}
+
+	// update additional_informations repository
+	if err := n.aiRepo.Update(ctx, mds.AdditionalInformation.ID, body); err != nil {
+		return
+	}
+}
