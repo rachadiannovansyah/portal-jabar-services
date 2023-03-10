@@ -190,6 +190,13 @@ type MasterDataServiceUsecaseArgs struct {
 	ContextTimeout time.Duration
 }
 
+type MasterDataServiceEntityID struct {
+	ID                      int64 `json:"mds_id"`
+	MainServiceID           int64 `json:"main_service_id"`
+	ApplicationID           int64 `json:"application_id"`
+	AdditionalInformationID int64 `json:"additional_information_id"`
+}
+
 type MasterDataServiceUsecase interface {
 	Store(ctx context.Context, au *JwtCustomClaims, body *StoreMasterDataService) (err error)
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataService, total int64, err error)
@@ -204,5 +211,5 @@ type MasterDataServiceRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []MasterDataService, total int64, err error)
 	Delete(ctx context.Context, ID int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
-	Update(context.Context, *StoreMasterDataService, int64, int64, int64, int64, *sql.Tx) (err error)
+	Update(context.Context, *StoreMasterDataService, *MasterDataServiceEntityID, *sql.Tx) (err error)
 }

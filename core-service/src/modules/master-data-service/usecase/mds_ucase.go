@@ -126,7 +126,13 @@ func (n *masterDataServiceUsecase) Update(ctx context.Context, body *domain.Stor
 	n.updateMdsSupport(ctx, mds, body) // use priv func to reduce exceeding return statements
 
 	// updated it on mds domain
-	if err = n.mdsRepo.Update(ctx, body, mdsID, mds.MainService.ID, mds.Application.ID, mds.AdditionalInformation.ID, tx); err != nil {
+	mdsEntityID := domain.MasterDataServiceEntityID{ // placed here on struct to reduce args code complexity
+		ID:                      mdsID,
+		MainServiceID:           mds.MainService.ID,
+		ApplicationID:           mds.Application.ID,
+		AdditionalInformationID: mds.AdditionalInformation.ID,
+	}
+	if err = n.mdsRepo.Update(ctx, body, &mdsEntityID, tx); err != nil {
 		return
 	}
 
