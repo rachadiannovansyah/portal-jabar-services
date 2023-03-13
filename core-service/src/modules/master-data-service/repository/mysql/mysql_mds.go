@@ -222,7 +222,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 }
 
 func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMasterDataService, entityID *domain.MasterDataServiceEntityID, tx *sql.Tx) (err error) {
-	query := `UPDATE masterdata_services SET main_service=?, applications=?, additional_information=?, status=? WHERE id=?`
+	query := `UPDATE masterdata_services SET main_service=?, application=?, additional_information=?, status=? WHERE id=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
