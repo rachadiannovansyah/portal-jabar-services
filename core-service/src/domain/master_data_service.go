@@ -100,7 +100,7 @@ type StoreMasterDataService struct {
 
 type DetailMasterDataServiceResponse struct {
 	ID                    int64                       `json:"id"`
-	MainService           MainServiceDetail           `json:"main_service"`
+	MainService           MainServiceDetail           `json:"services"`
 	Application           ApplicationDetail           `json:"application"`
 	AdditionalInformation AdditionalInformationDetail `json:"additional_information"`
 	Status                string                      `json:"status"`
