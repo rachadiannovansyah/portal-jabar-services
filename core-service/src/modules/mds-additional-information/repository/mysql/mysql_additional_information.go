@@ -17,11 +17,11 @@ func NewMysqlAdditionalInformationRepository(Conn *sql.DB) domain.AdditionalInfo
 	return &mysqlAdditionalInformationRepository{Conn}
 }
 
-func (m *mysqlAdditionalInformationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService) (ID int64, err error) {
+func (m *mysqlAdditionalInformationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
 	INSERT additional_informations SET responsible_name=?, phone_number=?, email=?, social_media=?
 	`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -43,12 +43,12 @@ func (m *mysqlAdditionalInformationRepository) Store(ctx context.Context, ms *do
 	return
 }
 
-func (m *mysqlAdditionalInformationRepository) Update(ctx context.Context, aID int64, ms *domain.StoreMasterDataService) (err error) {
+func (m *mysqlAdditionalInformationRepository) Update(ctx context.Context, aID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `
 	UPDATE additional_informations SET responsible_name=?, phone_number=?, email=?, social_media=? WHERE id=?
 	`
 
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}

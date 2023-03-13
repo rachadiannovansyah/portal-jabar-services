@@ -17,7 +17,7 @@ func NewMysqlMainServiceRepository(Conn *sql.DB) domain.MainServiceRepository {
 	return &mysqlMainServiceRepository{Conn}
 }
 
-func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService) (ID int64, err error) {
+func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
 	INSERT main_services SET opd_name=?, government_affair=?, sub_government_affair=?, service_form=?, 
 	service_type=?, sub_service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
@@ -25,7 +25,7 @@ func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.Store
 	terms_and_condition=?, service_procedures=?, service_fee=?, operational_time=?, hotline_number=?, 
 	hotline_mail=?, location=?
 	`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -67,7 +67,7 @@ func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.Store
 	return
 }
 
-func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms *domain.StoreMasterDataService) (err error) {
+func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `
 	UPDATE main_services SET government_affair=?, sub_government_affair=?, service_form=?, 
 	service_type=?, sub_service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
@@ -76,7 +76,7 @@ func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms 
 	hotline_mail=?, location=? WHERE id=?
 	`
 
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
