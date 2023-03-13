@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
@@ -37,7 +38,7 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 	}
 
 	// storing mds support entuty
-	n.storeMdsSupport(ctx, mds) // use priv func to reduce exceeding return statements
+	n.storeMdsSupport(ctx, mds, tx) // use priv func to reduce exceeding return statements
 
 	// store it on mds domain
 	if err = n.mdsRepo.Store(ctx, mds, tx); err != nil {
@@ -52,23 +53,23 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 }
 
 // private func to support of mds main_service, application, additional_information entities
-func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService) {
+func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) {
 	// store main_services repository
-	msID, err := n.msRepo.Store(ctx, mds)
+	msID, err := n.msRepo.Store(ctx, mds, tx)
 	if err != nil {
 		return
 	}
 	mds.Services.ID = msID
 
 	// store applications repository
-	apID, err := n.apRepo.Store(ctx, mds)
+	apID, err := n.apRepo.Store(ctx, mds, tx)
 	if err != nil {
 		return
 	}
 	mds.Application.ID = apID
 
 	// store additional_informations repository
-	aID, err := n.aiRepo.Store(ctx, mds)
+	aID, err := n.aiRepo.Store(ctx, mds, tx)
 	if err != nil {
 		return
 	}
@@ -109,6 +110,56 @@ func (u *masterDataServiceUsecase) GetByID(c context.Context, id int64) (res dom
 	}
 
 	return
+}
+
+func (n *masterDataServiceUsecase) Update(ctx context.Context, body *domain.StoreMasterDataService, mdsID int64) (err error) {
+	tx, err := n.mdsRepo.GetTx(ctx)
+	if err != nil {
+		return
+	}
+
+	mds, err := n.GetByID(ctx, mdsID)
+	if err != nil {
+		return
+	}
+
+	// update mds support entity
+	n.updateMdsSupport(ctx, mds, body, tx) // use priv func to reduce exceeding return statements
+
+	// updated it on mds domain
+	mdsEntityID := domain.MasterDataServiceEntityID{ // placed here on struct to reduce args code complexity
+		ID:                      mdsID,
+		MainServiceID:           mds.MainService.ID,
+		ApplicationID:           mds.Application.ID,
+		AdditionalInformationID: mds.AdditionalInformation.ID,
+	}
+	if err = n.mdsRepo.Update(ctx, body, &mdsEntityID, tx); err != nil {
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		return
+	}
+
+	return
+}
+
+// private func to support of mds main_service, application, additional_information entities
+func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds domain.MasterDataService, body *domain.StoreMasterDataService, tx *sql.Tx) {
+	// update main_services repository
+	if err := n.msRepo.Update(ctx, mds.MainService.ID, body, tx); err != nil {
+		return
+	}
+
+	// update applications repository
+	if err := n.apRepo.Update(ctx, mds.Application.ID, body, tx); err != nil {
+		return
+	}
+
+	// update additional_informations repository
+	if err := n.aiRepo.Update(ctx, mds.AdditionalInformation.ID, body, tx); err != nil {
+		return
+	}
 }
 
 func (n *masterDataServiceUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {

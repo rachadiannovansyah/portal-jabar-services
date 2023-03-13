@@ -17,11 +17,11 @@ func NewMysqlApplicationRepository(Conn *sql.DB) domain.ApplicationRepository {
 	return &mysqlApplicationRepository{Conn}
 }
 
-func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService) (ID int64, err error) {
+func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
 	INSERT applications SET name=?, status=?, features=?
 	`
-	stmt, err := m.Conn.PrepareContext(ctx, query)
+	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
@@ -35,6 +35,29 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 		return
 	}
 	ID, err = res.LastInsertId()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
+	query := `
+	UPDATE applications SET name=?, status=?, features=? WHERE id=?
+	`
+
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		&ms.Application.Name,
+		&ms.Application.Status,
+		helpers.GetStringFromObject(&ms.Application.Features),
+		apID,
+	)
 	if err != nil {
 		return
 	}

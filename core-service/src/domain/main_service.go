@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 type MainService struct {
 	ID                  int64      `json:"id"`
@@ -31,5 +34,6 @@ type MainService struct {
 }
 
 type MainServiceRepository interface {
-	Store(ctx context.Context, body *StoreMasterDataService) (ID int64, err error)
+	Store(ctx context.Context, body *StoreMasterDataService, tx *sql.Tx) (ID int64, err error)
+	Update(ctx context.Context, msID int64, body *StoreMasterDataService, tx *sql.Tx) (err error)
 }

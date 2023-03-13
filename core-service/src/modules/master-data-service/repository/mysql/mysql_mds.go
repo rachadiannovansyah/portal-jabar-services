@@ -221,6 +221,27 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 	return
 }
 
+func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMasterDataService, entityID *domain.MasterDataServiceEntityID, tx *sql.Tx) (err error) {
+	query := `UPDATE masterdata_services SET main_service=?, applications=?, additional_information=?, status=? WHERE id=?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+	_, err = stmt.ExecContext(ctx,
+		entityID.MainServiceID,
+		entityID.ApplicationID,
+		entityID.AdditionalInformationID,
+		mds.Status,
+		entityID.ID,
+	)
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (m *mysqlMdsRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
 	query := `
 		SELECT mds.status, count(mds.status)
