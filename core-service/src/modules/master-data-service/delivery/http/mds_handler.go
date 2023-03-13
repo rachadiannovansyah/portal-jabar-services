@@ -39,21 +39,16 @@ func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 
 	// bind a request body
-	mds := new(domain.StoreMasterDataService)
-	if err = c.Bind(mds); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
-	}
-
-	var ok bool
-	if ok, err = isRequestValid(mds); !ok {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	body, err := h.bindRequest(c)
+	if err != nil {
+		return
 	}
 
 	// get claims info
 	au := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &au)
 
-	err = h.MdsUcase.Store(ctx, &au, mds)
+	err = h.MdsUcase.Store(ctx, &au, body)
 	if err != nil {
 		return err
 	}
@@ -72,6 +67,20 @@ func isRequestValid(st interface{}) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (h *MasterDataServiceHandler) bindRequest(c echo.Context) (body *domain.StoreMasterDataService, err error) {
+	body = new(domain.StoreMasterDataService)
+	if err = c.Bind(body); err != nil {
+		return &domain.StoreMasterDataService{}, echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(body); !ok {
+		return &domain.StoreMasterDataService{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return
 }
 
 func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
@@ -168,14 +177,9 @@ func (h *MasterDataServiceHandler) Update(c echo.Context) (err error) {
 	}
 
 	ID := int64(reqID)
-	body := new(domain.StoreMasterDataService)
-	if err = c.Bind(body); err != nil {
-		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
-	}
-
-	var ok bool
-	if ok, err = isRequestValid(body); !ok {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	body, err := h.bindRequest(c)
+	if err != nil {
+		return
 	}
 
 	auth := domain.JwtCustomClaims{}
