@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/sirupsen/logrus"
 
@@ -47,17 +46,6 @@ func (m *mysqlSpbeRalsRepository) fetch(ctx context.Context, query string, args 
 	}
 
 	return results, nil
-}
-
-func (m *mysqlSpbeRalsRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
-
-	err = m.Conn.QueryRow(query, args...).Scan(&total)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	return total, nil
 }
 
 func (m *mysqlSpbeRalsRepository) Fetch(ctx context.Context) (res []domain.SpbeRals, err error) {
