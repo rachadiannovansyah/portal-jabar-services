@@ -45,7 +45,7 @@ on mds.additional_information = aif.id
 WHERE 1=1`
 
 func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
-	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?`
+	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?, updated_at=?, created_at=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -56,6 +56,8 @@ func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterD
 		mds.Application.ID,
 		mds.AdditionalInformation.ID,
 		mds.Status,
+		time.Now(),
+		time.Now(),
 	)
 
 	if err != nil {
