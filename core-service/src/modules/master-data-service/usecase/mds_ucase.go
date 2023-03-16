@@ -14,7 +14,6 @@ type masterDataServiceUsecase struct {
 	msRepo         domain.MainServiceRepository
 	apRepo         domain.ApplicationRepository
 	aiRepo         domain.AdditionalInformationRepository
-	userRepo       domain.UserRepository
 	cfg            *config.Config
 	contextTimeout time.Duration
 }
