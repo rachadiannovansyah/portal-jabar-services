@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
@@ -222,7 +223,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 }
 
 func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMasterDataService, entityID *domain.MasterDataServiceEntityID, tx *sql.Tx) (err error) {
-	query := `UPDATE masterdata_services SET main_service=?, application=?, additional_information=?, status=? WHERE id=?`
+	query := `UPDATE masterdata_services SET main_service=?, application=?, additional_information=?, status=?, updated_at=? WHERE id=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -232,6 +233,7 @@ func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMaster
 		entityID.ApplicationID,
 		entityID.AdditionalInformationID,
 		mds.Status,
+		time.Now(),
 		entityID.ID,
 	)
 
