@@ -71,8 +71,8 @@ type ImageMetaDataBanner struct {
 }
 
 type DetailMetaDataImage struct {
-	FileName        string `json:"file_name,omitempty"`
-	FileDownloadUri string `json:"file_download_uri,omitempty"`
+	FileName        string `json:"file_name"`
+	FileDownloadUri string `json:"file_download_uri"`
 	Size            int64  `json:"size"`
 }
 

@@ -33,22 +33,22 @@ type StoreMasterDataService struct {
 	Services struct {
 		ID          int64 `json:"id"`
 		Information struct {
-			OpdName             int64    `json:"opd_name"`
-			GovernmentAffair    string   `json:"government_affair"`
-			SubGovernmentAffair string   `json:"sub_government_affair"`
-			ServiceForm         string   `json:"form"`
-			ServiceType         string   `json:"type"`
-			SubServiceType      string   `json:"sub_service_type"`
-			ServiceName         string   `json:"name"`
-			ProgramName         string   `json:"program_name"`
-			Description         string   `json:"description"`
-			ServiceUser         string   `json:"user"`
-			SubServiceSpbe      string   `json:"sub_service_spbe"`
-			OperationalStatus   string   `json:"operational_status"`
-			Technical           string   `json:"technical"`
-			Benefits            []string `json:"benefits"`
-			Facilities          []string `json:"facilities"`
-			Website             string   `json:"website"`
+			OpdName             int64     `json:"opd_name"`
+			GovernmentAffair    string    `json:"government_affair"`
+			SubGovernmentAffair string    `json:"sub_government_affair"`
+			ServiceForm         string    `json:"form"`
+			ServiceType         string    `json:"type"`
+			SubServiceType      string    `json:"sub_service_type"`
+			ServiceName         string    `json:"name"`
+			ProgramName         string    `json:"program_name"`
+			Description         string    `json:"description"`
+			ServiceUser         string    `json:"user"`
+			SubServiceSpbe      string    `json:"sub_service_spbe"`
+			OperationalStatus   string    `json:"operational_status"`
+			Technical           string    `json:"technical"`
+			Benefits            MdsObject `json:"benefits"`
+			Facilities          MdsObject `json:"facilities"`
+			Website             string    `json:"website"`
 			Links               []struct {
 				Tautan string `json:"tautan"`
 				Type   string `json:"type"`
@@ -56,9 +56,9 @@ type StoreMasterDataService struct {
 			} `json:"links"`
 		} `json:"information"`
 		ServiceDetail struct {
-			TermsAndConditions []string `json:"terms_and_conditions"`
-			ServiceProcedures  []string `json:"service_procedures"`
-			ServiceFee         string   `json:"service_fee"`
+			TermsAndConditions MdsObjectCover `json:"terms_and_conditions"`
+			ServiceProcedures  MdsObjectCover `json:"service_procedures"`
+			ServiceFee         string         `json:"service_fee"`
 			OperationalTime    []struct {
 				Day   string `json:"day"`
 				Start string `json:"start"`
@@ -96,6 +96,24 @@ type StoreMasterDataService struct {
 		} `json:"social_media"`
 	} `json:"additional_information" validate:"required"`
 	Status string `json:"status" validate:"required,eq=DRAFT|eq=ARCHIVE"`
+}
+
+type MdsItems struct {
+	Name  string              `json:"name,omitempty"`
+	Image DetailMetaDataImage `json:"image,omitempty"`
+}
+
+type MdsObject struct {
+	Title    string     `json:"title"`
+	IsActive int8       `json:"is_active"`
+	Items    []MdsItems `json:"items"`
+}
+
+type MdsObjectCover struct {
+	Cover    DetailMetaDataImage `json:"cover"`
+	Title    string              `json:"title"`
+	IsActive int8                `json:"is_active"`
+	Items    []MdsItems          `json:"items"`
 }
 
 type DetailMasterDataServiceResponse struct {
@@ -148,12 +166,12 @@ type MainServiceDetail struct {
 	SubServiceSpbe      string               `json:"sub_service_spbe"`
 	OperationalStatus   string               `json:"operational_status"`
 	Technical           string               `json:"technical"`
-	Benefits            []string             `json:"benefits"`
-	Facilities          []string             `json:"facilities"`
+	Benefits            MdsObject            `json:"benefits"`
+	Facilities          MdsObject            `json:"facilities"`
 	Website             string               `json:"website"`
 	Links               []LinkMds            `json:"links"`
-	TermsAndConditions  []string             `json:"terms_and_conditions"`
-	ServiceProcedures   []string             `json:"service_procedures"`
+	TermsAndConditions  MdsObjectCover       `json:"terms_and_conditions"`
+	ServiceProcedures   MdsObjectCover       `json:"service_procedures"`
 	ServiceFee          string               `json:"service_fee"`
 	OperationalTimes    []OperationalTimeMds `json:"operational_times"`
 	HotlineNumber       string               `json:"hotline_number"`
