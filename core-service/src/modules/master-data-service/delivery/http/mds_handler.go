@@ -153,6 +153,7 @@ func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 
 	// represent response to the client
 	detailRes := domain.DetailMasterDataServiceResponse{}
+	detailRes.Application.Title = res.Application.Title.String // rendered from NullString value
 	copier.Copy(&detailRes, &res)
 
 	// un-marshalling json string to object
