@@ -113,3 +113,27 @@ func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms 
 
 	return
 }
+
+func (m *mysqlMainServiceRepository) UpdateFromPublication(ctx context.Context, msID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
+	query := `
+	UPDATE main_services SET benefits=?, facilities=?, terms_and_condition=?, service_procedures=? WHERE id=?
+	`
+
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		helpers.GetStringFromObject(&ms.Services.Information.Benefits),
+		helpers.GetStringFromObject(&ms.Services.Information.Facilities),
+		helpers.GetStringFromObject(&ms.Services.ServiceDetail.TermsAndConditions),
+		helpers.GetStringFromObject(&ms.Services.ServiceDetail.ServiceProcedures),
+		msID,
+	)
+	if err != nil {
+		return
+	}
+
+	return
+}
