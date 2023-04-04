@@ -9,6 +9,7 @@ type Application struct {
 	ID       int64      `json:"id"`
 	Name     string     `json:"name"`
 	Status   string     `json:"status"`
+	Title    string     `json:"title"`
 	Features NullString `json:"features"`
 }
 

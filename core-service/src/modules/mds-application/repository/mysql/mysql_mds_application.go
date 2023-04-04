@@ -19,7 +19,7 @@ func NewMysqlApplicationRepository(Conn *sql.DB) domain.ApplicationRepository {
 
 func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
-	INSERT applications SET name=?, status=?, features=?
+	INSERT applications SET name=?, status=?, title=?, features=?
 	`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
@@ -29,6 +29,7 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 	res, err := stmt.ExecContext(ctx,
 		&ms.Application.Name,
 		&ms.Application.Status,
+		&ms.Application.Title,
 		helpers.GetStringFromObject(&ms.Application.Features),
 	)
 	if err != nil {
