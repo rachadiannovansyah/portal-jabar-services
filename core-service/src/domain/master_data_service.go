@@ -104,6 +104,11 @@ type MdsItems struct {
 	Image DetailMetaDataImage `json:"image,omitempty"`
 }
 
+type MdsItemCovers struct {
+	Name string `json:"name"`
+	Link string `json:"link"`
+}
+
 type MdsObject struct {
 	Title    string     `json:"title"`
 	IsActive int8       `json:"is_active"`
@@ -114,7 +119,7 @@ type MdsObjectCover struct {
 	Cover    DetailMetaDataImage `json:"cover"`
 	Title    string              `json:"title"`
 	IsActive int8                `json:"is_active"`
-	Items    []MdsItems          `json:"items"`
+	Items    []MdsItemCovers     `json:"items"`
 }
 
 type DetailMasterDataServiceResponse struct {
