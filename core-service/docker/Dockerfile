@@ -1,5 +1,5 @@
 # Builder
-FROM registry.digitalservice.id/proxyjds/library/golang:1.16-alpine as builder
+FROM harbor.digitalservice.id/proxyjds/library/golang:1.16-alpine as builder
 
 RUN apk update && apk upgrade && \
     apk --update add git make
@@ -12,7 +12,7 @@ RUN make engine
 RUN make migrater
 
 # Distribution
-FROM registry.digitalservice.id/proxyjds/library/alpine:latest
+FROM harbor.digitalservice.id/proxyjds/library/alpine:latest
 
 RUN apk update && apk upgrade && \
     apk --update --no-cache add tzdata && \
