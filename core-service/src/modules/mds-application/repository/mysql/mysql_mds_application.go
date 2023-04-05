@@ -45,7 +45,7 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 
 func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `
-	UPDATE applications SET name=?, status=?, features=? WHERE id=?
+	UPDATE applications SET name=?, status=?, features=?, title=? WHERE id=?
 	`
 
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -57,6 +57,7 @@ func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms 
 		&ms.Application.Name,
 		&ms.Application.Status,
 		helpers.GetStringFromObject(&ms.Application.Features),
+		&ms.Application.Title,
 		apID,
 	)
 	if err != nil {

@@ -75,16 +75,7 @@ type StoreMasterDataService struct {
 			PhoneNumber  string `json:"phone_number"`
 		} `json:"location"`
 	} `json:"services" validate:"required"`
-	Application struct {
-		ID       int64  `json:"id"`
-		Name     string `json:"name"`
-		Status   string `json:"status"`
-		Title    string `json:"title"`
-		Features []struct {
-			Name        string `json:"name"`
-			Description string `json:"description"`
-		} `json:"features"`
-	} `json:"application" validate:"required"`
+	Application           MdsApplication `json:"application" validate:"required"`
 	AdditionalInformation struct {
 		ID              int64  `json:"id"`
 		ResponsibleName string `json:"responsible_name"`
@@ -104,6 +95,11 @@ type MdsItems struct {
 	Image DetailMetaDataImage `json:"image,omitempty"`
 }
 
+type MdsItemCovers struct {
+	Name string `json:"name"`
+	Link string `json:"link"`
+}
+
 type MdsObject struct {
 	Title    string     `json:"title"`
 	IsActive int8       `json:"is_active"`
@@ -114,7 +110,18 @@ type MdsObjectCover struct {
 	Cover    DetailMetaDataImage `json:"cover"`
 	Title    string              `json:"title"`
 	IsActive int8                `json:"is_active"`
-	Items    []MdsItems          `json:"items"`
+	Items    []MdsItemCovers     `json:"items"`
+}
+
+type MdsApplication struct {
+	ID       int64  `json:"id"`
+	Name     string `json:"name"`
+	Status   string `json:"status"`
+	Title    string `json:"title"`
+	Features []struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+	} `json:"features"`
 }
 
 type DetailMasterDataServiceResponse struct {
