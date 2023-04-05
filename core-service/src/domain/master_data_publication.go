@@ -40,6 +40,7 @@ type StoreMasterDataPublication struct {
 		InfoGraphics       PublicationInfographic `json:"infographics"`
 		TermsAndConditions MdsObjectCover         `json:"terms_and_conditions"`
 		ServiceProcedures  MdsObjectCover         `json:"service_procedures"`
+		Application        MdsApplication         `json:"application"`
 	} `json:"service_description" validate:"required"`
 	AdditionalInformation struct {
 		Keywords []string       `json:"keywords"`
