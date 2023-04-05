@@ -40,7 +40,7 @@ jobs:
         file: service-worker/docker/Dockerfile
         context: ./service-worker
         push: true
-        tags: ${{ secrets.SERVICE_WORKER_IMAGENAME }}:${{ env.RELEASE_TAG }}
+        tags: ${{ secrets.SERVICE_WORKER_IMAGENAME_PROD }}:${{ env.RELEASE_TAG }}
 
    # GitOps
     - name: GitOps ArgoCD Setup
@@ -52,7 +52,7 @@ jobs:
     - name: GitOps ArgoCD Update Image Tag Service Worker
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.SERVICE_WORKER_IMAGENAME }}:${{ env.RELEASE_TAG }}"' 'service-worker/jds-terraform-gke/k8s/portal-jabar-app/production-jcloud/deployment-worker.yaml'
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.SERVICE_WORKER_IMAGENAME_PROD }}:${{ env.RELEASE_TAG }}"' 'service-worker/jds-terraform-gke/k8s/portal-jabar-app/production-jcloud/deployment-worker.yaml'
 
     - name: GitOps ArgoCD Create Branch, Commit, Push
       run: |
