@@ -8,6 +8,10 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
+const (
+	ArchiveStatus = "ARCHIVE"
+)
+
 type MasterDataService struct {
 	ID                    int64                 `json:"id"`
 	MainService           MainService           `json:"main_service"`
@@ -231,6 +235,7 @@ type MasterDataServiceUsecase interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
 	Update(context.Context, *StoreMasterDataService, int64) (err error)
 	TabStatus(context.Context) ([]TabStatusResponse, error)
+	Archive(ctx context.Context, params *Request) (res []MasterDataService, err error)
 }
 
 type MasterDataServiceRepository interface {

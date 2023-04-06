@@ -32,6 +32,7 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 	r.GET("/master-data-services/:id", handler.GetByID)
 	r.PUT("/master-data-services/:id", handler.Update)
 	r.GET("/master-data-services/tabs", handler.TabStatus)
+	r.GET("/master-data-services/archives", handler.Archive)
 }
 
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
@@ -207,4 +208,36 @@ func (h *MasterDataServiceHandler) TabStatus(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
+}
+
+func (h *MasterDataServiceHandler) Archive(c echo.Context) error {
+
+	ctx := c.Request().Context()
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"status": c.QueryParam("status"),
+	}
+
+	data, err := h.MdsUcase.Archive(ctx, &params)
+	if err != nil {
+		return err
+	}
+
+	// represent response to the client
+	mdsRes := []domain.ListMasterDataResponse{}
+	for _, row := range data {
+		res := domain.ListMasterDataResponse{
+			ID:          row.ID,
+			ServiceName: row.MainService.ServiceName,
+			OpdName:     row.MainService.OpdName,
+			ServiceUser: row.MainService.ServiceUser,
+			Technical:   row.MainService.Technical,
+			UpdatedAt:   row.UpdatedAt,
+			Status:      row.Status,
+		}
+
+		mdsRes = append(mdsRes, res)
+	}
+
+	return c.JSON(http.StatusOK, domain.ResultData{Data: mdsRes})
 }
