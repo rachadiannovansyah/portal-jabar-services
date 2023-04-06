@@ -8,6 +8,10 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
+const (
+	ArchiveStatus = "ARCHIVE"
+)
+
 type MasterDataService struct {
 	ID                    int64                 `json:"id"`
 	MainService           MainService           `json:"main_service"`

@@ -182,7 +182,7 @@ func (n *masterDataServiceUsecase) Archive(c context.Context, params *domain.Req
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
-	params.Filters["status"] = "ARCHIVE"
+	params.Filters["status"] = domain.ArchiveStatus
 	res, _, err = n.mdsRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, err
