@@ -231,6 +231,7 @@ type MasterDataServiceUsecase interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
 	Update(context.Context, *StoreMasterDataService, int64) (err error)
 	TabStatus(context.Context) ([]TabStatusResponse, error)
+	Archive(ctx context.Context, params *Request) (res []MasterDataService, err error)
 }
 
 type MasterDataServiceRepository interface {
