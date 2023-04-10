@@ -16,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
 
     # Configure Docker with Credentials
     - name: Configure Docker
@@ -31,16 +31,16 @@ jobs:
      # Build the Docker image
     - name: Get release tag
       id: vars
-      run: echo ::set-output name=RELEASE_TAG::${GITHUB_REF/refs\/tags\//}
+      run: echo "RELEASE_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
     - name: Build and push
       id: docker_build
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v4
       with:
         file: core-service/docker/Dockerfile
         context: ./core-service
         push: true
-        tags: ${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.RELEASE_TAG }}
+        tags: ${{ secrets.CORE_SERVICE_IMAGENAME_PROD }}:${{ env.RELEASE_TAG }}
     
     # GitOps
     - name: GitOps ArgoCD Setup
@@ -52,7 +52,7 @@ jobs:
     - name: GitOps ArgoCD Update Image Tag
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME }}:${{ steps.vars.outputs.RELEASE_TAG }}"' 'core-service/jds-terraform-gke/k8s/portal-jabar-app/production-jcloud/deployment.yaml'
+        cmd: yq -i '.spec.template.spec.containers[0].image = "${{ secrets.CORE_SERVICE_IMAGENAME_PROD }}:${{ env.RELEASE_TAG }}"' 'core-service/jds-terraform-gke/k8s/portal-jabar-app/production-jcloud/deployment.yaml'
 
     - name: GitOps ArgoCD Create Branch, Commit, Push
       run: |
