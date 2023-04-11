@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -35,6 +36,9 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	sort.SliceStable(listSearch, func(i, j int) bool {
+		return listSearch[i].CreatedAt.Unix() > listSearch[j].CreatedAt.Unix()
+	})
 	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
