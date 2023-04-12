@@ -40,9 +40,11 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 		return listSearch[i].CreatedAt.Unix() > listSearch[j].CreatedAt.Unix()
 	})
 	ct := int(params.PerPage)
-	data := listSearch[:ct]
+	if ct < len(listSearch) {
+		listSearch = listSearch[:ct]
+	}
 
-	res := helpers.Paginate(c, data, tot, params)
+	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
 	return c.JSON(http.StatusOK, res)
