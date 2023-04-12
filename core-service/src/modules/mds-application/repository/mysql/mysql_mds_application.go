@@ -19,7 +19,7 @@ func NewMysqlApplicationRepository(Conn *sql.DB) domain.ApplicationRepository {
 
 func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
-	INSERT applications SET name=?, status=?, features=?
+	INSERT applications SET name=?, status=?, title=?, features=?
 	`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
@@ -29,6 +29,7 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 	res, err := stmt.ExecContext(ctx,
 		&ms.Application.Name,
 		&ms.Application.Status,
+		&ms.Application.Title,
 		helpers.GetStringFromObject(&ms.Application.Features),
 	)
 	if err != nil {
@@ -44,7 +45,7 @@ func (m *mysqlApplicationRepository) Store(ctx context.Context, ms *domain.Store
 
 func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `
-	UPDATE applications SET name=?, status=?, features=? WHERE id=?
+	UPDATE applications SET name=?, status=?, features=?, title=? WHERE id=?
 	`
 
 	stmt, err := tx.PrepareContext(ctx, query)
@@ -56,6 +57,7 @@ func (m *mysqlApplicationRepository) Update(ctx context.Context, apID int64, ms 
 		&ms.Application.Name,
 		&ms.Application.Status,
 		helpers.GetStringFromObject(&ms.Application.Features),
+		&ms.Application.Title,
 		apID,
 	)
 	if err != nil {

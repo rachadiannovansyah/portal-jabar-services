@@ -36,8 +36,10 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 		return
 	}
 
-	// storing mds support entuty
-	n.storeMdsSupport(ctx, mds, tx) // use priv func to reduce exceeding return statements
+	// storing mds support entity
+	if err = n.storeMdsSupport(ctx, mds, tx); err != nil {
+		return
+	}
 
 	// store it on mds domain
 	if err = n.mdsRepo.Store(ctx, mds, tx); err != nil {
@@ -52,7 +54,7 @@ func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCust
 }
 
 // private func to support of mds main_service, application, additional_information entities
-func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) {
+func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	// store main_services repository
 	msID, err := n.msRepo.Store(ctx, mds, tx)
 	if err != nil {
@@ -73,6 +75,8 @@ func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *dom
 		return
 	}
 	mds.AdditionalInformation.ID = aID
+
+	return
 }
 
 func (n *masterDataServiceUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
@@ -123,7 +127,9 @@ func (n *masterDataServiceUsecase) Update(ctx context.Context, body *domain.Stor
 	}
 
 	// update mds support entity
-	n.updateMdsSupport(ctx, mds, body, tx) // use priv func to reduce exceeding return statements
+	if err = n.updateMdsSupport(ctx, mds, body, tx); err != nil {
+		return
+	}
 
 	// updated it on mds domain
 	mdsEntityID := domain.MasterDataServiceEntityID{ // placed here on struct to reduce args code complexity
@@ -144,21 +150,23 @@ func (n *masterDataServiceUsecase) Update(ctx context.Context, body *domain.Stor
 }
 
 // private func to support of mds main_service, application, additional_information entities
-func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds domain.MasterDataService, body *domain.StoreMasterDataService, tx *sql.Tx) {
+func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds domain.MasterDataService, body *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	// update main_services repository
-	if err := n.msRepo.Update(ctx, mds.MainService.ID, body, tx); err != nil {
+	if err = n.msRepo.Update(ctx, mds.MainService.ID, body, tx); err != nil {
 		return
 	}
 
 	// update applications repository
-	if err := n.apRepo.Update(ctx, mds.Application.ID, body, tx); err != nil {
+	if err = n.apRepo.Update(ctx, mds.Application.ID, body, tx); err != nil {
 		return
 	}
 
 	// update additional_informations repository
-	if err := n.aiRepo.Update(ctx, mds.AdditionalInformation.ID, body, tx); err != nil {
+	if err = n.aiRepo.Update(ctx, mds.AdditionalInformation.ID, body, tx); err != nil {
 		return
 	}
+
+	return
 }
 
 func (n *masterDataServiceUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
@@ -166,5 +174,19 @@ func (n *masterDataServiceUsecase) TabStatus(ctx context.Context) (res []domain.
 	if err != nil {
 		return
 	}
+	return
+}
+
+func (n *masterDataServiceUsecase) Archive(c context.Context, params *domain.Request) (
+	res []domain.MasterDataService, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	params.Filters["status"] = domain.ArchiveStatus
+	res, _, err = n.mdsRepo.Fetch(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
 	return
 }

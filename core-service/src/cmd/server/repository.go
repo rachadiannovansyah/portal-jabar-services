@@ -17,6 +17,7 @@ import (
 	_generalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/general-information/repository/mysql"
 	_governmentAffairRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/repository/mysql"
 	_informationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/repository/mysql"
+	_masterDataPublicationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-publication/repository/mysql"
 	_masterDataServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-service/repository/mysql"
 	_additionalInformationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mds-additional-information/repository/mysql"
 	_applicationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/mds-application/repository/mysql"
@@ -40,73 +41,75 @@ import (
 
 // Repository ...
 type Repository struct {
-	CategoryRepo           domain.CategoryRepository
-	NewsRepo               domain.NewsRepository
-	InformationRepo        domain.InformationRepository
-	UnitRepo               domain.UnitRepository
-	AreaRepo               domain.AreaRepository
-	EventRepo              domain.EventRepository
-	FeedbackRepo           domain.FeedbackRepository
-	FeaturedProgramRepo    domain.FeaturedProgramRepository
-	UserRepo               domain.UserRepository
-	DataTagsRepo           domain.DataTagRepository
-	TagRepo                domain.TagRepository
-	SearchRepo             domain.SearchRepository
-	ServicePublicRepo      domain.ServicePublicRepository
-	GeneralInformationRepo domain.GeneralInformationRepository
-	RoleRepo               domain.RoleRepository
-	RolePermRepo           domain.RolePermissionRepository
-	TemplateRepo           domain.TemplateRepository
-	RegInvitationRepo      domain.RegistrationInvitationRepository
-	MailRepo               domain.MailRepository
-	AwardRepo              domain.AwardRepository
-	DistrictRepo           domain.DistrictRepository
-	DocumentArchiveRepo    domain.DocumentArchiveRepository
-	PublicServiceRepo      domain.PublicServiceRepository
-	ExternalVisitorRepo    domain.ExternalVisitorRepository
-	PopUpBannerRepo        domain.PopUpBannerRepository
-	GovernmentAffairRepo   domain.GovernmentAffairRepository
-	SpbeRalsRepo           domain.SpbeRalsRepository
-	UptdCabdinRepo         domain.UptdCabdinRepository
-	MasterDataServiceRepo  domain.MasterDataServiceRepository
-	MainServiceRepo        domain.MainServiceRepository
-	ApplicationRepo        domain.ApplicationRepository
-	AdditionalInfRepo      domain.AdditionalInformationRepository
+	CategoryRepo              domain.CategoryRepository
+	NewsRepo                  domain.NewsRepository
+	InformationRepo           domain.InformationRepository
+	UnitRepo                  domain.UnitRepository
+	AreaRepo                  domain.AreaRepository
+	EventRepo                 domain.EventRepository
+	FeedbackRepo              domain.FeedbackRepository
+	FeaturedProgramRepo       domain.FeaturedProgramRepository
+	UserRepo                  domain.UserRepository
+	DataTagsRepo              domain.DataTagRepository
+	TagRepo                   domain.TagRepository
+	SearchRepo                domain.SearchRepository
+	ServicePublicRepo         domain.ServicePublicRepository
+	GeneralInformationRepo    domain.GeneralInformationRepository
+	RoleRepo                  domain.RoleRepository
+	RolePermRepo              domain.RolePermissionRepository
+	TemplateRepo              domain.TemplateRepository
+	RegInvitationRepo         domain.RegistrationInvitationRepository
+	MailRepo                  domain.MailRepository
+	AwardRepo                 domain.AwardRepository
+	DistrictRepo              domain.DistrictRepository
+	DocumentArchiveRepo       domain.DocumentArchiveRepository
+	PublicServiceRepo         domain.PublicServiceRepository
+	ExternalVisitorRepo       domain.ExternalVisitorRepository
+	PopUpBannerRepo           domain.PopUpBannerRepository
+	GovernmentAffairRepo      domain.GovernmentAffairRepository
+	SpbeRalsRepo              domain.SpbeRalsRepository
+	UptdCabdinRepo            domain.UptdCabdinRepository
+	MasterDataServiceRepo     domain.MasterDataServiceRepository
+	MainServiceRepo           domain.MainServiceRepository
+	ApplicationRepo           domain.ApplicationRepository
+	AdditionalInfRepo         domain.AdditionalInformationRepository
+	MasterDataPublicationRepo domain.MasterDataPublicationRepository
 }
 
 // NewRepository will create an object that represent all repos interface
 func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *Repository {
 	return &Repository{
-		CategoryRepo:           _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
-		NewsRepo:               _newsRepo.NewMysqlNewsRepository(conn.Mysql, logrus),
-		InformationRepo:        _informationRepo.NewMysqlInformationRepository(conn.Mysql),
-		UnitRepo:               _unitRepo.NewMysqlUnitRepository(conn.Mysql),
-		AreaRepo:               _areaRepo.NewMysqlAreaRepository(conn.Mysql),
-		EventRepo:              _eventRepo.NewMysqlEventRepository(conn.Mysql),
-		FeedbackRepo:           _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
-		FeaturedProgramRepo:    _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
-		UserRepo:               _userRepo.NewMysqlUserRepository(conn.Mysql),
-		DataTagsRepo:           _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
-		TagRepo:                _tagRepo.NewMysqlTagRepository(conn.Mysql),
-		SearchRepo:             _searchRepo.NewElasticSearchRepository(conn.Elastic, cfg),
-		ServicePublicRepo:      _servicePublicRepo.NewMysqlServicePublicRepository(conn.Mysql),
-		GeneralInformationRepo: _generalInformationRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
-		RoleRepo:               _roleRepo.NewMysqlRoleRepository(conn.Mysql),
-		RolePermRepo:           _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
-		TemplateRepo:           _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
-		RegInvitationRepo:      _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
-		AwardRepo:              _awardRepo.NewMysqlAwardRepository(conn.Mysql),
-		DistrictRepo:           _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
-		DocumentArchiveRepo:    _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
-		PublicServiceRepo:      _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
-		ExternalVisitorRepo:    _externalVisitorRepo.NewExternalVisitorRepository(cfg),
-		PopUpBannerRepo:        _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
-		GovernmentAffairRepo:   _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
-		SpbeRalsRepo:           _spbeRalsRepo.NewMysqlSpbeRalsRepository(conn.Mysql),
-		UptdCabdinRepo:         _uptdCabdinRepo.NewMysqlUptdCabdinRepository(conn.Mysql),
-		MasterDataServiceRepo:  _masterDataServiceRepo.NewMysqlMasterDataServiceRepository(conn.Mysql),
-		MainServiceRepo:        _mainServiceRepo.NewMysqlMainServiceRepository(conn.Mysql),
-		ApplicationRepo:        _applicationRepo.NewMysqlApplicationRepository(conn.Mysql),
-		AdditionalInfRepo:      _additionalInformationRepo.NewMysqlAdditionalInformationRepository(conn.Mysql),
+		CategoryRepo:              _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
+		NewsRepo:                  _newsRepo.NewMysqlNewsRepository(conn.Mysql, logrus),
+		InformationRepo:           _informationRepo.NewMysqlInformationRepository(conn.Mysql),
+		UnitRepo:                  _unitRepo.NewMysqlUnitRepository(conn.Mysql),
+		AreaRepo:                  _areaRepo.NewMysqlAreaRepository(conn.Mysql),
+		EventRepo:                 _eventRepo.NewMysqlEventRepository(conn.Mysql),
+		FeedbackRepo:              _feedbackRepo.NewMysqlFeedbackRepository(conn.Mysql),
+		FeaturedProgramRepo:       _featuredProgramRepo.NewMysqlFeaturedProgramRepository(conn.Mysql),
+		UserRepo:                  _userRepo.NewMysqlUserRepository(conn.Mysql),
+		DataTagsRepo:              _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
+		TagRepo:                   _tagRepo.NewMysqlTagRepository(conn.Mysql),
+		SearchRepo:                _searchRepo.NewElasticSearchRepository(conn.Elastic, cfg),
+		ServicePublicRepo:         _servicePublicRepo.NewMysqlServicePublicRepository(conn.Mysql),
+		GeneralInformationRepo:    _generalInformationRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
+		RoleRepo:                  _roleRepo.NewMysqlRoleRepository(conn.Mysql),
+		RolePermRepo:              _rolePermRepo.NewMysqlRolePermissionRepository(conn.Mysql),
+		TemplateRepo:              _templateRepo.NewMysqlMailTemplateRepository(conn.Mysql),
+		RegInvitationRepo:         _regInvitationRepo.NewMysqlRegInvitationRepository(conn.Mysql),
+		AwardRepo:                 _awardRepo.NewMysqlAwardRepository(conn.Mysql),
+		DistrictRepo:              _districtRepo.NewMysqlDistrictRepository(conn.Mysql),
+		DocumentArchiveRepo:       _documentArchiveRepo.NewMysqlDocumentArchiveRepository(conn.Mysql),
+		PublicServiceRepo:         _publicServiceRepo.NewMysqlPublicServiceRepository(conn.Mysql),
+		ExternalVisitorRepo:       _externalVisitorRepo.NewExternalVisitorRepository(cfg),
+		PopUpBannerRepo:           _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
+		GovernmentAffairRepo:      _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
+		SpbeRalsRepo:              _spbeRalsRepo.NewMysqlSpbeRalsRepository(conn.Mysql),
+		UptdCabdinRepo:            _uptdCabdinRepo.NewMysqlUptdCabdinRepository(conn.Mysql),
+		MasterDataServiceRepo:     _masterDataServiceRepo.NewMysqlMasterDataServiceRepository(conn.Mysql),
+		MainServiceRepo:           _mainServiceRepo.NewMysqlMainServiceRepository(conn.Mysql),
+		ApplicationRepo:           _applicationRepo.NewMysqlApplicationRepository(conn.Mysql),
+		AdditionalInfRepo:         _additionalInformationRepo.NewMysqlAdditionalInformationRepository(conn.Mysql),
+		MasterDataPublicationRepo: _masterDataPublicationRepo.NewMysqlMasterDataPublicationRepository(conn.Mysql),
 	}
 }

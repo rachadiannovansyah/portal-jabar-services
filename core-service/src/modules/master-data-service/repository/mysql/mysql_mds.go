@@ -30,7 +30,7 @@ var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.serv
 ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.sub_service_type, ms.program_name,
 ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, ms.website, ms.links, ms.terms_and_condition, ms.service_procedures,
 ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, ms.location,
-apl.status, apl.name, apl.features, mds.application,
+apl.status, apl.name, apl.features, apl.title, mds.application,
 aif.id, aif.responsible_name, aif.phone_number, aif.email, aif.social_media,
 mds.status, mds.updated_at, mds.created_at
 FROM masterdata_services mds
@@ -206,6 +206,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.Application.Status,
 		&res.Application.Name,
 		&res.Application.Features,
+		&res.Application.Title,
 		&res.Application.ID,
 		&res.AdditionalInformation.ID,
 		&res.AdditionalInformation.ResponsibleName,
@@ -218,7 +219,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 	)
 
 	if err != nil {
-		err = domain.ErrNotFound
+		return
 	}
 
 	return
