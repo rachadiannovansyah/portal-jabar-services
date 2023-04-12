@@ -12,6 +12,7 @@ import (
 	"github.com/elastic/go-elasticsearch/esapi"
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/google/uuid"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/mitchellh/mapstructure"
@@ -20,6 +21,7 @@ import (
 
 type elasticSearchRepository struct {
 	Conn *elasticsearch.Client
+	Cfg  *config.Config
 }
 
 // Instantiate a mapping interface for API response
@@ -32,8 +34,8 @@ func failOnError(err error, msg string) {
 }
 
 // NewElasticSearchRepository will create an object that represent the news.Repository interface
-func NewElasticSearchRepository(es *elasticsearch.Client) domain.SearchRepository {
-	return &elasticSearchRepository{es}
+func NewElasticSearchRepository(es *elasticsearch.Client, cfg *config.Config) domain.SearchRepository {
+	return &elasticSearchRepository{es, cfg}
 }
 
 func mapElasticDocs(mapResp map[string]interface{}) (res []domain.SearchListResponse) {
@@ -155,7 +157,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, indices string, pa
 		esClient.Search.WithIndex(indices),
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
-		esClient.Search.WithSize(int(params.PerPage)),
+		esClient.Search.WithSize(es.Cfg.ELastic.IndexSize),
 	)
 
 	// Decode the JSON response and using a pointer
