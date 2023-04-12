@@ -90,7 +90,7 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		UserRepo:                  _userRepo.NewMysqlUserRepository(conn.Mysql),
 		DataTagsRepo:              _dataTagRepo.NewMysqlDataTagRepository(conn.Mysql),
 		TagRepo:                   _tagRepo.NewMysqlTagRepository(conn.Mysql),
-		SearchRepo:                _searchRepo.NewElasticSearchRepository(conn.Elastic),
+		SearchRepo:                _searchRepo.NewElasticSearchRepository(conn.Elastic, cfg),
 		ServicePublicRepo:         _servicePublicRepo.NewMysqlServicePublicRepository(conn.Mysql),
 		GeneralInformationRepo:    _generalInformationRepo.NewMysqlGeneralInformationRepository(conn.Mysql),
 		RoleRepo:                  _roleRepo.NewMysqlRoleRepository(conn.Mysql),

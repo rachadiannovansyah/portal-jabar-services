@@ -8,6 +8,7 @@ import (
 type ElasticConfig struct {
 	ElasticConfig *elasticsearch.Config
 	IndexContent  string
+	IndexSize     int
 }
 
 // LoadElasticConfig loads the elasticsearch configuration
@@ -18,5 +19,6 @@ func LoadElasticConfig() ElasticConfig {
 			APIKey:  viper.GetString("ELASTIC_API_KEY"),
 		},
 		IndexContent: viper.GetString("ELASTIC_CONTENT_INDEX"),
+		IndexSize:    viper.GetInt("ELASTIC_INDEX_SIZE"),
 	}
 }
