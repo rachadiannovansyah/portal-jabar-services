@@ -17,12 +17,40 @@ type MasterDataPublication struct {
 }
 
 type DefaultInformation struct {
+	MdsID             int64     `json:"mds_id"`
+	OpdName           string    `json:"opd_name"`
+	ServiceForm       string    `json:"form"`
+	ServiceName       string    `json:"name"`
+	ProgramName       string    `json:"program_name"`
+	Description       string    `json:"description"`
+	ServiceUser       string    `json:"user"`
+	PortalCategory    string    `json:"portal_category"`
+	OperationalStatus string    `json:"operational_status"`
+	Technical         string    `json:"technical"`
+	Benefits          MdsObject `json:"benefits"`
+	Facilities        MdsObject `json:"facilities"`
+	Slug              string    `json:"slug"`
 }
 
 type ServiceDescription struct {
+	Cover              CoverPublication       `json:"cover"`
+	Images             []DetailMetaDataImage  `json:"images"`
+	TermsAndConditions MdsObjectCover         `json:"terms_and_conditions"`
+	ServiceProcedures  MdsObjectCover         `json:"service_procedures"`
+	ServiceFee         string                 `json:"service_fee"`
+	OperationalTimes   []OperationalTimeMds   `json:"operational_times"`
+	HotlineNumber      string                 `json:"hotline_number"`
+	HotlineMail        string                 `json:"hotline_mail"`
+	InfoGraphics       PublicationInfographic `json:"infographics"`
+	Locations          []LocationMds          `json:"locations"`
+	Application        MdsApplication         `json:"application"`
+	Links              []LinkMds              `json:"links"`
+	SocialMedia        []SocialMediaMds       `json:"social_media"`
 }
 
 type PublicationInformation struct {
+	Keywords []string       `json:"keywords"`
+	FAQ      PublicationFAQ `json:"faq"`
 }
 
 type StoreMasterDataPublication struct {
@@ -70,9 +98,11 @@ type PublicationFAQ struct {
 }
 type MasterDataPublicationUsecase interface {
 	Store(ctx context.Context, body *StoreMasterDataPublication) (err error)
+	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataPublication, total int64, err error)
 }
 
 type MasterDataPublicationRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataPublication) (err error)
 	GetTx(context.Context) (*sql.Tx, error)
+	Fetch(ctx context.Context, params *Request) (res []MasterDataPublication, total int64, err error)
 }

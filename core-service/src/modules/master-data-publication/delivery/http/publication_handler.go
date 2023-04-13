@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -23,6 +24,7 @@ func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicat
 		apm:      apm,
 	}
 	r.POST("/master-data-publications", handler.Store)
+	r.GET("/master-data-publications", handler.Fetch)
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -68,4 +70,39 @@ func (h *MasterDataPublicationHandler) bindRequest(c echo.Context) (body *domain
 	}
 
 	return
+}
+
+func (h *MasterDataPublicationHandler) Fetch(c echo.Context) error {
+
+	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"status": c.QueryParam("status"),
+	}
+
+	data, total, err := h.MdpUcase.Fetch(ctx, au, &params)
+	if err != nil {
+		return err
+	}
+
+	// represent responses to the client
+	pubRes := []domain.ListMasterDataResponse{}
+	for _, row := range data {
+		res := domain.ListMasterDataResponse{
+			ID:          row.ID,
+			ServiceName: row.DefaultInformation.ServiceName,
+			OpdName:     row.DefaultInformation.OpdName,
+			ServiceUser: row.DefaultInformation.ServiceUser,
+			Technical:   row.DefaultInformation.Technical,
+			UpdatedAt:   row.UpdatedAt,
+			Status:      row.Status,
+		}
+
+		pubRes = append(pubRes, res)
+	}
+
+	res := helpers.Paginate(c, pubRes, total, params)
+
+	return c.JSON(http.StatusOK, res)
 }
