@@ -75,3 +75,16 @@ func (n *masterDataPublicationUsecase) Store(ctx context.Context, body *domain.S
 
 	return
 }
+
+func (n *masterDataPublicationUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
+	res []domain.MasterDataPublication, total int64, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, total, err = n.mdpRepo.Fetch(ctx, params)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return
+}
