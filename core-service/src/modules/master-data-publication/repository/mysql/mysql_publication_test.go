@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/bxcodec/faker"
+	"github.com/go-faker/faker/v4"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	mdpRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-publication/repository/mysql"
 	"github.com/stretchr/testify/assert"
