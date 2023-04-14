@@ -99,10 +99,12 @@ type PublicationFAQ struct {
 type MasterDataPublicationUsecase interface {
 	Store(ctx context.Context, body *StoreMasterDataPublication) (err error)
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataPublication, total int64, err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
 
 type MasterDataPublicationRepository interface {
 	Store(ctx context.Context, body *StoreMasterDataPublication) (err error)
 	GetTx(context.Context) (*sql.Tx, error)
 	Fetch(ctx context.Context, params *Request) (res []MasterDataPublication, total int64, err error)
+	Delete(ctx context.Context, id int64) (err error)
 }
