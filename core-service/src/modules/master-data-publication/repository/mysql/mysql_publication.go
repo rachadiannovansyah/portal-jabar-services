@@ -129,3 +129,37 @@ func (m *mysqlMdpRepository) Fetch(ctx context.Context, params *domain.Request) 
 
 	return
 }
+
+func (m *mysqlMdpRepository) Delete(ctx context.Context, id int64) (err error) {
+	query := "DELETE FROM masterdata_publications WHERE id = ?"
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	res, err := stmt.ExecContext(ctx, id)
+	if err != nil {
+		return
+	}
+
+	err = m.rowsAffected(res)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (m *mysqlMdpRepository) rowsAffected(res sql.Result) (err error) {
+	rowAffected, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if rowAffected != 1 {
+		logrus.Error(err)
+		return
+	}
+
+	return
+}

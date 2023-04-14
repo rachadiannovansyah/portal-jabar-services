@@ -88,3 +88,14 @@ func (n *masterDataPublicationUsecase) Fetch(c context.Context, au *domain.JwtCu
 
 	return
 }
+
+func (u *masterDataPublicationUsecase) Delete(c context.Context, id int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	if err = u.mdpRepo.Delete(ctx, id); err != nil {
+		return
+	}
+
+	return
+}
