@@ -99,3 +99,15 @@ func (u *masterDataPublicationUsecase) Delete(c context.Context, id int64) (err 
 
 	return
 }
+
+func (u *masterDataPublicationUsecase) GetByID(c context.Context, id int64) (res domain.MasterDataPublication, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.mdpRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
+	return
+}
