@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/go-playground/validator"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -27,6 +28,7 @@ func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicat
 	r.POST("/master-data-publications", handler.Store)
 	r.GET("/master-data-publications", handler.Fetch)
 	r.DELETE("/master-data-publications/:id", handler.Delete)
+	r.GET("/master-data-publications/:id", handler.GetByID)
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -125,4 +127,42 @@ func (h *MasterDataPublicationHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// GetByID will get master data publication by given id
+func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	res, err := h.MdpUcase.GetByID(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// represent response to the client
+	detailRes := domain.DetailPublicationResponse{}
+
+	copier.Copy(&detailRes, &res)
+	// un-marshalling json from string to object
+	helpers.GetObjectFromString(res.DefaultInformation.Benefits.String, &detailRes.DefaultInformation.Benefits)
+	helpers.GetObjectFromString(res.DefaultInformation.Facilities.String, &detailRes.DefaultInformation.Facilities)
+	helpers.GetObjectFromString(res.ServiceDescription.Cover.String, &detailRes.ServiceDescription.Cover)
+	helpers.GetObjectFromString(res.ServiceDescription.Images.String, &detailRes.ServiceDescription.Images)
+	helpers.GetObjectFromString(res.ServiceDescription.TermsAndConditions.String, &detailRes.ServiceDescription.TermsAndConditions)
+	helpers.GetObjectFromString(res.ServiceDescription.ServiceProcedures.String, &detailRes.ServiceDescription.ServiceProcedures)
+	helpers.GetObjectFromString(res.ServiceDescription.OperationalTimes.String, &detailRes.ServiceDescription.OperationalTimes)
+	helpers.GetObjectFromString(res.ServiceDescription.InfoGraphics.String, &detailRes.ServiceDescription.InfoGraphics)
+	helpers.GetObjectFromString(res.ServiceDescription.Locations.String, &detailRes.ServiceDescription.Locations)
+	helpers.GetObjectFromString(res.ServiceDescription.Application.Features.String, &detailRes.ServiceDescription.Application.Features)
+	helpers.GetObjectFromString(res.ServiceDescription.Links.String, &detailRes.ServiceDescription.Links)
+	helpers.GetObjectFromString(res.ServiceDescription.SocialMedia.String, &detailRes.ServiceDescription.SocialMedia)
+	helpers.GetObjectFromString(res.AdditionalInformation.Keywords.String, &detailRes.AdditionalInformation.Keywords)
+	helpers.GetObjectFromString(res.AdditionalInformation.FAQ.String, &detailRes.AdditionalInformation.FAQ)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }

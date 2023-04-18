@@ -29,6 +29,22 @@ LEFT JOIN units
 ON ms.opd_name = units.id
 WHERE 1=1`
 
+var querySelectJoinDetail = `SELECT mdp.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
+mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
+ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at
+FROM masterdata_publications as mdp
+LEFT JOIN masterdata_services as mds
+ON mdp.mds_id = mds.id
+LEFT JOIN main_services as ms
+on mds.main_service = ms.id
+LEFT JOIN applications as ap
+on mds.application = ap.id
+LEFT JOIN additional_informations as aif
+on mds.additional_information = aif.id
+LEFT JOIN units as unit
+on ms.opd_name = unit.id
+WHERE 1=1`
+
 func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMasterDataPublication) (err error) {
 	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -158,6 +174,54 @@ func (m *mysqlMdpRepository) rowsAffected(res sql.Result) (err error) {
 
 	if rowAffected != 1 {
 		logrus.Error(err)
+		return
+	}
+
+	return
+}
+
+func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.MasterDataPublication, err error) {
+	query := querySelectJoinDetail + " AND mdp.id = ? LIMIT 1"
+
+	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
+		&res.ID,
+		&res.DefaultInformation.OpdName,
+		&res.DefaultInformation.ServiceForm,
+		&res.DefaultInformation.ServiceName,
+		&res.DefaultInformation.ProgramName,
+		&res.DefaultInformation.Description,
+		&res.DefaultInformation.ServiceUser,
+		&res.DefaultInformation.PortalCategory,
+		&res.DefaultInformation.OperationalStatus,
+		&res.DefaultInformation.Technical,
+		&res.DefaultInformation.Benefits,
+		&res.DefaultInformation.Facilities,
+		&res.DefaultInformation.Slug,
+		&res.ServiceDescription.Cover,
+		&res.ServiceDescription.Images,
+		&res.ServiceDescription.TermsAndConditions,
+		&res.ServiceDescription.ServiceProcedures,
+		&res.ServiceDescription.ServiceFee,
+		&res.ServiceDescription.OperationalTimes,
+		&res.ServiceDescription.HotlineNumber,
+		&res.ServiceDescription.HotlineMail,
+		&res.ServiceDescription.InfoGraphics,
+		&res.ServiceDescription.Locations,
+		&res.ServiceDescription.Application.ID,
+		&res.ServiceDescription.Application.Name,
+		&res.ServiceDescription.Application.Status,
+		&res.ServiceDescription.Application.Features,
+		&res.ServiceDescription.Application.Title,
+		&res.ServiceDescription.Links,
+		&res.ServiceDescription.SocialMedia,
+		&res.AdditionalInformation.Keywords,
+		&res.AdditionalInformation.FAQ,
+		&res.Status,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
 		return
 	}
 
