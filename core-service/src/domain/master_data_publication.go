@@ -155,6 +155,7 @@ type MasterDataPublicationUsecase interface {
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataPublication, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
+	TabStatus(context.Context) ([]TabStatusResponse, error)
 }
 
 type MasterDataPublicationRepository interface {
@@ -163,4 +164,5 @@ type MasterDataPublicationRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []MasterDataPublication, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
+	TabStatus(context.Context) ([]TabStatusResponse, error)
 }
