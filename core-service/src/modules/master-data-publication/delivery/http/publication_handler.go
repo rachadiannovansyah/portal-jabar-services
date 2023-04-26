@@ -29,6 +29,7 @@ func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicat
 	r.GET("/master-data-publications", handler.Fetch)
 	r.DELETE("/master-data-publications/:id", handler.Delete)
 	r.GET("/master-data-publications/:id", handler.GetByID)
+	r.GET("/master-data-publications/tabs", handler.TabStatus)
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -165,4 +166,15 @@ func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(res.AdditionalInformation.FAQ.String, &detailRes.AdditionalInformation.FAQ)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
+}
+
+func (h *MasterDataPublicationHandler) TabStatus(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	tabs, err := h.MdpUcase.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }

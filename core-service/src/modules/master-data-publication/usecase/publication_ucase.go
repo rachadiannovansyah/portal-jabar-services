@@ -111,3 +111,11 @@ func (u *masterDataPublicationUsecase) GetByID(c context.Context, id int64) (res
 
 	return
 }
+
+func (n *masterDataPublicationUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	res, err = n.mdpRepo.TabStatus(ctx)
+	if err != nil {
+		return
+	}
+	return
+}

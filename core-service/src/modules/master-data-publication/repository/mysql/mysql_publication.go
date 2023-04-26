@@ -227,3 +227,45 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 
 	return
 }
+
+func (m *mysqlMdpRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	query := `
+		SELECT mdp.status, count(mdp.status)
+		FROM masterdata_publications mdp
+		WHERE 1=1
+		GROUP BY mdp.status
+	`
+
+	res, err = m.fetchTabs(ctx, query)
+
+	if err != nil {
+		return []domain.TabStatusResponse{}, err
+	}
+
+	return
+}
+
+func (m *mysqlMdpRepository) fetchTabs(ctx context.Context, query string, args ...interface{}) (result []domain.TabStatusResponse, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	result = make([]domain.TabStatusResponse, 0)
+	for rows.Next() {
+		t := domain.TabStatusResponse{}
+		err = rows.Scan(
+			&t.Status,
+			&t.Count,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+		result = append(result, t)
+	}
+
+	return result, nil
+}
