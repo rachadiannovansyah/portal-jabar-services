@@ -269,3 +269,33 @@ func (m *mysqlMdpRepository) fetchTabs(ctx context.Context, query string, args .
 
 	return result, nil
 }
+
+func (m *mysqlMdpRepository) Update(ctx context.Context, body *domain.StoreMasterDataPublication, ID int64) (err error) {
+	query := `UPDATE masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?
+		WHERE id=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		body.DefaultInformation.MdsID,
+		body.DefaultInformation.PortalCategory,
+		body.DefaultInformation.Slug,
+		helpers.GetStringFromObject(body.ServiceDescription.Cover),
+		helpers.GetStringFromObject(body.ServiceDescription.Images),
+		helpers.GetStringFromObject(body.ServiceDescription.InfoGraphics),
+		helpers.GetStringFromObject(body.AdditionalInformation.Keywords),
+		helpers.GetStringFromObject(body.AdditionalInformation.FAQ),
+		body.Status,
+		time.Now(),
+		time.Now(),
+		ID,
+	)
+
+	if err != nil {
+		return
+	}
+
+	return
+}

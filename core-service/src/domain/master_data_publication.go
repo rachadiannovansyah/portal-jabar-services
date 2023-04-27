@@ -156,6 +156,7 @@ type MasterDataPublicationUsecase interface {
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
 	TabStatus(context.Context) ([]TabStatusResponse, error)
+	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
 }
 
 type MasterDataPublicationRepository interface {
@@ -165,4 +166,5 @@ type MasterDataPublicationRepository interface {
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
 	TabStatus(context.Context) ([]TabStatusResponse, error)
+	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
 }

@@ -30,6 +30,7 @@ func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicat
 	r.DELETE("/master-data-publications/:id", handler.Delete)
 	r.GET("/master-data-publications/:id", handler.GetByID)
 	r.GET("/master-data-publications/tabs", handler.TabStatus)
+	r.PUT("/master-data-publications/:id", handler.Update)
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -177,4 +178,29 @@ func (h *MasterDataPublicationHandler) TabStatus(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
+}
+
+func (h *MasterDataPublicationHandler) Update(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+	reqID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	ID := int64(reqID)
+	body, err := h.bindRequest(c)
+	if err != nil {
+		return
+	}
+
+	err = h.MdpUcase.Update(ctx, body, ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	result := map[string]interface{}{
+		"message": "UPDATED",
+	}
+
+	return c.JSON(http.StatusOK, result)
 }
