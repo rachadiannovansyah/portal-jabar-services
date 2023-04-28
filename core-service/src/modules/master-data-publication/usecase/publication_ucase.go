@@ -154,11 +154,7 @@ func (n *masterDataPublicationUsecase) Update(ctx context.Context, body *domain.
 	}
 
 	// update for existing publication
-	pubObj, err := n.mdpRepo.GetByID(ctx, pubID)
-	if err != nil {
-		return
-	}
-	body.DefaultInformation.MdsID = pubObj.ID
+	body.DefaultInformation.MdsID = mds.ID
 	if err = n.mdpRepo.Update(ctx, body, pubID); err != nil {
 		return
 	}
