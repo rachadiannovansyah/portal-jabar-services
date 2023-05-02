@@ -219,7 +219,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 	)
 
 	if err != nil {
-		return
+		return domain.MasterDataService{}, domain.ErrNotFound
 	}
 
 	return
