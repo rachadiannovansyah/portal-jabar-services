@@ -222,7 +222,7 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 	)
 
 	if err != nil {
-		return
+		return domain.MasterDataPublication{}, domain.ErrNotFound
 	}
 
 	return
