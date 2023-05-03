@@ -106,6 +106,7 @@ type PublicationFAQ struct {
 }
 
 type DetailPublicationResponse struct {
+	ID                    int64                       `json:"id"`
 	DefaultInformation    DetailDefaultInformation    `json:"default_information"`
 	ServiceDescription    DetailServiceDescription    `json:"service_description"`
 	AdditionalInformation DetailAdditionalInformation `json:"additional_information"`

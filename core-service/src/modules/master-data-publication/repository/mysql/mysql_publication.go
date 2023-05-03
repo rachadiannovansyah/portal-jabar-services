@@ -184,7 +184,7 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 	query := querySelectJoinDetail + " AND mdp.id = ? LIMIT 1"
 
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
-		&res.ID,
+		&res.ID, // include id for delete act
 		&res.DefaultInformation.OpdName,
 		&res.DefaultInformation.ServiceForm,
 		&res.DefaultInformation.ServiceName,
