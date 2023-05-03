@@ -24,7 +24,7 @@ LEFT JOIN main_services ms
 ON mds.main_service = ms.id
 LEFT JOIN units
 ON ms.opd_name = units.id
-WHERE 1=1`
+WHERE deleted_at is NULL`
 
 var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service,
 ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.sub_service_type, ms.program_name,
@@ -42,7 +42,7 @@ LEFT JOIN applications apl
 on mds.application = apl.id
 LEFT JOIN additional_informations aif
 on mds.additional_information = aif.id
-WHERE 1=1`
+WHERE deleted_at is NULL`
 
 func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?, updated_at=?, created_at=?`
@@ -141,13 +141,13 @@ func (m *mysqlMdsRepository) Fetch(ctx context.Context, params *domain.Request) 
 }
 
 func (m *mysqlMdsRepository) Delete(ctx context.Context, id int64) (err error) {
-	query := "DELETE FROM masterdata_services WHERE id = ?"
+	query := "UPDATE masterdata_services SET deleted_at = ? WHERE id = ?"
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
 	}
 
-	res, err := stmt.ExecContext(ctx, id)
+	res, err := stmt.ExecContext(ctx, time.Now(), id)
 	if err != nil {
 		return
 	}
