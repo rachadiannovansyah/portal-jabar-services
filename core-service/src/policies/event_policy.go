@@ -10,5 +10,9 @@ func AllowEventAccess(au *domain.JwtCustomClaims, e domain.Event) bool {
 		return au.Unit.Name.String == e.CreatedBy.UnitName
 	}
 
+	if helpers.IsSuperAdmin(au) {
+		return true
+	}
+
 	return false
 }

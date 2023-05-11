@@ -10,5 +10,9 @@ func AllowUserAccess(au *domain.JwtCustomClaims, n domain.User) bool {
 		return au.Unit.ID == n.Unit.ID
 	}
 
+	if helpers.IsSuperAdmin(au) {
+		return true
+	}
+
 	return false
 }

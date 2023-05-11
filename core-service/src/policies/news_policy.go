@@ -14,5 +14,9 @@ func AllowNewsAccess(au *domain.JwtCustomClaims, n domain.News) bool {
 		return au.Unit.Name.String == n.CreatedBy.UnitName
 	}
 
+	if helpers.IsSuperAdmin(au) {
+		return true
+	}
+
 	return false
 }
