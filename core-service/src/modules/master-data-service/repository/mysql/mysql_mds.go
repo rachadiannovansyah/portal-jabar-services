@@ -26,6 +26,13 @@ LEFT JOIN units
 ON ms.opd_name = units.id
 WHERE deleted_at is NULL`
 
+var querySelectCount = `SELECT COUNT(1) FROM masterdata_services mds
+LEFT JOIN main_services ms
+ON mds.main_service = ms.id
+LEFT JOIN units
+ON ms.opd_name = units.id
+WHERE deleted_at is NULL `
+
 var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service,
 ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.sub_service_type, ms.program_name,
 ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, ms.website, ms.links, ms.terms_and_condition, ms.service_procedures,
@@ -123,10 +130,10 @@ func (m *mysqlMdsRepository) Fetch(ctx context.Context, params *domain.Request) 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query += ` ORDER BY updated_at DESC`
+		query += ` ORDER BY mds.updated_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_services WHERE 1=1 `+query, binds...)
+	total, _ = m.count(ctx, querySelectCount+query, binds...)
 	query = querySelectJoin + query + ` LIMIT ?,? `
 
 	binds = append(binds, params.Offset, params.PerPage)

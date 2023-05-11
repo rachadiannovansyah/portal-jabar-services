@@ -29,6 +29,13 @@ LEFT JOIN units
 ON ms.opd_name = units.id
 WHERE 1=1`
 
+var querySelectCount = `SELECT COUNT(1) FROM masterdata_publications pub LEFT JOIN masterdata_services mds
+ON pub.mds_id = mds.id
+LEFT JOIN main_services ms
+ON mds.main_service = ms.id
+LEFT JOIN units
+ON ms.opd_name = units.id WHERE 1=1 `
+
 var querySelectJoinDetail = `SELECT mdp.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
 mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
 ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at
@@ -129,10 +136,10 @@ func (m *mysqlMdpRepository) Fetch(ctx context.Context, params *domain.Request) 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
 	} else {
-		query += ` ORDER BY updated_at DESC`
+		query += ` ORDER BY pub.updated_at DESC`
 	}
 
-	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_publications pub WHERE 1=1 `+query, binds...)
+	total, _ = m.count(ctx, querySelectCount+query, binds...)
 	query = querySelectJoin + query + ` LIMIT ?,? `
 
 	binds = append(binds, params.Offset, params.PerPage)
