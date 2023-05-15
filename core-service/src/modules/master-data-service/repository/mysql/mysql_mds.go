@@ -258,7 +258,7 @@ func (m *mysqlMdsRepository) TabStatus(ctx context.Context) (res []domain.TabSta
 	query := `
 		SELECT mds.status, count(mds.status)
 		FROM masterdata_services mds
-		WHERE 1=1
+		WHERE deleted_at is NULL
 		GROUP BY mds.status
 	`
 
