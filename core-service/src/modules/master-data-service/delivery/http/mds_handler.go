@@ -49,6 +49,8 @@ func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
 	au := domain.JwtCustomClaims{}
 	mapstructure.Decode(c.Get("auth:user"), &au)
 
+	body.CreatedBy.ID = au.ID
+
 	err = h.MdsUcase.Store(ctx, &au, body)
 	if err != nil {
 		return err

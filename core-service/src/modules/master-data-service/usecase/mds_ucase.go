@@ -7,6 +7,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type masterDataServiceUsecase struct {
@@ -79,10 +80,27 @@ func (n *masterDataServiceUsecase) storeMdsSupport(ctx context.Context, mds *dom
 	return
 }
 
+func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *domain.Request {
+
+	if params.Filters == nil {
+		params.Filters = map[string]interface{}{}
+	}
+
+	if au.Role.ID == domain.RoleContributor {
+		params.Filters["created_by"] = au.ID
+	} else if helpers.IsAdminOPD(au) {
+		params.Filters["unit_id"] = au.Unit.ID
+	}
+
+	return params
+}
+
 func (n *masterDataServiceUsecase) Fetch(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
 	res []domain.MasterDataService, total int64, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
+
+	params = filterByRoleAcces(au, params)
 
 	res, total, err = n.mdsRepo.Fetch(ctx, params)
 	if err != nil {
