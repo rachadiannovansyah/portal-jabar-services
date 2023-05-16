@@ -18,6 +18,7 @@ type MasterDataService struct {
 	Application           Application           `json:"application"`
 	AdditionalInformation AdditionalInformation `json:"additional_information"`
 	Status                string                `json:"status"`
+	CreatedBy             User                  `json:"created_by"`
 	UpdatedAt             time.Time             `json:"updated_at"`
 	CreatedAt             time.Time             `json:"created_at"`
 }
@@ -91,7 +92,8 @@ type StoreMasterDataService struct {
 			Link string `json:"link"`
 		} `json:"social_media"`
 	} `json:"additional_information" validate:"required"`
-	Status string `json:"status" validate:"required,eq=DRAFT|eq=ARCHIVE"`
+	Status    string `json:"status" validate:"required,eq=DRAFT|eq=ARCHIVE"`
+	CreatedBy User   `json:"created_by"`
 }
 
 type MdsItems struct {

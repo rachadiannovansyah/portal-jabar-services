@@ -18,13 +18,15 @@ func NewMysqlMasterDataServiceRepository(Conn *sql.DB) domain.MasterDataServiceR
 	return &mysqlMdsRepository{Conn}
 }
 
-var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.technical, mds.updated_at, mds.status, mds.main_service
+var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.technical, mds.updated_at, mds.status, mds.main_service, mds.created_by
 FROM masterdata_services mds
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
 LEFT JOIN units
 ON ms.opd_name = units.id
-WHERE deleted_at is NULL`
+LEFT JOIN users u
+ON mds.created_by = u.id
+WHERE mds.deleted_at is NULL`
 
 var querySelectCount = `SELECT COUNT(1) FROM masterdata_services mds
 LEFT JOIN main_services ms
@@ -52,7 +54,7 @@ on mds.additional_information = aif.id
 WHERE deleted_at is NULL`
 
 func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
-	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?, updated_at=?, created_at=?`
+	query := `INSERT masterdata_services SET main_service=?, application=?, additional_information=?, status=?, updated_at=?, created_at=?, created_by=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -65,6 +67,7 @@ func (m *mysqlMdsRepository) Store(ctx context.Context, mds *domain.StoreMasterD
 		mds.Status,
 		time.Now(),
 		time.Now(),
+		mds.CreatedBy.ID.String(),
 	)
 
 	if err != nil {
@@ -100,6 +103,7 @@ func (m *mysqlMdsRepository) fetch(ctx context.Context, query string, args ...in
 			&mds.UpdatedAt,
 			&mds.Status,
 			&mds.MainService.ID,
+			&mds.CreatedBy.ID,
 		)
 
 		if err != nil {
