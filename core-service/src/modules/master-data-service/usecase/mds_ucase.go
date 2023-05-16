@@ -15,6 +15,7 @@ type masterDataServiceUsecase struct {
 	msRepo         domain.MainServiceRepository
 	apRepo         domain.ApplicationRepository
 	aiRepo         domain.AdditionalInformationRepository
+	userRepo       domain.UserRepository
 	cfg            *config.Config
 	contextTimeout time.Duration
 }
@@ -26,6 +27,7 @@ func NewMasterDataServiceUsecase(mdsArgs domain.MasterDataServiceUsecaseArgs) do
 		msRepo:         mdsArgs.MsRepo,
 		apRepo:         mdsArgs.ApRepo,
 		aiRepo:         mdsArgs.AiRepo,
+		userRepo:       mdsArgs.UserRepo,
 		cfg:            mdsArgs.Cfg,
 		contextTimeout: mdsArgs.ContextTimeout,
 	}
@@ -129,6 +131,12 @@ func (u *masterDataServiceUsecase) GetByID(c context.Context, id int64) (res dom
 	if err != nil {
 		return
 	}
+
+	resCreatedBy, err := u.userRepo.GetByID(ctx, res.CreatedBy.ID)
+	if err != nil {
+		return
+	}
+	res.CreatedBy = resCreatedBy
 
 	return
 }

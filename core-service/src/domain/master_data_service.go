@@ -219,6 +219,7 @@ type MasterDataServiceUsecaseArgs struct {
 	MsRepo         MainServiceRepository
 	ApRepo         ApplicationRepository
 	AiRepo         AdditionalInformationRepository
+	UserRepo       UserRepository
 	Cfg            *config.Config
 	ContextTimeout time.Duration
 }
