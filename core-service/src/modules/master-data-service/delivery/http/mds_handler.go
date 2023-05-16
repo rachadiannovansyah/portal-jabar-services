@@ -11,6 +11,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -148,10 +149,15 @@ func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 
 	id := int64(idP)
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
 
 	res, err := h.MdsUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	if !policies.AllowMdsAccess(au, res) {
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: domain.ErrForbidden.Error()})
 	}
 
 	// represent response to the client
