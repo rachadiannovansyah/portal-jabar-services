@@ -63,7 +63,7 @@ type StoreMasterDataService struct {
 		ServiceDetail struct {
 			TermsAndConditions MdsObjectCover `json:"terms_and_conditions"`
 			ServiceProcedures  MdsObjectCover `json:"service_procedures"`
-			ServiceFee         string         `json:"service_fee"`
+			ServiceFee         MdsServiceFee  `json:"service_fee"`
 			OperationalTime    []struct {
 				Day   string `json:"day"`
 				Start string `json:"start"`
@@ -187,11 +187,19 @@ type MainServiceDetail struct {
 	Links               []LinkMds            `json:"links"`
 	TermsAndConditions  MdsObjectCover       `json:"terms_and_conditions"`
 	ServiceProcedures   MdsObjectCover       `json:"service_procedures"`
-	ServiceFee          string               `json:"service_fee"`
+	ServiceFee          MdsServiceFee        `json:"service_fee"`
 	OperationalTimes    []OperationalTimeMds `json:"operational_times"`
 	HotlineNumber       string               `json:"hotline_number"`
 	HotlineMail         string               `json:"hotline_mail"`
 	Locations           []LocationMds        `json:"locations"`
+}
+
+type MdsServiceFee struct {
+	HasRange       int8   `json:"has_range"`
+	MinimunFee     int64  `json:"minimum_fee"`
+	MaximumFee     int64  `json:"maximum_fee"`
+	HasDescription int8   `json:"has_description"`
+	Description    string `json:"description"`
 }
 
 type LinkMds struct {
