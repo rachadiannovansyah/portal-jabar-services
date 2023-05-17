@@ -12,7 +12,6 @@ type MainService struct {
 	SubGovernmentAffair string     `json:"sub_government_affair"`
 	ServiceForm         string     `json:"form"`
 	ServiceType         string     `json:"type"`
-	SubServiceType      string     `json:"sub_service_type"`
 	ServiceName         string     `json:"name"`
 	ProgramName         string     `json:"program_name"`
 	Description         string     `json:"description"`
