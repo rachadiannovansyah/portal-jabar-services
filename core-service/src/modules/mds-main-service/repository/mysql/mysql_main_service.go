@@ -20,7 +20,7 @@ func NewMysqlMainServiceRepository(Conn *sql.DB) domain.MainServiceRepository {
 func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.StoreMasterDataService, tx *sql.Tx) (ID int64, err error) {
 	query := `
 	INSERT main_services SET opd_name=?, government_affair=?, sub_government_affair=?, service_form=?, 
-	service_type=?, sub_service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
+	service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
 	sub_service_spbe=?, operational_status=?, technical=?, benefits=?, facilities=?, website=?, links=?, 
 	terms_and_condition=?, service_procedures=?, service_fee=?, operational_time=?, hotline_number=?, 
 	hotline_mail=?, location=?
@@ -36,7 +36,6 @@ func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.Store
 		&ms.Services.Information.SubGovernmentAffair,
 		&ms.Services.Information.ServiceForm,
 		&ms.Services.Information.ServiceType,
-		&ms.Services.Information.SubServiceType,
 		&ms.Services.Information.ServiceName,
 		&ms.Services.Information.ProgramName,
 		&ms.Services.Information.Description,
@@ -70,7 +69,7 @@ func (m *mysqlMainServiceRepository) Store(ctx context.Context, ms *domain.Store
 func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms *domain.StoreMasterDataService, tx *sql.Tx) (err error) {
 	query := `
 	UPDATE main_services SET government_affair=?, sub_government_affair=?, service_form=?, 
-	service_type=?, sub_service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
+	service_type=?, service_name=?, program_name=?, description=?, service_user=?, 
 	sub_service_spbe=?, operational_status=?, technical=?, benefits=?, facilities=?, website=?, links=?, 
 	terms_and_condition=?, service_procedures=?, service_fee=?, operational_time=?, hotline_number=?, 
 	hotline_mail=?, location=? WHERE id=?
@@ -86,7 +85,6 @@ func (m *mysqlMainServiceRepository) Update(ctx context.Context, msID int64, ms 
 		&ms.Services.Information.SubGovernmentAffair,
 		&ms.Services.Information.ServiceForm,
 		&ms.Services.Information.ServiceType,
-		&ms.Services.Information.SubServiceType,
 		&ms.Services.Information.ServiceName,
 		&ms.Services.Information.ProgramName,
 		&ms.Services.Information.Description,

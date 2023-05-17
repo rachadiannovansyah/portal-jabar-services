@@ -37,7 +37,7 @@ ON ms.opd_name = units.id
 WHERE deleted_at is NULL `
 
 var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service,
-ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.sub_service_type, ms.program_name,
+ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.program_name,
 ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, ms.website, ms.links, ms.terms_and_condition, ms.service_procedures,
 ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, ms.location,
 apl.status, apl.name, apl.features, apl.title, mds.application,
@@ -200,7 +200,6 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.MainService.SubGovernmentAffair,
 		&res.MainService.ServiceForm,
 		&res.MainService.ServiceType,
-		&res.MainService.SubServiceType,
 		&res.MainService.ProgramName,
 		&res.MainService.Description,
 		&res.MainService.SubServiceSpbe,
