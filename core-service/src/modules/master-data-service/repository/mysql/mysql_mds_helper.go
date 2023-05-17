@@ -20,7 +20,7 @@ func filterMdsQuery(params *domain.Request, binds *[]interface{}) string {
 
 	if params.Filters["status"] != "" {
 		*binds = append(*binds, params.Filters["status"])
-		query = fmt.Sprintf(`%s AND status = ?`, query)
+		query = fmt.Sprintf(`%s AND mds.status = ?`, query)
 	}
 
 	if v, ok := params.Filters["created_by"]; ok && v != "" {
