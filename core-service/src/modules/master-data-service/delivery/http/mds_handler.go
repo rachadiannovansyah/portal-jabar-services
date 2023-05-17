@@ -176,6 +176,7 @@ func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(res.MainService.Facilities, &detailRes.MainService.Facilities)
 	helpers.GetObjectFromString(res.MainService.TermsAndConditions, &detailRes.MainService.TermsAndConditions)
 	helpers.GetObjectFromString(res.MainService.ServiceProcedures, &detailRes.MainService.ServiceProcedures)
+	helpers.GetObjectFromString(res.MainService.ServiceFee, &detailRes.MainService.ServiceFee)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }
