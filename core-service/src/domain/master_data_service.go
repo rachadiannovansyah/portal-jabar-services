@@ -87,7 +87,7 @@ type StoreMasterDataService struct {
 		Email           string `json:"email"`
 		SocialMedia     []struct {
 			Name string `json:"name"`
-			Type string `json:"type" validate:"required,eq=GOOGLE_FORM|eq=|eq=GOOGLE_PLAYSTORE|eq=APP_STORE|eq=WEBSITE"`
+			Type string `json:"type" validate:"required,eq=GOOGLE_FORM|eq=|eq=GOOGLE_PLAYSTORE|eq=APP_STORE|eq=WEBSITE|EQ=TIKTOK"`
 			Link string `json:"link"`
 		} `json:"social_media"`
 	} `json:"additional_information" validate:"required"`
