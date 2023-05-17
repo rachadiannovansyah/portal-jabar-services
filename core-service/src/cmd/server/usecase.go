@@ -98,6 +98,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 			MsRepo:         r.MainServiceRepo,
 			ApRepo:         r.ApplicationRepo,
 			AiRepo:         r.AdditionalInfRepo,
+			UserRepo:       r.UserRepo,
 			Cfg:            cfg,
 			ContextTimeout: timeoutContext,
 		}),

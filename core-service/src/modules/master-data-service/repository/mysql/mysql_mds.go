@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/sirupsen/logrus"
 )
@@ -41,7 +42,7 @@ ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, m
 ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, ms.location,
 apl.status, apl.name, apl.features, apl.title, mds.application,
 aif.id, aif.responsible_name, aif.phone_number, aif.email, aif.social_media,
-mds.status, mds.updated_at, mds.created_at
+mds.status, mds.updated_at, mds.created_at, mds.created_by
 FROM masterdata_services mds
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
@@ -185,6 +186,7 @@ func (m *mysqlMdsRepository) rowsAffected(res sql.Result) (err error) {
 func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.MasterDataService, err error) {
 	query := querySelectJoinDetail + " AND mds.id = ? LIMIT 1"
 
+	createdByID := uuid.UUID{}
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
 		&res.ID,
 		&res.MainService.ServiceName,
@@ -225,9 +227,12 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.AdditionalInformation.Email,
 		&res.AdditionalInformation.SocialMedia,
 		&res.Status,
-		&res.CreatedAt,
 		&res.UpdatedAt,
+		&res.CreatedAt,
+		&createdByID,
 	)
+
+	res.CreatedBy = domain.User{ID: createdByID}
 
 	if err != nil {
 		return domain.MasterDataService{}, domain.ErrNotFound

@@ -143,13 +143,14 @@ func (h *MasterDataServiceHandler) Delete(c echo.Context) (err error) {
 // GetByID will get master data serviceby given id
 func (h *MasterDataServiceHandler) GetByID(c echo.Context) error {
 	idP, err := strconv.Atoi(c.Param("id"))
+	au := helpers.GetAuthenticatedUser(c)
+
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
 
 	id := int64(idP)
 	ctx := c.Request().Context()
-	au := helpers.GetAuthenticatedUser(c)
 
 	res, err := h.MdsUcase.GetByID(ctx, id)
 	if err != nil {
