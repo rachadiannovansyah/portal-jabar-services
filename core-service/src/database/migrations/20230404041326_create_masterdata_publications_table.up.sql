@@ -9,7 +9,7 @@ CREATE TABLE `masterdata_publications` (
     `keywords` varchar(255),
     `faq` json,
     `status` varchar(100),
-    `created_at` timestamp default null,
-    `updated_at` timestamp default null,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`mds_id`) REFERENCES `masterdata_services` (`id`)
 );
