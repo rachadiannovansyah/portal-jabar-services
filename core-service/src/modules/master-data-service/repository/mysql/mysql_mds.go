@@ -262,15 +262,21 @@ func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMaster
 	return
 }
 
-func (m *mysqlMdsRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
-	query := `
+func (m *mysqlMdsRepository) TabStatus(ctx context.Context, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+	queryTabs := `
 		SELECT mds.status, count(mds.status)
 		FROM masterdata_services mds
-		WHERE deleted_at is NULL
-		GROUP BY mds.status
+		LEFT JOIN users u
+		ON mds.created_by = u.id
+		WHERE mds.deleted_at is NULL
 	`
 
-	res, err = m.fetchTabs(ctx, query)
+	binds := make([]interface{}, 0)
+	query := filterMdsQuery(params, &binds)
+
+	query = queryTabs + query + " GROUP BY mds.status"
+
+	res, err = m.fetchTabs(ctx, query, binds...)
 
 	if err != nil {
 		return []domain.TabStatusResponse{}, err
