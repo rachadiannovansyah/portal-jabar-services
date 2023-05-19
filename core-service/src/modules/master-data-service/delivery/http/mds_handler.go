@@ -211,8 +211,10 @@ func (h *MasterDataServiceHandler) Update(c echo.Context) (err error) {
 
 func (h *MasterDataServiceHandler) TabStatus(c echo.Context) (err error) {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+	params := helpers.GetRequestParams(c)
 
-	tabs, err := h.MdsUcase.TabStatus(ctx)
+	tabs, err := h.MdsUcase.TabStatus(ctx, au, &params)
 	if err != nil {
 		return
 	}

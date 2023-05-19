@@ -18,8 +18,8 @@ func filterMdsQuery(params *domain.Request, binds *[]interface{}) string {
 		query = fmt.Sprintf(`%s AND ms.service_name LIKE ?`, query)
 	}
 
-	if params.Filters["status"] != "" {
-		*binds = append(*binds, params.Filters["status"])
+	if v, ok := params.Filters["status"]; ok && v != "" {
+		*binds = append(*binds, v)
 		query = fmt.Sprintf(`%s AND mds.status = ?`, query)
 	}
 
