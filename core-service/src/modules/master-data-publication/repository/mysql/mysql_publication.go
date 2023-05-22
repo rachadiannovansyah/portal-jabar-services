@@ -19,7 +19,7 @@ func NewMysqlMasterDataPublicationRepository(Conn *sql.DB) domain.MasterDataPubl
 	return &mysqlMdpRepository{Conn}
 }
 
-var querySelectJoin = `SELECT pub.id, pub.mds_id, ms.service_name, units.name, ms.service_user, ms.technical, pub.updated_at, pub.status
+var querySelectJoin = `SELECT pub.id, pub.mds_id, ms.service_name, units.name, ms.service_user, ms.technical, pub.updated_at, pub.status, pub.created_by
 FROM masterdata_publications pub
 LEFT JOIN masterdata_services mds
 ON pub.mds_id = mds.id
@@ -27,6 +27,8 @@ LEFT JOIN main_services ms
 ON mds.main_service = ms.id
 LEFT JOIN units
 ON ms.opd_name = units.id
+LEFT JOIN users u
+ON mds.created_by = u.id
 WHERE 1=1`
 
 var querySelectCount = `SELECT COUNT(1) FROM masterdata_publications pub LEFT JOIN masterdata_services mds
@@ -34,7 +36,9 @@ ON pub.mds_id = mds.id
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
 LEFT JOIN units
-ON ms.opd_name = units.id WHERE 1=1 `
+ON ms.opd_name = units.id
+LEFT JOIN users u
+ON pub.created_by = u.id WHERE 1=1 `
 
 var querySelectJoinDetail = `SELECT mdp.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
 mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
@@ -53,7 +57,7 @@ on ms.opd_name = unit.id
 WHERE 1=1`
 
 func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMasterDataPublication) (err error) {
-	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?`
+	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -71,6 +75,7 @@ func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMaster
 		body.Status,
 		time.Now(),
 		time.Now(),
+		body.CreatedBy.ID.String(),
 	)
 
 	if err != nil {
@@ -106,6 +111,7 @@ func (m *mysqlMdpRepository) fetch(ctx context.Context, query string, args ...in
 			&pub.DefaultInformation.Technical,
 			&pub.UpdatedAt,
 			&pub.Status,
+			&pub.CreatedBy.ID,
 		)
 
 		if err != nil {

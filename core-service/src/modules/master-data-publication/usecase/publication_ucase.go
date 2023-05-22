@@ -7,6 +7,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 type masterDataPublicationUsecase struct {
@@ -81,6 +82,8 @@ func (n *masterDataPublicationUsecase) Fetch(c context.Context, au *domain.JwtCu
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	params = filterByRoleAcces(au, params)
+
 	res, total, err = n.mdpRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, 0, err
@@ -110,6 +113,21 @@ func (u *masterDataPublicationUsecase) GetByID(c context.Context, id int64) (res
 	}
 
 	return
+}
+
+func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *domain.Request {
+
+	if params.Filters == nil {
+		params.Filters = map[string]interface{}{}
+	}
+
+	if au.Role.ID == domain.RoleContributor {
+		params.Filters["created_by"] = au.ID
+	} else if helpers.IsAdminOPD(au) {
+		params.Filters["unit_id"] = au.Unit.ID
+	}
+
+	return params
 }
 
 func (n *masterDataPublicationUsecase) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {

@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
+	"github.com/mitchellh/mapstructure"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -42,6 +43,11 @@ func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
 	if err != nil {
 		return
 	}
+
+	au := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &au)
+
+	body.CreatedBy.ID = au.ID
 
 	err = h.MdpUcase.Store(ctx, body)
 	if err != nil {
