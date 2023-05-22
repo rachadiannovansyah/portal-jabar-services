@@ -34,7 +34,9 @@ LEFT JOIN main_services ms
 ON mds.main_service = ms.id
 LEFT JOIN units
 ON ms.opd_name = units.id
-WHERE deleted_at is NULL `
+LEFT JOIN users u
+ON mds.created_by = u.id
+WHERE mds.deleted_at is NULL `
 
 var querySelectJoinDetail = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.operational_status, mds.updated_at, mds.status, mds.main_service,
 ms.government_affair, ms.sub_government_affair, ms.service_form, ms.service_type, ms.program_name,
