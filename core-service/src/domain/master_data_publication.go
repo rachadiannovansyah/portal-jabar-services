@@ -12,6 +12,7 @@ type MasterDataPublication struct {
 	ServiceDescription    ServiceDescription     `json:"service_description"`
 	AdditionalInformation PublicationInformation `json:"additional_information"`
 	Status                string                 `json:"status"`
+	CreatedBy             User                   `json:"created_by"`
 	UpdatedAt             time.Time              `json:"updated_at"`
 	CreatedAt             time.Time              `json:"created_at"`
 }
@@ -83,6 +84,7 @@ type StoreMasterDataPublication struct {
 		FAQ      PublicationFAQ `json:"faq"`
 	} `json:"additional_information" validate:"required"`
 	Status    string    `json:"status" validate:"required,eq=PUBLISH|eq=ARCHIVE"`
+	CreatedBy User      `json:"created_by"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

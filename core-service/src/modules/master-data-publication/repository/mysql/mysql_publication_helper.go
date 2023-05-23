@@ -15,12 +15,22 @@ func filterPublicationQuery(params *domain.Request, binds *[]interface{}) string
 
 	if params.Keyword != "" {
 		*binds = append(*binds, `%`+params.Keyword+`%`)
-		query = fmt.Sprintf(`%s AND ms.service_name LIKE ?`, query)
+		query = fmt.Sprintf(`%s AND pub.portal_category LIKE ?`, query)
 	}
 
-	if params.Filters["status"] != "" {
-		*binds = append(*binds, params.Filters["status"])
+	if v, ok := params.Filters["status"]; ok && v != "" {
+		*binds = append(*binds, v)
 		query = fmt.Sprintf(`%s AND pub.status = ?`, query)
+	}
+
+	if v, ok := params.Filters["created_by"]; ok && v != "" {
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND pub.created_by = ?`, query)
+	}
+
+	if v, ok := params.Filters["unit_id"]; ok && v != "" {
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND u.unit_id = ?`, query)
 	}
 
 	return query
