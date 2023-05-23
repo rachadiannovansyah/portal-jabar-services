@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
 type MasterDataPublication struct {
@@ -151,6 +153,16 @@ type DetailServiceDescription struct {
 type DetailAdditionalInformation struct {
 	Keywords []string       `json:"keywords"`
 	FAQ      PublicationFAQ `json:"faq"`
+}
+
+type MasterDataPublicationUsecaseArgs struct {
+	PubRepo        MasterDataPublicationRepository
+	MdsRepo        MasterDataServiceRepository
+	MsRepo         MainServiceRepository
+	ApRepo         ApplicationRepository
+	UserRepo       UserRepository
+	Cfg            *config.Config
+	ContextTimeout time.Duration
 }
 
 type MasterDataPublicationUsecase interface {

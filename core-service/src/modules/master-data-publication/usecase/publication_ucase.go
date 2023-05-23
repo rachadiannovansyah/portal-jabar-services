@@ -21,15 +21,15 @@ type masterDataPublicationUsecase struct {
 }
 
 // NewMasterDataPublicationUsecase creates a new master-data-publication usecase
-func NewMasterDataPublicationUsecase(mdpRepo domain.MasterDataPublicationRepository, mdsRepo domain.MasterDataServiceRepository, msRepo domain.MainServiceRepository, apRepo domain.ApplicationRepository, userRepo domain.UserRepository, cfg *config.Config, contextTimeout time.Duration) domain.MasterDataPublicationUsecase {
+func NewMasterDataPublicationUsecase(pubArgs domain.MasterDataPublicationUsecaseArgs) domain.MasterDataPublicationUsecase {
 	return &masterDataPublicationUsecase{
-		mdpRepo:        mdpRepo,
-		mdsRepo:        mdsRepo,
-		msRepo:         msRepo,
-		apRepo:         apRepo,
-		userRepo:       userRepo,
-		cfg:            cfg,
-		contextTimeout: contextTimeout,
+		mdpRepo:        pubArgs.PubRepo,
+		mdsRepo:        pubArgs.MdsRepo,
+		msRepo:         pubArgs.MsRepo,
+		apRepo:         pubArgs.ApRepo,
+		userRepo:       pubArgs.UserRepo,
+		cfg:            pubArgs.Cfg,
+		contextTimeout: pubArgs.ContextTimeout,
 	}
 }
 
