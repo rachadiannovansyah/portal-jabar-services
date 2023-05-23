@@ -15,17 +15,19 @@ type masterDataPublicationUsecase struct {
 	mdsRepo        domain.MasterDataServiceRepository
 	msRepo         domain.MainServiceRepository
 	apRepo         domain.ApplicationRepository
+	userRepo       domain.UserRepository
 	cfg            *config.Config
 	contextTimeout time.Duration
 }
 
 // NewMasterDataPublicationUsecase creates a new master-data-publication usecase
-func NewMasterDataPublicationUsecase(mdpRepo domain.MasterDataPublicationRepository, mdsRepo domain.MasterDataServiceRepository, msRepo domain.MainServiceRepository, apRepo domain.ApplicationRepository, cfg *config.Config, contextTimeout time.Duration) domain.MasterDataPublicationUsecase {
+func NewMasterDataPublicationUsecase(mdpRepo domain.MasterDataPublicationRepository, mdsRepo domain.MasterDataServiceRepository, msRepo domain.MainServiceRepository, apRepo domain.ApplicationRepository, userRepo domain.UserRepository, cfg *config.Config, contextTimeout time.Duration) domain.MasterDataPublicationUsecase {
 	return &masterDataPublicationUsecase{
 		mdpRepo:        mdpRepo,
 		mdsRepo:        mdsRepo,
 		msRepo:         msRepo,
 		apRepo:         apRepo,
+		userRepo:       userRepo,
 		cfg:            cfg,
 		contextTimeout: contextTimeout,
 	}
@@ -111,6 +113,12 @@ func (u *masterDataPublicationUsecase) GetByID(c context.Context, id int64) (res
 	if err != nil {
 		return
 	}
+
+	resCreatedBy, err := u.userRepo.GetByID(ctx, res.CreatedBy.ID)
+	if err != nil {
+		return
+	}
+	res.CreatedBy = resCreatedBy
 
 	return
 }
