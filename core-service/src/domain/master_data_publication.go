@@ -170,7 +170,7 @@ type MasterDataPublicationUsecase interface {
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataPublication, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
-	TabStatus(context.Context) ([]TabStatusResponse, error)
+	TabStatus(ctx context.Context, au *JwtCustomClaims, params *Request) ([]TabStatusResponse, error)
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
 }
 
@@ -180,6 +180,6 @@ type MasterDataPublicationRepository interface {
 	Fetch(ctx context.Context, params *Request) (res []MasterDataPublication, total int64, err error)
 	Delete(ctx context.Context, id int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
-	TabStatus(context.Context) ([]TabStatusResponse, error)
+	TabStatus(ctx context.Context, params *Request) ([]TabStatusResponse, error)
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
 }
