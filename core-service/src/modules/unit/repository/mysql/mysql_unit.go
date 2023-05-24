@@ -69,11 +69,9 @@ func (m *mysqlUnitRepository) count(ctx context.Context, query string) (total in
 }
 
 func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.Unit, total int64, err error) {
-	var query string
-
-	if params.Keyword != "" {
-		query += ` AND name LIKE '%` + params.Keyword + `%' `
-	}
+	binds := make([]interface{}, 0)
+	query := filterUnitsQuery(params, &binds)
+	query += ` AND name != "Superadmin"` // excluded units superadmin to fetchs
 
 	if params.SortBy != "" {
 		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
