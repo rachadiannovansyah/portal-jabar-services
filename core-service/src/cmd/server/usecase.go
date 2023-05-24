@@ -102,6 +102,14 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 			Cfg:            cfg,
 			ContextTimeout: timeoutContext,
 		}),
-		MasterDataPublicationUsecase: _masterDataPublicationUcase.NewMasterDataPublicationUsecase(r.MasterDataPublicationRepo, r.MasterDataServiceRepo, r.MainServiceRepo, r.ApplicationRepo, cfg, timeoutContext),
+		MasterDataPublicationUsecase: _masterDataPublicationUcase.NewMasterDataPublicationUsecase(domain.MasterDataPublicationUsecaseArgs{
+			PubRepo:        r.MasterDataPublicationRepo,
+			MdsRepo:        r.MasterDataServiceRepo,
+			MsRepo:         r.MainServiceRepo,
+			ApRepo:         r.ApplicationRepo,
+			UserRepo:       r.UserRepo,
+			Cfg:            cfg,
+			ContextTimeout: timeoutContext,
+		}),
 	}
 }

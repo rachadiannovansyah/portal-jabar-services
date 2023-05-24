@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
@@ -42,7 +43,7 @@ ON pub.created_by = u.id WHERE 1=1 `
 
 var querySelectJoinDetail = `SELECT mdp.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
 mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
-ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at
+ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at, mdp.created_by
 FROM masterdata_publications as mdp
 LEFT JOIN masterdata_services as mds
 ON mdp.mds_id = mds.id
@@ -196,6 +197,7 @@ func (m *mysqlMdpRepository) rowsAffected(res sql.Result) (err error) {
 func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.MasterDataPublication, err error) {
 	query := querySelectJoinDetail + " AND mdp.id = ? LIMIT 1"
 
+	createdByID := uuid.UUID{}
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
 		&res.ID, // include id for delete act
 		&res.DefaultInformation.OpdName,
@@ -232,7 +234,10 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.Status,
 		&res.CreatedAt,
 		&res.UpdatedAt,
+		&createdByID,
 	)
+
+	res.CreatedBy = domain.User{ID: createdByID}
 
 	if err != nil {
 		return domain.MasterDataPublication{}, domain.ErrNotFound

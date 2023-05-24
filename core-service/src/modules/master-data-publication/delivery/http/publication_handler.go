@@ -11,6 +11,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
@@ -140,6 +141,8 @@ func (h *MasterDataPublicationHandler) Delete(c echo.Context) (err error) {
 // GetByID will get master data publication by given id
 func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
 	idP, err := strconv.Atoi(c.Param("id"))
+	au := helpers.GetAuthenticatedUser(c)
+
 	if err != nil {
 		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
 	}
@@ -150,6 +153,10 @@ func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
 	res, err := h.MdpUcase.GetByID(ctx, id)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	if !policies.AllowPublicationAccess(au, res) {
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: domain.ErrForbidden.Error()})
 	}
 
 	// represent response to the client
