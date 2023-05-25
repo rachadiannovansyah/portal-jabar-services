@@ -246,15 +246,21 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 	return
 }
 
-func (m *mysqlMdpRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
-	query := `
-		SELECT mdp.status, count(mdp.status)
-		FROM masterdata_publications mdp
+func (m *mysqlMdpRepository) TabStatus(ctx context.Context, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+	queryTabs := `
+		SELECT pub.status, count(pub.status)
+		FROM masterdata_publications pub
+		LEFT JOIN users u
+		ON pub.created_by = u.id
 		WHERE 1=1
-		GROUP BY mdp.status
 	`
 
-	res, err = m.fetchTabs(ctx, query)
+	binds := make([]interface{}, 0)
+	query := filterPublicationQuery(params, &binds)
+
+	query = queryTabs + query + " GROUP BY pub.status"
+
+	res, err = m.fetchTabs(ctx, query, binds...)
 
 	if err != nil {
 		return []domain.TabStatusResponse{}, err

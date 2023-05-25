@@ -184,8 +184,10 @@ func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
 
 func (h *MasterDataPublicationHandler) TabStatus(c echo.Context) (err error) {
 	ctx := c.Request().Context()
+	au := helpers.GetAuthenticatedUser(c)
+	params := helpers.GetRequestParams(c)
 
-	tabs, err := h.MdpUcase.TabStatus(ctx)
+	tabs, err := h.MdpUcase.TabStatus(ctx, au, &params)
 	if err != nil {
 		return
 	}
