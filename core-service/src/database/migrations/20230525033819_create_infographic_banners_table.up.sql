@@ -1,7 +1,7 @@
 CREATE TABLE infographic_banners (
     id int(10) unsigned NOT NULL AUTO_INCREMENT,
     title varchar(255) NOT NULL,
-    order int(10) DEFAULT NULL,
+    sequence int(10) DEFAULT NULL,
     image json DEFAULT NULL,
     link varchar(255) DEFAULT NULL,
     is_active tinyint(1) DEFAULT 1,
