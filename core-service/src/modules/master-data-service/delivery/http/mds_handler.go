@@ -229,8 +229,9 @@ func (h *MasterDataServiceHandler) Archive(c echo.Context) error {
 	params.Filters = map[string]interface{}{
 		"status": c.QueryParam("status"),
 	}
+	au := helpers.GetAuthenticatedUser(c)
 
-	data, err := h.MdsUcase.Archive(ctx, &params)
+	data, err := h.MdsUcase.Archive(ctx, au, &params)
 	if err != nil {
 		return err
 	}

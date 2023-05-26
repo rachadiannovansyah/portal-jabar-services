@@ -204,12 +204,14 @@ func (n *masterDataServiceUsecase) TabStatus(ctx context.Context, au *domain.Jwt
 	return
 }
 
-func (n *masterDataServiceUsecase) Archive(c context.Context, params *domain.Request) (
+func (n *masterDataServiceUsecase) Archive(c context.Context, au *domain.JwtCustomClaims, params *domain.Request) (
 	res []domain.MasterDataService, err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	params = filterByRoleAcces(au, params)
 	params.Filters["status"] = domain.ArchiveStatus
+
 	res, _, err = n.mdsRepo.Fetch(ctx, params)
 	if err != nil {
 		return nil, err
