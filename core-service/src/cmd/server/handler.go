@@ -28,6 +28,7 @@ import (
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_governmentAffairDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/delivery/http"
+	_infographicBannerDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/infographic-banner/delivery/http"
 	_informationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/information/delivery/http"
 	_masterDataPublicationDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-publication/delivery/http"
 	_masterDataServiceDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/master-data-service/delivery/http"
@@ -104,6 +105,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, p, u.PublicServiceUsecase)
 	_visitorHttpDelivery.NewCounterVisitorHandler(p, u.VisitorUsecase)
 	_popUpBannerDelivery.NewPopUpBannerHandler(r, u.PopUpBannerUsecase, apm)
+	_infographicBannerDelivery.NewInfographicBannerHandler(r, u.InfographicBannerUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
 	_spbeRalsDelivery.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
