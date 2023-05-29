@@ -42,3 +42,8 @@ func (i *infographicBannerUsecase) Store(c context.Context, body *domain.StoreIn
 
 	return
 }
+
+func (i *infographicBannerUsecase) Fetch(c context.Context, params domain.Request) (res []domain.InfographicBanner, total int64, err error) {
+	res, total, err = i.infographicBannerRepo.Fetch(c, params)
+	return
+}

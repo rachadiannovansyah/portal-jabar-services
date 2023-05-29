@@ -12,6 +12,9 @@ type infographicBannerRepository struct {
 	Conn *sql.DB
 }
 
+var querySelect = `SELECT id, title, sequence, link, is_active, image, created_at, updated_at FROM infographic_banners WHERE 1=1 `
+var querySelectTotal = `SELECT COUNT(1) FROM infographic_banners WHERE 1=1 `
+
 func NewMysqlInfographicBannerRepository(Conn *sql.DB) domain.InfographicBannerRepository {
 	return &infographicBannerRepository{Conn}
 }
@@ -42,7 +45,7 @@ func (m *infographicBannerRepository) Store(ctx context.Context, body *domain.St
 }
 
 func (m *infographicBannerRepository) GetLastSequence(ctx context.Context) (sequence int64) {
-	query := `SELECT sequence FROM infographic_banners where is_active = 1 order by sequence DESC`
+	query := `SELECT sequence FROM infographic_banners WHERE is_active = 1 order by sequence DESC`
 
 	_ = m.Conn.QueryRowContext(ctx, query).Scan(&sequence)
 
@@ -50,7 +53,7 @@ func (m *infographicBannerRepository) GetLastSequence(ctx context.Context) (sequ
 }
 
 func (m *infographicBannerRepository) SyncSequence(ctx context.Context, sequence int64, tx *sql.Tx) (err error) {
-	query := `SELECT id FROM infographic_banners where is_active = 1 order by sequence ASC`
+	query := `SELECT id FROM infographic_banners WHERE is_active = 1 order by sequence ASC`
 
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
@@ -72,8 +75,47 @@ func (m *infographicBannerRepository) SyncSequence(ctx context.Context, sequence
 	return
 }
 
+func (m *infographicBannerRepository) Fetch(ctx context.Context, params domain.Request) (result []domain.InfographicBanner, total int64, err error) {
+	binds := make([]interface{}, 0)
+	queryFilter := filterInfographicBannerQuery(params, &binds)
+
+	querySelectTotal += queryFilter
+
+	if err = m.Conn.QueryRowContext(ctx, querySelectTotal, binds...).Scan(&total); err != nil {
+		return
+	}
+
+	binds = append(binds, params.Offset, params.PerPage)
+
+	querySelect += queryFilter + ` ORDER BY sequence ASC LIMIT ?,?`
+	rows, err := m.Conn.QueryContext(ctx, querySelect, binds...)
+	if err != nil {
+		return
+	}
+	result = make([]domain.InfographicBanner, 0)
+	for rows.Next() {
+		var item domain.InfographicBanner
+		err = rows.Scan(
+			&item.ID,
+			&item.Title,
+			&item.Sequence,
+			&item.Link,
+			&item.IsActive,
+			&item.Image,
+			&item.CreatedAt,
+			&item.UpdatedAt,
+		)
+		if err != nil {
+			return
+		}
+
+		result = append(result, item)
+	}
+	return
+}
+
 func (m *infographicBannerRepository) UpdateSequence(ctx context.Context, ID int64, sequence int8, tx *sql.Tx) (err error) {
-	query := `UPDATE infographic_banners SET sequence=? where id=?`
+	query := `UPDATE infographic_banners SET sequence=? WHERE id=?`
 
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
