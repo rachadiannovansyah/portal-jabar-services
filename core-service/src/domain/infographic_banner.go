@@ -41,6 +41,7 @@ type InfographicBannerResponse struct {
 type InfographicBannerUsecase interface {
 	Store(ctx context.Context, body *StoreInfographicBanner) (err error)
 	Fetch(ctx context.Context, params Request) (res []InfographicBanner, total int64, err error)
+	Delete(ctx context.Context, ID int64) (err error)
 }
 
 type InfographicBannerRepository interface {
@@ -49,4 +50,6 @@ type InfographicBannerRepository interface {
 	Store(ctx context.Context, body *StoreInfographicBanner, tx *sql.Tx) (err error)
 	GetLastSequence(ctx context.Context) (count int64)
 	SyncSequence(ctx context.Context, sequence int64, tx *sql.Tx) (err error)
+	Delete(ctx context.Context, ID int64, tx *sql.Tx) (err error)
+	GetByID(ctx context.Context, ID int64, tx *sql.Tx) (res InfographicBanner, err error)
 }

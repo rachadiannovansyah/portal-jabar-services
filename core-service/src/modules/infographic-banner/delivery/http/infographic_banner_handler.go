@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -23,6 +24,7 @@ func NewInfographicBannerHandler(r *echo.Group, ucase domain.InfographicBannerUs
 
 	r.POST("/infographic-banners", handler.Store)
 	r.GET("/infographic-banners", handler.Fetch)
+	r.DELETE("/infographic-banners/:id", handler.Delete)
 }
 
 func (h *infographicBannerHandler) Store(c echo.Context) (err error) {
@@ -80,6 +82,24 @@ func (h *infographicBannerHandler) Fetch(c echo.Context) (err error) {
 	res := helpers.Paginate(c, list, total, params)
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func (h *infographicBannerHandler) Delete(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.ResponseError{Message: domain.ErrNotFound.Error()})
+	}
+
+	ID := int64(id)
+	ctx := c.Request().Context()
+
+	if err = h.IUsecase.Delete(ctx, ID); err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, domain.MessageResponse{
+		Message: "Successfully deleted.",
+	})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {

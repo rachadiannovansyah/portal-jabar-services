@@ -44,6 +44,33 @@ func (i *infographicBannerUsecase) Store(c context.Context, body *domain.StoreIn
 }
 
 func (i *infographicBannerUsecase) Fetch(c context.Context, params domain.Request) (res []domain.InfographicBanner, total int64, err error) {
-	res, total, err = i.infographicBannerRepo.Fetch(c, params)
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	res, total, err = i.infographicBannerRepo.Fetch(ctx, params)
+	return
+}
+
+func (i *infographicBannerUsecase) Delete(c context.Context, ID int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	tx, _ := i.infographicBannerRepo.GetTx(ctx)
+
+	_, err = i.infographicBannerRepo.GetByID(ctx, ID, tx)
+	if err != nil {
+		return
+	}
+
+	if err = i.infographicBannerRepo.Delete(ctx, ID, tx); err != nil {
+		return
+	}
+
+	if err = i.infographicBannerRepo.SyncSequence(ctx, 1, tx); err != nil {
+		return
+	}
+
+	tx.Commit()
+
 	return
 }

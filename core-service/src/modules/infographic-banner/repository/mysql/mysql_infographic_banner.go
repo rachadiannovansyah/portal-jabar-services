@@ -59,6 +59,7 @@ func (m *infographicBannerRepository) SyncSequence(ctx context.Context, sequence
 	if err != nil {
 		return
 	}
+	items := make([]domain.SyncSequence, 0)
 	for rows.Next() {
 		var ID int64
 		err = rows.Scan(&ID)
@@ -66,11 +67,19 @@ func (m *infographicBannerRepository) SyncSequence(ctx context.Context, sequence
 			return
 		}
 
-		err = m.UpdateSequence(ctx, ID, int8(sequence), tx)
+		items = append(items, domain.SyncSequence{
+			ID:       ID,
+			Sequence: int8(sequence),
+		})
+
+		sequence++
+	}
+
+	for _, item := range items {
+		err = m.UpdateSequence(ctx, item.ID, item.Sequence, tx)
 		if err != nil {
 			return
 		}
-		sequence++
 	}
 	return
 }
@@ -79,7 +88,7 @@ func (m *infographicBannerRepository) Fetch(ctx context.Context, params domain.R
 	binds := make([]interface{}, 0)
 	queryFilter := filterInfographicBannerQuery(params, &binds)
 
-	querySelectTotal += queryFilter
+	querySelectTotal := querySelectTotal + queryFilter
 
 	if err = m.Conn.QueryRowContext(ctx, querySelectTotal, binds...).Scan(&total); err != nil {
 		return
@@ -87,7 +96,7 @@ func (m *infographicBannerRepository) Fetch(ctx context.Context, params domain.R
 
 	binds = append(binds, params.Offset, params.PerPage)
 
-	querySelect += queryFilter + ` ORDER BY sequence ASC LIMIT ?,?`
+	querySelect := querySelect + queryFilter + ` ORDER BY sequence ASC LIMIT ?,?`
 	rows, err := m.Conn.QueryContext(ctx, querySelect, binds...)
 	if err != nil {
 		return
@@ -126,5 +135,39 @@ func (m *infographicBannerRepository) UpdateSequence(ctx context.Context, ID int
 		sequence,
 		ID,
 	)
+	return
+}
+
+func (m *infographicBannerRepository) Delete(ctx context.Context, ID int64, tx *sql.Tx) (err error) {
+	query := `DELETE FROM infographic_banners WHERE id = ?`
+
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx, ID)
+
+	return
+}
+
+func (m *infographicBannerRepository) GetByID(ctx context.Context, ID int64, tx *sql.Tx) (res domain.InfographicBanner, err error) {
+	query := querySelect + `AND id = ? LIMIT 1`
+
+	err = tx.QueryRowContext(ctx, query, ID).Scan(
+		&res.ID,
+		&res.Title,
+		&res.Sequence,
+		&res.Link,
+		&res.IsActive,
+		&res.Image,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	if err != nil {
+		err = domain.ErrNotFound
+	}
+
 	return
 }
