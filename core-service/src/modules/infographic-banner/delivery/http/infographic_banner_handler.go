@@ -8,6 +8,7 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
+	"github.com/jinzhu/copier"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,6 +26,7 @@ func NewInfographicBannerHandler(r *echo.Group, ucase domain.InfographicBannerUs
 	r.POST("/infographic-banners", handler.Store)
 	r.GET("/infographic-banners", handler.Fetch)
 	r.DELETE("/infographic-banners/:id", handler.Delete)
+	r.GET("/infographic-banners/:id", handler.GetByID)
 }
 
 func (h *infographicBannerHandler) Store(c echo.Context) (err error) {
@@ -100,6 +102,29 @@ func (h *infographicBannerHandler) Delete(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, domain.MessageResponse{
 		Message: "Successfully deleted.",
 	})
+}
+
+func (h *infographicBannerHandler) GetByID(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.ResponseError{Message: domain.ErrNotFound.Error()})
+	}
+
+	ID := int64(id)
+	ctx := c.Request().Context()
+
+	row, err := h.IUsecase.GetByID(ctx, ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	var res domain.InfographicBannerResponse
+
+	copier.Copy(&res, &row)
+
+	helpers.GetObjectFromString(row.Image, &res.Image)
+
+	return c.JSON(http.StatusOK, domain.ResultData{Data: res})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {

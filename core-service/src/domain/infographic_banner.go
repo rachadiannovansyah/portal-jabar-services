@@ -42,6 +42,7 @@ type InfographicBannerUsecase interface {
 	Store(ctx context.Context, body *StoreInfographicBanner) (err error)
 	Fetch(ctx context.Context, params Request) (res []InfographicBanner, total int64, err error)
 	Delete(ctx context.Context, ID int64) (err error)
+	GetByID(ctx context.Context, ID int64) (res InfographicBanner, err error)
 }
 
 type InfographicBannerRepository interface {

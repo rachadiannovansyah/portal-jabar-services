@@ -70,7 +70,23 @@ func (i *infographicBannerUsecase) Delete(c context.Context, ID int64) (err erro
 		return
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+
+	return
+}
+
+func (i *infographicBannerUsecase) GetByID(c context.Context, ID int64) (res domain.InfographicBanner, err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	tx, _ := i.infographicBannerRepo.GetTx(ctx)
+
+	res, err = i.infographicBannerRepo.GetByID(ctx, ID, tx)
+	if err != nil {
+		return
+	}
+
+	err = tx.Commit()
 
 	return
 }
