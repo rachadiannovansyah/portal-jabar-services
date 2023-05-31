@@ -90,3 +90,25 @@ func (i *infographicBannerUsecase) GetByID(c context.Context, ID int64) (res dom
 
 	return
 }
+
+func (i *infographicBannerUsecase) UpdateStatus(c context.Context, ID int64, body *domain.UpdateStatusInfographicBanner) (err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	tx, _ := i.infographicBannerRepo.GetTx(ctx)
+
+	if _, err = i.infographicBannerRepo.GetByID(ctx, ID, tx); err != nil {
+		return
+	}
+
+	if body.IsActive == 1 {
+		i.infographicBannerRepo.SyncSequence(ctx, 2, tx)
+		i.infographicBannerRepo.UpdateStatus(ctx, ID, body, tx)
+	} else {
+		i.infographicBannerRepo.UpdateStatus(ctx, ID, body, tx)
+		i.infographicBannerRepo.SyncSequence(ctx, 1, tx)
+	}
+
+	err = tx.Commit()
+	return
+}

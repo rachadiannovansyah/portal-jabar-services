@@ -96,7 +96,7 @@ func (m *infographicBannerRepository) Fetch(ctx context.Context, params domain.R
 
 	binds = append(binds, params.Offset, params.PerPage)
 
-	querySelect := querySelect + queryFilter + ` ORDER BY sequence ASC LIMIT ?,?`
+	querySelect := querySelect + queryFilter + ` ORDER BY is_active DESC, sequence ASC  LIMIT ?,?`
 	rows, err := m.Conn.QueryContext(ctx, querySelect, binds...)
 	if err != nil {
 		return
@@ -132,6 +132,24 @@ func (m *infographicBannerRepository) UpdateSequence(ctx context.Context, ID int
 	}
 
 	_, err = stmt.ExecContext(ctx,
+		sequence,
+		ID,
+	)
+	return
+}
+
+func (m *infographicBannerRepository) UpdateStatus(ctx context.Context, ID int64, body *domain.UpdateStatusInfographicBanner, tx *sql.Tx) (err error) {
+	query := `UPDATE infographic_banners SET is_active=?, sequence=? WHERE id=?`
+
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	sequence := body.IsActive
+
+	_, err = stmt.ExecContext(ctx,
+		body.IsActive,
 		sequence,
 		ID,
 	)

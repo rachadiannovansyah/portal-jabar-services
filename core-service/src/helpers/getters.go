@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -179,4 +180,29 @@ func GetInBind(binds *[]interface{}, arr []string) string {
 	bind += ")"
 
 	return bind
+}
+
+func GetMetaDataImage(link string) (meta domain.DetailMetaDataImage, err error) {
+	subStringsSlice := strings.Split(link, "/")
+	fileName := subStringsSlice[len(subStringsSlice)-1]
+
+	resp, err := http.Head(link)
+	if err != nil {
+		logrus.Error(err)
+		return domain.DetailMetaDataImage{}, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logrus.Error(err)
+		return domain.DetailMetaDataImage{}, err
+	}
+
+	size, _ := strconv.Atoi(resp.Header.Get("Content-Length"))
+	fileSize := int64(size)
+
+	meta.FileName = fileName
+	meta.FileDownloadUri = link
+	meta.Size = fileSize
+
+	return meta, err
 }
