@@ -57,9 +57,9 @@ func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
-func (m *mysqlUnitRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlUnitRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 
-	err = m.Conn.QueryRow(query).Scan(&total)
+	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -79,11 +79,13 @@ func (m *mysqlUnitRepository) Fetch(ctx context.Context, params *domain.Request)
 		query += ` ORDER BY created_at DESC `
 	}
 
-	total, _ = m.count(ctx, `SELECT COUNT(1) FROM units WHERE 1=1`+query)
+	total, _ = m.count(ctx, `SELECT COUNT(1) FROM units WHERE 1=1`+query, binds...)
 
 	query = querySelectUnit + query + ` LIMIT ?,? `
 
-	res, err = m.fetch(ctx, query, params.Offset, params.PerPage)
+	binds = append(binds, params.Offset, params.PerPage)
+
+	res, err = m.fetch(ctx, query, binds...)
 
 	if err != nil {
 		return nil, 0, err
