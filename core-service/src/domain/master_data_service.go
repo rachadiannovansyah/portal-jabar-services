@@ -194,8 +194,8 @@ type MainServiceDetail struct {
 
 type MdsServiceFee struct {
 	HasRange       int8   `json:"has_range"`
-	MinimunFee     int64  `json:"minimum_fee,omitempty"`
-	MaximumFee     int64  `json:"maximum_fee,omitempty"`
+	MinimunFee     int64  `json:"minimum_fee"`
+	MaximumFee     int64  `json:"maximum_fee"`
 	HasDescription int8   `json:"has_description"`
 	Description    string `json:"description"`
 }
