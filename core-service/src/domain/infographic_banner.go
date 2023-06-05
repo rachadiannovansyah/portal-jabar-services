@@ -54,6 +54,7 @@ type InfographicBannerUsecase interface {
 	GetByID(ctx context.Context, ID int64) (res InfographicBanner, err error)
 	UpdateStatus(ctx context.Context, ID int64, body *UpdateStatusInfographicBanner) (err error)
 	UpdateSequence(ctx context.Context, body *UpdateSequenceInfographicBanner) (err error)
+	Update(c context.Context, ID int64, body *StoreInfographicBanner) (err error)
 }
 
 type InfographicBannerRepository interface {
@@ -63,6 +64,7 @@ type InfographicBannerRepository interface {
 	GetLastSequence(ctx context.Context) (count int64)
 	SyncSequence(ctx context.Context, sequence int64, tx *sql.Tx) (err error)
 	UpdateSequence(ctx context.Context, ID int64, sequence int8, tx *sql.Tx) (err error)
+	Update(ctx context.Context, ID int64, body *StoreInfographicBanner, tx *sql.Tx) (err error)
 	UpdateStatus(ctx context.Context, ID int64, body *UpdateStatusInfographicBanner, tx *sql.Tx) (err error)
 	Delete(ctx context.Context, ID int64, tx *sql.Tx) (err error)
 	GetByID(ctx context.Context, ID int64, tx *sql.Tx) (res InfographicBanner, err error)

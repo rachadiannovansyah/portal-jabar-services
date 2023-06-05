@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -41,6 +42,24 @@ func (m *infographicBannerRepository) Store(ctx context.Context, body *domain.St
 		1,
 		body.Link,
 		helpers.GetStringFromObject(body.Image),
+	)
+
+	return
+}
+
+func (m *infographicBannerRepository) Update(ctx context.Context, ID int64, body *domain.StoreInfographicBanner, tx *sql.Tx) (err error) {
+	query := `UPDATE infographic_banners SET title=?, link=?, image=?, updated_at=? where id = ?`
+	stmt, err := tx.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		body.Title,
+		body.Link,
+		helpers.GetStringFromObject(body.Image),
+		time.Now(),
+		ID,
 	)
 
 	return
