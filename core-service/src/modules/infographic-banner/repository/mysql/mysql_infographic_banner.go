@@ -3,6 +3,8 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"fmt"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -184,7 +186,7 @@ func (m *infographicBannerRepository) GetByID(ctx context.Context, ID int64, tx 
 	)
 
 	if err != nil {
-		err = domain.ErrNotFound
+		err = errors.New(fmt.Sprintf("Your requested Item with ID %d is not found", ID))
 	}
 
 	return

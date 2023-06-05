@@ -112,3 +112,23 @@ func (i *infographicBannerUsecase) UpdateStatus(c context.Context, ID int64, bod
 	err = tx.Commit()
 	return
 }
+
+func (i *infographicBannerUsecase) UpdateSequence(c context.Context, body *domain.UpdateSequenceInfographicBanner) (err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	tx, _ := i.infographicBannerRepo.GetTx(ctx)
+
+	for _, item := range body.Sequences {
+		if _, err = i.infographicBannerRepo.GetByID(ctx, item.ID, tx); err != nil {
+			return
+		}
+
+		if err = i.infographicBannerRepo.UpdateSequence(ctx, item.ID, item.Sequence, tx); err != nil {
+			return
+		}
+	}
+
+	err = tx.Commit()
+	return
+}

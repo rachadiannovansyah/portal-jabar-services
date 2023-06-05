@@ -27,6 +27,7 @@ func NewInfographicBannerHandler(r *echo.Group, ucase domain.InfographicBannerUs
 	r.GET("/infographic-banners", handler.Fetch)
 	r.DELETE("/infographic-banners/:id", handler.Delete)
 	r.GET("/infographic-banners/:id", handler.GetByID)
+	r.PATCH("/infographic-banners/sequences", handler.UpdateSequence)
 	r.PATCH("/infographic-banners/:id/status", handler.UpdateStatus)
 }
 
@@ -104,6 +105,28 @@ func (h *infographicBannerHandler) UpdateStatus(c echo.Context) (err error) {
 	}
 
 	if err = h.IUsecase.UpdateStatus(ctx, ID, req); err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, domain.MessageResponse{
+		Message: "Successfully updated.",
+	})
+}
+
+func (h *infographicBannerHandler) UpdateSequence(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
+	req := new(domain.UpdateSequenceInfographicBanner)
+	if err = c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	var ok bool
+	if ok, err = isRequestValid(req); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	if err = h.IUsecase.UpdateSequence(ctx, req); err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 

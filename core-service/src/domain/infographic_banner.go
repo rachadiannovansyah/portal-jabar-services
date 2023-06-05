@@ -18,13 +18,17 @@ type InfographicBanner struct {
 }
 
 type SyncSequence struct {
-	ID       int64 `json:"id"`
-	Sequence int8  `json:"sequence"`
+	ID       int64 `json:"id" validate:"required"`
+	Sequence int8  `json:"sequence" validate:"required"`
 }
 type StoreInfographicBanner struct {
 	Title string      `json:"title" validate:"required,max=255"`
 	Link  string      `json:"link"`
 	Image ImageBanner `json:"image" validate:"required"`
+}
+
+type UpdateSequenceInfographicBanner struct {
+	Sequences []SyncSequence `json:"sequences" validate:"required"`
 }
 
 type UpdateStatusInfographicBanner struct {
@@ -49,6 +53,7 @@ type InfographicBannerUsecase interface {
 	Delete(ctx context.Context, ID int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res InfographicBanner, err error)
 	UpdateStatus(ctx context.Context, ID int64, body *UpdateStatusInfographicBanner) (err error)
+	UpdateSequence(ctx context.Context, body *UpdateSequenceInfographicBanner) (err error)
 }
 
 type InfographicBannerRepository interface {
