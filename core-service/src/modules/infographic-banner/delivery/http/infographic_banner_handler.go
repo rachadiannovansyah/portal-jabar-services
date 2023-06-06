@@ -205,6 +205,7 @@ func (h *infographicBannerHandler) GetByID(c echo.Context) (err error) {
 		Desktop: metaDesktop,
 		Mobile:  metaMobile,
 	}
+	res.IsActive = row.IsActive == 1
 
 	return c.JSON(http.StatusOK, domain.ResultData{Data: res})
 }
