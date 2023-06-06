@@ -255,4 +255,5 @@ type MasterDataServiceRepository interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
 	Update(context.Context, *StoreMasterDataService, *MasterDataServiceEntityID, *sql.Tx) (err error)
 	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
+	Archive(ctx context.Context, params *Request) (res []MasterDataService, err error)
 }

@@ -225,7 +225,7 @@ func (h *MasterDataServiceHandler) TabStatus(c echo.Context) (err error) {
 func (h *MasterDataServiceHandler) Archive(c echo.Context) error {
 
 	ctx := c.Request().Context()
-	params := helpers.GetRequestParams(c)
+	params := domain.Request{}
 	params.Filters = map[string]interface{}{
 		"status": c.QueryParam("status"),
 	}

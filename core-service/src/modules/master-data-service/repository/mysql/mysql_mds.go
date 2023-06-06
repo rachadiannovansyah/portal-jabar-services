@@ -311,3 +311,17 @@ func (m *mysqlMdsRepository) fetchTabs(ctx context.Context, query string, args .
 
 	return result, nil
 }
+
+func (m *mysqlMdsRepository) Archive(ctx context.Context, params *domain.Request) (res []domain.MasterDataService, err error) {
+	binds := make([]interface{}, 0)
+	query := filterMdsQuery(params, &binds)
+	query += ` ORDER BY mds.updated_at DESC`
+
+	query = querySelectJoin + query
+	res, err = m.fetch(ctx, query, binds...)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
