@@ -40,7 +40,7 @@ type ServiceDescription struct {
 	Images             NullString     `json:"images"`
 	TermsAndConditions NullString     `json:"terms_and_conditions"`
 	ServiceProcedures  NullString     `json:"service_procedures"`
-	ServiceFee         string         `json:"service_fee"`
+	ServiceFee         NullString     `json:"service_fee"`
 	OperationalTimes   NullString     `json:"operational_times"`
 	HotlineNumber      string         `json:"hotline_number"`
 	HotlineMail        string         `json:"hotline_mail"`
@@ -139,7 +139,7 @@ type DetailServiceDescription struct {
 	Images             []DetailMetaDataImage  `json:"images"`
 	TermsAndConditions MdsObjectCover         `json:"terms_and_conditions"`
 	ServiceProcedures  MdsObjectCover         `json:"service_procedures"`
-	ServiceFee         string                 `json:"service_fee"`
+	ServiceFee         MdsServiceFee          `json:"service_fee"`
 	OperationalTimes   []OperationalTimeMds   `json:"operational_times"`
 	HotlineNumber      string                 `json:"hotline_number"`
 	HotlineMail        string                 `json:"hotline_mail"`
