@@ -28,6 +28,7 @@ type DefaultInformation struct {
 	Description       string     `json:"description"`
 	ServiceUser       string     `json:"user"`
 	PortalCategory    string     `json:"portal_category"`
+	Logo              NullString `json:"logo"`
 	OperationalStatus string     `json:"operational_status"`
 	Technical         string     `json:"technical"`
 	Benefits          NullString `json:"benefits"`
@@ -67,11 +68,12 @@ type PublicationInformation struct {
 type StoreMasterDataPublication struct {
 	ID                 int64 `json:"id"`
 	DefaultInformation struct {
-		MdsID          int64     `json:"mds_id"`
-		PortalCategory string    `json:"portal_category"`
-		Slug           string    `json:"slug"`
-		Benefits       MdsObject `json:"benefits"`
-		Facilities     MdsObject `json:"facilities"`
+		MdsID          int64               `json:"mds_id"`
+		PortalCategory string              `json:"portal_category"`
+		Logo           DetailMetaDataImage `json:"logo"`
+		Slug           string              `json:"slug"`
+		Benefits       MdsObject           `json:"benefits"`
+		Facilities     MdsObject           `json:"facilities"`
 	} `json:"default_information" validate:"required"`
 	ServiceDescription struct {
 		Cover              CoverPublication       `json:"cover"`
@@ -120,18 +122,20 @@ type DetailPublicationResponse struct {
 }
 
 type DetailDefaultInformation struct {
-	OpdName           string    `json:"opd_name"`
-	ServiceForm       string    `json:"service_form"`
-	ServiceName       string    `json:"service_name"`
-	ProgramName       string    `json:"program_name"`
-	Description       string    `json:"description"`
-	ServiceUser       string    `json:"service_user"`
-	PortalCategory    string    `json:"portal_category"`
-	OperationalStatus string    `json:"operator_status"`
-	Technical         string    `json:"technical"`
-	Benefits          MdsObject `json:"benefits"`
-	Facilities        MdsObject `json:"facilities"`
-	Slug              string    `json:"slug"`
+	MdsID             int64               `json:"mds_id"`
+	OpdName           string              `json:"opd_name"`
+	ServiceForm       string              `json:"service_form"`
+	ServiceName       string              `json:"service_name"`
+	ProgramName       string              `json:"program_name"`
+	Description       string              `json:"description"`
+	ServiceUser       string              `json:"service_user"`
+	PortalCategory    string              `json:"portal_category"`
+	Logo              DetailMetaDataImage `json:"logo"`
+	OperationalStatus string              `json:"operator_status"`
+	Technical         string              `json:"technical"`
+	Benefits          MdsObject           `json:"benefits"`
+	Facilities        MdsObject           `json:"facilities"`
+	Slug              string              `json:"slug"`
 }
 
 type DetailServiceDescription struct {

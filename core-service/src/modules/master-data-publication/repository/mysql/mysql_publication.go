@@ -41,7 +41,7 @@ ON ms.opd_name = units.id
 LEFT JOIN users u
 ON pub.created_by = u.id WHERE 1=1 `
 
-var querySelectJoinDetail = `SELECT mdp.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
+var querySelectJoinDetail = `SELECT mdp.id, mds.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, mdp.logo, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
 mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
 ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at, mdp.created_by
 FROM masterdata_publications as mdp
@@ -58,7 +58,7 @@ on ms.opd_name = unit.id
 WHERE 1=1`
 
 func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMasterDataPublication) (err error) {
-	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?, created_by=?`
+	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, logo=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -67,6 +67,7 @@ func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMaster
 	_, err = stmt.ExecContext(ctx,
 		body.DefaultInformation.MdsID,
 		body.DefaultInformation.PortalCategory,
+		helpers.GetStringFromObject(body.DefaultInformation.Logo),
 		body.DefaultInformation.Slug,
 		helpers.GetStringFromObject(body.ServiceDescription.Cover),
 		helpers.GetStringFromObject(body.ServiceDescription.Images),
@@ -200,6 +201,7 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 	createdByID := uuid.UUID{}
 	err = m.Conn.QueryRowContext(ctx, query, id).Scan(
 		&res.ID, // include id for delete act
+		&res.DefaultInformation.MdsID,
 		&res.DefaultInformation.OpdName,
 		&res.DefaultInformation.ServiceForm,
 		&res.DefaultInformation.ServiceName,
@@ -207,6 +209,7 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.DefaultInformation.Description,
 		&res.DefaultInformation.ServiceUser,
 		&res.DefaultInformation.PortalCategory,
+		&res.DefaultInformation.Logo,
 		&res.DefaultInformation.OperationalStatus,
 		&res.DefaultInformation.Technical,
 		&res.DefaultInformation.Benefits,
@@ -295,7 +298,7 @@ func (m *mysqlMdpRepository) fetchTabs(ctx context.Context, query string, args .
 }
 
 func (m *mysqlMdpRepository) Update(ctx context.Context, body *domain.StoreMasterDataPublication, ID int64) (err error) {
-	query := `UPDATE masterdata_publications SET mds_id=?, portal_category=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?
+	query := `UPDATE masterdata_publications SET mds_id=?, portal_category=?, logo=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?
 		WHERE id=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -305,6 +308,7 @@ func (m *mysqlMdpRepository) Update(ctx context.Context, body *domain.StoreMaste
 	_, err = stmt.ExecContext(ctx,
 		body.DefaultInformation.MdsID,
 		body.DefaultInformation.PortalCategory,
+		helpers.GetStringFromObject(body.DefaultInformation.Logo),
 		body.DefaultInformation.Slug,
 		helpers.GetStringFromObject(body.ServiceDescription.Cover),
 		helpers.GetStringFromObject(body.ServiceDescription.Images),

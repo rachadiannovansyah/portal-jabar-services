@@ -178,6 +178,7 @@ func (h *MasterDataPublicationHandler) GetByID(c echo.Context) error {
 	helpers.GetObjectFromString(res.ServiceDescription.SocialMedia.String, &detailRes.ServiceDescription.SocialMedia)
 	helpers.GetObjectFromString(res.AdditionalInformation.Keywords.String, &detailRes.AdditionalInformation.Keywords)
 	helpers.GetObjectFromString(res.AdditionalInformation.FAQ.String, &detailRes.AdditionalInformation.FAQ)
+	helpers.GetObjectFromString(res.DefaultInformation.Logo.String, &detailRes.DefaultInformation.Logo)
 	helpers.GetObjectFromString(res.ServiceDescription.ServiceFee.String, &detailRes.ServiceDescription.ServiceFee)
 
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
