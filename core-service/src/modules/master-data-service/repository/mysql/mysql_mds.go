@@ -19,7 +19,7 @@ func NewMysqlMasterDataServiceRepository(Conn *sql.DB) domain.MasterDataServiceR
 	return &mysqlMdsRepository{Conn}
 }
 
-var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.technical, mds.updated_at, mds.status, mds.main_service, mds.created_by
+var querySelectJoin = `SELECT mds.id, ms.service_name, units.name, ms.service_user, ms.technical, mds.updated_at, mds.status, mds.has_publication, mds.main_service, mds.created_by
 FROM masterdata_services mds
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
@@ -44,7 +44,7 @@ ms.description, ms.sub_service_spbe, ms.technical, ms.benefits, ms.facilities, m
 ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, ms.location,
 apl.status, apl.name, apl.features, apl.title, mds.application,
 aif.id, aif.responsible_name, aif.phone_number, aif.email, aif.social_media,
-mds.status, mds.updated_at, mds.created_at, mds.created_by
+mds.status, mds.has_publication, mds.updated_at, mds.created_at, mds.created_by
 FROM masterdata_services mds
 LEFT JOIN main_services ms
 ON mds.main_service = ms.id
@@ -105,6 +105,7 @@ func (m *mysqlMdsRepository) fetch(ctx context.Context, query string, args ...in
 			&mds.MainService.Technical,
 			&mds.UpdatedAt,
 			&mds.Status,
+			&mds.HasPublication,
 			&mds.MainService.ID,
 			&mds.CreatedBy.ID,
 		)
@@ -228,6 +229,7 @@ func (m *mysqlMdsRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.AdditionalInformation.Email,
 		&res.AdditionalInformation.SocialMedia,
 		&res.Status,
+		&res.HasPublication,
 		&res.UpdatedAt,
 		&res.CreatedAt,
 		&createdByID,

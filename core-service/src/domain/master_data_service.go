@@ -18,19 +18,21 @@ type MasterDataService struct {
 	Application           Application           `json:"application"`
 	AdditionalInformation AdditionalInformation `json:"additional_information"`
 	Status                string                `json:"status"`
+	HasPublication        int8                  `json:"has_publication"`
 	CreatedBy             User                  `json:"created_by"`
 	UpdatedAt             time.Time             `json:"updated_at"`
 	CreatedAt             time.Time             `json:"created_at"`
 }
 
 type ListMasterDataResponse struct {
-	ID          int64     `json:"id"`
-	ServiceName string    `json:"service_name"`
-	OpdName     string    `json:"opd_name"`
-	ServiceUser string    `json:"service_user"`
-	Technical   string    `json:"technical"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	Status      string    `json:"status"`
+	ID             int64     `json:"id"`
+	ServiceName    string    `json:"service_name"`
+	OpdName        string    `json:"opd_name"`
+	ServiceUser    string    `json:"service_user"`
+	Technical      string    `json:"technical"`
+	UpdatedAt      time.Time `json:"updated_at"`
+	Status         string    `json:"status"`
+	HasPublication int8      `json:"has_publication"`
 }
 
 type StoreMasterDataService struct {
@@ -135,6 +137,7 @@ type DetailMasterDataServiceResponse struct {
 	Application           ApplicationDetail           `json:"application"`
 	AdditionalInformation AdditionalInformationDetail `json:"additional_information"`
 	Status                string                      `json:"status"`
+	HasPublication        int8                        `json:"has_publication"`
 	UpdatedAt             time.Time                   `json:"updated_at"`
 	CreatedAt             time.Time                   `json:"created_at"`
 }
