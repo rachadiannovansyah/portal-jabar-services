@@ -8,8 +8,8 @@ import (
 )
 
 // NewExternalHandler will initialize the event endpoint
-func NewExternalHandler(e *echo.Group, r *echo.Group) {
-	r.GET("/public/link-checker", CheckLinkHandler)
+func NewExternalHandler(p *echo.Group) {
+	p.GET("/link-checker", CheckLinkHandler)
 }
 
 // Fetch will get events data

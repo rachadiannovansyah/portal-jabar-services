@@ -113,7 +113,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_uptdCabdinDelivery.NewUptdCabdinHandler(r, u.UptdCabdinUsecase, apm)
 	_masterDataServiceDelivery.NewMasterDataServiceHandler(r, u.MasterDataServiceUsecase, apm)
 	_masterDataPublicationDelivery.NewMasterDataPublicationHandler(r, u.MasterDataPublicationUsecase, apm)
-	_checkerHttpDelivery.NewExternalHandler(v1, r)
+	_checkerHttpDelivery.NewExternalHandler(p)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
