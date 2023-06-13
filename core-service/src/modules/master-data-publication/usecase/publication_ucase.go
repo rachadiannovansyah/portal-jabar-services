@@ -102,7 +102,18 @@ func (u *masterDataPublicationUsecase) Delete(c context.Context, id int64) (err 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
+	// get publication data
+	pub, err := u.mdpRepo.GetByID(ctx, id)
+	if err != nil {
+		return
+	}
+
 	if err = u.mdpRepo.Delete(ctx, id); err != nil {
+		return
+	}
+
+	// disabled has publication linked flag
+	if err = u.mdsRepo.UpdateHasPublication(ctx, pub.DefaultInformation.MdsID, 0); err != nil {
 		return
 	}
 
