@@ -344,7 +344,7 @@ func (m *mysqlMdsRepository) CheckHasPublication(ctx context.Context, ID int64) 
 }
 
 func (m *mysqlMdsRepository) UpdateHasPublication(ctx context.Context, ID int64, HasPublication int8) (err error) {
-	query := "UPDATE masterdata_services SET has_publication = ? WHERE id = ?"
+	query := "UPDATE masterdata_services SET has_publication = ?, updated_at = ? WHERE id = ?"
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -352,6 +352,7 @@ func (m *mysqlMdsRepository) UpdateHasPublication(ctx context.Context, ID int64,
 
 	_, err = stmt.ExecContext(ctx,
 		HasPublication,
+		time.Now(),
 		ID,
 	)
 
