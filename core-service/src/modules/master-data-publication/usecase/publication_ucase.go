@@ -71,6 +71,10 @@ func (n *masterDataPublicationUsecase) Store(ctx context.Context, body *domain.S
 		return
 	}
 
+	if err = n.mdsRepo.UpdateHasPublication(ctx, body.DefaultInformation.MdsID, 1); err != nil {
+		return
+	}
+
 	// transaction commit
 	if err = tx.Commit(); err != nil {
 		return

@@ -260,4 +260,5 @@ type MasterDataServiceRepository interface {
 	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
 	Archive(ctx context.Context, params *Request) (res []MasterDataService, err error)
 	CheckHasPublication(ctx context.Context, ID int64) (res MasterDataService, err error)
+	UpdateHasPublication(ctx context.Context, ID int64, HasPublication int8) (err error)
 }
