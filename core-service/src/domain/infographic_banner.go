@@ -32,7 +32,7 @@ type UpdateSequenceInfographicBanner struct {
 }
 
 type UpdateStatusInfographicBanner struct {
-	IsActive int8 `json:"is_active" validate:"required,eq=1|eq=0"`
+	IsActive *int8 `json:"is_active" validate:"required,eq=1|eq=0"`
 }
 
 type InfographicBannerResponse struct {

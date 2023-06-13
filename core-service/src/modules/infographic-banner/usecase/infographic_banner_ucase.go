@@ -101,7 +101,7 @@ func (i *infographicBannerUsecase) UpdateStatus(c context.Context, ID int64, bod
 		return
 	}
 
-	if body.IsActive == 1 {
+	if *body.IsActive == 1 {
 		i.infographicBannerRepo.SyncSequence(ctx, 2, tx)
 		i.infographicBannerRepo.UpdateStatus(ctx, ID, body, tx)
 	} else {
