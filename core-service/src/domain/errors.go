@@ -19,6 +19,8 @@ var (
 	ErrUserIsNotActive = errors.New("Your account is not active")
 	// Forbidden
 	ErrForbidden = errors.New("You are not authorized to access this resource")
+	// Has Publication
+	ErrHasPublication = errors.New("Your requested master data is already used on publication")
 )
 
 type ErrResponse struct {

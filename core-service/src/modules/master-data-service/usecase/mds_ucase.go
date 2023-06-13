@@ -116,7 +116,13 @@ func (u *masterDataServiceUsecase) Delete(c context.Context, id int64) (err erro
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	if err = u.mdsRepo.Delete(ctx, id); err != nil {
+	// check deleteable mds
+	delMds, err := u.mdsRepo.CheckHasPublication(ctx, id)
+	if err != nil {
+		return
+	}
+
+	if err = u.mdsRepo.Delete(ctx, delMds.ID); err != nil {
 		return
 	}
 

@@ -327,3 +327,18 @@ func (m *mysqlMdsRepository) Archive(ctx context.Context, params *domain.Request
 
 	return
 }
+
+func (m *mysqlMdsRepository) CheckHasPublication(ctx context.Context, ID int64) (res domain.MasterDataService, err error) {
+	query := "SELECT id, has_publication FROM masterdata_services WHERE has_publication != 1 AND id = ?"
+
+	err = m.Conn.QueryRowContext(ctx, query, ID).Scan(
+		&res.ID,
+		&res.HasPublication,
+	)
+
+	if err != nil {
+		return domain.MasterDataService{}, domain.ErrHasPublication
+	}
+
+	return
+}

@@ -135,7 +135,7 @@ func (h *MasterDataServiceHandler) Delete(c echo.Context) (err error) {
 
 	err = h.MdsUcase.Delete(ctx, id)
 	if err != nil {
-		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusForbidden, helpers.ResponseError{Message: err.Error()})
 	}
 
 	return c.NoContent(http.StatusNoContent)
