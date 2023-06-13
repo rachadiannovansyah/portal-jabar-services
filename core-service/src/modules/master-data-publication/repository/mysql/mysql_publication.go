@@ -41,7 +41,7 @@ ON ms.opd_name = units.id
 LEFT JOIN users u
 ON pub.created_by = u.id WHERE 1=1 `
 
-var querySelectJoinDetail = `SELECT mdp.id, mds.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, mdp.logo, ms.operational_status, ms.technical, ms.benefits, ms.facilities, mdp.slug,
+var querySelectJoinDetail = `SELECT mdp.id, mds.id, unit.name, ms.service_form, ms.service_name, ms.program_name, ms.description, ms.service_user, mdp.portal_category, mdp.logo, ms.operational_status, ms.technical, ms.benefits, ms.facilities, ms.website, mdp.slug,
 mdp.cover, mdp.images, ms.terms_and_condition, ms.service_procedures, ms.service_fee, ms.operational_time, ms.hotline_number, ms.hotline_mail, mdp.infographics,
 ms.location, ap.ID, ap.name, ap.status, ap.features, ap.title, ms.links, aif.social_media, mdp.keywords, mdp.faq, mdp.status, mdp.created_at, mdp.updated_at, mdp.created_by
 FROM masterdata_publications as mdp
@@ -214,6 +214,7 @@ func (m *mysqlMdpRepository) GetByID(ctx context.Context, id int64) (res domain.
 		&res.DefaultInformation.Technical,
 		&res.DefaultInformation.Benefits,
 		&res.DefaultInformation.Facilities,
+		&res.DefaultInformation.Website,
 		&res.DefaultInformation.Slug,
 		&res.ServiceDescription.Cover,
 		&res.ServiceDescription.Images,

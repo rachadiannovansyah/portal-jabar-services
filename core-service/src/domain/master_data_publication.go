@@ -33,6 +33,7 @@ type DefaultInformation struct {
 	Technical         string     `json:"technical"`
 	Benefits          NullString `json:"benefits"`
 	Facilities        NullString `json:"facilities"`
+	Website           string     `json:"website"`
 	Slug              string     `json:"slug"`
 }
 
@@ -135,6 +136,7 @@ type DetailDefaultInformation struct {
 	Technical         string              `json:"technical"`
 	Benefits          MdsObject           `json:"benefits"`
 	Facilities        MdsObject           `json:"facilities"`
+	Website           string              `json:"website"`
 	Slug              string              `json:"slug"`
 }
 
