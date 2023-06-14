@@ -31,7 +31,7 @@ func (m *infographicBannerRepository) GetTx(ctx context.Context) (tx *sql.Tx, er
 }
 
 func (m *infographicBannerRepository) Store(ctx context.Context, body *domain.StoreInfographicBanner, tx *sql.Tx) (err error) {
-	query := `INSERT infographic_banners SET title=?, sequence=?, link=?, image=?`
+	query := `INSERT infographic_banners SET title=?, sequence=?, link=?, image=?, created_at=?, updated_at=?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -42,6 +42,8 @@ func (m *infographicBannerRepository) Store(ctx context.Context, body *domain.St
 		1,
 		body.Link,
 		helpers.GetStringFromObject(body.Image),
+		time.Now(),
+		time.Now(),
 	)
 
 	return
