@@ -32,7 +32,7 @@ func (h *PublicPopUpBanner) LiveBanner(c echo.Context) error {
 	ctx := c.Request().Context()
 	data, err := h.PUsecase.LiveBanner(ctx)
 	if err != nil {
-		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusNoContent, helpers.ResponseError{Message: err.Error()})
 	}
 
 	// re-presenting responses
