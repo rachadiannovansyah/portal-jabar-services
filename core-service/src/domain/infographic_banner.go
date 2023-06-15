@@ -28,7 +28,7 @@ type StoreInfographicBanner struct {
 }
 
 type UpdateSequenceInfographicBanner struct {
-	Sequences []SyncSequence `json:"sequences" validate:"required"`
+	IDs []int64 `json:"ids" validate:"required"`
 }
 
 type UpdateStatusInfographicBanner struct {

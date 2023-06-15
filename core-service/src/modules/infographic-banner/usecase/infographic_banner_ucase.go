@@ -137,14 +137,16 @@ func (i *infographicBannerUsecase) UpdateSequence(c context.Context, body *domai
 
 	tx, _ := i.infographicBannerRepo.GetTx(ctx)
 
-	for _, item := range body.Sequences {
-		if _, err = i.infographicBannerRepo.GetByID(ctx, item.ID, tx); err != nil {
+	sequence := 1
+	for _, id := range body.IDs {
+		if _, err = i.infographicBannerRepo.GetByID(ctx, id, tx); err != nil {
 			return
 		}
 
-		if err = i.infographicBannerRepo.UpdateSequence(ctx, item.ID, item.Sequence, tx); err != nil {
+		if err = i.infographicBannerRepo.UpdateSequence(ctx, id, int8(sequence), tx); err != nil {
 			return
 		}
+		sequence++
 	}
 
 	err = tx.Commit()
