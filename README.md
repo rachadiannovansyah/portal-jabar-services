@@ -17,6 +17,7 @@ The core of jabar portal services
 - **Elasticsearch** - <https://www.elastic.co//>
 - **MySQL** - <https://www.mysql.com/>
 - **Redis** - <https://redis.io/>
+- **AWS** - <https://aws.amazon.com/>
 
 ## Description
 
