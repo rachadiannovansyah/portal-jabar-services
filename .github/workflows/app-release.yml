@@ -60,7 +60,7 @@ jobs:
         cd jds-terraform-gke/k8s/portal-jabar-app/production-jcloud
         git config user.email "github-action@github.com"
         git config user.name "Github Action"
-        git checkout -b portal-jabar-release-production
+        git checkout -b portal-jabar-api-release-production
         git add deployment.yaml
-        git commit -m "Portal Jabar Release to Production"
-        git push origin portal-jabar-release-production -o merge_request.description="# Overview \n\n - Portal Jabar API release to production \n\n ## Evidence \n\n - title: Portal Jabar API release to production \n - project: Portal Jabar \n - participants:  " -o merge_request.create
+        git commit -m "Portal Jabar API Release to Production"
+        git push origin portal-jabar-api-release-production -o merge_request.description="# Overview \n\n - Portal Jabar API release to production \n\n ## Evidence \n\n - title: Portal Jabar API release to production \n - project: Portal Jabar \n - participants:  " -o merge_request.create
