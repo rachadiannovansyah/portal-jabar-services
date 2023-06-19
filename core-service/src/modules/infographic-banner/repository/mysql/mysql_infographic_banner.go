@@ -162,7 +162,7 @@ func (m *infographicBannerRepository) UpdateSequence(ctx context.Context, ID int
 }
 
 func (m *infographicBannerRepository) UpdateStatus(ctx context.Context, ID int64, body *domain.UpdateStatusInfographicBanner, tx *sql.Tx) (err error) {
-	query := `UPDATE infographic_banners SET is_active=?, sequence=? WHERE id=?`
+	query := `UPDATE infographic_banners SET is_active=?, sequence=?, updated_at=? WHERE id=?`
 
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
@@ -174,6 +174,7 @@ func (m *infographicBannerRepository) UpdateStatus(ctx context.Context, ID int64
 	_, err = stmt.ExecContext(ctx,
 		body.IsActive,
 		sequence,
+		time.Now(),
 		ID,
 	)
 	return
