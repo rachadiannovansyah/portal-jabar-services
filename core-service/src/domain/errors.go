@@ -21,6 +21,8 @@ var (
 	ErrForbidden = errors.New("You are not authorized to access this resource")
 	// Has Publication
 	ErrHasPublication = errors.New("Your requested master data is already used on publication")
+	// ErrSlugAlreadyExist
+	ErrSlugAlreadyExist = errors.New("Slug already exists")
 )
 
 type ErrResponse struct {

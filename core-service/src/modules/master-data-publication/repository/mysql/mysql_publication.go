@@ -328,3 +328,19 @@ func (m *mysqlMdpRepository) Update(ctx context.Context, body *domain.StoreMaste
 
 	return
 }
+
+func (m *mysqlMdpRepository) SlugExists(ctx context.Context, slug string) (ok bool) {
+	query := "SELECT id, slug FROM masterdata_publications WHERE slug = ? LIMIT 1"
+
+	pub := domain.MasterDataPublication{}
+	_ = m.Conn.QueryRowContext(ctx, query, slug).Scan(
+		&pub.ID,
+		&pub.DefaultInformation.Slug,
+	)
+
+	if pub.ID != 0 {
+		ok = true
+	}
+
+	return
+}

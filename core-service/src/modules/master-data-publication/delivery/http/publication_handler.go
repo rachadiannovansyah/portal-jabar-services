@@ -52,7 +52,7 @@ func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
 
 	err = h.MdpUcase.Store(ctx, body)
 	if err != nil {
-		return err
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
 	res := map[string]interface{}{

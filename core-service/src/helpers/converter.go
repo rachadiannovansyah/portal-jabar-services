@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -62,4 +63,25 @@ func Substr(s string, n int) string {
 	}
 
 	return s
+}
+
+// Generate Slug
+func SlugGenerator(str string, identifier int64) string {
+	strLower := strings.Fields(strings.ToLower(str))
+	strSlug := strings.Join(strLower, "-")
+	return fmt.Sprintf("%s-%d", strSlug, identifier)
+}
+
+func SlugFormatter(str string) string {
+	// Convert the text to lowercase
+	slug := strings.ToLower(str)
+
+	// Remove unwanted characters using regular expressions
+	reg := regexp.MustCompile("[^a-z0-9]+")
+	slug = reg.ReplaceAllString(slug, "-")
+
+	// Remove leading and trailing
+	slug = strings.Trim(slug, "-")
+
+	return slug
 }

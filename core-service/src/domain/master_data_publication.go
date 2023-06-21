@@ -188,4 +188,5 @@ type MasterDataPublicationRepository interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
 	TabStatus(ctx context.Context, params *Request) ([]TabStatusResponse, error)
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
+	SlugExists(ctx context.Context, slug string) (ok bool)
 }
