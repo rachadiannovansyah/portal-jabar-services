@@ -338,7 +338,7 @@ func (m *mysqlMdpRepository) SlugExists(ctx context.Context, slug string) (ok bo
 		&pub.DefaultInformation.Slug,
 	)
 
-	if pub.ID != 0 {
+	if pub.DefaultInformation.Slug != "" {
 		ok = true
 	}
 

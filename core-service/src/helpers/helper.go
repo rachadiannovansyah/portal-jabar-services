@@ -5,6 +5,7 @@ import (
 	"net/mail"
 	"reflect"
 	"regexp"
+	"strings"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/labstack/echo/v4"
@@ -56,4 +57,12 @@ func InArray(needle interface{}, haystack interface{}) (exists bool, index int) 
 func RegexReplaceString(c echo.Context, str string, repl string) string {
 	re := regexp.MustCompile(`[^ a-zA-Z0-9_]`)
 	return re.ReplaceAllString(str, repl)
+}
+
+// Sanity slug text with standard regex rules
+func RegexReplaceSlug(str string) string {
+	reg := regexp.MustCompile("[^a-z0-9]+")
+	str = reg.ReplaceAllString(strings.ToLower(str), "-")
+
+	return strings.Trim(str, "-") // Remove leading and trailing
 }
