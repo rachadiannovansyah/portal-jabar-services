@@ -249,3 +249,27 @@ func (n *masterDataPublicationUsecase) slugExist(ctx context.Context, slug strin
 
 	return
 }
+
+func (u *masterDataPublicationUsecase) PortalFetch(c context.Context, params *domain.Request) (res []domain.MasterDataPublication, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.mdpRepo.PortalFetch(ctx, params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (u *masterDataPublicationUsecase) PortalMetaFetch(c context.Context, params *domain.Request) (total int64, lastUpdated string, staticCount int64, err error) {
+
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	total, lastUpdated, staticCount, err = u.mdpRepo.PortalMetaFetch(ctx, params)
+
+	return
+}

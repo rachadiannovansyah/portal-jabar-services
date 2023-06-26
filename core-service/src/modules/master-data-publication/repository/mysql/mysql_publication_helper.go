@@ -35,3 +35,22 @@ func filterPublicationQuery(params *domain.Request, binds *[]interface{}) string
 
 	return query
 }
+
+/**
+ * this block of code is used to generate the query for the service public
+ */
+func filterPublicationPortalQuery(params *domain.Request, binds *[]interface{}) string {
+	var queryFilter string
+
+	if params.Keyword != "" {
+		*binds = append(*binds, `%`+params.Keyword+`%`)
+		queryFilter = fmt.Sprintf(`%s AND ms.service_name LIKE ?`, queryFilter)
+	}
+
+	if v, ok := params.Filters["category"]; ok && v != "" {
+		*binds = append(*binds, v)
+		queryFilter = fmt.Sprintf(`%s AND mdp.portal_category = ?`, queryFilter)
+	}
+
+	return queryFilter
+}

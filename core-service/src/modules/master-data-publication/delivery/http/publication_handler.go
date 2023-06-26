@@ -11,6 +11,7 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
@@ -22,7 +23,7 @@ type MasterDataPublicationHandler struct {
 }
 
 // NewMasterDataPublicationHandler will create a new MasterDataPublicationHandler
-func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicationUsecase, apm *utils.Apm) {
+func NewMasterDataPublicationHandler(p *echo.Group, r *echo.Group, sp domain.MasterDataPublicationUsecase, apm *utils.Apm) {
 	handler := &MasterDataPublicationHandler{
 		MdpUcase: sp,
 		apm:      apm,
@@ -33,6 +34,7 @@ func NewMasterDataPublicationHandler(r *echo.Group, sp domain.MasterDataPublicat
 	r.GET("/master-data-publications/:id", handler.GetByID)
 	r.GET("/master-data-publications/tabs", handler.TabStatus)
 	r.PUT("/master-data-publications/:id", handler.Update)
+	p.GET("/master-data-publications", handler.PortalFetch, middleware.VerifyCache())
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -220,4 +222,53 @@ func (h *MasterDataPublicationHandler) Update(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, result)
+}
+
+func (h *MasterDataPublicationHandler) PortalFetch(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	params := helpers.GetRequestParams(c)
+	params.Filters = map[string]interface{}{
+		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
+		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+	}
+
+	res, err := h.MdpUcase.PortalFetch(ctx, &params)
+	if err != nil {
+		return err
+	}
+
+	total, lastUpdated, staticCount, err := h.MdpUcase.PortalMetaFetch(ctx, &params)
+
+	if err != nil {
+		return err
+	}
+
+	lists := []domain.ListPortalPublicationResponse{}
+	pub := domain.ListPortalPublicationResponse{}
+	for _, row := range res {
+		// get struct response
+		helpers.GetObjectFromString(row.DefaultInformation.Logo.String, &pub.LogoMeta)
+		pub.ID = row.ID
+		pub.Description = row.DefaultInformation.Description
+		pub.Slug = row.DefaultInformation.Slug
+		pub.Name = row.DefaultInformation.ServiceName
+		pub.PortalCategory = row.DefaultInformation.PortalCategory
+		pub.Logo = pub.LogoMeta.FileName
+		lists = append(lists, pub)
+	}
+
+	data := domain.ResultsData{
+		Data: lists,
+		Meta: &domain.CustomMetaData{
+			TotalCount:  total,
+			LastUpdated: lastUpdated,
+			StaticCount: staticCount,
+		},
+	}
+
+	// set cache from dependency injection redis
+	helpers.Cache(c.Request().URL.RequestURI(), data.Data, data.Meta)
+
+	return c.JSON(http.StatusOK, data)
 }

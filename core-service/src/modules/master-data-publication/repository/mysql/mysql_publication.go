@@ -57,6 +57,16 @@ LEFT JOIN units as unit
 on ms.opd_name = unit.id
 WHERE 1=1`
 
+var querySelectListPortal = `SELECT mdp.id, ms.service_name, mdp.logo, ms.description, mdp.slug, mdp.created_at, mdp.updated_at, mdp.portal_category
+FROM masterdata_publications as mdp
+LEFT JOIN masterdata_services as mds
+ON mdp.mds_id = mds.id
+LEFT JOIN main_services as ms
+on mds.main_service = ms.id
+LEFT JOIN units as unit
+on ms.opd_name = unit.id
+WHERE 1=1`
+
 func (m *mysqlMdpRepository) Store(ctx context.Context, body *domain.StoreMasterDataPublication) (err error) {
 	query := `INSERT masterdata_publications SET mds_id=?, portal_category=?, logo=?, slug=?, cover=?, images=?, infographics=?, keywords=?, faq=?, status=?, created_at=?, updated_at=?, created_by=?`
 	stmt, err := m.Conn.PrepareContext(ctx, query)
@@ -343,4 +353,82 @@ func (m *mysqlMdpRepository) SlugExists(ctx context.Context, slug string) (ok bo
 	}
 
 	return
+}
+
+func (m *mysqlMdpRepository) PortalFetch(ctx context.Context, params *domain.Request) (res []domain.MasterDataPublication, err error) {
+	// add binding optional params to mitigate sql injection
+	binds := make([]interface{}, 0)
+	queryFilter := filterPublicationPortalQuery(params, &binds)
+
+	query := querySelectListPortal + queryFilter + ` LIMIT ?,? `
+	binds = append(binds, params.Offset, params.PerPage)
+
+	res, err = m.fetchPortal(ctx, query, binds...)
+	if err != nil {
+		return nil, err
+	}
+
+	return
+}
+
+func (m *mysqlMdpRepository) fetchPortal(ctx context.Context, query string, args ...interface{}) (result []domain.MasterDataPublication, err error) {
+	rows, err := m.Conn.QueryContext(ctx, query, args...)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	result = make([]domain.MasterDataPublication, 0)
+	for rows.Next() {
+		pub := domain.MasterDataPublication{}
+		err = rows.Scan(
+			&pub.ID,
+			&pub.DefaultInformation.ServiceName,
+			&pub.DefaultInformation.Logo,
+			&pub.DefaultInformation.Description,
+			&pub.DefaultInformation.Slug,
+			&pub.CreatedAt,
+			&pub.UpdatedAt,
+			&pub.DefaultInformation.PortalCategory,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return nil, err
+		}
+
+		result = append(result, pub)
+	}
+
+	return result, nil
+}
+
+func (m *mysqlMdpRepository) PortalMetaFetch(ctx context.Context, params *domain.Request) (total int64, lastUpdated string, staticCount int64, err error) {
+	binds := make([]interface{}, 0)
+	queryFilter := filterPublicationPortalQuery(params, &binds)
+
+	total, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_publications as mdp
+	LEFT JOIN masterdata_services as mds
+	ON mdp.mds_id = mds.id
+	LEFT JOIN main_services as ms
+	on mds.main_service = ms.id
+	LEFT JOIN units as unit
+	on ms.opd_name = unit.id
+	WHERE 1=1 `+queryFilter, binds...)
+
+	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM masterdata_publications ORDER BY updated_at DESC LIMIT 1`)
+
+	staticCount, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_publications mdp WHERE portal_category = ?`, params.Filters["category"].(string))
+
+	if err != nil {
+		return 0, "", 0, err
+	}
+
+	return
+}
+
+func (m *mysqlMdpRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+	_ = m.Conn.QueryRow(query).Scan(&lastUpdated)
+
+	return lastUpdated, nil
 }

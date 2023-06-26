@@ -171,6 +171,16 @@ type MasterDataPublicationUsecaseArgs struct {
 	ContextTimeout time.Duration
 }
 
+type ListPortalPublicationResponse struct {
+	ID             int64               `json:"id"`
+	Name           string              `json:"name"`
+	Description    string              `json:"description"`
+	Slug           string              `json:"slug"`
+	Logo           string              `json:"logo"`
+	LogoMeta       DetailMetaDataImage `json:"logo_meta"`
+	PortalCategory string              `json:"portal_category"`
+}
+
 type MasterDataPublicationUsecase interface {
 	Store(ctx context.Context, body *StoreMasterDataPublication) (err error)
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataPublication, total int64, err error)
@@ -178,6 +188,8 @@ type MasterDataPublicationUsecase interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
 	TabStatus(ctx context.Context, au *JwtCustomClaims, params *Request) ([]TabStatusResponse, error)
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
+	PortalFetch(ctx context.Context, params *Request) (sp []MasterDataPublication, err error)
+	PortalMetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 }
 
 type MasterDataPublicationRepository interface {
@@ -188,5 +200,7 @@ type MasterDataPublicationRepository interface {
 	GetByID(ctx context.Context, ID int64) (res MasterDataPublication, err error)
 	TabStatus(ctx context.Context, params *Request) ([]TabStatusResponse, error)
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
+	PortalFetch(ctx context.Context, params *Request) ([]MasterDataPublication, error)
+	PortalMetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	SlugExists(ctx context.Context, slug string) (ok bool)
 }
