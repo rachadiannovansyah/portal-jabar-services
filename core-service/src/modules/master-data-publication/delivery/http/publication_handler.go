@@ -35,6 +35,7 @@ func NewMasterDataPublicationHandler(p *echo.Group, r *echo.Group, sp domain.Mas
 	r.GET("/master-data-publications/tabs", handler.TabStatus)
 	r.PUT("/master-data-publications/:id", handler.Update)
 	p.GET("/master-data-publications", handler.PortalFetch, middleware.VerifyCache())
+	p.GET("/master-data-publications/slug/:slug", handler.PortalGetBySlug, middleware.VerifyCache())
 }
 
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
@@ -271,4 +272,62 @@ func (h *MasterDataPublicationHandler) PortalFetch(c echo.Context) error {
 	helpers.Cache(c.Request().URL.RequestURI(), data.Data, data.Meta)
 
 	return c.JSON(http.StatusOK, data)
+}
+
+// PortalGetBySlug will get master data publication by given slug
+func (h *MasterDataPublicationHandler) PortalGetBySlug(c echo.Context) error {
+	slug := c.Param("slug")
+	ctx := c.Request().Context()
+
+	res, err := h.MdpUcase.GetBySlug(ctx, slug)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	// represent response to the client
+	detailRes := domain.DetailPublicationPortalResponse{
+		ID:                res.ID,
+		OpdName:           res.DefaultInformation.OpdName,
+		PortalCategory:    res.DefaultInformation.PortalCategory,
+		ServiceName:       res.DefaultInformation.ServiceName,
+		ProgramName:       res.DefaultInformation.ProgramName,
+		Description:       res.DefaultInformation.Description,
+		ServiceForm:       res.DefaultInformation.ServiceForm,
+		ServiceUser:       res.DefaultInformation.ServiceUser,
+		OperationalStatus: res.DefaultInformation.OperationalStatus,
+		Technical:         res.DefaultInformation.Technical,
+		HotlineNumber:     res.ServiceDescription.HotlineNumber,
+		HotlineMail:       res.ServiceDescription.HotlineMail,
+		Website:           res.DefaultInformation.Website,
+		Application: domain.MdsApplication{
+			ID:     res.ServiceDescription.Application.ID,
+			Name:   res.ServiceDescription.Application.Name,
+			Status: res.ServiceDescription.Application.Status,
+			Title:  res.ServiceDescription.Application.Title,
+		},
+		UpdatedAt: res.UpdatedAt,
+	}
+
+	// un-marshalling json from string to object
+	helpers.GetObjectFromString(res.DefaultInformation.Benefits.String, &detailRes.Benefits)
+	helpers.GetObjectFromString(res.DefaultInformation.Facilities.String, &detailRes.Facilities)
+	helpers.GetObjectFromString(res.ServiceDescription.Cover.String, &detailRes.Cover)
+	helpers.GetObjectFromString(res.ServiceDescription.Images.String, &detailRes.Images)
+	helpers.GetObjectFromString(res.ServiceDescription.TermsAndConditions.String, &detailRes.TermsAndConditions)
+	helpers.GetObjectFromString(res.ServiceDescription.ServiceProcedures.String, &detailRes.ServiceProcedures)
+	helpers.GetObjectFromString(res.ServiceDescription.OperationalTimes.String, &detailRes.OperationalTimes)
+	helpers.GetObjectFromString(res.ServiceDescription.InfoGraphics.String, &detailRes.InfoGraphics)
+	helpers.GetObjectFromString(res.ServiceDescription.Locations.String, &detailRes.Locations)
+	helpers.GetObjectFromString(res.ServiceDescription.Application.Features.String, &detailRes.Application.Features)
+	helpers.GetObjectFromString(res.ServiceDescription.Links.String, &detailRes.Links)
+	helpers.GetObjectFromString(res.ServiceDescription.SocialMedia.String, &detailRes.SocialMedia)
+	helpers.GetObjectFromString(res.AdditionalInformation.Keywords.String, &detailRes.Keywords)
+	helpers.GetObjectFromString(res.AdditionalInformation.FAQ.String, &detailRes.FAQ)
+	helpers.GetObjectFromString(res.DefaultInformation.Logo.String, &detailRes.Logo)
+	helpers.GetObjectFromString(res.ServiceDescription.ServiceFee.String, &detailRes.ServiceFee)
+
+	// set cache for redis
+	helpers.Cache(c.Request().URL.RequestURI(), &detailRes, nil)
+
+	return c.JSON(http.StatusOK, &domain.ResultData{Data: &detailRes})
 }

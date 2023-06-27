@@ -273,3 +273,15 @@ func (u *masterDataPublicationUsecase) PortalMetaFetch(c context.Context, params
 
 	return
 }
+
+func (u *masterDataPublicationUsecase) GetBySlug(c context.Context, slug string) (res domain.MasterDataPublication, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	res, err = u.mdpRepo.GetBySlug(ctx, slug)
+	if err != nil {
+		return
+	}
+
+	return
+}

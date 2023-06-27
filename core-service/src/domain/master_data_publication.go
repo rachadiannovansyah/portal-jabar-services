@@ -122,6 +122,39 @@ type DetailPublicationResponse struct {
 	CreatedAt             time.Time                   `json:"created_at"`
 }
 
+type DetailPublicationPortalResponse struct {
+	ID                 int64                  `json:"id"`
+	OpdName            string                 `json:"opd_name"`
+	Logo               DetailMetaDataImage    `json:"logo"`
+	PortalCategory     string                 `json:"portal_category"`
+	ServiceName        string                 `json:"service_name"`
+	ProgramName        string                 `json:"program_name"`
+	Description        string                 `json:"description"`
+	ServiceForm        string                 `json:"service_form"`
+	ServiceUser        string                 `json:"service_user"`
+	OperationalStatus  string                 `json:"operator_status"`
+	Technical          string                 `json:"technical"`
+	Cover              CoverPublication       `json:"cover"`
+	Images             []DetailMetaDataImage  `json:"images"`
+	HotlineNumber      string                 `json:"hotline_number"`
+	HotlineMail        string                 `json:"hotline_mail"`
+	OperationalTimes   []OperationalTimeMds   `json:"operational_times"`
+	ServiceFee         MdsServiceFee          `json:"service_fee"`
+	Website            string                 `json:"website"`
+	Locations          []LocationMds          `json:"locations"`
+	Links              []LinkMds              `json:"links"`
+	SocialMedia        []SocialMediaMds       `json:"social_media"`
+	Benefits           MdsObject              `json:"benefits"`
+	Facilities         MdsObject              `json:"facilities"`
+	TermsAndConditions MdsObjectCover         `json:"terms_and_conditions"`
+	ServiceProcedures  MdsObjectCover         `json:"service_procedures"`
+	InfoGraphics       PublicationInfographic `json:"infographics"`
+	FAQ                PublicationFAQ         `json:"faq"`
+	Application        MdsApplication         `json:"application"`
+	Keywords           []string               `json:"keywords"`
+	UpdatedAt          time.Time              `json:"updated_at"`
+}
+
 type DetailDefaultInformation struct {
 	MdsID             int64               `json:"mds_id"`
 	OpdName           string              `json:"opd_name"`
@@ -190,6 +223,7 @@ type MasterDataPublicationUsecase interface {
 	Update(ctx context.Context, body *StoreMasterDataPublication, ID int64) (err error)
 	PortalFetch(ctx context.Context, params *Request) (sp []MasterDataPublication, err error)
 	PortalMetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
+	GetBySlug(ctx context.Context, slug string) (res MasterDataPublication, err error)
 }
 
 type MasterDataPublicationRepository interface {
@@ -203,4 +237,5 @@ type MasterDataPublicationRepository interface {
 	PortalFetch(ctx context.Context, params *Request) ([]MasterDataPublication, error)
 	PortalMetaFetch(ctx context.Context, params *Request) (int64, string, int64, error)
 	SlugExists(ctx context.Context, slug string) (ok bool)
+	GetBySlug(ctx context.Context, slug string) (res MasterDataPublication, err error)
 }

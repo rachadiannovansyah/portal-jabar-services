@@ -432,3 +432,58 @@ func (m *mysqlMdpRepository) getLastUpdated(ctx context.Context, query string) (
 
 	return lastUpdated, nil
 }
+
+func (m *mysqlMdpRepository) GetBySlug(ctx context.Context, slug string) (res domain.MasterDataPublication, err error) {
+	query := querySelectJoinDetail + " AND mdp.slug = ? LIMIT 1"
+
+	createdByID := uuid.UUID{}
+	err = m.Conn.QueryRowContext(ctx, query, slug).Scan(
+		&res.ID, // include id for delete act
+		&res.DefaultInformation.MdsID,
+		&res.DefaultInformation.OpdName,
+		&res.DefaultInformation.ServiceForm,
+		&res.DefaultInformation.ServiceName,
+		&res.DefaultInformation.ProgramName,
+		&res.DefaultInformation.Description,
+		&res.DefaultInformation.ServiceUser,
+		&res.DefaultInformation.PortalCategory,
+		&res.DefaultInformation.Logo,
+		&res.DefaultInformation.OperationalStatus,
+		&res.DefaultInformation.Technical,
+		&res.DefaultInformation.Benefits,
+		&res.DefaultInformation.Facilities,
+		&res.DefaultInformation.Website,
+		&res.DefaultInformation.Slug,
+		&res.ServiceDescription.Cover,
+		&res.ServiceDescription.Images,
+		&res.ServiceDescription.TermsAndConditions,
+		&res.ServiceDescription.ServiceProcedures,
+		&res.ServiceDescription.ServiceFee,
+		&res.ServiceDescription.OperationalTimes,
+		&res.ServiceDescription.HotlineNumber,
+		&res.ServiceDescription.HotlineMail,
+		&res.ServiceDescription.InfoGraphics,
+		&res.ServiceDescription.Locations,
+		&res.ServiceDescription.Application.ID,
+		&res.ServiceDescription.Application.Name,
+		&res.ServiceDescription.Application.Status,
+		&res.ServiceDescription.Application.Features,
+		&res.ServiceDescription.Application.Title,
+		&res.ServiceDescription.Links,
+		&res.ServiceDescription.SocialMedia,
+		&res.AdditionalInformation.Keywords,
+		&res.AdditionalInformation.FAQ,
+		&res.Status,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+		&createdByID,
+	)
+
+	res.CreatedBy = domain.User{ID: createdByID}
+
+	if err != nil {
+		return domain.MasterDataPublication{}, domain.ErrNotFound
+	}
+
+	return
+}
