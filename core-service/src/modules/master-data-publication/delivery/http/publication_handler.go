@@ -255,7 +255,7 @@ func (h *MasterDataPublicationHandler) PortalFetch(c echo.Context) error {
 		pub.Slug = row.DefaultInformation.Slug
 		pub.Name = row.DefaultInformation.ServiceName
 		pub.PortalCategory = row.DefaultInformation.PortalCategory
-		pub.Logo = pub.LogoMeta.FileName
+		pub.Logo = pub.LogoMeta.FileDownloadUri
 		lists = append(lists, pub)
 	}
 
