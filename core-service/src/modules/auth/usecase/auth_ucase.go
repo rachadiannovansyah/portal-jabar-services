@@ -150,6 +150,10 @@ func (n *authUsecase) RefreshToken(c context.Context, req *domain.RefreshRequest
 		return domain.LoginResponse{}, err
 	}
 
+	// append unit name to response
+	unit, _ := n.unitRepo.GetByID(ctx, user.Unit.ID)
+	user.Unit.Name = unit.Name
+
 	permissions, _ := n.rolePermRepo.GetPermissionsByRoleID(ctx, user.Role.ID)
 	accessToken, exp, err := n.createAccessToken(&user, permissions)
 	if err != nil {
