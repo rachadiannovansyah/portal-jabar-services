@@ -312,7 +312,7 @@ func (h *MasterDataPublicationHandler) PortalGetBySlug(c echo.Context) error {
 	helpers.GetObjectFromString(res.DefaultInformation.Benefits.String, &detailRes.Benefits)
 	helpers.GetObjectFromString(res.DefaultInformation.Facilities.String, &detailRes.Facilities)
 	helpers.GetObjectFromString(res.ServiceDescription.Cover.String, &detailRes.Cover)
-	helpers.GetObjectFromString(res.ServiceDescription.Images.String, &detailRes.Images)
+	helpers.GetObjectFromString(res.ServiceDescription.Images.String, &detailRes.ContentImages)
 	helpers.GetObjectFromString(res.ServiceDescription.TermsAndConditions.String, &detailRes.TermsAndConditions)
 	helpers.GetObjectFromString(res.ServiceDescription.ServiceProcedures.String, &detailRes.ServiceProcedures)
 	helpers.GetObjectFromString(res.ServiceDescription.OperationalTimes.String, &detailRes.OperationalTimes)

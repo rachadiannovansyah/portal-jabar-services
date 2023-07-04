@@ -151,6 +151,7 @@ type DetailPublicationPortalResponse struct {
 	InfoGraphics       PublicationInfographic `json:"infographics"`
 	FAQ                PublicationFAQ         `json:"faq"`
 	Application        MdsApplication         `json:"application"`
+	ContentImages      []DetailMetaDataImage  `json:"content_images"`
 	Keywords           []string               `json:"keywords"`
 	UpdatedAt          time.Time              `json:"updated_at"`
 }
