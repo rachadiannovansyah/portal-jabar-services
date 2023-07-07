@@ -24,6 +24,7 @@ import (
 	_newsUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/usecase"
 	_popUpBannerUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/usecase"
 	_publicServiceUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/usecase"
+	_quickAccessUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/quick-access/usecase"
 	_regInvitationUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/usecase"
 	_searchUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/usecase"
 	_servicePublicUcase "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/usecase"
@@ -61,6 +62,7 @@ type Usecases struct {
 	VisitorUsecase               domain.VisitorUsecase
 	PopUpBannerUsecase           domain.PopUpBannerUsecase
 	InfographicBannerUsecase     domain.InfographicBannerUsecase
+	QuickAccessUsecase           domain.QuickAccessUsecase
 	GovernmentAffairUsecase      domain.GovernmentAffairUsecase
 	SpbeRalsUsecase              domain.SpbeRalsUsecase
 	UptdCabdinUsecase            domain.UptdCabdinUsecase
@@ -93,6 +95,7 @@ func NewUcase(cfg *config.Config, conn *utils.Conn, r *Repository, timeoutContex
 		VisitorUsecase:           _visitorUcase.NewVisitorUsecase(r.ExternalVisitorRepo, conn, timeoutContext),
 		PopUpBannerUsecase:       _popUpBannerUcase.NewPopUpBannerUsecase(r.PopUpBannerRepo, cfg, timeoutContext),
 		InfographicBannerUsecase: _infographicBannerUcase.NewInfographicBannerUsecase(r.InfographicBannerRepo, cfg, timeoutContext),
+		QuickAccessUsecase:       _quickAccessUcase.NewQuickAccessUsecase(r.QuickAccessRepo, cfg, timeoutContext),
 		GovernmentAffairUsecase:  _governmentAffairUcase.NewGovernmentAffairUsecase(r.GovernmentAffairRepo, cfg, timeoutContext),
 		SpbeRalsUsecase:          _spbeRalsUcase.NewSpbeRalsUsecase(r.SpbeRalsRepo, cfg, timeoutContext),
 		UptdCabdinUsecase:        _uptdCabdinUcase.NewUptdCabdinUsecase(r.UptdCabdinRepo, cfg, timeoutContext),

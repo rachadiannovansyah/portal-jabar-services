@@ -36,6 +36,7 @@ import (
 	_newsHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/delivery/http"
 	_popUpBannerDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/delivery/http"
 	_publicServiceHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/delivery/http"
+	_quickAccessDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/quick-access/delivery/http"
 	_regInvitationHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/delivery/http"
 	_searchHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/search/delivery/http"
 	_servicePublicHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/service-public/delivery/http"
@@ -107,6 +108,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_visitorHttpDelivery.NewCounterVisitorHandler(p, u.VisitorUsecase)
 	_popUpBannerDelivery.NewPopUpBannerHandler(r, u.PopUpBannerUsecase, apm)
 	_infographicBannerDelivery.NewInfographicBannerHandler(r, u.InfographicBannerUsecase, apm)
+	_quickAccessDelivery.NewQuickAccessHandler(r, u.QuickAccessUsecase, apm)
 	_infographicBannerDelivery.NewPublicInfographicBannerHandler(p, u.InfographicBannerUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)

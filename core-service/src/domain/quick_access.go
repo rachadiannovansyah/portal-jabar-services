@@ -22,11 +22,11 @@ type UpdateStatusQuickAccess struct {
 }
 
 type StoreQuickAccess struct {
-	Title       string      `json:"title" validate:"required,max=80"`
-	Description string      `json:"description" validate:"required,max=200"`
-	Link        string      `json:"link"`
-	Image       ImageBanner `json:"image" validate:"required"`
-	IsActive    *int8       `json:"is_active" validate:"required,eq=1|eq=0"`
+	Title       string `json:"title" validate:"required,max=100"`
+	Description string `json:"description" validate:"required,max=200"`
+	Link        string `json:"link"`
+	Image       string `json:"image" validate:"required"`
+	IsActive    *int8  `json:"is_active" validate:"required,eq=1|eq=0"`
 }
 
 type QuickAccessResponse struct {
@@ -56,5 +56,5 @@ type QuickAccessRepository interface {
 	Update(ctx context.Context, ID int64, body *StoreQuickAccess, tx *sql.Tx) (err error)
 	UpdateStatus(ctx context.Context, ID int64, body *UpdateStatusQuickAccess, tx *sql.Tx) (err error)
 	Delete(ctx context.Context, ID int64, tx *sql.Tx) (err error)
-	GetByID(ctx context.Context, ID int64, tx *sql.Tx) (res QuickAccess, err error)
+	GetByID(ctx context.Context, ID int64) (res QuickAccess, err error)
 }

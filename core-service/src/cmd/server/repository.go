@@ -26,6 +26,7 @@ import (
 	_newsRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
 	_popUpBannerRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/pop-up-banner/repository/mysql"
 	_publicServiceRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/public-service/repository/mysql"
+	_quickAccessRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/quick-access/repository/mysql"
 	_regInvitationRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/registration-invitation/repository/mysql"
 	_rolePermRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role-permission/repository/mysql"
 	_roleRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/role/repository/mysql"
@@ -68,6 +69,7 @@ type Repository struct {
 	ExternalVisitorRepo       domain.ExternalVisitorRepository
 	PopUpBannerRepo           domain.PopUpBannerRepository
 	InfographicBannerRepo     domain.InfographicBannerRepository
+	QuickAccessRepo           domain.QuickAccessRepository
 	GovernmentAffairRepo      domain.GovernmentAffairRepository
 	SpbeRalsRepo              domain.SpbeRalsRepository
 	UptdCabdinRepo            domain.UptdCabdinRepository
@@ -106,6 +108,7 @@ func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *
 		ExternalVisitorRepo:       _externalVisitorRepo.NewExternalVisitorRepository(cfg),
 		PopUpBannerRepo:           _popUpBannerRepo.NewMysqlPopUpBannerRepository(conn.Mysql),
 		InfographicBannerRepo:     _infographicBannerRepo.NewMysqlInfographicBannerRepository(conn.Mysql),
+		QuickAccessRepo:           _quickAccessRepo.NewMysqlQuickAccessRepository(conn.Mysql),
 		GovernmentAffairRepo:      _governmentAffairRepo.NewMysqlGovernmentAffairRepository(conn.Mysql),
 		SpbeRalsRepo:              _spbeRalsRepo.NewMysqlSpbeRalsRepository(conn.Mysql),
 		UptdCabdinRepo:            _uptdCabdinRepo.NewMysqlUptdCabdinRepository(conn.Mysql),

@@ -135,10 +135,10 @@ func (m *quickAccessRepository) Delete(ctx context.Context, ID int64, tx *sql.Tx
 	return
 }
 
-func (m *quickAccessRepository) GetByID(ctx context.Context, ID int64, tx *sql.Tx) (res domain.QuickAccess, err error) {
+func (m *quickAccessRepository) GetByID(ctx context.Context, ID int64) (res domain.QuickAccess, err error) {
 	query := querySelect + `AND id = ? LIMIT 1`
 
-	err = tx.QueryRowContext(ctx, query, ID).Scan(
+	err = m.Conn.QueryRowContext(ctx, query, ID).Scan(
 		&res.ID,
 		&res.Title,
 		&res.Description,
