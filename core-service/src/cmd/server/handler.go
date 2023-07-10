@@ -110,6 +110,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_infographicBannerDelivery.NewInfographicBannerHandler(r, u.InfographicBannerUsecase, apm)
 	_quickAccessDelivery.NewQuickAccessHandler(r, u.QuickAccessUsecase, apm)
 	_infographicBannerDelivery.NewPublicInfographicBannerHandler(p, u.InfographicBannerUsecase, apm)
+	_quickAccessDelivery.NewPublicQuickAccessHandler(p, u.QuickAccessUsecase, apm)
 	_popUpBannerDelivery.NewPublicPopUpBanner(p, u.PopUpBannerUsecase, apm)
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
 	_spbeRalsDelivery.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
