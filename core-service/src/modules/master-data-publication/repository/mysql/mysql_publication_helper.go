@@ -52,5 +52,10 @@ func filterPublicationPortalQuery(params *domain.Request, binds *[]interface{}) 
 		queryFilter = fmt.Sprintf(`%s AND mdp.portal_category = ?`, queryFilter)
 	}
 
+	if v, ok := params.Filters["status"]; ok && v != "" {
+		*binds = append(*binds, v)
+		queryFilter = fmt.Sprintf(`%s AND mdp.status = ?`, queryFilter)
+	}
+
 	return queryFilter
 }

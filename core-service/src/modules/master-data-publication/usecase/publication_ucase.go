@@ -255,6 +255,9 @@ func (u *masterDataPublicationUsecase) PortalFetch(c context.Context, params *do
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
+	// only fetch published publications
+	params.Filters["status"] = domain.PublishStatus
+
 	res, err = u.mdpRepo.PortalFetch(ctx, params)
 
 	if err != nil {

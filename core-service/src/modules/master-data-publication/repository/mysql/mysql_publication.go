@@ -57,7 +57,7 @@ LEFT JOIN units as unit
 on ms.opd_name = unit.id
 WHERE 1=1`
 
-var querySelectListPortal = `SELECT mdp.id, ms.service_name, mdp.logo, ms.description, mdp.slug, mdp.created_at, mdp.updated_at, mdp.portal_category
+var querySelectListPortal = `SELECT mdp.id, ms.service_name, mdp.logo, ms.description, mdp.slug, mdp.created_at, mdp.updated_at, mdp.portal_category, mdp.status
 FROM masterdata_publications as mdp
 LEFT JOIN masterdata_services as mds
 ON mdp.mds_id = mds.id
@@ -390,6 +390,7 @@ func (m *mysqlMdpRepository) fetchPortal(ctx context.Context, query string, args
 			&pub.CreatedAt,
 			&pub.UpdatedAt,
 			&pub.DefaultInformation.PortalCategory,
+			&pub.Status,
 		)
 
 		if err != nil {

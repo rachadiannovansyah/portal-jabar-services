@@ -10,6 +10,7 @@ import (
 
 const (
 	ArchiveStatus = "ARCHIVE"
+	PublishStatus = "PUBLISH"
 )
 
 type MasterDataService struct {
