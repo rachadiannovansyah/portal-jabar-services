@@ -419,7 +419,7 @@ func (m *mysqlMdpRepository) PortalMetaFetch(ctx context.Context, params *domain
 
 	lastUpdated, err = m.getLastUpdated(ctx, ` SELECT updated_at FROM masterdata_publications ORDER BY updated_at DESC LIMIT 1`)
 
-	staticCount, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_publications mdp WHERE portal_category = ?`, params.Filters["category"].(string))
+	staticCount, _ = m.count(ctx, ` SELECT COUNT(1) FROM masterdata_publications mdp WHERE portal_category = ? AND status = ?`, params.Filters["category"].(string), domain.PublishStatus)
 
 	if err != nil {
 		return 0, "", 0, err
