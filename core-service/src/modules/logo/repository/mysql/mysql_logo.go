@@ -51,3 +51,18 @@ func (m *logoRepository) Fetch(ctx context.Context, params domain.Request) (resu
 	}
 	return
 }
+
+func (m *logoRepository) Store(ctx context.Context, body *domain.StoreLogoRequest) (err error) {
+	query := `INSERT logos SET title=?, image=?`
+	stmt, err := m.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+
+	_, err = stmt.ExecContext(ctx,
+		body.Title,
+		body.Image,
+	)
+
+	return
+}

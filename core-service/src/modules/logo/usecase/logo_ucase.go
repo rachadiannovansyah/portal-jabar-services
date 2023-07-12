@@ -29,3 +29,14 @@ func (i *logoUsecase) Fetch(c context.Context, params domain.Request) (res []dom
 	res, total, err = i.logoRepo.Fetch(ctx, params)
 	return
 }
+
+func (i *logoUsecase) Store(c context.Context, body *domain.StoreLogoRequest) (err error) {
+	ctx, cancel := context.WithTimeout(c, i.contextTimeout)
+	defer cancel()
+
+	if err = i.logoRepo.Store(ctx, body); err != nil {
+		return
+	}
+
+	return
+}
