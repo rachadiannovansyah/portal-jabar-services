@@ -20,7 +20,7 @@ func NewMysqlMasterDataPublicationRepository(Conn *sql.DB) domain.MasterDataPubl
 	return &mysqlMdpRepository{Conn}
 }
 
-var querySelectJoin = `SELECT pub.id, pub.mds_id, ms.service_name, units.name, ms.service_user, ms.technical, pub.updated_at, pub.status, pub.created_by
+var querySelectJoin = `SELECT pub.id, pub.mds_id, ms.service_name, units.name, ms.service_user, ms.technical, pub.updated_at, pub.status, pub.created_by, ms.service_name
 FROM masterdata_publications pub
 LEFT JOIN masterdata_services mds
 ON pub.mds_id = mds.id
@@ -124,6 +124,7 @@ func (m *mysqlMdpRepository) fetch(ctx context.Context, query string, args ...in
 			&pub.UpdatedAt,
 			&pub.Status,
 			&pub.CreatedBy.ID,
+			&pub.DefaultInformation.ServiceName,
 		)
 
 		if err != nil {

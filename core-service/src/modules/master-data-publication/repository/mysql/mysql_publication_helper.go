@@ -15,7 +15,7 @@ func filterPublicationQuery(params *domain.Request, binds *[]interface{}) string
 
 	if params.Keyword != "" {
 		*binds = append(*binds, `%`+params.Keyword+`%`)
-		query = fmt.Sprintf(`%s AND pub.portal_category LIKE ?`, query)
+		query = fmt.Sprintf(`%s AND ms.service_name LIKE ?`, query)
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
