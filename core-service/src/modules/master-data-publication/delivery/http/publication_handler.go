@@ -228,7 +228,8 @@ func (h *MasterDataPublicationHandler) Update(c echo.Context) (err error) {
 func (h *MasterDataPublicationHandler) PortalFetch(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	params := helpers.GetRequestParams(c)
+	params := domain.Request{}
+	params.Keyword = helpers.RegexReplaceString(c, c.QueryParam("q"), "")
 	params.Filters = map[string]interface{}{
 		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
 		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),

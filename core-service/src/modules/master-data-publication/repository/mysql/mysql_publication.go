@@ -361,9 +361,7 @@ func (m *mysqlMdpRepository) PortalFetch(ctx context.Context, params *domain.Req
 	binds := make([]interface{}, 0)
 	queryFilter := filterPublicationPortalQuery(params, &binds)
 
-	query := querySelectListPortal + queryFilter + ` LIMIT ?,? `
-	binds = append(binds, params.Offset, params.PerPage)
-
+	query := querySelectListPortal + queryFilter
 	res, err = m.fetchPortal(ctx, query, binds...)
 	if err != nil {
 		return nil, err
