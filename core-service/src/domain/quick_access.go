@@ -26,7 +26,6 @@ type StoreQuickAccess struct {
 	Description string `json:"description" validate:"required,max=200"`
 	Link        string `json:"link"`
 	Image       string `json:"image" validate:"required"`
-	IsActive    *int8  `json:"is_active" validate:"required,eq=1|eq=0"`
 }
 
 type QuickAccessResponse struct {

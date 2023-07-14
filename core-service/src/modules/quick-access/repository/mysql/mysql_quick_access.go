@@ -39,7 +39,7 @@ func (m *quickAccessRepository) Store(ctx context.Context, body *domain.StoreQui
 		body.Description,
 		body.Link,
 		body.Image,
-		body.IsActive,
+		0,
 		time.Now(),
 		time.Now(),
 	)
@@ -48,7 +48,7 @@ func (m *quickAccessRepository) Store(ctx context.Context, body *domain.StoreQui
 }
 
 func (m *quickAccessRepository) Update(ctx context.Context, ID int64, body *domain.StoreQuickAccess, tx *sql.Tx) (err error) {
-	query := `UPDATE quick_accesses SET title=?, description=?, link=?, image=?, is_active=?, updated_at=? where id = ?`
+	query := `UPDATE quick_accesses SET title=?, description=?, link=?, image=?, updated_at=? where id = ?`
 	stmt, err := tx.PrepareContext(ctx, query)
 	if err != nil {
 		return
@@ -59,7 +59,6 @@ func (m *quickAccessRepository) Update(ctx context.Context, ID int64, body *doma
 		body.Description,
 		body.Link,
 		body.Image,
-		body.IsActive,
 		time.Now(),
 		ID,
 	)
