@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var QuickAccessMaxActived = 8
+
 type QuickAccess struct {
 	ID          int64     `json:"id"`
 	Title       string    `json:"title"`
@@ -56,4 +58,5 @@ type QuickAccessRepository interface {
 	UpdateStatus(ctx context.Context, ID int64, body *UpdateStatusQuickAccess, tx *sql.Tx) (err error)
 	Delete(ctx context.Context, ID int64, tx *sql.Tx) (err error)
 	GetByID(ctx context.Context, ID int64) (res QuickAccess, err error)
+	CountByActived(ctx context.Context) (total int64)
 }

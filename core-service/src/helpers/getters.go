@@ -122,6 +122,8 @@ func GetStatusCode(err error) int {
 		return http.StatusUnauthorized
 	case domain.ErrSlugAlreadyExist:
 		return http.StatusBadRequest
+	case domain.ErrBadRequest:
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}

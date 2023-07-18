@@ -23,6 +23,8 @@ var (
 	ErrHasPublication = errors.New("Your requested master data is already used on publication")
 	// ErrSlugAlreadyExist
 	ErrSlugAlreadyExist = errors.New("Slug already exists")
+	// Err for bad request
+	ErrBadRequest = errors.New("Bad Request")
 )
 
 type ErrResponse struct {

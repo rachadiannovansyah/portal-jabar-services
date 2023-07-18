@@ -154,3 +154,13 @@ func (m *quickAccessRepository) GetByID(ctx context.Context, ID int64) (res doma
 
 	return
 }
+
+func (m *quickAccessRepository) CountByActived(ctx context.Context) (total int64) {
+	query := querySelectTotal + `AND is_active = 1`
+
+	_ = m.Conn.QueryRowContext(ctx, query).Scan(
+		&total,
+	)
+
+	return
+}
