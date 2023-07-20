@@ -2,7 +2,6 @@ package http
 
 import (
 	"net/http"
-	"sort"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -35,13 +34,6 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
 		return err
-	}
-	sort.SliceStable(listSearch, func(i, j int) bool {
-		return listSearch[i].CreatedAt.Unix() > listSearch[j].CreatedAt.Unix()
-	})
-	ct := int(params.PerPage)
-	if ct < len(listSearch) {
-		listSearch = listSearch[:ct]
 	}
 
 	res := helpers.Paginate(c, listSearch, tot, params)

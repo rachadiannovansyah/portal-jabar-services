@@ -78,7 +78,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 	// set default sort by computed each _score documents
 	paramsSort := q{"_score": "desc"}
 	if sortFilter := params.SortBy; len(sortFilter) > 0 {
-		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
+		paramsSort = q{params.SortBy + ".keyword": q{"order": params.SortOrder}}
 	}
 
 	// set default fuzziness to "AUTO"
@@ -116,7 +116,7 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		"aggs": q{
 			"agg_domain": q{
 				"terms": q{
-					"field": "domain",
+					"field": "domain.keyword",
 				},
 			},
 		},
@@ -157,7 +157,7 @@ func (es *elasticSearchRepository) Fetch(ctx context.Context, indices string, pa
 		esClient.Search.WithIndex(indices),
 		esClient.Search.WithBody(&query),
 		esClient.Search.WithFrom(int(params.Offset)),
-		esClient.Search.WithSize(es.Cfg.ELastic.IndexSize),
+		esClient.Search.WithSize(int(params.PerPage)),
 	)
 
 	// Decode the JSON response and using a pointer
