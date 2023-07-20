@@ -87,7 +87,7 @@ func (i *quickAccessUsecase) UpdateStatus(c context.Context, ID int64, body *dom
 
 	// for case request is active true then checking max active
 	if *body.IsActive == int8(1) {
-		if total := i.quickAccessRepo.CountByActived(ctx); total > int64(domain.QuickAccessMaxActived) {
+		if total := i.quickAccessRepo.CountByActived(ctx); total >= int64(domain.QuickAccessMaxActived) {
 			err = domain.ErrBadRequest
 			return
 		}
