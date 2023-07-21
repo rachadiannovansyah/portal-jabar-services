@@ -75,10 +75,10 @@ func buildQuery(params *domain.Request) (buf bytes.Buffer) {
 		domain = domainFilter
 	}
 
-	// set default sort by computed each _score documents
-	paramsSort := q{"_score": "desc"}
+	// set default sort by created_at descending
+	paramsSort := q{"created_at.keyword": "desc"}
 	if sortFilter := params.SortBy; len(sortFilter) > 0 {
-		paramsSort = q{params.SortBy + ".keyword": q{"order": params.SortOrder}}
+		paramsSort = q{params.SortBy: q{"order": params.SortOrder}}
 	}
 
 	// set default fuzziness to "AUTO"
