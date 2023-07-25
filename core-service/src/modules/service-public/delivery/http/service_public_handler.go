@@ -22,7 +22,7 @@ type ServicePublicHandler struct {
 }
 
 // NewServicePublicHandler will create a new ServicePublicHandler
-func NewServicePublicHandler(_ *echo.Group, p *echo.Group, r *echo.Group, sp domain.ServicePublicUsecase, apm *utils.Apm) {
+func NewServicePublicHandler(_, p, r *echo.Group, sp domain.ServicePublicUsecase, apm *utils.Apm) {
 	handler := &ServicePublicHandler{
 		SPUsecase: sp,
 		apm:       apm,

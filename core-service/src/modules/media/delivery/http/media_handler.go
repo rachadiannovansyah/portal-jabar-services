@@ -17,7 +17,7 @@ type MediaHandler struct {
 }
 
 // NewMediaHandler will create a new MediaHandler
-func NewMediaHandler(_ *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
+func NewMediaHandler(_, r *echo.Group, mu domain.MediaUsecase) {
 	handler := &MediaHandler{
 		MUsecase: mu,
 	}

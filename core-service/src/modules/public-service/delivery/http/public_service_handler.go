@@ -17,7 +17,7 @@ type PublicServiceHandler struct {
 }
 
 // NewPublicServiceHandler will create a new PublicServiceHandler
-func NewPublicServiceHandler(_ *echo.Group, p *echo.Group, ps domain.PublicServiceUsecase) {
+func NewPublicServiceHandler(_, p *echo.Group, ps domain.PublicServiceUsecase) {
 	handler := &PublicServiceHandler{
 		PSUsecase: ps,
 	}

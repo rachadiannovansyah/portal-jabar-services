@@ -21,7 +21,7 @@ type EventHandler struct {
 }
 
 // NewEventHandler will initialize the event endpoint
-func NewEventHandler(_ *echo.Group, r *echo.Group, us domain.EventUsecase) {
+func NewEventHandler(_, r *echo.Group, us domain.EventUsecase) {
 	handler := &EventHandler{
 		EventUcase: us,
 	}

@@ -15,7 +15,7 @@ type TagHandler struct {
 }
 
 // NewTagHandler will initialize the contents/ resources endpoint
-func NewTagHandler(e *echo.Group, _ *echo.Group, us domain.TagUsecase) {
+func NewTagHandler(e, _ *echo.Group, us domain.TagUsecase) {
 	handler := &TagHandler{
 		TagUsecase: us,
 	}

@@ -14,7 +14,7 @@ type SearchHandler struct {
 }
 
 // NewSearchHandler will initialize the search/ resources endpoint
-func NewSearchHandler(e *echo.Group, _ *echo.Group, us domain.SearchUsecase) {
+func NewSearchHandler(e, _ *echo.Group, us domain.SearchUsecase) {
 	handler := &SearchHandler{
 		SUsecase: us,
 	}
