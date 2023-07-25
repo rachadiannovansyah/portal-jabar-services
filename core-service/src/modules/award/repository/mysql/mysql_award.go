@@ -53,7 +53,7 @@ func (m *mysqlAwardRepository) fetch(ctx context.Context, query string, args ...
 	return result, nil
 }
 
-func (m *mysqlAwardRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlAwardRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)
 	if err != nil {

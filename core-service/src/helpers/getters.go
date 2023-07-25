@@ -75,7 +75,7 @@ func GetRequestParams(c echo.Context) domain.Request {
 }
 
 // Paginate ...
-func Paginate(c echo.Context, data interface{}, total int64, params domain.Request) *domain.ResultsData {
+func Paginate(_ echo.Context, data interface{}, total int64, params domain.Request) *domain.ResultsData {
 	return &domain.ResultsData{
 		Data: data,
 		Meta: &domain.MetaData{

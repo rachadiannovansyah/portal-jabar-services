@@ -15,7 +15,7 @@ type FeaturedProgramHandler struct {
 }
 
 // NewFeaturedProgramHandler will initialize the featured-program resources endpoint
-func NewFeaturedProgramHandler(e *echo.Group, r *echo.Group, us domain.FeaturedProgramUsecase) {
+func NewFeaturedProgramHandler(e *echo.Group, _ *echo.Group, us domain.FeaturedProgramUsecase) {
 	handler := &FeaturedProgramHandler{FPUsecase: us}
 	e.GET("/featured-programs", handler.FetchFeaturedPrograms)
 }

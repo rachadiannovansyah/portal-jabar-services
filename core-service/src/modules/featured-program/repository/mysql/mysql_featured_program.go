@@ -76,7 +76,7 @@ func (m *mysqlFeaturedProgramRepository) fetch(ctx context.Context, query string
 	return result, nil
 }
 
-func (m *mysqlFeaturedProgramRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlFeaturedProgramRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)
 	if err != nil {
@@ -87,7 +87,7 @@ func (m *mysqlFeaturedProgramRepository) count(ctx context.Context, query string
 	return total, nil
 }
 
-func (m *mysqlFeaturedProgramRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+func (m *mysqlFeaturedProgramRepository) getLastUpdated(_ context.Context, query string) (lastUpdated string, err error) {
 	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
 
 	if err == sql.ErrNoRows {

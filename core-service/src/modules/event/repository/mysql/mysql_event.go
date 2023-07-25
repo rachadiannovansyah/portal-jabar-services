@@ -102,7 +102,7 @@ func (r *mysqlEventRepository) fetchQueryCalendar(ctx context.Context, query str
 	return result, nil
 }
 
-func (r *mysqlEventRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (r *mysqlEventRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 
 	err = r.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {

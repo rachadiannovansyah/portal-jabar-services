@@ -190,7 +190,7 @@ func (m *mysqlUserRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
-func (m *mysqlUserRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlUserRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(fmt.Sprintf(`SELECT COUNT(1) FROM (%s) AS t`, query)).Scan(&total)
 	if err != nil {

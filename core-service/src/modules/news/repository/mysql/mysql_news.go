@@ -167,7 +167,7 @@ func (m *mysqlNewsRepository) fetchTabs(ctx context.Context, query string, args 
 	return result, nil
 }
 
-func (m *mysqlNewsRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlNewsRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())

@@ -27,7 +27,7 @@ func NewPopUpBannerUsecase(pb domain.PopUpBannerRepository, cfg *config.Config, 
 	}
 }
 
-func (u *popUpBannerUsecase) Fetch(c context.Context, auth *domain.JwtCustomClaims, params *domain.Request) (res []domain.PopUpBanner, total int64, err error) {
+func (u *popUpBannerUsecase) Fetch(c context.Context, _ *domain.JwtCustomClaims, params *domain.Request) (res []domain.PopUpBanner, total int64, err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
@@ -51,7 +51,7 @@ func (u *popUpBannerUsecase) GetByID(c context.Context, id int64) (res domain.Po
 	return
 }
 
-func (u *popUpBannerUsecase) Store(c context.Context, au *domain.JwtCustomClaims, body *domain.StorePopUpBannerRequest) (err error) {
+func (u *popUpBannerUsecase) Store(c context.Context, _ *domain.JwtCustomClaims, body *domain.StorePopUpBannerRequest) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
@@ -103,7 +103,7 @@ func (n *popUpBannerUsecase) UpdateStatus(ctx context.Context, ID int64, body *d
 	return
 }
 
-func (n *popUpBannerUsecase) Update(ctx context.Context, au *domain.JwtCustomClaims, ID int64, body *domain.StorePopUpBannerRequest) (err error) {
+func (n *popUpBannerUsecase) Update(ctx context.Context, _ *domain.JwtCustomClaims, ID int64, body *domain.StorePopUpBannerRequest) (err error) {
 	// set flag if use scheduler
 	body.Scheduler.Status = "NON-ACTIVE"
 	if body.Scheduler.IsScheduled == 1 { // 1 is mean true
@@ -117,7 +117,7 @@ func (n *popUpBannerUsecase) Update(ctx context.Context, au *domain.JwtCustomCla
 	return
 }
 
-func (u *popUpBannerUsecase) GetMetaDataImage(ctx context.Context, link string) (meta domain.DetailMetaDataImage, err error) {
+func (u *popUpBannerUsecase) GetMetaDataImage(_ context.Context, link string) (meta domain.DetailMetaDataImage, err error) {
 	subStringsSlice := strings.Split(link, "/")
 	fileName := subStringsSlice[len(subStringsSlice)-1]
 

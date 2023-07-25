@@ -54,7 +54,7 @@ func InArray(needle interface{}, haystack interface{}) (exists bool, index int) 
 	return
 }
 
-func RegexReplaceString(c echo.Context, str string, repl string) string {
+func RegexReplaceString(_ echo.Context, str string, repl string) string {
 	re := regexp.MustCompile(`[^ a-zA-Z0-9_]`)
 	return re.ReplaceAllString(str, repl)
 }

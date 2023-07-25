@@ -52,7 +52,7 @@ func (m *mysqlAreaRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
-func (m *mysqlAreaRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlAreaRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)
 	if err != nil {

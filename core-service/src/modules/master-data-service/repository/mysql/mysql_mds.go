@@ -121,7 +121,7 @@ func (m *mysqlMdsRepository) fetch(ctx context.Context, query string, args ...in
 	return result, nil
 }
 
-func (m *mysqlMdsRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlMdsRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		logrus.Error(err)

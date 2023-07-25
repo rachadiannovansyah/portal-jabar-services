@@ -46,7 +46,7 @@ func (m *mysqlTagRepository) fetch(ctx context.Context, query string, args ...in
 	return result, nil
 }
 
-func (m *mysqlTagRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (m *mysqlTagRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query).Scan(&total)
 	if err != nil {

@@ -57,7 +57,7 @@ func (m *mysqlUnitRepository) fetch(ctx context.Context, query string, args ...i
 	return result, nil
 }
 
-func (m *mysqlUnitRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlUnitRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {

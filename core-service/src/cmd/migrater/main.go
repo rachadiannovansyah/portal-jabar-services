@@ -135,7 +135,7 @@ func Migrate(dsn string, command string) error {
 	return nil
 }
 
-func DoTruncate(cfg *config.Config, command string) error {
+func DoTruncate(cfg *config.Config, _ string) error {
 	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
@@ -168,7 +168,7 @@ func DoTruncate(cfg *config.Config, command string) error {
 	return nil
 }
 
-func DoSyncElastic(cfg *config.Config, command string) error {
+func DoSyncElastic(cfg *config.Config, _ string) error {
 	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
@@ -281,7 +281,7 @@ func DoSyncElastic(cfg *config.Config, command string) error {
 	return nil
 }
 
-func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
+func DoSyncElasticFeaturedProgram(cfg *config.Config, _ string) error {
 	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
@@ -383,7 +383,7 @@ func DoSyncElasticFeaturedProgram(cfg *config.Config, command string) error {
 	return nil
 }
 
-func DoSyncElasticPublicService(cfg *config.Config, command string) error {
+func DoSyncElasticPublicService(cfg *config.Config, _ string) error {
 	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
@@ -499,7 +499,7 @@ func DoSyncElasticPublicService(cfg *config.Config, command string) error {
 	return nil
 }
 
-func DoSyncElasticPopularService(cfg *config.Config, command string) error {
+func DoSyncElasticPopularService(cfg *config.Config, _ string) error {
 	es, err := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 	if err != nil {
 		logrus.Error(err)
@@ -615,7 +615,7 @@ func DoSyncElasticPopularService(cfg *config.Config, command string) error {
 	return nil
 }
 
-func DoMapping(cfg *config.Config, command string) error {
+func DoMapping(cfg *config.Config, _ string) error {
 	es, _ := elasticsearch.NewClient(*cfg.ELastic.ElasticConfig)
 
 	mappings := `

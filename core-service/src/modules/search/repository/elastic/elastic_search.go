@@ -286,7 +286,7 @@ func (es *elasticSearchRepository) Store(ctx context.Context, indices string, da
 	return
 }
 
-func (es *elasticSearchRepository) Update(ctx context.Context, indices string, id int, data *domain.Search) (err error) {
+func (es *elasticSearchRepository) Update(_ context.Context, indices string, id int, data *domain.Search) (err error) {
 	esclient := es.Conn
 
 	body, err := goquery.NewDocumentFromReader(strings.NewReader(data.Content))
@@ -351,7 +351,7 @@ func (es *elasticSearchRepository) Update(ctx context.Context, indices string, i
 	return
 }
 
-func (es *elasticSearchRepository) Delete(ctx context.Context, indices string, id int, domain string) (err error) {
+func (es *elasticSearchRepository) Delete(_ context.Context, indices string, id int, domain string) (err error) {
 	esclient := es.Conn
 
 	doc := q{
