@@ -59,7 +59,7 @@ func (m *mysqlPopUpBannerRepository) fetch(ctx context.Context, query string, ar
 	return result, nil
 }
 
-func (m *mysqlPopUpBannerRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlPopUpBannerRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {

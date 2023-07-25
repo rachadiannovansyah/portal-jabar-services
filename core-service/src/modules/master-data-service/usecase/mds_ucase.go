@@ -33,7 +33,7 @@ func NewMasterDataServiceUsecase(mdsArgs domain.MasterDataServiceUsecaseArgs) do
 	}
 }
 
-func (n *masterDataServiceUsecase) Store(ctx context.Context, au *domain.JwtCustomClaims, mds *domain.StoreMasterDataService) (err error) {
+func (n *masterDataServiceUsecase) Store(ctx context.Context, _ *domain.JwtCustomClaims, mds *domain.StoreMasterDataService) (err error) {
 	tx, err := n.mdsRepo.GetTx(ctx)
 	if err != nil {
 		return

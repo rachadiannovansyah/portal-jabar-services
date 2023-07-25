@@ -40,7 +40,7 @@ func (u *mediaUsecase) newMediaResponse(fileName string, fileDownloadUri string,
 	}
 }
 
-func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf bytes.Buffer, domain string) (res *domain.MediaResponse, err error) {
+func (u *mediaUsecase) Store(_ context.Context, file *multipart.FileHeader, buf bytes.Buffer, domain string) (res *domain.MediaResponse, err error) {
 	fileName := strings.Replace(fmt.Sprintf("%d-%s", time.Now().Unix(), file.Filename), " ", "-", -1) // fixme
 	fileSize := file.Size
 	filePath := u.config.AWS.Env + "/media/img/" + domain + fileName
@@ -60,7 +60,7 @@ func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf 
 	return u.newMediaResponse(fileName, fileDownloadUri, fileSize), err
 }
 
-func (u *mediaUsecase) Delete(c context.Context, body *domain.DeleteMediaRequest) (err error) {
+func (u *mediaUsecase) Delete(_ context.Context, body *domain.DeleteMediaRequest) (err error) {
 	filePath := u.config.AWS.Env + "/media/img/" + body.Domain + body.Key
 
 	_, err = s3.New(u.conn.AWS).DeleteObject(&s3.DeleteObjectInput{

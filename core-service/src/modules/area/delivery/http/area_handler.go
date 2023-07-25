@@ -16,7 +16,7 @@ type AreaHandler struct {
 }
 
 // NewAreaHandler will initialize the contents/ resources endpoint
-func NewAreaHandler(e *echo.Group, r *echo.Group, us domain.AreaUsecase) {
+func NewAreaHandler(e, _ *echo.Group, us domain.AreaUsecase) {
 	handler := &AreaHandler{
 		AUsecase: us,
 	}

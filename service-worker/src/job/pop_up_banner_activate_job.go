@@ -10,7 +10,7 @@ import (
 )
 
 // PopUpBannerActivateJob ...
-func PopUpBannerActivateJob(conn *utils.Conn, cfg *config.Config) {
+func PopUpBannerActivateJob(conn *utils.Conn, _ *config.Config) {
 	logrus.Println("PopUpBannerActivateJob is running...")
 
 	// Get pop_up_banners ids from pop_up_banners will be archived

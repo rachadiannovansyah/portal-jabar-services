@@ -78,7 +78,7 @@ func (m *mysqlServicePublicRepository) fetch(ctx context.Context, query string, 
 	return result, nil
 }
 
-func (m *mysqlServicePublicRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlServicePublicRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
@@ -89,7 +89,7 @@ func (m *mysqlServicePublicRepository) count(ctx context.Context, query string, 
 	return total, nil
 }
 
-func (m *mysqlServicePublicRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+func (m *mysqlServicePublicRepository) getLastUpdated(_ context.Context, query string) (lastUpdated string, err error) {
 	err = m.Conn.QueryRow(query).Scan(&lastUpdated)
 
 	if err == sql.ErrNoRows {

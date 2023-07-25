@@ -138,7 +138,7 @@ func (m *mysqlMdpRepository) fetch(ctx context.Context, query string, args ...in
 	return result, nil
 }
 
-func (m *mysqlMdpRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
+func (m *mysqlMdpRepository) count(_ context.Context, query string, args ...interface{}) (total int64, err error) {
 	err = m.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		logrus.Error(err)
@@ -427,7 +427,7 @@ func (m *mysqlMdpRepository) PortalMetaFetch(ctx context.Context, params *domain
 	return
 }
 
-func (m *mysqlMdpRepository) getLastUpdated(ctx context.Context, query string) (lastUpdated string, err error) {
+func (m *mysqlMdpRepository) getLastUpdated(_ context.Context, query string) (lastUpdated string, err error) {
 	_ = m.Conn.QueryRow(query).Scan(&lastUpdated)
 
 	return lastUpdated, nil

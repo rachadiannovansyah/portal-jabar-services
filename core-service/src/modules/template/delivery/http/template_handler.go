@@ -12,7 +12,7 @@ type MailHandler struct {
 	MUsecase domain.TemplateUsecase
 }
 
-func NewMailHandler(e *echo.Group, r *echo.Group, us domain.TemplateUsecase) {
+func NewMailHandler(_, r *echo.Group, us domain.TemplateUsecase) {
 	handler := &MailHandler{
 		MUsecase: us,
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func PopUpBannerDeactivateJob(conn *utils.Conn, cfg *config.Config) {
+func PopUpBannerDeactivateJob(conn *utils.Conn, _ *config.Config) {
 	logrus.Println("PopUpBannerDeactivateJob is running...")
 
 	// deactivate banner

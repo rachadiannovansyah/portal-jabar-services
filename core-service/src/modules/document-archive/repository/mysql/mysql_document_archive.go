@@ -61,7 +61,7 @@ func (r *mysqlDocumentArchiveRepository) fetchQuery(ctx context.Context, query s
 	return result, nil
 }
 
-func (r *mysqlDocumentArchiveRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (r *mysqlDocumentArchiveRepository) count(_ context.Context, query string) (total int64, err error) {
 
 	err = r.Conn.QueryRow(query).Scan(&total)
 	if err != nil {

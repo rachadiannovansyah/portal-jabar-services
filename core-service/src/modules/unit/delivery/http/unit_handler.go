@@ -17,7 +17,7 @@ type UnitHandler struct {
 }
 
 // NewUnitHandler will initialize the contents/ resources endpoint
-func NewUnitHandler(e *echo.Group, r *echo.Group, us domain.UnitUsecase) {
+func NewUnitHandler(e, _ *echo.Group, us domain.UnitUsecase) {
 	handler := &UnitHandler{
 		UUsecase: us,
 	}

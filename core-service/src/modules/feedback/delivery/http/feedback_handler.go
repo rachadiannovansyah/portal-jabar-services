@@ -15,7 +15,7 @@ type FeedbackHandler struct {
 }
 
 // NewFeedbackHandler will create a new FeedbackHandler
-func NewFeedbackHandler(e *echo.Group, r *echo.Group, fu domain.FeedbackUsecase) {
+func NewFeedbackHandler(e, _ *echo.Group, fu domain.FeedbackUsecase) {
 	handler := &FeedbackHandler{
 		FUsecase: fu,
 	}
